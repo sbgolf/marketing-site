@@ -1,0 +1,15 @@
+:root{
+  --ink:#0E1729;
+  --ink-2:#1A2438;
+  --paper:#FAFAF7;
+  --paper-2:#F0EDE5;
+  --accent:#FF4D3D;
+  --accent-deep:#D43B2D;
+  --teal:#1FB8C4;
+  --gold:#F5C04A;
+  --muted:#8A93A6;
+  --line:rgba(14,23,41,.12);
+  --line-dark:rgba(250,250,247,.14);
+  --maxw:1200px;
+  --r-lg:24px;
+}
