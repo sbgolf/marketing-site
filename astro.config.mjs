@@ -1,8 +1,13 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
+const isGitHubPages = process.env.GITHUB_PAGES === 'true';
+
 export default defineConfig({
-  site: 'https://brand-marketing-site.pages.dev',
+  site: isGitHubPages
+    ? 'https://sbgolf.github.io'
+    : 'https://brand-marketing-site.pages.dev',
+  base: isGitHubPages ? '/marketing-site' : undefined,
   integrations: [sitemap()],
   output: 'static',
   vite: {
