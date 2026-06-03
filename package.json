@@ -1,0 +1,25 @@
+{
+  "name": "marketing-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "lighthouse": "lhci autorun --config=./lighthouserc.cjs"
+  },
+  "dependencies": {
+    "@fontsource/instrument-serif": "latest",
+    "@fontsource/jetbrains-mono": "latest",
+    "@fontsource/plus-jakarta-sans": "latest",
+    "astro": "^4.16.18"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/sitemap": "^3.2.1",
+    "@lhci/cli": "latest",
+    "lighthouse": "latest",
+    "typescript": "latest"
+  }
+}
