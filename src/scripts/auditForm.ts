@@ -23,6 +23,6 @@ form?.addEventListener('submit', (event) => {
     msg!.textContent = 'Please fill in all fields.';
     return;
   }
-  msg!.textContent = 'Got it — your audit will land in your inbox within 24 hours. (Demo only)';
+  msg!.textContent = 'Demo only — this request was not sent. Connect a form endpoint before publishing this CTA live.';
   form.reset();
 });
