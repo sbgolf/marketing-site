@@ -154,9 +154,9 @@ Don’t lose these in translation. They’re what makes the site feel intentiona
 ## SEO and metadata
 
 ```html
-<title>StartLine Sites — Race websites that drive registrations</title>
-<meta name="description" content="Modern, SEO-optimized race websites built in 14 days. Built by the team behind bostonmarathonqualifyingraces.com. For race directors who want their site to actually drive signups.">
-<meta property="og:title" content="StartLine Sites — Race websites that drive registrations">
+<title>StartLine Sites — Race websites built to turn interest into registrations</title>
+<meta name="description" content="Fast, SEO-optimized websites for race directors — designed to help runners find your race, trust the details, and click through to register.">
+<meta property="og:title" content="StartLine Sites — Race websites built to turn interest into registrations">
 <meta property="og:description" content="...">
 <meta property="og:image" content="/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
