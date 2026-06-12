@@ -6,7 +6,7 @@ const isGitHubPages = process.env.GITHUB_PAGES === 'true';
 export default defineConfig({
   site: isGitHubPages
     ? 'https://sbgolf.github.io'
-    : 'https://brand-marketing-site.pages.dev',
+    : 'https://startlinesites.com',
   base: isGitHubPages ? '/marketing-site' : undefined,
   integrations: [sitemap()],
   output: 'static',
