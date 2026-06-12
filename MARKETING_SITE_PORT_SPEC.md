@@ -154,9 +154,9 @@ Don’t lose these in translation. They’re what makes the site feel intentiona
 ## SEO and metadata
 
 ```html
-<title>[BRAND] — Race websites that drive registrations</title>
+<title>StartLine Sites — Race websites that drive registrations</title>
 <meta name="description" content="Modern, SEO-optimized race websites built in 14 days. Built by the team behind bostonmarathonqualifyingraces.com. For race directors who want their site to actually drive signups.">
-<meta property="og:title" content="[BRAND] — Race websites that drive registrations">
+<meta property="og:title" content="StartLine Sites — Race websites that drive registrations">
 <meta property="og:description" content="...">
 <meta property="og:image" content="/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -168,7 +168,7 @@ Add JSON-LD `Organization` schema in `Base.astro` head:
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "[BRAND]",
+  "name": "StartLine Sites",
   "url": "https://[domain].com",
   "description": "Modern race websites for race directors.",
   "sameAs": ["https://bostonmarathonqualifyingraces.com"]
@@ -206,9 +206,9 @@ These are blockers for going live, not for starting work.
 
 ### 1. Brand name (biggest blocker)
 
-The HTML prototype uses `[BRAND]` as a placeholder swap token. Once Steve locks the name:
+The HTML prototype uses `StartLine Sites` as a placeholder swap token. Once Steve locks the name:
 
-- Global find/replace `[BRAND]` → actual name
+- Global find/replace `StartLine Sites` → actual name
 - Rename repo to `sbgolf/[brand-slug]-marketing`
 - Rename workspace folder
 - Update `<title>`, footer brand, OG meta, JSON-LD
