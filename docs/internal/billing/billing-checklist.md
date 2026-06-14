@@ -13,7 +13,7 @@ Quick checklist for StartLine Sites proposals, deposits, final invoices, and mon
 - [ ] Deposit amount matches selected tier
 - [ ] Final invoice amount matches selected tier
 - [ ] Monthly amount matches selected tier
-- [ ] Correct Stripe deposit link included
+- [ ] Correct Stripe deposit link included, or Premium is marked proposal-only
 - [ ] No full pricing menu included unless Steve approved it
 - [ ] Any exception approved by Steve before customer communication
 
@@ -41,15 +41,16 @@ Quick checklist for StartLine Sites proposals, deposits, final invoices, and mon
 - [ ] Deposit: $2,250
 - [ ] Final: $2,250
 - [ ] Monthly: $499/mo
-- [ ] Deposit link: https://buy.stripe.com/4gMcMY4NE7YYb9x0UJ9fW02
+- [ ] Deposit link: **proposal-only**; send only after Steve approves the Premium proposal/scope and ensure Stripe metadata includes `proposal_approved=true` or `deposit_source=approved_proposal`
 
 ## After deposit link is sent
 
 - [ ] Deposit link sent to customer
 - [ ] Deposit payment confirmed in Stripe
-- [ ] Stripe customer/billing email checked
-- [ ] Payment/customer reference saved outside committed docs
-- [ ] Deposit marked paid in CRM/customer record
+- [ ] Stripe webhook event recorded in `stripe_webhook_events` as processed or duplicate
+- [ ] `customer_records.deposit_status = paid`
+- [ ] `customer_records.kickoff_status = ready`
+- [ ] `customer_records.intake_status = ready_to_send`
 - [ ] Kickoff/welcome email sent
 - [ ] Intake form sent
 - [ ] Asset checklist sent

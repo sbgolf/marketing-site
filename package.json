@@ -7,7 +7,8 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "lighthouse": "lhci autorun --config=./lighthouserc.cjs"
+    "lighthouse": "lhci autorun --config=./lighthouserc.cjs",
+    "test": "node --test"
   },
   "dependencies": {
     "@fontsource/instrument-serif": "latest",
