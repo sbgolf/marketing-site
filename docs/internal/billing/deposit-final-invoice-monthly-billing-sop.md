@@ -35,7 +35,7 @@ Keep the close-to-launch payment flow simple and repeatable:
 - Deposit: **$2,250**
 - Final invoice: **$2,250**
 - Monthly plan: **Performance — $499/mo**
-- Deposit link: https://buy.stripe.com/4gMcMY4NE7YYb9x0UJ9fW02
+- Deposit link: **proposal-only**. Do not send a Premium deposit link until Steve approves the customer-specific proposal/scope. Any approved Premium Checkout Session/Payment Link must include Stripe metadata `proposal_approved=true` or `deposit_source=approved_proposal`.
 
 ## Commercial rule
 
@@ -78,14 +78,15 @@ Once that is paid, we’ll send the intake form and asset checklist and start th
 
 After the customer pays:
 
-- Confirm the payment in Stripe.
-- Confirm the Stripe customer record has the correct billing email.
-- Save the Stripe payment/customer reference in Stripe and the dedicated private Supabase `customer_records` table, not in committed markdown.
-- Mark deposit status as paid in `customer_records`.
-- Send kickoff/welcome intake email.
+- Stripe sends `checkout.session.completed` to `/.netlify/functions/stripe-webhook`.
+- The webhook verifies the signature, records the Stripe event in `stripe_webhook_events`, and marks duplicate retries as no-ops.
+- The webhook marks `audit_requests.deposit_status = paid` when it can match the lead by `audit_request_id`, `client_reference_id`, or email/package fallback.
+- The webhook creates/updates the private Supabase `customer_records` row with Stripe customer/session/payment references.
+- The webhook sets `customer_status = kickoff_ready`, `kickoff_status = ready`, and `intake_status = ready_to_send`.
+- Confirm Stripe and Supabase agree before sending kickoff/welcome intake email.
 - Start the customer folder/repo/intake workflow.
 
-Do not begin production work until deposit payment is confirmed.
+Do not begin production work until deposit payment is confirmed in Stripe and reflected in `customer_records`.
 
 ## Step 4 — Kickoff after deposit
 

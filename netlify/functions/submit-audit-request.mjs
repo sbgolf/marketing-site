@@ -51,7 +51,7 @@ const depositPackages = {
     name: 'Premium',
     setup_price: '$4,500',
     deposit_amount: '$2,250',
-    url: 'https://buy.stripe.com/4gMcMY4NE7YYb9x0UJ9fW02',
+    proposal_required: true,
   },
 };
 
@@ -91,9 +91,10 @@ const sendLeadNotification = async ({ record, row }) => {
   const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
   const rowId = record?.id || 'Unknown';
   const subject = `New StartLine audit request: ${row.race_name}`;
-  const packageName = row.metadata?.selected_package?.name;
-  const packageDeposit = row.metadata?.selected_package?.deposit_amount;
-  const packageUrl = row.metadata?.selected_package?.url;
+  const selectedPackage = row.metadata?.selected_package;
+  const packageName = selectedPackage?.name;
+  const packageDeposit = selectedPackage?.deposit_amount;
+  const packageUrl = selectedPackage?.proposal_required ? 'Proposal required before deposit link is sent' : selectedPackage?.url;
   const lines = [
     'A new StartLine Sites audit request was submitted.',
     '',
@@ -220,7 +221,8 @@ export async function handler(event) {
         name: selectedPackage.name,
         setup_price: selectedPackage.setup_price,
         deposit_amount: selectedPackage.deposit_amount,
-        url: selectedPackage.url,
+        url: selectedPackage.url || null,
+        proposal_required: Boolean(selectedPackage.proposal_required),
       } : null,
     },
   };
