@@ -26,7 +26,7 @@ type PackageKey = 'starter' | 'standard' | 'premium';
 type PackageInfo = {
   name: string;
   deposit: string;
-  url: string;
+  url?: string;
 };
 
 const packages: Record<PackageKey, PackageInfo> = {
@@ -43,7 +43,6 @@ const packages: Record<PackageKey, PackageInfo> = {
   premium: {
     name: 'Premium',
     deposit: '$2,250',
-    url: 'https://buy.stripe.com/4gMcMY4NE7YYb9x0UJ9fW02',
   },
 };
 
@@ -117,11 +116,16 @@ form?.addEventListener('submit', async (event) => {
     }
 
     const selectedPackageInfo = isPackageKey(payload.package_tier) ? packages[payload.package_tier] : null;
-    if (selectedPackageInfo) {
+    if (selectedPackageInfo?.url) {
       setMessage(
         `<div class="payment-next"><strong>Thanks — your private audit request was received.</strong><span>Ready to start with ${selectedPackageInfo.name}? Pay the ${selectedPackageInfo.deposit} deposit when you're ready.</span><a href="${selectedPackageInfo.url}" target="_blank" rel="noopener noreferrer">Pay ${selectedPackageInfo.name} deposit →</a><small>We will still review your race site and follow up by email. The deposit starts the project.</small></div>`,
         'success',
         true,
+      );
+    } else if (selectedPackageInfo) {
+      setMessage(
+        `Thanks — your private audit request was received. ${selectedPackageInfo.name} requires a reviewed proposal before deposit, so we’ll follow up by email with the recommended scope and next step.`,
+        'success',
       );
     } else {
       setMessage('Thanks — your private audit request was received. We’ll review it and follow up by email with a package recommendation.', 'success');
