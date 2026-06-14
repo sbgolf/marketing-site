@@ -6,3 +6,4 @@ dist/
 !.env.example
 lighthouse-report.json
 .lighthouseci/
+supabase/.temp/
