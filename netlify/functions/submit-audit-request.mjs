@@ -22,6 +22,18 @@ const optionalClean = (value, max = 500) => {
   return cleaned || null;
 };
 
+const escapeHtml = (value) => String(value ?? '')
+  .replaceAll('&', '&amp;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#39;');
+
+const fieldLine = (label, value) => `${label}: ${value || 'Not provided'}`;
+
+const htmlField = (label, value) => `
+  <p><strong>${escapeHtml(label)}:</strong><br>${escapeHtml(value || 'Not provided')}</p>`;
+
 const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 const isHttpUrl = (value) => {
@@ -40,6 +52,65 @@ const hashIp = (event) => {
     || '';
   const salt = process.env.STARTLINE_IP_HASH_SALT || process.env.SUPABASE_SERVICE_ROLE_KEY || 'startline-sites';
   return ip ? createHash('sha256').update(`${salt}:${ip}`).digest('hex') : null;
+};
+
+const sendLeadNotification = async ({ record, row }) => {
+  const apiKey = process.env.RESEND_API_KEY || process.env.STARTLINE_RESEND_API_KEY;
+  const to = process.env.STARTLINE_LEAD_NOTIFY_EMAIL
+    || process.env.STARTLINE_ADMIN_EMAIL
+    || 'support@startlinesites.com';
+
+  if (!apiKey) {
+    console.warn('Lead notification skipped: RESEND_API_KEY or STARTLINE_RESEND_API_KEY is not configured.');
+    return;
+  }
+
+  const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
+  const rowId = record?.id || 'Unknown';
+  const subject = `New StartLine audit request: ${row.race_name}`;
+  const lines = [
+    'A new StartLine Sites audit request was submitted.',
+    '',
+    fieldLine('Race name', row.race_name),
+    fieldLine('Current URL', row.current_url),
+    fieldLine('Contact name', row.contact_name),
+    fieldLine('Contact email', row.contact_email),
+    fieldLine('Notes', row.notes),
+    fieldLine('Landing page', row.landing_page),
+    fieldLine('Referrer', row.referrer),
+    fieldLine('Supabase row ID', rowId),
+  ];
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${apiKey}`,
+      'content-type': 'application/json',
+      'user-agent': 'StartLineSites/1.0 (lead-notifications)',
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      subject,
+      text: lines.join('\n'),
+      html: `
+        <h2>New StartLine Sites audit request</h2>
+        ${htmlField('Race name', row.race_name)}
+        ${htmlField('Current URL', row.current_url)}
+        ${htmlField('Contact name', row.contact_name)}
+        ${htmlField('Contact email', row.contact_email)}
+        ${htmlField('Notes', row.notes)}
+        ${htmlField('Landing page', row.landing_page)}
+        ${htmlField('Referrer', row.referrer)}
+        ${htmlField('Supabase row ID', rowId)}
+      `,
+    }),
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Resend notification failed: ${response.status} ${detail}`);
+  }
 };
 
 export async function handler(event) {
@@ -132,6 +203,13 @@ export async function handler(event) {
   }
 
   const [record] = await response.json();
+
+  try {
+    await sendLeadNotification({ record, row });
+  } catch (error) {
+    console.error('Lead notification failed', error);
+  }
+
   return json(201, {
     ok: true,
     id: record?.id,
