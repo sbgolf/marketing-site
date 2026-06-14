@@ -7,6 +7,9 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - Proposal template: `proposals/proposal-one-pager-template.md`
 - Billing SOP: `billing/deposit-final-invoice-monthly-billing-sop.md`
 - Billing checklist: `billing/billing-checklist.md`
+- Invoice wording and monthly start policy: `billing/invoice-wording-and-monthly-start-policy.md`
+- Service agreement draft: `legal/service-agreement-draft.md`
+- Service agreement source notes: `legal/source-notes.md`
 - Current blockers: `blockers.md`
 
 ## Standard flow
@@ -20,4 +23,4 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 
 ## Data hygiene
 
-Do not commit customer-specific Stripe IDs, private billing notes, legal exceptions, or sensitive customer details to this repo. Store those in Stripe and the approved CRM/customer tracker instead.
+Do not commit customer-specific Stripe IDs, private billing notes, legal exceptions, or sensitive customer details to this repo. Store those in Stripe and the dedicated private Supabase customer records table instead.

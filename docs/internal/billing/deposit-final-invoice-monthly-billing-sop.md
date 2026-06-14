@@ -80,8 +80,8 @@ After the customer pays:
 
 - Confirm the payment in Stripe.
 - Confirm the Stripe customer record has the correct billing email.
-- Save the Stripe payment/customer reference in the customer record or CRM, not in committed markdown.
-- Mark deposit status as paid.
+- Save the Stripe payment/customer reference in Stripe and the dedicated private Supabase `customer_records` table, not in committed markdown.
+- Mark deposit status as paid in `customer_records`.
 - Send kickoff/welcome intake email.
 - Start the customer folder/repo/intake workflow.
 
@@ -130,7 +130,7 @@ Create/start the correct Stripe subscription under the same Stripe customer when
 - Growth: $249/mo
 - Performance: $499/mo
 
-Record outside committed docs:
+Record in Stripe and `customer_records`:
 
 - Stripe customer ID
 - Stripe subscription ID

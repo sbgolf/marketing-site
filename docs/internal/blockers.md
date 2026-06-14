@@ -1,47 +1,61 @@
 # StartLine Sites operational blockers
 
-This file tracks current setup items Steve may need to unblock before the first paid customer moves through the full flow.
+This file tracks current setup items Steve may need to review before the first paid customer moves through the full flow.
 
-## Current blockers for Steve
+## Current review items for Steve
 
-### 1. Confirm legal/service-agreement posture
+### 1. Service agreement draft
 
-Status: Steve blocker before sending contracts or requiring terms acknowledgement in Stripe.
+Status: draft created for Steve review.
 
-Need decision:
+Files:
 
-- Use attorney-reviewed service agreement before first paid customer, or
-- Start with simple proposal/payment language and add legal terms after attorney review.
+- `docs/internal/legal/service-agreement-draft.md`
+- `docs/internal/legal/source-notes.md`
 
-Recommendation: do not enable Stripe terms acknowledgement until there is a reviewed URL to link.
+Current approach:
 
-### 2. Confirm final invoice wording
+- Draft our own plain-English agreement based on public web design, hosting, maintenance, and subscription-service examples.
+- Do not copy external legal text verbatim.
+- Keep legal placeholders visible: legal entity, governing law, venue/arbitration, cure period, correction period, and final liability language.
 
-Status: Steve approval recommended before first customer invoice.
+Recommendation: review the draft internally first; optionally have counsel review before requiring customer signature or Stripe terms acknowledgement.
+
+### 2. Final invoice wording
+
+Status: draft created for Steve review.
+
+File: `docs/internal/billing/invoice-wording-and-monthly-start-policy.md`
 
 Default wording:
 
 ```text
-Final 50% balance for StartLine Sites [Starter / Standard / Premium] website setup. Site launched at [Live URL] on [Launch Date]. Due net 7.
+Final 50% balance for StartLine Sites [Starter / Standard / Premium] website setup for [Race Name]. Site launched at [Live URL] on [Launch Date]. Due net 7.
 ```
 
-### 3. Confirm monthly subscription start policy
+### 3. Monthly subscription start policy
 
-Status: default set, Steve can override.
+Status: draft created for Steve review.
 
-Default: monthly subscription starts at go-live, not at deposit.
+Default policy:
 
-### 4. Confirm where customer records live
+```text
+The StartLine Sites monthly plan starts on the go-live date. The go-live date is the date the customer site is made available on the production domain or otherwise launched under the approved launch plan. Monthly billing renews each month until cancelled under the agreement.
+```
 
-Status: Steve blocker for repeatable operations.
+### 4. Customer records system
 
-Need one operational home for customer/payment references outside committed repo docs:
+Status: Steve decided customer records should live in Stripe plus a dedicated Supabase table.
 
-- Stripe customer record
-- CRM/Notion/Airtable/customer tracker
-- Customer repo metadata file with no secrets
+Implementation:
 
-Recommendation: use a lightweight CRM/customer tracker; do not store Stripe IDs or private billing notes in public committed markdown.
+- Stripe remains the billing source of truth.
+- Supabase `customer_records` stores non-secret customer lifecycle/billing references and status.
+- RLS is enabled with no public policies; access should stay server-side through the service-role key.
+
+Migration:
+
+- `supabase/migrations/20260614131939_create_customer_records.sql`
 
 ## Not blockers
 
