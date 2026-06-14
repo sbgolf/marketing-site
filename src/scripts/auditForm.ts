@@ -17,12 +17,55 @@ document.querySelectorAll<HTMLButtonElement>('.faq-q').forEach((q) => {
 
 const form = document.getElementById('auditForm') as HTMLFormElement | null;
 const msg = document.getElementById('formMsg');
-form?.addEventListener('submit', (event) => {
+
+const setMessage = (text: string, type: 'success' | 'error' | 'info' = 'info') => {
+  if (!msg) return;
+  msg.textContent = text;
+  msg.dataset.state = type;
+};
+
+form?.addEventListener('submit', async (event) => {
   event.preventDefault();
+
   if (!form.checkValidity()) {
-    msg!.textContent = 'Please fill in all fields.';
+    setMessage('Please fill in all required fields.', 'error');
+    form.reportValidity();
     return;
   }
-  msg!.textContent = 'Demo only — this request was not sent. Connect a form endpoint before publishing this CTA live.';
-  form.reset();
+
+  const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const formData = new FormData(form);
+  const payload = {
+    race_name: String(formData.get('raceName') || ''),
+    current_url: String(formData.get('currentUrl') || ''),
+    contact_name: String(formData.get('auditName') || ''),
+    contact_email: String(formData.get('auditEmail') || ''),
+    company_website: String(formData.get('companyWebsite') || ''),
+    landing_page: window.location.href,
+    referrer: document.referrer,
+  };
+
+  submitButton?.setAttribute('disabled', 'true');
+  setMessage('Sending your request…', 'info');
+
+  try {
+    const response = await fetch('/.netlify/functions/submit-audit-request', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json().catch(() => null) as { message?: string; error?: string } | null;
+
+    if (!response.ok || !result?.message) {
+      throw new Error(result?.error || 'Submission failed.');
+    }
+
+    setMessage('Thanks — your private audit request was received. We’ll review it and follow up by email.', 'success');
+    form.reset();
+  } catch (error) {
+    console.error(error);
+    setMessage('Sorry, the request could not be sent. Please try again or email us directly.', 'error');
+  } finally {
+    submitButton?.removeAttribute('disabled');
+  }
 });
