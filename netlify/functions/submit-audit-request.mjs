@@ -86,6 +86,7 @@ const sendLeadNotification = async ({ record, row }) => {
     headers: {
       authorization: `Bearer ${apiKey}`,
       'content-type': 'application/json',
+      'user-agent': 'StartLineSites/1.0 (lead-notifications)',
     },
     body: JSON.stringify({
       from,
