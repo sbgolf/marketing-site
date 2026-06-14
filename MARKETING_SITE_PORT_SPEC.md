@@ -113,9 +113,9 @@ Copy these as-is from the prototype into `tokens.css`. Do not adjust values with
 Each component below corresponds to a `<section>` in the prototype. Match HTML structure, classes, and inline animations.
 
 1. **Nav.astro** — sticky top nav, `.scrolled` class on body scroll past 40px, `.menu-open` class when mobile menu open. Brand mark + 5 links + audit CTA + hamburger.
-1. **Hero.astro** — eyebrow, h1 with italic emphasis, lead, dual CTA, trust row. Right column: tilted browser mock with Cascade hero render (SVG mountains, gradient bg, sun) + floating Lighthouse badge with SVG ring gauge.
+1. **Hero.astro** — eyebrow, h1 with italic emphasis, lead, dual CTA, trust row. Right column: tilted browser mock with Ocean hero render (SVG mountains, gradient bg, sun) + floating Lighthouse badge with SVG ring gauge.
 1. **Problem.astro** — bento layout (1.55fr / 1fr, 2 rows). Card 01 dominates: oversized italic number, italic-serif heading, search-ranking visualization (4 result rows, the 4th highlighted as “Your Race #47”), stat pill. Cards 02/03 stack on right, smaller.
-1. **Templates.astro** — main grid: Cascade card (full hero render with gradient sun + mountains) + Community card (cream/terracotta with photo placeholder block). Below: 3 mini cards for Trail / Performance / Charity (“Coming next”).
+1. **Templates.astro** — main grid: Ocean card (full hero render with gradient sun + mountains) + Community card (cream/terracotta with photo placeholder block). Below: 3 mini cards for Trail / Performance / Charity (“Coming next”).
 1. **HowItWorks.astro** — dark section (–ink). Dotted gold connecting line behind 4 step cards. Each step: gold-ringed circle with mono number, h4, copy, time pill.
 1. **Credibility.astro** — paper-2 background. Left: copy + signature line. Right: dark “What We Measure On Every Site” callout with 6 metrics (95+ Lighthouse Performance, 100 SEO, 100 Accessibility, <2s LCP, <0.1 CLS, 14 days Contract to Live).
 1. **BuiltFor.astro** — centered. Italic-emphasis h2. Row of 7 pill chips (USATF-Certified, Boston Qualifiers, Trail & Ultra, Community 5Ks, Charity, Multi-Distance, RRCA). Hover inverts chip to dark.
@@ -133,7 +133,7 @@ Don’t lose these in translation. They’re what makes the site feel intentiona
 
 - **Bento Problem layout** — the asymmetric 1.55fr / 1fr grid with card 01 spanning two rows. Collapses to single column on mobile.
 - **Floating Lighthouse badge** — SVG ring with `lhg` gradient definition (cyan to green), `98` score in Instrument Serif. Floats with 1.5s-delayed animation offset to the browser mock.
-- **Browser mock with Cascade hero** — full gradient background (#FFD8A8 → #0B0E13), radial sun, SVG mountain silhouettes, countdown row. This is what visually demonstrates “we build sites like this.”
+- **Browser mock with Ocean hero** — full gradient background (#FFD8A8 → #0B0E13), radial sun, SVG mountain silhouettes, countdown row. This is what visually demonstrates “we build sites like this.”
 - **Dotted connecting line** — `repeating-linear-gradient` between step cards in How It Works. Hidden on mobile (steps stack vertically).
 - **Tilted report mock** — 6° rotation, behind/beside the audit form. Hidden on mobile.
 - **Mobile menu** — full-screen takeover, NOT a side drawer. Hamburger animates to X via three transform/opacity changes. Body scroll locks via `no-scroll` class. Escape key closes. Menu items are Instrument Serif at 1.65rem with dividers.
