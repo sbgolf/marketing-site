@@ -17,10 +17,64 @@ document.querySelectorAll<HTMLButtonElement>('.faq-q').forEach((q) => {
 
 const form = document.getElementById('auditForm') as HTMLFormElement | null;
 const msg = document.getElementById('formMsg');
+const packageTier = document.getElementById('packageTier') as HTMLInputElement | null;
+const selectedPackage = document.getElementById('selectedPackage');
+const selectedPackageLabel = document.getElementById('selectedPackageLabel');
 
-const setMessage = (text: string, type: 'success' | 'error' | 'info' = 'info') => {
+type PackageKey = 'starter' | 'standard' | 'premium';
+
+type PackageInfo = {
+  name: string;
+  deposit: string;
+  url: string;
+};
+
+const packages: Record<PackageKey, PackageInfo> = {
+  starter: {
+    name: 'Starter',
+    deposit: '$750',
+    url: 'https://buy.stripe.com/8x2bIU1Bs0ww3H50UJ9fW00',
+  },
+  standard: {
+    name: 'Standard',
+    deposit: '$1,250',
+    url: 'https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01',
+  },
+  premium: {
+    name: 'Premium',
+    deposit: '$2,250',
+    url: 'https://buy.stripe.com/4gMcMY4NE7YYb9x0UJ9fW02',
+  },
+};
+
+const isPackageKey = (value: string): value is PackageKey => value in packages;
+
+const selectPackage = (tier: PackageKey) => {
+  const packageInfo = packages[tier];
+  if (packageTier) packageTier.value = tier;
+  if (selectedPackage && selectedPackageLabel) {
+    selectedPackageLabel.textContent = `${packageInfo.name} (${packageInfo.deposit} deposit)`;
+    selectedPackage.hidden = false;
+  }
+  document.querySelectorAll<HTMLElement>('[data-package-card]').forEach((card) => {
+    card.classList.toggle('selected', card.dataset.packageCard === tier);
+  });
+};
+
+document.querySelectorAll<HTMLElement>('[data-package-tier]').forEach((button) => {
+  button.addEventListener('click', () => {
+    const tier = button.dataset.packageTier || '';
+    if (isPackageKey(tier)) selectPackage(tier);
+  });
+});
+
+const setMessage = (content: string, type: 'success' | 'error' | 'info' = 'info', html = false) => {
   if (!msg) return;
-  msg.textContent = text;
+  if (html) {
+    msg.innerHTML = content;
+  } else {
+    msg.textContent = content;
+  }
   msg.dataset.state = type;
 };
 
@@ -35,12 +89,14 @@ form?.addEventListener('submit', async (event) => {
 
   const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
   const formData = new FormData(form);
+  const selectedTier = String(formData.get('packageTier') || '');
   const payload = {
     race_name: String(formData.get('raceName') || ''),
     current_url: String(formData.get('currentUrl') || ''),
     contact_name: String(formData.get('auditName') || ''),
     contact_email: String(formData.get('auditEmail') || ''),
     company_website: String(formData.get('companyWebsite') || ''),
+    package_tier: isPackageKey(selectedTier) ? selectedTier : '',
     landing_page: window.location.href,
     referrer: document.referrer,
   };
@@ -60,8 +116,20 @@ form?.addEventListener('submit', async (event) => {
       throw new Error(result?.error || 'Submission failed.');
     }
 
-    setMessage('Thanks — your private audit request was received. We’ll review it and follow up by email.', 'success');
+    const selectedPackageInfo = isPackageKey(payload.package_tier) ? packages[payload.package_tier] : null;
+    if (selectedPackageInfo) {
+      setMessage(
+        `<div class="payment-next"><strong>Thanks — your private audit request was received.</strong><span>Ready to start with ${selectedPackageInfo.name}? Pay the ${selectedPackageInfo.deposit} deposit when you're ready.</span><a href="${selectedPackageInfo.url}" target="_blank" rel="noopener noreferrer">Pay ${selectedPackageInfo.name} deposit →</a><small>We will still review your race site and follow up by email. The deposit starts the project.</small></div>`,
+        'success',
+        true,
+      );
+    } else {
+      setMessage('Thanks — your private audit request was received. We’ll review it and follow up by email with a package recommendation.', 'success');
+    }
+
     form.reset();
+    if (selectedPackage) selectedPackage.hidden = true;
+    document.querySelectorAll<HTMLElement>('[data-package-card]').forEach((card) => card.classList.remove('selected'));
   } catch (error) {
     console.error(error);
     setMessage('Sorry, the request could not be sent. Please try again or email us directly.', 'error');
