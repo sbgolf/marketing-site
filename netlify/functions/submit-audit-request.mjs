@@ -34,6 +34,29 @@ const fieldLine = (label, value) => `${label}: ${value || 'Not provided'}`;
 const htmlField = (label, value) => `
   <p><strong>${escapeHtml(label)}:</strong><br>${escapeHtml(value || 'Not provided')}</p>`;
 
+const depositPackages = {
+  starter: {
+    name: 'Starter',
+    setup_price: '$1,500',
+    deposit_amount: '$750',
+    url: 'https://buy.stripe.com/8x2bIU1Bs0ww3H50UJ9fW00',
+  },
+  standard: {
+    name: 'Standard',
+    setup_price: '$2,500',
+    deposit_amount: '$1,250',
+    url: 'https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01',
+  },
+  premium: {
+    name: 'Premium',
+    setup_price: '$4,500',
+    deposit_amount: '$2,250',
+    url: 'https://buy.stripe.com/4gMcMY4NE7YYb9x0UJ9fW02',
+  },
+};
+
+const getDepositPackage = (tier) => depositPackages[tier] || null;
+
 const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 const isHttpUrl = (value) => {
@@ -68,6 +91,9 @@ const sendLeadNotification = async ({ record, row }) => {
   const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
   const rowId = record?.id || 'Unknown';
   const subject = `New StartLine audit request: ${row.race_name}`;
+  const packageName = row.metadata?.selected_package?.name;
+  const packageDeposit = row.metadata?.selected_package?.deposit_amount;
+  const packageUrl = row.metadata?.selected_package?.url;
   const lines = [
     'A new StartLine Sites audit request was submitted.',
     '',
@@ -75,6 +101,8 @@ const sendLeadNotification = async ({ record, row }) => {
     fieldLine('Current URL', row.current_url),
     fieldLine('Contact name', row.contact_name),
     fieldLine('Contact email', row.contact_email),
+    fieldLine('Selected package', packageName ? `${packageName} (${packageDeposit} deposit)` : null),
+    fieldLine('Stripe deposit link', packageUrl),
     fieldLine('Notes', row.notes),
     fieldLine('Landing page', row.landing_page),
     fieldLine('Referrer', row.referrer),
@@ -99,6 +127,8 @@ const sendLeadNotification = async ({ record, row }) => {
         ${htmlField('Current URL', row.current_url)}
         ${htmlField('Contact name', row.contact_name)}
         ${htmlField('Contact email', row.contact_email)}
+        ${htmlField('Selected package', packageName ? `${packageName} (${packageDeposit} deposit)` : null)}
+        ${htmlField('Stripe deposit link', packageUrl)}
         ${htmlField('Notes', row.notes)}
         ${htmlField('Landing page', row.landing_page)}
         ${htmlField('Referrer', row.referrer)}
@@ -150,12 +180,15 @@ export async function handler(event) {
   const contactName = clean(payload.contact_name, 160);
   const contactEmail = clean(payload.contact_email, 254).toLowerCase();
   const notes = optionalClean(payload.notes, 1200);
+  const packageTier = clean(payload.package_tier, 40).toLowerCase();
+  const selectedPackage = getDepositPackage(packageTier);
 
   const errors = {};
   if (!raceName) errors.race_name = 'Race name is required.';
   if (!currentUrl || !isHttpUrl(currentUrl)) errors.current_url = 'A valid race website or registration URL is required.';
   if (!contactName) errors.contact_name = 'Your name is required.';
   if (!contactEmail || !isEmail(contactEmail)) errors.contact_email = 'A valid email is required.';
+  if (packageTier && !selectedPackage) errors.package_tier = 'Selected package is not valid.';
 
   if (Object.keys(errors).length) {
     return json(422, { ok: false, error: 'Please check the form fields.', fields: errors });
@@ -181,7 +214,14 @@ export async function handler(event) {
     deposit_status: 'not_sent',
     metadata: {
       submitted_from: 'startlinesites.com',
-      form_version: 'audit_request_v1',
+      form_version: 'audit_request_v2',
+      selected_package: selectedPackage ? {
+        tier: packageTier,
+        name: selectedPackage.name,
+        setup_price: selectedPackage.setup_price,
+        deposit_amount: selectedPackage.deposit_amount,
+        url: selectedPackage.url,
+      } : null,
     },
   };
 
