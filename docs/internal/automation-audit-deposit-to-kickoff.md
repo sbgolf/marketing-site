@@ -26,8 +26,8 @@ Audited the StartLine Sites lead-to-deposit path for manual steps that can be au
 
 5. **Payment matching was brittle with static Payment Links.**
    - Risk: static links do not always carry the Supabase lead ID.
-   - Mitigation in this branch: webhook supports exact matching by `metadata.audit_request_id` / `client_reference_id`, then falls back to email/package matching for current links.
-   - Best next improvement: replace static links with server-created Checkout Sessions after lead capture so every payment carries `audit_request_id`.
+   - Fix now implemented: the audit form can create customer-specific Stripe Checkout Sessions after lead capture when `STRIPE_SECRET_KEY` is configured, and those sessions carry `audit_request_id` / `client_reference_id` for exact webhook matching.
+   - Fallback retained: webhook still supports email/package matching for legacy/static links when exact metadata is unavailable.
 
 ## Implemented safeguards
 
@@ -38,20 +38,16 @@ Audited the StartLine Sites lead-to-deposit path for manual steps that can be au
 - Amount mismatch records failure instead of silently creating a customer.
 - Unsupported Stripe events are recorded and ignored cleanly.
 - Resend deposit notification is best-effort only; notification failure does not roll back the payment record.
+- Dynamic Checkout Session creation is implemented in `netlify/functions/create-checkout-session.mjs` and covered by tests.
 - Unit/smoke tests cover signature verification, Premium gating, amount mismatch, and a mocked Standard deposit webhook.
 
-## Remaining blockers before live automation
+## Remaining production verification blockers
 
-- Apply Supabase migration `20260614190000_add_stripe_deposit_webhook_support.sql`.
-- Add `STRIPE_WEBHOOK_SECRET` in Netlify production env.
-- Configure Stripe webhook endpoint: `https://startlinesites.com/.netlify/functions/stripe-webhook` for `checkout.session.completed`.
-- Confirm Stripe Payment Links/Checkout Sessions include metadata:
-  - `startline_payment_type=deposit`
-  - `setup_tier=starter|standard|premium`
-  - `audit_request_id=<audit_requests.id>` when available
-  - `proposal_approved=true` only for Steve-approved Premium proposal deposits
-- Run one live/test-mode Stripe webhook smoke test from Stripe before relying on automation.
+- **Netlify production env vars:** confirm Supabase, Stripe, Resend, site URL, and kickoff/intake variables are present in production and not exposed client-side.
+- **Remote Supabase migrations:** apply/confirm migrations through `20260614190000_add_stripe_deposit_webhook_support.sql` in the production Supabase project.
+- **Stripe webhook secret and delivery:** add the production `STRIPE_WEBHOOK_SECRET`, configure Stripe to send `checkout.session.completed` to `https://startlinesites.com/.netlify/functions/stripe-webhook`, and run one live/test-mode delivery smoke test.
+- **Resend deliverability:** verify the production sender/domain and delivery to Steve/customer inboxes for lead notifications, customer confirmations, and kickoff emails.
 
-## Recommended next automation increment
+## Implemented automation increment
 
-Build a server-side `create-checkout-session` function so the audit form returns a customer-specific Stripe Checkout URL instead of static Payment Links. That will make lead-to-payment matching exact and remove the remaining fallback logic.
+The server-side `create-checkout-session` path is implemented. With `STRIPE_SECRET_KEY` configured, the audit flow returns a customer-specific Stripe Checkout URL instead of relying only on static Payment Links, making lead-to-payment matching exact while preserving fallback behavior.

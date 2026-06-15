@@ -22,7 +22,7 @@ This site is the venture’s storefront. It must itself pass the launch gate fro
 
 - **Repo:** `sbgolf/marketing-site` (rename to `sbgolf/[brand-slug]-marketing` once name is locked)
 - **Workspace:** `/Users/clawdbot/.hermes/hermes-agent/marketing-site/`
-- **Branch model:** `main` for production, `staging` for Steve review, feature branches for incremental work
+- **Branch model:** `main` is production/source of truth; use feature/ops branches and PRs for incremental work. `staging` may still exist remotely as historical infrastructure, but it is not the active implementation branch.
 - **Deploy target:** Cloudflare Pages with automatic branch previews (preview URLs go in PR comments)
 
 -----

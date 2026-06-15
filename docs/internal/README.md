@@ -8,9 +8,16 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - Billing SOP: `billing/deposit-final-invoice-monthly-billing-sop.md`
 - Billing checklist: `billing/billing-checklist.md`
 - Invoice wording and monthly start policy: `billing/invoice-wording-and-monthly-start-policy.md`
+- Automation audit/status: `automation-audit-deposit-to-kickoff.md`
 - Service agreement draft: `legal/service-agreement-draft.md`
 - Service agreement source notes: `legal/source-notes.md`
 - Current blockers: `blockers.md`
+
+## Current implementation status
+
+- `main` is the production/source-of-truth branch.
+- Dynamic Checkout Session creation and Stripe deposit webhook automation are implemented in code.
+- Remaining production readiness work is verification of Netlify env vars, remote Supabase migrations, Stripe webhook secret/delivery, and Resend deliverability.
 
 ## Standard flow
 
