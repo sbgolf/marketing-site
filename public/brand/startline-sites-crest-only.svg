@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">StartLine Sites SLS race-club crest logo</title>
+  <desc id="desc">Circular Race-Club Crest seal with SLS acronym in StartLine Sites brand colors.</desc>
+  <defs>
+    <style>
+      .serif{font-family: Georgia, 'Times New Roman', Times, serif;}
+      .sans{font-family: 'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;}
+    </style>
+  </defs>
+  <circle cx="256" cy="256" r="240" fill="#FAFAF7"/>
+  <circle cx="256" cy="256" r="229" fill="none" stroke="#FF4D3D" stroke-width="28"/>
+  <circle cx="256" cy="256" r="202" fill="none" stroke="#0E1729" stroke-width="8"/>
+  <circle cx="256" cy="256" r="170" fill="none" stroke="#F5C04A" stroke-width="3" stroke-dasharray="10 14" opacity=".9"/>
+  <path d="M114 259c24-18 50-27 78-27 21 0 41 5 61 15 32 16 67 18 102 4 17-7 32-17 45-30" fill="none" stroke="#1FB8C4" stroke-width="9" stroke-linecap="round" opacity=".92"/>
+  <text x="256" y="270" class="serif" text-anchor="middle" font-size="182" font-weight="700" letter-spacing="-22" fill="#0E1729">
+    <tspan>S</tspan><tspan fill="#FF4D3D" font-style="italic">L</tspan><tspan>S</tspan>
+  </text>
+  <text x="256" y="348" class="sans" text-anchor="middle" font-size="28" font-weight="800" letter-spacing="7" fill="#0E1729" opacity=".68">STARTLINE</text>
+  <text x="256" y="385" class="sans" text-anchor="middle" font-size="18" font-weight="800" letter-spacing="6" fill="#8A93A6">SITES</text>
+</svg>
