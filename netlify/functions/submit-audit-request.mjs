@@ -73,7 +73,7 @@ const sendLeadNotification = async ({ record, row }) => {
   const selectedPackage = row.metadata?.selected_package;
   const packageName = selectedPackage?.name;
   const packageDeposit = selectedPackage?.deposit_amount;
-  const packageUrl = selectedPackage?.proposal_required ? 'Proposal required before deposit link is sent' : selectedPackage?.url;
+  const packageUrl = selectedPackage?.proposal_required ? 'Proposal required before deposit link is sent' : (selectedPackage?.url || selectedPackage?.static_url);
   const lines = [
     'A new StartLine Sites audit request was submitted.',
     '',
@@ -120,6 +120,87 @@ const sendLeadNotification = async ({ record, row }) => {
   if (!response.ok) {
     const detail = await response.text();
     throw new Error(`Resend notification failed: ${response.status} ${detail}`);
+  }
+};
+
+const sendCustomerAuditConfirmation = async ({ row }) => {
+  const apiKey = process.env.RESEND_API_KEY || process.env.STARTLINE_RESEND_API_KEY;
+  const to = row.contact_email;
+
+  if (!apiKey || !to || !isEmail(to)) {
+    console.warn('Customer audit confirmation skipped: Resend is not configured or contact email is invalid.');
+    return;
+  }
+
+  const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
+  const replyTo = process.env.STARTLINE_KICKOFF_REPLY_TO
+    || process.env.STARTLINE_ADMIN_EMAIL
+    || process.env.STARTLINE_LEAD_NOTIFY_EMAIL
+    || undefined;
+  const selectedPackage = row.metadata?.selected_package;
+  const checkoutUrl = selectedPackage?.proposal_required ? null : (selectedPackage?.url || selectedPackage?.static_url);
+  const packageLine = selectedPackage?.name
+    ? `Selected package: ${selectedPackage.name.replace('StartLine Sites ', '').replace(' Deposit', '')}${selectedPackage.deposit_amount ? ` (${selectedPackage.deposit_amount} deposit)` : ''}`
+    : 'Selected package: We will recommend the best fit after reviewing your race.';
+  const nextStep = checkoutUrl
+    ? `If you are ready to start, you can pay the setup deposit here: ${checkoutUrl}`
+    : selectedPackage?.proposal_required
+      ? 'Premium projects start with a reviewed proposal before any deposit link is sent.'
+      : 'We will review your race site and follow up with the clearest package recommendation.';
+  const lines = [
+    `Hi ${row.contact_name},`,
+    '',
+    `Thanks — we received the private StartLine Sites audit request for ${row.race_name}.`,
+    '',
+    packageLine,
+    fieldLine('Current site / registration URL', row.current_url),
+    '',
+    'What happens next:',
+    '1. We review the current race page like a runner deciding whether to register.',
+    '2. We identify the clearest opportunities around trust, search visibility, mobile experience, and registration flow.',
+    '3. We follow up with the recommended next step.',
+    '',
+    nextStep,
+    '',
+    'Reply to this email if anything about the request should change.',
+    '',
+    '— StartLine Sites',
+  ];
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${apiKey}`,
+      'content-type': 'application/json',
+      'user-agent': 'StartLineSites/1.0 (customer-audit-confirmation)',
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      ...(replyTo ? { reply_to: replyTo } : {}),
+      subject: `We received your StartLine audit request for ${row.race_name}`,
+      text: lines.join('\n'),
+      html: `
+        <p>Hi ${escapeHtml(row.contact_name)},</p>
+        <p>Thanks — we received the private StartLine Sites audit request for <strong>${escapeHtml(row.race_name)}</strong>.</p>
+        ${htmlField('Selected package', selectedPackage?.name ? `${selectedPackage.name.replace('StartLine Sites ', '').replace(' Deposit', '')}${selectedPackage.deposit_amount ? ` (${selectedPackage.deposit_amount} deposit)` : ''}` : 'We will recommend the best fit after reviewing your race.')}
+        ${htmlField('Current site / registration URL', row.current_url)}
+        <p><strong>What happens next:</strong></p>
+        <ol>
+          <li>We review the current race page like a runner deciding whether to register.</li>
+          <li>We identify the clearest opportunities around trust, search visibility, mobile experience, and registration flow.</li>
+          <li>We follow up with the recommended next step.</li>
+        </ol>
+        <p>${escapeHtml(nextStep)}</p>
+        <p>Reply to this email if anything about the request should change.</p>
+        <p>— StartLine Sites</p>
+      `,
+    }),
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Resend customer confirmation failed: ${response.status} ${detail}`);
   }
 };
 
@@ -200,7 +281,7 @@ export async function handler(event) {
         name: selectedPackage.name,
         setup_price: selectedPackage.setup_price,
         deposit_amount: selectedPackage.deposit_amount,
-        url: selectedPackage.url || null,
+        static_url: selectedPackage.static_url || null,
         proposal_required: Boolean(selectedPackage.proposal_required),
       } : null,
     },
@@ -254,11 +335,17 @@ export async function handler(event) {
     console.error('Lead notification failed', error);
   }
 
+  try {
+    await sendCustomerAuditConfirmation({ row });
+  } catch (error) {
+    console.error('Customer audit confirmation failed', error);
+  }
+
   return json(201, {
     ok: true,
     id: record?.id,
     message: 'Thanks — your private audit request was received.',
-    checkout_url: checkoutSession?.url || selectedPackage?.url || null,
-    checkout_url_source: checkoutSession?.url ? 'dynamic_checkout_session' : (selectedPackage?.url ? 'static_payment_link' : null),
+    checkout_url: checkoutSession?.url || selectedPackage?.static_url || null,
+    checkout_url_source: checkoutSession?.url ? 'dynamic_checkout_session' : (selectedPackage?.static_url ? 'static_payment_link' : null),
   });
 }

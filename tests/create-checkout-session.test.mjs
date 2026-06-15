@@ -16,6 +16,8 @@ test('buildCheckoutSessionParams creates exact Standard deposit metadata', () =>
   assert.equal(params.get('mode'), 'payment');
   assert.equal(params.get('client_reference_id'), 'audit-123');
   assert.equal(params.get('customer_email'), 'director@example.com');
+  assert.equal(params.get('success_url'), 'https://startlinesites.com/?deposit=success&session_id={CHECKOUT_SESSION_ID}');
+  assert.equal(params.get('cancel_url'), 'https://startlinesites.com/?deposit=cancelled#pricing');
   assert.equal(params.get('line_items[0][price_data][unit_amount]'), '125000');
   assert.equal(params.get('metadata[startline_payment_type]'), 'deposit');
   assert.equal(params.get('metadata[setup_tier]'), 'standard');

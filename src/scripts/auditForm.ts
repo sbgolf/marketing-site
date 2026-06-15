@@ -21,6 +21,29 @@ const packageTier = document.getElementById('packageTier') as HTMLInputElement |
 const selectedPackage = document.getElementById('selectedPackage');
 const selectedPackageLabel = document.getElementById('selectedPackageLabel');
 
+const showCheckoutReturnMessage = () => {
+  const params = new URLSearchParams(window.location.search);
+  const depositState = params.get('deposit');
+  if (depositState !== 'success' && depositState !== 'cancelled') return;
+
+  const banner = document.createElement('div');
+  banner.className = `checkout-status checkout-status-${depositState}`;
+  banner.setAttribute('role', 'status');
+  banner.setAttribute('aria-live', 'polite');
+
+  if (depositState === 'success') {
+    banner.innerHTML = '<strong>Thanks — if your deposit completed, Stripe will confirm it securely.</strong><span>Watch your inbox for StartLine kickoff details. The build timeline starts after complete intake details and usable assets are received.</span>';
+  } else {
+    banner.innerHTML = '<strong>No problem — the deposit checkout was not completed.</strong><span>You can return to pricing or request a package recommendation before paying.</span>';
+  }
+
+  document.getElementById('main')?.prepend(banner);
+  const cleanUrl = `${window.location.pathname}${window.location.hash || ''}`;
+  window.history.replaceState({}, document.title, cleanUrl);
+};
+
+showCheckoutReturnMessage();
+
 type PackageKey = 'starter' | 'standard' | 'premium';
 
 type PackageInfo = {
@@ -94,6 +117,7 @@ form?.addEventListener('submit', async (event) => {
     current_url: String(formData.get('currentUrl') || ''),
     contact_name: String(formData.get('auditName') || ''),
     contact_email: String(formData.get('auditEmail') || ''),
+    notes: String(formData.get('notes') || ''),
     company_website: String(formData.get('companyWebsite') || ''),
     package_tier: isPackageKey(selectedTier) ? selectedTier : '',
     landing_page: window.location.href,

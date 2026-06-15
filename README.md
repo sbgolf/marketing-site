@@ -4,7 +4,7 @@ Baseline branch. Active implementation is on `staging` for Steve review.
 
 ## Netlify production environment
 
-The audit request form posts to `netlify/functions/submit-audit-request.mjs`, which writes to Supabase and can notify Steve by email after a successful insert.
+The audit request form posts to `netlify/functions/submit-audit-request.mjs`, which writes to Supabase, can notify Steve by email after a successful insert, and can send the customer a best-effort confirmation email when Resend is configured.
 
 Required for submissions:
 
@@ -12,11 +12,18 @@ Required for submissions:
 - `SUPABASE_SERVICE_ROLE_KEY` (server-side Netlify Function only; do not expose client-side)
 - `STARTLINE_SITE_URL=https://startlinesites.com`
 
-Recommended for lead notifications via Resend REST API:
+Recommended for lead/customer notification emails via Resend REST API:
 
 - `RESEND_API_KEY` or `STARTLINE_RESEND_API_KEY`
 - `STARTLINE_LEAD_NOTIFY_EMAIL` (falls back to `STARTLINE_ADMIN_EMAIL`, then `support@startlinesites.com`)
 - `STARTLINE_NOTIFY_FROM` (optional; must be a sender/domain verified in Resend; defaults to `StartLine Sites <support@startlinesites.com>`)
+- `STARTLINE_KICKOFF_REPLY_TO` (optional; used as reply-to for customer confirmation and kickoff emails)
+
+Customer-facing email behavior:
+
+- Audit submissions send a best-effort receipt/next-step confirmation when Resend is configured.
+- Email failures are logged but do not block the Supabase lead record or customer form response.
+- Starter/Standard confirmations include the active deposit link. Premium confirmations say a proposal is required before a deposit link is sent.
 
 Required for Stripe deposit automation:
 

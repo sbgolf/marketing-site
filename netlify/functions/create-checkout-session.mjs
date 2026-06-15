@@ -64,7 +64,7 @@ export const buildCheckoutSessionParams = ({ auditRequestId, setupTier, contactE
   params.set('customer_email', email);
   params.set('billing_address_collection', 'required');
   params.set('success_url', `${siteUrl()}/?deposit=success&session_id={CHECKOUT_SESSION_ID}`);
-  params.set('cancel_url', `${siteUrl()}/#pricing`);
+  params.set('cancel_url', `${siteUrl()}/?deposit=cancelled#pricing`);
   params.set('line_items[0][quantity]', '1');
   params.set('line_items[0][price_data][currency]', 'usd');
   params.set('line_items[0][price_data][unit_amount]', String(pkg.deposit_amount_cents));
