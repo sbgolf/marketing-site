@@ -49,9 +49,9 @@ Quick checklist for StartLine Sites proposals, deposits, final invoices, and mon
 - [ ] Deposit payment confirmed in Stripe
 - [ ] Stripe webhook event recorded in `stripe_webhook_events` as processed or duplicate
 - [ ] `customer_records.deposit_status = paid`
-- [ ] `customer_records.kickoff_status = ready`
-- [ ] `customer_records.intake_status = ready_to_send`
-- [ ] Kickoff/welcome email sent
+- [ ] `customer_records.kickoff_status = ready` or `started` if kickoff email was sent automatically
+- [ ] `customer_records.intake_status = ready_to_send` or `sent` if kickoff email was sent automatically
+- [ ] Kickoff/welcome email sent manually, or automatically via `STARTLINE_INTAKE_FORM_URL` + `STARTLINE_ASSET_CHECKLIST_URL`
 - [ ] Intake form sent
 - [ ] Asset checklist sent
 

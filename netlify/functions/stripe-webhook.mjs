@@ -304,6 +304,7 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
     status: 'processed',
     audit_request_id: auditRequest?.id || null,
     customer_record_id: customerRows?.[0]?.id || null,
+    customer_record: customerRows?.[0] || null,
     mapping_method: mappingMethod,
   };
 };
@@ -352,6 +353,84 @@ const sendDepositNotification = async ({ result, session, tier }) => {
   } catch (error) {
     console.error('Deposit notification failed', error);
   }
+};
+
+const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, session, tier }) => {
+  const apiKey = process.env.RESEND_API_KEY || process.env.STARTLINE_RESEND_API_KEY;
+  const intakeUrl = clean(process.env.STARTLINE_INTAKE_FORM_URL || '', 1000);
+  const assetChecklistUrl = clean(process.env.STARTLINE_ASSET_CHECKLIST_URL || '', 1000);
+  const customer = result.customer_record;
+  const toEmail = customer?.primary_contact_email || session.customer_details?.email || session.customer_email;
+
+  if (!apiKey || result.status !== 'processed' || !customer?.id || !toEmail || !intakeUrl || !assetChecklistUrl) return { sent: false };
+
+  const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
+  const replyTo = clean(process.env.STARTLINE_KICKOFF_REPLY_TO || process.env.STARTLINE_ADMIN_EMAIL || '', 254) || undefined;
+  const raceName = customer.race_name || session.metadata?.race_name || 'your race';
+  const customerName = customer.primary_contact_name || session.customer_details?.name || 'there';
+  const amount = `$${(session.amount_total / 100).toLocaleString('en-US')}`;
+  const subject = `Next steps for ${raceName}`;
+  const text = [
+    `Hi ${customerName},`,
+    '',
+    `Thanks — we received the ${amount} ${tier} setup deposit for ${raceName}.`,
+    '',
+    'Next step: complete the intake form and gather the assets we need to build the site.',
+    '',
+    `Intake form: ${intakeUrl}`,
+    `Asset checklist: ${assetChecklistUrl}`,
+    '',
+    'The build timeline starts once we have complete intake details and usable assets. If anything is unclear or missing, we’ll follow up with a short list instead of making you redo the whole form.',
+    '',
+    'Reply here if you have questions.',
+    '',
+    '— StartLine Sites',
+  ].join('\n');
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${apiKey}`,
+      'content-type': 'application/json',
+      'user-agent': 'StartLineSites/1.0 (kickoff-email)',
+    },
+    body: JSON.stringify({
+      from,
+      to: [toEmail],
+      ...(replyTo ? { reply_to: replyTo } : {}),
+      subject,
+      text,
+    }),
+  });
+
+  if (!response.ok) {
+    console.error('Kickoff email failed', response.status, await response.text());
+    return { sent: false };
+  }
+
+  await supabaseFetch({
+    supabaseUrl,
+    serviceKey,
+    path: `customer_records?id=eq.${encodeURIComponent(customer.id)}`,
+    method: 'PATCH',
+    body: {
+      kickoff_status: 'started',
+      intake_status: 'sent',
+      intake_sent_at: new Date().toISOString(),
+      metadata: {
+        ...(customer.metadata || {}),
+        kickoff_email: {
+          sent_at: new Date().toISOString(),
+          to: toEmail,
+          intake_url_configured: true,
+          asset_checklist_url_configured: true,
+        },
+      },
+    },
+    headers: { prefer: 'return=minimal' },
+  });
+
+  return { sent: true };
 };
 
 export async function handler(event) {
@@ -439,7 +518,9 @@ export async function handler(event) {
       patch: { processing_status: 'processed', processed_at: new Date().toISOString() },
     });
     await sendDepositNotification({ result, session, tier: classification.tier });
-    return json(200, { ok: true, ...result });
+    await sendCustomerKickoffEmail({ supabaseUrl, serviceKey, result, session, tier: classification.tier });
+    const { customer_record: _customerRecord, ...publicResult } = result;
+    return json(200, { ok: true, ...publicResult });
   } catch (error) {
     console.error('Stripe deposit processing failed', error);
     await updateWebhookEvent({
