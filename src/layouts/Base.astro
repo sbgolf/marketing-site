@@ -7,12 +7,15 @@ const basePath = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const faviconHref = `${basePath}favicon.svg`;
+const appleTouchIconHref = `${basePath}brand/startline-sites-social-avatar-1024x1024.png`;
+const logoHref = `${siteUrl}${basePath}brand/startline-sites-crest-only.svg`;
 const ogImageHref = `${siteUrl}${basePath}og-image.jpg`;
 const orgJson = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'StartLine Sites',
   url: siteUrl,
+  logo: logoHref,
   description: 'Modern race websites for race directors.',
   sameAs: ['https://bostonmarathonqualifyingraces.com']
 };
@@ -29,6 +32,7 @@ const orgJson = {
     <meta property="og:image" content={ogImageHref} />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href={faviconHref} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={appleTouchIconHref} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(orgJson)} />
   </head>
   <body>
