@@ -1,5 +1,7 @@
 import { createHash } from 'node:crypto';
 
+import { createDepositCheckoutSession, getDepositPackage } from './create-checkout-session.mjs';
+
 const ALLOWED_METHODS = ['POST', 'OPTIONS'];
 const MAX_BODY_BYTES = 10_000;
 
@@ -33,29 +35,6 @@ const fieldLine = (label, value) => `${label}: ${value || 'Not provided'}`;
 
 const htmlField = (label, value) => `
   <p><strong>${escapeHtml(label)}:</strong><br>${escapeHtml(value || 'Not provided')}</p>`;
-
-const depositPackages = {
-  starter: {
-    name: 'Starter',
-    setup_price: '$1,500',
-    deposit_amount: '$750',
-    url: 'https://buy.stripe.com/8x2bIU1Bs0ww3H50UJ9fW00',
-  },
-  standard: {
-    name: 'Standard',
-    setup_price: '$2,500',
-    deposit_amount: '$1,250',
-    url: 'https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01',
-  },
-  premium: {
-    name: 'Premium',
-    setup_price: '$4,500',
-    deposit_amount: '$2,250',
-    proposal_required: true,
-  },
-};
-
-const getDepositPackage = (tier) => depositPackages[tier] || null;
 
 const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
@@ -245,6 +224,29 @@ export async function handler(event) {
   }
 
   const [record] = await response.json();
+  let checkoutSession = null;
+
+  if (record?.id && selectedPackage && !selectedPackage.proposal_required && process.env.STRIPE_SECRET_KEY) {
+    try {
+      checkoutSession = await createDepositCheckoutSession({
+        stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+        auditRequestId: record.id,
+        setupTier: packageTier,
+        contactEmail,
+        raceName,
+        currentUrl,
+      });
+
+      row.metadata.selected_package = {
+        ...row.metadata.selected_package,
+        checkout_session_id: checkoutSession.id,
+        url: checkoutSession.url,
+        url_source: 'dynamic_checkout_session',
+      };
+    } catch (error) {
+      console.error('Stripe Checkout Session creation failed', error);
+    }
+  }
 
   try {
     await sendLeadNotification({ record, row });
@@ -256,5 +258,7 @@ export async function handler(event) {
     ok: true,
     id: record?.id,
     message: 'Thanks — your private audit request was received.',
+    checkout_url: checkoutSession?.url || selectedPackage?.url || null,
+    checkout_url_source: checkoutSession?.url ? 'dynamic_checkout_session' : (selectedPackage?.url ? 'static_payment_link' : null),
   });
 }

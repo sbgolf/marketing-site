@@ -22,13 +22,19 @@ Required for Stripe deposit automation:
 
 - `STRIPE_WEBHOOK_SECRET` from the Stripe webhook endpoint signing secret.
 - Configure Stripe to POST `checkout.session.completed` events to `https://startlinesites.com/.netlify/functions/stripe-webhook`.
-- Run the Supabase migration `20260614190000_add_stripe_deposit_webhook_support.sql` before enabling the webhook.
+- Run the Supabase migrations through `20260614190000_add_stripe_deposit_webhook_support.sql` before enabling the webhook.
+
+Recommended for exact lead-to-payment matching:
+
+- `STRIPE_SECRET_KEY` enables server-created Checkout Sessions after audit submission. When omitted, Starter/Standard fall back to the stored static Payment Links.
 
 Optional:
 
 - `STARTLINE_IP_HASH_SALT` for stable one-way IP hashing independent of the Supabase service role key.
 - `STRIPE_WEBHOOK_TOLERANCE_SECONDS` (defaults to `300`).
 - `STARTLINE_STRIPE_WEBHOOK_MAX_BODY_BYTES` (defaults to `100000`).
+- `STARTLINE_INTAKE_FORM_URL` and `STARTLINE_ASSET_CHECKLIST_URL` enable the customer-facing post-deposit kickoff email.
+- `STARTLINE_KICKOFF_REPLY_TO` sets the reply-to address for kickoff emails.
 
 ## Deposit automation behavior
 
@@ -51,3 +57,7 @@ Recommended Checkout Session / Payment Link metadata:
 - `proposal_approved=true` only after Steve-approved Premium proposal
 
 The webhook can fall back to matching by customer email and selected tier for the current static Starter/Standard links, but exact matching is strongest when Stripe metadata includes the `audit_request_id`.
+
+When `STRIPE_SECRET_KEY` is configured, the audit form asks Stripe to create a customer-specific Checkout Session after the Supabase lead row is inserted. That session carries `client_reference_id` and `metadata.audit_request_id`, so the webhook can connect the paid deposit back to the exact audit request instead of relying on fallback matching.
+
+When `STARTLINE_INTAKE_FORM_URL` and `STARTLINE_ASSET_CHECKLIST_URL` are configured, a processed deposit also sends the customer a short kickoff email and updates the customer record to `kickoff_status = started`, `intake_status = sent`, and `intake_sent_at = now()`. If either URL is missing, the email is skipped and the record stays ready for manual kickoff.

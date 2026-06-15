@@ -109,16 +109,17 @@ form?.addEventListener('submit', async (event) => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json().catch(() => null) as { message?: string; error?: string } | null;
+    const result = await response.json().catch(() => null) as { message?: string; error?: string; checkout_url?: string } | null;
 
     if (!response.ok || !result?.message) {
       throw new Error(result?.error || 'Submission failed.');
     }
 
     const selectedPackageInfo = isPackageKey(payload.package_tier) ? packages[payload.package_tier] : null;
-    if (selectedPackageInfo?.url) {
+    const checkoutUrl = result.checkout_url || selectedPackageInfo?.url;
+    if (selectedPackageInfo && checkoutUrl) {
       setMessage(
-        `<div class="payment-next"><strong>Thanks — your private audit request was received.</strong><span>Ready to start with ${selectedPackageInfo.name}? Pay the ${selectedPackageInfo.deposit} deposit when you're ready.</span><a href="${selectedPackageInfo.url}" target="_blank" rel="noopener noreferrer">Pay ${selectedPackageInfo.name} deposit →</a><small>We will still review your race site and follow up by email. The deposit starts the project.</small></div>`,
+        `<div class="payment-next"><strong>Thanks — your private audit request was received.</strong><span>Ready to start with ${selectedPackageInfo.name}? Pay the ${selectedPackageInfo.deposit} deposit when you're ready.</span><a href="${checkoutUrl}" target="_blank" rel="noopener noreferrer">Pay ${selectedPackageInfo.name} deposit →</a><small>We will still review your race site and follow up by email. The deposit starts the project.</small></div>`,
         'success',
         true,
       );
