@@ -9,15 +9,85 @@ const basePath = import.meta.env.BASE_URL.endsWith('/')
 const faviconHref = `${basePath}favicon.svg`;
 const appleTouchIconHref = `${basePath}brand/startline-sites-social-avatar-1024x1024.png`;
 const logoHref = `${siteUrl}${basePath}brand/startline-sites-crest-only.svg`;
+const canonicalUrl = `${siteUrl}${basePath}`;
 const ogImageHref = `${siteUrl}${basePath}og-image.jpg`;
+const organizationId = `${canonicalUrl}#organization`;
+const serviceId = `${canonicalUrl}#service`;
 const orgJson = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  '@id': organizationId,
   name: 'StartLine Sites',
-  url: siteUrl,
+  url: canonicalUrl,
   logo: logoHref,
   description: 'Modern race websites for race directors.',
   sameAs: ['https://bostonmarathonqualifyingraces.com']
+};
+const serviceJson = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': serviceId,
+  name: 'StartLine Sites race website design and SEO service',
+  serviceType: 'Race website design, SEO, analytics, and conversion optimization',
+  url: canonicalUrl,
+  description,
+  provider: { '@id': organizationId },
+  areaServed: {
+    '@type': 'Country',
+    name: 'United States'
+  },
+  audience: {
+    '@type': 'Audience',
+    audienceType: 'Race directors and endurance event organizers'
+  },
+  offers: [
+    {
+      '@type': 'Offer',
+      name: 'Starter race website package',
+      price: '1500',
+      priceCurrency: 'USD',
+      url: `${canonicalUrl}#pricing`,
+      availability: 'https://schema.org/InStock'
+    },
+    {
+      '@type': 'Offer',
+      name: 'Standard race website package',
+      price: '2500',
+      priceCurrency: 'USD',
+      url: `${canonicalUrl}#pricing`,
+      availability: 'https://schema.org/InStock'
+    },
+    {
+      '@type': 'Offer',
+      name: 'Premium race website package',
+      price: '4500',
+      priceCurrency: 'USD',
+      url: `${canonicalUrl}#pricing`,
+      availability: 'https://schema.org/InStock'
+    }
+  ]
+};
+const faqJson = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  '@id': `${canonicalUrl}#faq-schema`,
+  mainEntity: [
+    ['Do we have to switch from RunSignup or RaceRoster?', 'No. We deep-link to your existing registration platform. Your money flow stays exactly where it is.'],
+    ['Who owns the domain and the site?', 'You do. Always. We host the site on your domain — you register and own it.'],
+    ['Who owns GA4 and Search Console data?', 'You do. We configure Google Analytics 4 and Google Search Console tracking, but the Google accounts, properties, access, and data remain under your ownership.'],
+    ["What if I don't have logos or photos ready?", "Bring what you have. We'll work with low-res versions while better assets get sourced."],
+    ['What does the monthly fee actually cover?', 'Hosting, SSL, uptime monitoring, content updates, reporting, and tier-specific services.'],
+    ['Can I see what the analytics look like?', 'Yes — every customer gets their own Google Analytics 4 property and Search Console setup.'],
+    ['What if my race is in a few weeks and I need this fast?', 'Starter goes live in 7 days if intake and assets are ready on day one.'],
+    ['Do you work with non-marathon races?', 'Yes. Any road race — 5K, 10K, half, marathon, and ultra.']
+  ].map(([name, text]) => ({
+    '@type': 'Question',
+    name,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text
+    }
+  }))
 };
 ---
 <!doctype html>
@@ -27,13 +97,20 @@ const orgJson = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImageHref} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <link rel="icon" href={faviconHref} type="image/svg+xml" />
     <link rel="apple-touch-icon" href={appleTouchIconHref} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(orgJson)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(serviceJson)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJson)} />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
