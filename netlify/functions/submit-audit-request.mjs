@@ -204,6 +204,30 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
   }
 };
 
+const persistCheckoutSessionMetadata = async ({ supabaseUrl, serviceKey, auditRequestId, checkoutSession, metadata }) => {
+  const sessionId = clean(checkoutSession?.id, 200);
+  if (!sessionId || !auditRequestId) return;
+
+  const response = await fetch(`${supabaseUrl}/rest/v1/audit_requests?id=eq.${encodeURIComponent(auditRequestId)}`, {
+    method: 'PATCH',
+    headers: {
+      apikey: serviceKey,
+      authorization: `Bearer ${serviceKey}`,
+      'content-type': 'application/json',
+      prefer: 'return=minimal',
+    },
+    body: JSON.stringify({
+      stripe_checkout_session_id: sessionId,
+      metadata,
+    }),
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Supabase checkout metadata patch failed: ${response.status} ${detail}`);
+  }
+};
+
 export async function handler(event) {
   if (!ALLOWED_METHODS.includes(event.httpMethod)) {
     return json(405, { ok: false, error: 'Method not allowed.' });
@@ -324,6 +348,18 @@ export async function handler(event) {
         url: checkoutSession.url,
         url_source: 'dynamic_checkout_session',
       };
+
+      try {
+        await persistCheckoutSessionMetadata({
+          supabaseUrl,
+          serviceKey,
+          auditRequestId: record.id,
+          checkoutSession,
+          metadata: row.metadata,
+        });
+      } catch (error) {
+        console.error('Checkout Session metadata persistence failed', error);
+      }
     } catch (error) {
       console.error('Stripe Checkout Session creation failed', error);
     }

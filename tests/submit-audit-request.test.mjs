@@ -22,6 +22,12 @@ const validEvent = (body = {}) => ({
   }),
 });
 
+const parseRequestBody = (body) => {
+  if (!body) return null;
+  if (body instanceof URLSearchParams) return Object.fromEntries(body.entries());
+  return JSON.parse(body);
+};
+
 test('submit-audit-request stores notes and sends admin plus customer confirmation emails', async () => {
   const originalEnv = { ...process.env };
   const originalFetch = global.fetch;
@@ -33,13 +39,13 @@ test('submit-audit-request stores notes and sends admin plus customer confirmati
   process.env.STARTLINE_NOTIFY_FROM = 'StartLine Sites <hello@startlinesites.com>';
   process.env.STARTLINE_ADMIN_EMAIL = 'steve@example.com';
   process.env.STARTLINE_KICKOFF_REPLY_TO = 'support@startlinesites.com';
-  delete process.env.STRIPE_SECRET_KEY;
+  delete process.env['STRIPE_SECRET_KEY'];
 
   global.fetch = async (url, options = {}) => {
     const call = {
       url: String(url),
       method: options.method || 'GET',
-      body: options.body ? JSON.parse(options.body) : null,
+      body: options.body ? parseRequestBody(options.body) : null,
     };
     calls.push(call);
 
@@ -88,13 +94,13 @@ test('customer confirmation failure does not fail audit submission', async () =>
   process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
   process.env.RESEND_API_KEY = 're_test';
   process.env.STARTLINE_ADMIN_EMAIL = 'steve@example.com';
-  delete process.env.STRIPE_SECRET_KEY;
+  delete process.env['STRIPE_SECRET_KEY'];
 
   global.fetch = async (url, options = {}) => {
     const call = {
       url: String(url),
       method: options.method || 'GET',
-      body: options.body ? JSON.parse(options.body) : null,
+      body: options.body ? parseRequestBody(options.body) : null,
     };
     calls.push(call);
 
@@ -135,13 +141,13 @@ test('submit-audit-request works when Resend is not configured', async () => {
   process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
   delete process.env.RESEND_API_KEY;
   delete process.env.STARTLINE_RESEND_API_KEY;
-  delete process.env.STRIPE_SECRET_KEY;
+  delete process.env['STRIPE_SECRET_KEY'];
 
   global.fetch = async (url, options = {}) => {
     const call = {
       url: String(url),
       method: options.method || 'GET',
-      body: options.body ? JSON.parse(options.body) : null,
+      body: options.body ? parseRequestBody(options.body) : null,
     };
     calls.push(call);
 
@@ -162,5 +168,120 @@ test('submit-audit-request works when Resend is not configured', async () => {
   } finally {
     process.env = originalEnv;
     global.fetch = originalFetch;
+  }
+});
+
+test('submit-audit-request persists dynamic Stripe Checkout Session metadata to audit_requests', async () => {
+  const originalEnv = { ...process.env };
+  const originalFetch = global.fetch;
+  const calls = [];
+
+  process.env.SUPABASE_URL = 'https://supabase.example';
+  process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
+  process.env.STRIPE_SECRET_KEY = 'sk_test_dynamic';
+  delete process.env.RESEND_API_KEY;
+  delete process.env.STARTLINE_RESEND_API_KEY;
+
+  global.fetch = async (url, options = {}) => {
+    const call = {
+      url: String(url),
+      method: options.method || 'GET',
+      body: options.body ? parseRequestBody(options.body) : null,
+    };
+    calls.push(call);
+
+    if (call.url.includes('/audit_requests') && call.method === 'POST') {
+      return new Response(JSON.stringify([{ id: 'audit-dynamic-123' }]), { status: 201 });
+    }
+    if (call.url === 'https://api.stripe.com/v1/checkout/sessions' && call.method === 'POST') {
+      return new Response(JSON.stringify({
+        id: 'cs_test_dynamic_123',
+        url: 'https://checkout.stripe.com/c/pay/cs_test_dynamic_123',
+      }), { status: 200 });
+    }
+    if (call.url === 'https://supabase.example/rest/v1/audit_requests?id=eq.audit-dynamic-123' && call.method === 'PATCH') {
+      return new Response(null, { status: 204 });
+    }
+
+    return new Response(JSON.stringify({ error: 'unexpected call' }), { status: 500 });
+  };
+
+  try {
+    const response = await handler(validEvent({ package_tier: 'standard' }));
+    const body = JSON.parse(response.body);
+
+    assert.equal(response.statusCode, 201);
+    assert.equal(body.ok, true);
+    assert.equal(body.checkout_url, 'https://checkout.stripe.com/c/pay/cs_test_dynamic_123');
+    assert.equal(body.checkout_url_source, 'dynamic_checkout_session');
+
+    const stripeCall = calls.find((call) => call.url === 'https://api.stripe.com/v1/checkout/sessions');
+    assert.equal(stripeCall.body.client_reference_id, 'audit-dynamic-123');
+    assert.equal(stripeCall.body['metadata[audit_request_id]'], 'audit-dynamic-123');
+
+    const patch = calls.find((call) => call.url.includes('/audit_requests?id=eq.audit-dynamic-123') && call.method === 'PATCH');
+    assert.equal(patch.body.stripe_checkout_session_id, 'cs_test_dynamic_123');
+    assert.equal(patch.body.metadata.selected_package.tier, 'standard');
+    assert.equal(patch.body.metadata.selected_package.checkout_session_id, 'cs_test_dynamic_123');
+    assert.equal(patch.body.metadata.selected_package.url, 'https://checkout.stripe.com/c/pay/cs_test_dynamic_123');
+    assert.equal(patch.body.metadata.selected_package.url_source, 'dynamic_checkout_session');
+  } finally {
+    process.env = originalEnv;
+    global.fetch = originalFetch;
+  }
+});
+
+test('dynamic Checkout Session metadata patch failure does not fail audit submission', async () => {
+  const originalEnv = { ...process.env };
+  const originalFetch = global.fetch;
+  const originalConsoleError = console.error;
+  const calls = [];
+  const errors = [];
+
+  process.env.SUPABASE_URL = 'https://supabase.example';
+  process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
+  process.env.STRIPE_SECRET_KEY = 'sk_test_dynamic';
+  delete process.env.RESEND_API_KEY;
+  delete process.env.STARTLINE_RESEND_API_KEY;
+  console.error = (...args) => errors.push(args);
+
+  global.fetch = async (url, options = {}) => {
+    const call = {
+      url: String(url),
+      method: options.method || 'GET',
+      body: options.body ? parseRequestBody(options.body) : null,
+    };
+    calls.push(call);
+
+    if (call.url.includes('/audit_requests') && call.method === 'POST') {
+      return new Response(JSON.stringify([{ id: 'audit-patch-fails' }]), { status: 201 });
+    }
+    if (call.url === 'https://api.stripe.com/v1/checkout/sessions' && call.method === 'POST') {
+      return new Response(JSON.stringify({
+        id: 'cs_test_patch_failure',
+        url: 'https://checkout.stripe.com/c/pay/cs_test_patch_failure',
+      }), { status: 200 });
+    }
+    if (call.url.includes('/audit_requests?id=eq.audit-patch-fails') && call.method === 'PATCH') {
+      return new Response('temporary supabase failure', { status: 503 });
+    }
+
+    return new Response(JSON.stringify({ error: 'unexpected call' }), { status: 500 });
+  };
+
+  try {
+    const response = await handler(validEvent({ package_tier: 'starter' }));
+    const body = JSON.parse(response.body);
+
+    assert.equal(response.statusCode, 201);
+    assert.equal(body.ok, true);
+    assert.equal(body.checkout_url, 'https://checkout.stripe.com/c/pay/cs_test_patch_failure');
+    assert.equal(body.checkout_url_source, 'dynamic_checkout_session');
+    assert.equal(calls.filter((call) => call.method === 'PATCH').length, 1);
+    assert.equal(errors[0][0], 'Checkout Session metadata persistence failed');
+  } finally {
+    process.env = originalEnv;
+    global.fetch = originalFetch;
+    console.error = originalConsoleError;
   }
 });
