@@ -6,8 +6,15 @@ Use this checklist before exposing any customer-facing terms acknowledgement, pr
 
 - Keep Starter and Standard deposit CTAs behind audit form submission.
 - Keep Premium proposal-only until Steve approves scope and Stripe metadata includes `proposal_approved=true` or `deposit_source=approved_proposal`.
-- Use customer-specific Checkout Sessions when `STRIPE_SECRET_KEY` is configured so deposits carry `audit_request_id` metadata.
+- Use the implemented customer-specific Checkout Session path when `STRIPE_SECRET_KEY` is configured so deposits carry `audit_request_id` metadata.
 - Send customer kickoff email only when approved intake/checklist URLs are configured in Netlify.
+
+## Production verification blockers
+
+- Confirm required Netlify production env vars for Supabase, Stripe, Resend, site URL, and kickoff/intake URLs.
+- Apply/confirm remote Supabase migrations through `20260614190000_add_stripe_deposit_webhook_support.sql`.
+- Add the production `STRIPE_WEBHOOK_SECRET`, configure Stripe webhook delivery, and smoke-test `checkout.session.completed`.
+- Verify Resend sender/domain deliverability for Steve notifications and customer emails.
 
 ## Requires Steve/legal approval before publishing
 

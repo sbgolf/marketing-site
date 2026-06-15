@@ -1,6 +1,17 @@
 # Marketing Site
 
-Baseline branch. Active implementation is on `staging` for Steve review.
+`main` is the current production branch and source of truth for StartLine Sites. Use feature/ops branches and pull requests for new changes; do not treat `staging` as the active implementation branch.
+
+## Production readiness status
+
+The production code path now includes Supabase lead capture, customer-specific Checkout Session creation when `STRIPE_SECRET_KEY` is configured, Stripe deposit webhook processing, and best-effort Resend notifications/kickoff email support.
+
+Remaining production verification blockers are operational, not code-path TODOs:
+
+- Confirm all required Netlify production environment variables are present and scoped correctly.
+- Apply/confirm the remote Supabase migrations through `20260614190000_add_stripe_deposit_webhook_support.sql`.
+- Add the production `STRIPE_WEBHOOK_SECRET` and verify Stripe webhook delivery for `checkout.session.completed`.
+- Verify Resend sender/domain deliverability for lead notifications, customer confirmations, and kickoff emails.
 
 ## Netlify production environment
 
