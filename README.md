@@ -51,8 +51,8 @@ Optional:
 - `STARTLINE_IP_HASH_SALT` for stable one-way IP hashing independent of the Supabase service role key.
 - `STRIPE_WEBHOOK_TOLERANCE_SECONDS` (defaults to `300`).
 - `STARTLINE_STRIPE_WEBHOOK_MAX_BODY_BYTES` (defaults to `100000`).
-- `STARTLINE_INTAKE_FORM_URL` and `STARTLINE_ASSET_CHECKLIST_URL` enable the customer-facing post-deposit kickoff email.
-- `STARTLINE_KICKOFF_REPLY_TO` sets the reply-to address for kickoff emails.
+- `STARTLINE_INTAKE_FORM_URL=https://startlinesites.com/intake` and `STARTLINE_ASSET_CHECKLIST_URL=https://startlinesites.com/asset-checklist` enable the customer-facing post-deposit kickoff email after this branch is merged and deployed.
+- `STARTLINE_KICKOFF_REPLY_TO` sets the reply-to address for kickoff and intake confirmation emails.
 
 ## Deposit automation behavior
 
