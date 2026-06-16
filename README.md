@@ -10,7 +10,7 @@ Remaining production verification blockers are operational, not code-path TODOs:
 
 - Confirm all required Netlify production environment variables are present and scoped correctly.
 - Apply/confirm the remote Supabase migrations through `20260614190000_add_stripe_deposit_webhook_support.sql`.
-- Add the production `STRIPE_WEBHOOK_SECRET` and verify Stripe webhook delivery for `checkout.session.completed` with `npm run verify:stripe-webhook`.
+- Add the production `STRIPE_WEBHOOK_SECRET`, configure Stripe webhook delivery for `checkout.session.completed` and `invoice.paid`, and verify with `npm run verify:stripe-webhook`.
 - Verify Resend sender/domain deliverability for lead notifications, customer confirmations, and kickoff emails.
 
 ## Netlify production environment
@@ -36,15 +36,17 @@ Customer-facing email behavior:
 - Email failures are logged but do not block the Supabase lead record or customer form response.
 - Starter/Standard confirmations include the active deposit link. Premium confirmations say a proposal is required before a deposit link is sent.
 
-Required for Stripe deposit automation:
+Required for Stripe deposit, launch billing, and monthly subscription automation:
 
 - `STRIPE_WEBHOOK_SECRET` from the Stripe webhook endpoint signing secret.
-- Configure Stripe to POST `checkout.session.completed` events to `https://startlinesites.com/.netlify/functions/stripe-webhook`.
+- `STRIPE_SECRET_KEY` for server-created Checkout Sessions, final invoices, and monthly subscriptions.
+- `STARTLINE_LAUNCH_BILLING_TOKEN` for the internal launch billing trigger.
+- Configure Stripe to POST `checkout.session.completed` and `invoice.paid` events to `https://startlinesites.com/.netlify/functions/stripe-webhook`.
 - Run the Supabase migrations through `20260614190000_add_stripe_deposit_webhook_support.sql` before enabling the webhook.
 
 Recommended for exact lead-to-payment matching:
 
-- `STRIPE_SECRET_KEY` enables server-created Checkout Sessions after audit submission. When omitted, Starter/Standard fall back to the stored static Payment Links.
+- Customer-specific Checkout Session metadata carries `audit_request_id` when `STRIPE_SECRET_KEY` is configured.
 
 Optional:
 
@@ -81,6 +83,21 @@ When `STRIPE_SECRET_KEY` is configured, the audit form asks Stripe to create a c
 
 When `STARTLINE_INTAKE_FORM_URL` and `STARTLINE_ASSET_CHECKLIST_URL` are configured, a processed deposit also sends the customer a short kickoff email and updates the customer record to `kickoff_status = started`, `intake_status = sent`, and `intake_sent_at = now()`. If either URL is missing, the email is skipped and the record stays ready for manual kickoff.
 
+## Launch billing behavior
+
+After the site is approved for launch, call the internal Netlify Function with a service token:
+
+```bash
+curl -X POST https://startlinesites.com/.netlify/functions/start-launch-billing \
+  -H "Authorization: Bearer $STARTLINE_LAUNCH_BILLING_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"customer_record_id":"<customer_records.id>"}'
+```
+
+The function requires a paid deposit, a Stripe customer id, final invoice amount, currency, race name, and setup tier. It creates a Stripe invoice item for the final 50% setup payment, creates/sends a net-7 Stripe invoice with `metadata.startline_payment_type=final_invoice`, then updates `customer_records.final_invoice_status = sent`, `stripe_final_invoice_id`, `final_invoice_sent_at`, and `customer_status = launch_billing`. If a final invoice was already sent or paid, the function returns the existing invoice id without creating a duplicate.
+
+When Stripe sends `invoice.paid` for that final invoice, the webhook marks the final invoice paid and creates the stored monthly subscription using inline Stripe price data from `monthly_amount_cents`, `currency`, and `monthly_tier`. Successful creation sets `customer_status = active`, records `stripe_subscription_id`, `subscription_started_at`, and `first_monthly_report_due_at`. Subscription creation failures mark `subscription_status = failed` and fail the webhook processing so the billing error is visible instead of silently lost.
+
 ## Stripe webhook verification
 
 Run the dependency-light verifier from a shell that has production env loaded, or from a local checkout with `.env.local` populated:
@@ -90,7 +107,7 @@ npm run verify:stripe-webhook
 npm run verify:stripe-webhook -- --event-id evt_123
 ```
 
-The command checks required env (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`), confirms the Stripe webhook endpoint URL is configured for `checkout.session.completed`, and checks `stripe_webhook_events` for processed `checkout.session.completed` rows from the last 72 hours or the supplied target event id. It redacts secret values in output. Missing env, endpoint mismatch, or a missing/unprocessed target `--event-id` exits nonzero; no recent processed event without `--event-id` is a warning so first-time setup can still verify endpoint configuration before a live test payment.
+The command checks required env (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`), confirms the Stripe webhook endpoint URL is configured for both `checkout.session.completed` and `invoice.paid`, and checks `stripe_webhook_events` for processed `checkout.session.completed` rows from the last 72 hours or the supplied target event id. It redacts secret values in output. Missing env, endpoint mismatch, missing `invoice.paid`, or a missing/unprocessed target `--event-id` exits nonzero; no recent processed event without `--event-id` is a warning so first-time setup can still verify endpoint configuration before a live test payment.
 
 ## Intake-to-build handoff
 

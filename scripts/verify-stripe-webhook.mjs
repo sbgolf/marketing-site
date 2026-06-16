@@ -12,6 +12,7 @@ export const REQUIRED_ENV = [
 
 export const DEFAULT_WEBHOOK_URL = 'https://startlinesites.com/.netlify/functions/stripe-webhook';
 export const REQUIRED_EVENT_TYPE = 'checkout.session.completed';
+export const REQUIRED_EVENT_TYPES = ['checkout.session.completed', 'invoice.paid'];
 export const DEFAULT_RECENT_EVENT_HOURS = 72;
 export const ACCEPTED_PROCESSING_STATUSES = ['processed', 'duplicate'];
 
@@ -45,11 +46,16 @@ export const analyzeStripeEndpoints = (endpoints, expectedUrl = DEFAULT_WEBHOOK_
   const expected = normalizeUrl(expectedUrl);
   const matchedEndpoint = (endpoints || []).find((endpoint) => normalizeUrl(endpoint.url) === expected) || null;
   const enabledEvents = matchedEndpoint?.enabled_events || [];
-  const hasCheckoutCompleted = enabledEvents.includes(REQUIRED_EVENT_TYPE) || enabledEvents.includes('*');
+  const hasWildcard = enabledEvents.includes('*');
+  const eventChecks = Object.fromEntries(REQUIRED_EVENT_TYPES.map((eventType) => [eventType, hasWildcard || enabledEvents.includes(eventType)]));
+  const hasCheckoutCompleted = eventChecks['checkout.session.completed'];
+  const hasInvoicePaid = eventChecks['invoice.paid'];
   return {
-    ok: Boolean(matchedEndpoint && hasCheckoutCompleted),
+    ok: Boolean(matchedEndpoint && REQUIRED_EVENT_TYPES.every((eventType) => eventChecks[eventType])),
     hasExpectedUrl: Boolean(matchedEndpoint),
     hasCheckoutCompleted,
+    hasInvoicePaid,
+    eventChecks,
     matchedEndpoint,
     expectedUrl: expected,
     endpointCount: endpoints?.length || 0,
@@ -200,7 +206,8 @@ export async function runCli({ argv = process.argv.slice(2), env = process.env }
 
   lines.push('', 'Stripe endpoint:');
   lines.push(`- [${endpointResult.hasExpectedUrl ? 'x' : ' '}] Expected URL configured: ${expectedUrl}`);
-  lines.push(`- [${endpointResult.hasCheckoutCompleted ? 'x' : ' '}] Enabled event includes ${REQUIRED_EVENT_TYPE}`);
+  lines.push(`- [${endpointResult.hasCheckoutCompleted ? 'x' : ' '}] Enabled event includes checkout.session.completed`);
+  lines.push(`- [${endpointResult.hasInvoicePaid ? 'x' : ' '}] Enabled event includes invoice.paid`);
   if (endpointResult.matchedEndpoint) lines.push(`  Endpoint ID: ${endpointResult.matchedEndpoint.id}`);
   if (endpointError) lines.push(`  Error: ${endpointError.message}`);
 
