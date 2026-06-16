@@ -47,13 +47,23 @@ Quick checklist for StartLine Sites proposals, deposits, final invoices, and mon
 
 - [ ] Deposit link sent to customer
 - [ ] Deposit payment confirmed in Stripe
-- [ ] Stripe webhook event recorded in `stripe_webhook_events` as processed or duplicate
+- [ ] Stripe webhook event recorded in `stripe_webhook_events` as processed or duplicate (`npm run verify:stripe-webhook -- --event-id evt_...` for a target delivery, or without `--event-id` for endpoint/recent-row verification)
 - [ ] `customer_records.deposit_status = paid`
 - [ ] `customer_records.kickoff_status = ready` or `started` if kickoff email was sent automatically
 - [ ] `customer_records.intake_status = ready_to_send` or `sent` if kickoff email was sent automatically
 - [ ] Kickoff/welcome email sent manually, or automatically via `STARTLINE_INTAKE_FORM_URL` + `STARTLINE_ASSET_CHECKLIST_URL`
 - [ ] Intake form sent
 - [ ] Asset checklist sent
+
+## After customer intake is submitted
+
+- [ ] `customer_intake_submissions` row exists for the race
+- [ ] Matching `customer_records.customer_intake_submission_id` is set, when an existing paid/started customer record exists
+- [ ] `customer_records.intake_status = received`
+- [ ] `customer_records.build_status = ready_for_build`
+- [ ] `customer_records.build_handoff_at` is populated
+- [ ] Support email includes the build handoff checklist, missing critical inputs, suggested next steps, Supabase intake ID, and customer record ID (or clearly says not matched)
+- [ ] Missing critical inputs are requested before production starts
 
 ## Before launch/final invoice
 
