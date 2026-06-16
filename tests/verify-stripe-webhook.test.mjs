@@ -26,22 +26,24 @@ test('validateRequiredEnv reports missing required variables without exposing se
 test('analyzeStripeEndpoints finds expected URL and required checkout event', () => {
   const result = analyzeStripeEndpoints([
     { id: 'we_1', url: 'https://other.example/webhook', enabled_events: ['checkout.session.completed'] },
-    { id: 'we_2', url: 'https://startlinesites.com/.netlify/functions/stripe-webhook', enabled_events: ['charge.succeeded', 'checkout.session.completed'] },
+    { id: 'we_2', url: 'https://startlinesites.com/.netlify/functions/stripe-webhook', enabled_events: ['charge.succeeded', 'checkout.session.completed', 'invoice.paid'] },
   ], 'https://startlinesites.com/.netlify/functions/stripe-webhook');
 
   assert.equal(result.ok, true);
   assert.equal(result.matchedEndpoint.id, 'we_2');
   assert.equal(result.hasCheckoutCompleted, true);
+  assert.equal(result.hasInvoicePaid, true);
 });
 
-test('analyzeStripeEndpoints fails when endpoint is missing required checkout event', () => {
+test('analyzeStripeEndpoints fails when endpoint is missing required billing events', () => {
   const result = analyzeStripeEndpoints([
-    { id: 'we_2', url: 'https://startlinesites.com/.netlify/functions/stripe-webhook', enabled_events: ['charge.succeeded'] },
+    { id: 'we_2', url: 'https://startlinesites.com/.netlify/functions/stripe-webhook', enabled_events: ['checkout.session.completed'] },
   ], 'https://startlinesites.com/.netlify/functions/stripe-webhook');
 
   assert.equal(result.ok, false);
   assert.equal(result.hasExpectedUrl, true);
-  assert.equal(result.hasCheckoutCompleted, false);
+  assert.equal(result.hasCheckoutCompleted, true);
+  assert.equal(result.hasInvoicePaid, false);
 });
 
 test('decideVerificationStatus only fails recent event absence when a target event id was requested', () => {

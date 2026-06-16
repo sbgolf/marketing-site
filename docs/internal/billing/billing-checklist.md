@@ -72,18 +72,24 @@ Quick checklist for StartLine Sites proposals, deposits, final invoices, and mon
 - [ ] Live URL or launch target confirmed
 - [ ] Final invoice amount confirmed
 - [ ] Billing contact confirmed again
-- [ ] Final 50% Stripe Invoice created
+- [ ] `STARTLINE_LAUNCH_BILLING_TOKEN` is configured in Netlify and only available internally
+- [ ] Stripe webhook endpoint includes both `checkout.session.completed` and `invoice.paid`
+- [ ] Trigger `/.netlify/functions/start-launch-billing` with `customer_record_id`
+- [ ] `customer_records.final_invoice_status = sent`
+- [ ] `customer_records.stripe_final_invoice_id` is recorded
 - [ ] Invoice terms set to net 7
-- [ ] Invoice memo includes live URL and launch date
 
 ## At go-live
 
 - [ ] Production site verified
 - [ ] Go-live date recorded
-- [ ] Final invoice sent
-- [ ] Correct monthly subscription started
-- [ ] Stripe subscription ID recorded outside committed docs
-- [ ] First monthly report date recorded
+- [ ] Final invoice is paid in Stripe
+- [ ] `invoice.paid` webhook is recorded as processed in `stripe_webhook_events`
+- [ ] Correct monthly subscription started automatically
+- [ ] `customer_records.final_invoice_status = paid`
+- [ ] `customer_records.subscription_status = active` (or reviewed if Stripe returned another status)
+- [ ] `customer_records.stripe_subscription_id` is recorded
+- [ ] `customer_records.first_monthly_report_due_at` is recorded
 - [ ] Launch confirmation email sent
 
 ## Blockers

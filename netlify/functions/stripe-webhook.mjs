@@ -182,6 +182,203 @@ const updateWebhookEvent = async ({ supabaseUrl, serviceKey, stripeEventId, patc
   });
 };
 
+const stripeFetch = async ({ secretKey, path, params }) => {
+  const response = await fetch(`https://api.stripe.com/v1/${path}`, {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${secretKey}`,
+      'content-type': 'application/x-www-form-urlencoded',
+      'user-agent': 'StartLineSites/1.0 (stripe-webhook)',
+    },
+    body: new URLSearchParams(params),
+  });
+
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : {};
+  if (!response.ok) {
+    const error = new Error(data?.error?.message || `Stripe ${path} failed: ${response.status}`);
+    error.status = response.status;
+    error.detail = data;
+    throw error;
+  }
+  return data;
+};
+
+const addOneMonthDate = (now = new Date()) => {
+  const date = new Date(now);
+  date.setUTCMonth(date.getUTCMonth() + 1);
+  return date.toISOString().slice(0, 10);
+};
+
+const isFinalInvoicePaid = (invoice) => {
+  const metadata = normalizeMetadata(invoice?.metadata);
+  return invoice?.status === 'paid' && clean(metadata.startline_payment_type || '', 80).toLowerCase() === 'final_invoice';
+};
+
+const findCustomerForFinalInvoice = async ({ supabaseUrl, serviceKey, invoice }) => {
+  const metadata = normalizeMetadata(invoice.metadata);
+  const customerRecordId = clean(metadata.customer_record_id || '', 120);
+  const invoiceId = clean(invoice.id || '', 200);
+  const stripeCustomerId = clean(typeof invoice.customer === 'string' ? invoice.customer : '', 200);
+
+  const filters = [];
+  if (customerRecordId) filters.push(`id=eq.${encodeURIComponent(customerRecordId)}`);
+  if (invoiceId) filters.push(`stripe_final_invoice_id=eq.${encodeURIComponent(invoiceId)}`);
+  if (stripeCustomerId) filters.push(`stripe_customer_id=eq.${encodeURIComponent(stripeCustomerId)}`);
+
+  for (const filter of filters) {
+    const rows = await supabaseFetch({
+      supabaseUrl,
+      serviceKey,
+      path: `customer_records?${filter}&limit=1`,
+    });
+    if (rows?.[0]) return rows[0];
+  }
+  return null;
+};
+
+const validateCustomerForSubscription = (customer, invoice) => {
+  if (!customer) return 'customer_record_not_found';
+  if (customer.deposit_status !== 'paid') return 'deposit_not_paid';
+  if (customer.stripe_final_invoice_id && customer.stripe_final_invoice_id !== invoice.id) return 'final_invoice_mismatch';
+  if (!clean(customer.stripe_customer_id, 200)) return 'missing_stripe_customer_id';
+  if (!Number.isInteger(customer.monthly_amount_cents) || customer.monthly_amount_cents <= 0) return 'missing_monthly_amount_cents';
+  if (!clean(customer.currency, 10)) return 'missing_currency';
+  if (!clean(customer.monthly_tier, 80)) return 'missing_monthly_tier';
+  if (customer.stripe_subscription_id && ['active', 'trialing', 'past_due', 'pending'].includes(customer.subscription_status)) return 'subscription_already_started';
+  return null;
+};
+
+const patchCustomerRecord = async ({ supabaseUrl, serviceKey, customerId, body }) => supabaseFetch({
+  supabaseUrl,
+  serviceKey,
+  path: `customer_records?id=eq.${encodeURIComponent(customerId)}`,
+  method: 'PATCH',
+  body,
+  headers: { prefer: 'return=minimal' },
+});
+
+const processFinalInvoicePaid = async ({ supabaseUrl, serviceKey, stripeSecretKey, stripeEvent, invoice }) => {
+  if (!isFinalInvoicePaid(invoice)) return { status: 'ignored', reason: 'not_final_invoice' };
+  if (!stripeSecretKey) throw new Error('STRIPE_SECRET_KEY is required to start monthly subscriptions.');
+
+  const customer = await findCustomerForFinalInvoice({ supabaseUrl, serviceKey, invoice });
+  const validationError = validateCustomerForSubscription(customer, invoice);
+  if (validationError === 'subscription_already_started') {
+    return {
+      status: 'processed',
+      customer_record_id: customer.id,
+      stripe_subscription_id: customer.stripe_subscription_id,
+      subscription_status: customer.subscription_status,
+      idempotent: true,
+    };
+  }
+  if (validationError) throw new Error(validationError);
+
+  const paidAt = stripeEvent.created ? new Date(stripeEvent.created * 1000).toISOString() : new Date().toISOString();
+  await patchCustomerRecord({
+    supabaseUrl,
+    serviceKey,
+    customerId: customer.id,
+    body: {
+      final_invoice_status: 'paid',
+      final_invoice_paid_at: paidAt,
+      stripe_final_invoice_id: invoice.id,
+      metadata: {
+        ...(customer.metadata || {}),
+        final_invoice_paid: {
+          event_id: stripeEvent.id,
+          invoice_id: invoice.id,
+          paid_at: paidAt,
+        },
+      },
+    },
+  });
+
+  try {
+    const subscription = await stripeFetch({
+      secretKey: stripeSecretKey,
+      path: 'subscriptions',
+      params: {
+        customer: customer.stripe_customer_id,
+        collection_method: 'send_invoice',
+        days_until_due: '7',
+        'items[0][price_data][currency]': clean(customer.currency, 10).toLowerCase(),
+        'items[0][price_data][unit_amount]': String(customer.monthly_amount_cents),
+        'items[0][price_data][recurring][interval]': 'month',
+        'items[0][price_data][product_data][name]': `StartLine Sites ${customer.monthly_tier} monthly plan`,
+        'items[0][price_data][product_data][metadata][monthly_tier]': customer.monthly_tier,
+        'items[0][price_data][product_data][metadata][race_name]': customer.race_name || '',
+        'metadata[startline_payment_type]': 'monthly_subscription',
+        'metadata[customer_record_id]': customer.id,
+        'metadata[monthly_tier]': customer.monthly_tier,
+        'metadata[race_name]': customer.race_name || '',
+        'metadata[final_invoice_id]': invoice.id,
+      },
+    });
+
+    const subscriptionStatus = ['active', 'trialing'].includes(subscription.status) ? 'active' : (subscription.status || 'pending');
+    const startedAt = new Date().toISOString();
+    await patchCustomerRecord({
+      supabaseUrl,
+      serviceKey,
+      customerId: customer.id,
+      body: {
+        customer_status: 'active',
+        subscription_status: subscriptionStatus,
+        stripe_subscription_id: subscription.id,
+        subscription_started_at: startedAt,
+        first_monthly_report_due_at: addOneMonthDate(new Date(startedAt)),
+        metadata: {
+          ...(customer.metadata || {}),
+          final_invoice_paid: {
+            event_id: stripeEvent.id,
+            invoice_id: invoice.id,
+            paid_at: paidAt,
+          },
+          monthly_subscription: {
+            subscription_id: subscription.id,
+            status: subscription.status || null,
+            started_at: startedAt,
+            source_event_id: stripeEvent.id,
+          },
+        },
+      },
+    });
+
+    return {
+      status: 'processed',
+      customer_record_id: customer.id,
+      stripe_subscription_id: subscription.id,
+      subscription_status: subscriptionStatus,
+    };
+  } catch (error) {
+    await patchCustomerRecord({
+      supabaseUrl,
+      serviceKey,
+      customerId: customer.id,
+      body: {
+        customer_status: 'launch_billing',
+        subscription_status: 'failed',
+        metadata: {
+          ...(customer.metadata || {}),
+          final_invoice_paid: {
+            event_id: stripeEvent.id,
+            invoice_id: invoice.id,
+            paid_at: paidAt,
+          },
+          monthly_subscription_error: {
+            failed_at: new Date().toISOString(),
+            message: clean(error.message, 1200),
+            source_event_id: stripeEvent.id,
+          },
+        },
+      },
+    });
+    throw error;
+  }
+};
+
 const findAuditRequest = async ({ supabaseUrl, serviceKey, session, tier }) => {
   const metadata = normalizeMetadata(session.metadata);
   const explicitId = clean(metadata.audit_request_id || session.client_reference_id || '', 80);
@@ -441,6 +638,7 @@ export async function handler(event) {
   const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, '');
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   const toleranceSeconds = Number(process.env.STRIPE_WEBHOOK_TOLERANCE_SECONDS || DEFAULT_TOLERANCE_SECONDS);
 
   if (!supabaseUrl || !serviceKey || !webhookSecret) {
@@ -480,6 +678,38 @@ export async function handler(event) {
 
   if (webhookRecord.duplicate) {
     return json(200, { ok: true, status: 'duplicate' });
+  }
+
+  if (stripeEvent.type === 'invoice.paid') {
+    try {
+      const result = await processFinalInvoicePaid({
+        supabaseUrl,
+        serviceKey,
+        stripeSecretKey,
+        stripeEvent,
+        invoice: stripeEvent.data.object,
+      });
+      await updateWebhookEvent({
+        supabaseUrl,
+        serviceKey,
+        stripeEventId: stripeEvent.id,
+        patch: {
+          processing_status: result.status === 'processed' ? 'processed' : 'ignored',
+          ignored_reason: result.status === 'ignored' ? result.reason : null,
+          processed_at: new Date().toISOString(),
+        },
+      });
+      return json(200, { ok: true, ...result });
+    } catch (error) {
+      console.error('Stripe final invoice processing failed', error);
+      await updateWebhookEvent({
+        supabaseUrl,
+        serviceKey,
+        stripeEventId: stripeEvent.id,
+        patch: { processing_status: 'failed', error_message: clean(error.message, 1200), processed_at: new Date().toISOString() },
+      });
+      return json(500, { ok: false, error: 'Webhook processing failed.' });
+    }
   }
 
   if (stripeEvent.type !== 'checkout.session.completed') {
