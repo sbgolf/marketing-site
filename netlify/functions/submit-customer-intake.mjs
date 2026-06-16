@@ -39,6 +39,7 @@ const isHttpUrl = (value) => {
 
 const fieldLine = (label, value) => `${label}: ${value || 'Not provided'}`;
 const htmlField = (label, value) => `<p><strong>${escapeHtml(label)}:</strong><br>${escapeHtml(value || 'Not provided')}</p>`;
+const normalizeMatchValue = (value) => clean(value, 240).toLowerCase();
 
 const hashIp = (event) => {
   const ip = event.headers?.['x-nf-client-connection-ip']
@@ -100,7 +101,128 @@ const validateRow = (row) => {
   return errors;
 };
 
-const sendSupportNotification = async ({ record, row }) => {
+const buildHandoffChecklist = ({ row, intakeId }) => {
+  const missing = [];
+  if (!row.race_name) missing.push('race name');
+  if (!row.contact_name || !row.contact_email) missing.push('primary contact');
+  if (!row.event_date) missing.push('event date');
+  if (!row.event_location) missing.push('event location');
+  if (!row.registration_url) missing.push('registration URL');
+  if (!row.metadata.assets_link) missing.push('shared asset folder');
+  if (!row.metadata.distances_pricing) missing.push('distances/pricing');
+  if (!row.metadata.course_logistics) missing.push('course/logistics');
+
+  return {
+    intake_id: intakeId || null,
+    race_name: row.race_name,
+    contact_email: row.contact_email,
+    event_date_present: Boolean(row.event_date),
+    event_location_present: Boolean(row.event_location),
+    registration_url_present: Boolean(row.registration_url),
+    assets_link_present: Boolean(row.metadata.assets_link),
+    missing_critical_inputs: missing,
+    suggested_next_steps: [
+      'Review intake details and shared assets.',
+      missing.length ? 'Request missing critical inputs before build production.' : 'Queue build production and create the project brief.',
+      'Confirm staging timeline with Steve/support.',
+    ],
+  };
+};
+
+const scoreCustomerMatch = (candidate, row) => {
+  const email = normalizeMatchValue(row.contact_email);
+  const raceName = normalizeMatchValue(row.race_name);
+  const candidateRace = normalizeMatchValue(candidate.race_name);
+  const primaryEmail = normalizeMatchValue(candidate.primary_contact_email);
+  const billingEmail = normalizeMatchValue(candidate.billing_contact_email);
+  if (!email || !raceName || candidateRace !== raceName || (primaryEmail !== email && billingEmail !== email)) return -1;
+
+  const hasPostDepositSignal = candidate.deposit_status === 'paid'
+    || ['ready', 'started'].includes(candidate.kickoff_status)
+    || ['ready_to_send', 'sent', 'received'].includes(candidate.intake_status)
+    || ['kickoff_ready', 'build_queued', 'customer_active'].includes(candidate.customer_status);
+  if (!hasPostDepositSignal) return -1;
+
+  let score = 0;
+  if (primaryEmail === email) score += 4;
+  if (billingEmail === email) score += 3;
+  if (candidate.deposit_status === 'paid') score += 4;
+  if (['kickoff_ready', 'build_queued', 'customer_active'].includes(candidate.customer_status)) score += 3;
+  if (['sent', 'ready_to_send', 'received'].includes(candidate.intake_status)) score += 2;
+  if (['started', 'ready'].includes(candidate.kickoff_status)) score += 1;
+  return score;
+};
+
+const findMatchingCustomerRecord = async ({ supabaseUrl, serviceKey, row }) => {
+  const email = normalizeMatchValue(row.contact_email);
+  const query = new URLSearchParams({
+    select: 'id,race_name,primary_contact_email,billing_contact_email,customer_status,deposit_status,intake_status,kickoff_status,created_at',
+    or: `(primary_contact_email.ilike.${email},billing_contact_email.ilike.${email})`,
+    race_name: `ilike.${row.race_name}`,
+    order: 'created_at.desc',
+    limit: '10',
+  });
+
+  const response = await fetch(`${supabaseUrl}/rest/v1/customer_records?${query}`, {
+    method: 'GET',
+    headers: {
+      apikey: serviceKey,
+      authorization: `Bearer ${serviceKey}`,
+      accept: 'application/json',
+      'user-agent': 'StartLineSites/1.0 (customer-intake-handoff)',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Customer record lookup failed: ${response.status} ${detail}`);
+  }
+
+  const candidates = await response.json();
+  return (Array.isArray(candidates) ? candidates : [])
+    .map((candidate) => ({ candidate, score: scoreCustomerMatch(candidate, row) }))
+    .filter((entry) => entry.score >= 0)
+    .sort((a, b) => b.score - a.score || String(b.candidate.created_at || '').localeCompare(String(a.candidate.created_at || '')))[0]?.candidate || null;
+};
+
+const updateBuildHandoff = async ({ supabaseUrl, serviceKey, row, record }) => {
+  const customerRecord = await findMatchingCustomerRecord({ supabaseUrl, serviceKey, row });
+  const checklist = buildHandoffChecklist({ row, intakeId: record?.id });
+  if (!customerRecord) {
+    console.warn('Customer intake build handoff skipped: no matching customer record found', { intakeId: record?.id, raceName: row.race_name, contactEmail: row.contact_email });
+    return { customerRecord: null, checklist };
+  }
+
+  const response = await fetch(`${supabaseUrl}/rest/v1/customer_records?id=eq.${encodeURIComponent(customerRecord.id)}`, {
+    method: 'PATCH',
+    headers: {
+      apikey: serviceKey,
+      authorization: `Bearer ${serviceKey}`,
+      'content-type': 'application/json',
+      prefer: 'return=representation',
+      'user-agent': 'StartLineSites/1.0 (customer-intake-handoff)',
+    },
+    body: JSON.stringify({
+      customer_intake_submission_id: record?.id || null,
+      customer_status: 'build_queued',
+      intake_status: 'received',
+      build_status: 'ready_for_build',
+      build_handoff_at: new Date().toISOString(),
+      build_handoff_checklist: checklist,
+    }),
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    const error = new Error(`Customer record handoff update failed: ${response.status} ${detail}`);
+    error.customerRecord = customerRecord;
+    throw error;
+  }
+
+  return { customerRecord, checklist };
+};
+
+const sendSupportNotification = async ({ record, row, customerRecord, checklist }) => {
   const apiKey = process.env.RESEND_API_KEY || process.env.STARTLINE_RESEND_API_KEY;
   if (!apiKey) {
     console.warn('Customer intake support notification skipped: Resend is not configured.');
@@ -112,9 +234,27 @@ const sendSupportNotification = async ({ record, row }) => {
     || 'support@startlinesites.com';
   const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
   const rowId = record?.id || 'Unknown';
+  const customerRecordId = customerRecord?.id || 'Not matched';
+  const handoffChecklist = checklist || buildHandoffChecklist({ row, intakeId: record?.id });
+  const missingCriticalInputs = handoffChecklist.missing_critical_inputs.length
+    ? handoffChecklist.missing_critical_inputs.join(', ')
+    : 'None';
   const lines = [
     'A new StartLine Sites customer intake was submitted.',
     '',
+    'Build handoff checklist',
+    fieldLine('Race', row.race_name),
+    fieldLine('Contact', `${row.contact_name} <${row.contact_email}>`),
+    fieldLine('Event date/location', [row.event_date, row.event_location].filter(Boolean).join(' — ')),
+    fieldLine('Registration URL', row.registration_url),
+    fieldLine('Asset link', row.metadata.assets_link),
+    fieldLine('Missing critical inputs', missingCriticalInputs),
+    fieldLine('Supabase intake ID', rowId),
+    fieldLine('Customer record ID', customerRecordId),
+    'Suggested next steps:',
+    ...handoffChecklist.suggested_next_steps.map((step, index) => `${index + 1}. ${step}`),
+    '',
+    'Full intake detail',
     fieldLine('Race name', row.race_name),
     fieldLine('Organization', row.organization_name),
     fieldLine('Contact', `${row.contact_name} <${row.contact_email}>`),
@@ -147,7 +287,17 @@ const sendSupportNotification = async ({ record, row }) => {
       to: [to],
       subject: `New StartLine customer intake: ${row.race_name}`,
       text: lines.join('\n'),
-      html: `<h2>New StartLine Sites customer intake</h2>${[
+      html: `<h2>New StartLine Sites customer intake</h2><h3>Build handoff checklist</h3>${[
+        ['Race', row.race_name],
+        ['Contact', `${row.contact_name} <${row.contact_email}>`],
+        ['Event date/location', [row.event_date, row.event_location].filter(Boolean).join(' — ')],
+        ['Registration URL', row.registration_url],
+        ['Asset link', row.metadata.assets_link],
+        ['Missing critical inputs', missingCriticalInputs],
+        ['Supabase intake ID', rowId],
+        ['Customer record ID', customerRecordId],
+        ['Suggested next steps', handoffChecklist.suggested_next_steps.join('\n')],
+      ].map(([label, value]) => htmlField(label, value)).join('')}<h3>Full intake detail</h3>${[
         ['Race name', row.race_name],
         ['Organization', row.organization_name],
         ['Contact', `${row.contact_name} <${row.contact_email}>`],
@@ -295,9 +445,20 @@ export async function handler(event) {
   }
 
   const [record] = await response.json();
+  let handoff = { customerRecord: null, checklist: buildHandoffChecklist({ row, intakeId: record?.id }) };
 
   try {
-    await sendSupportNotification({ record, row });
+    handoff = await updateBuildHandoff({ supabaseUrl, serviceKey, row, record });
+  } catch (error) {
+    console.error('Customer intake build handoff update failed', error);
+    handoff = {
+      customerRecord: error.customerRecord || null,
+      checklist: buildHandoffChecklist({ row, intakeId: record?.id }),
+    };
+  }
+
+  try {
+    await sendSupportNotification({ record, row, ...handoff });
   } catch (error) {
     console.error('Customer intake support notification failed', error);
   }

@@ -8,6 +8,7 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "lighthouse": "lhci autorun --config=./lighthouserc.cjs",
+    "verify:stripe-webhook": "node scripts/verify-stripe-webhook.mjs",
     "test": "node --test"
   },
   "dependencies": {
