@@ -301,6 +301,8 @@ const processFinalInvoicePaid = async ({ supabaseUrl, serviceKey, stripeSecretKe
       path: 'subscriptions',
       params: {
         customer: customer.stripe_customer_id,
+        collection_method: 'send_invoice',
+        days_until_due: '7',
         'items[0][price_data][currency]': clean(customer.currency, 10).toLowerCase(),
         'items[0][price_data][unit_amount]': String(customer.monthly_amount_cents),
         'items[0][price_data][recurring][interval]': 'month',

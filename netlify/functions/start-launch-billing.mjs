@@ -194,21 +194,6 @@ export async function handler(event) {
   }
 
   try {
-    await stripeFetch({
-      secretKey: stripeSecretKey,
-      path: 'invoiceitems',
-      params: {
-        customer: customer.stripe_customer_id,
-        amount: String(customer.final_invoice_amount_cents),
-        currency: clean(customer.currency, 10).toLowerCase(),
-        description: `Final 50% setup payment for ${customer.race_name}`,
-        'metadata[startline_payment_type]': 'final_invoice',
-        'metadata[customer_record_id]': customer.id,
-        'metadata[setup_tier]': customer.setup_tier,
-        'metadata[race_name]': customer.race_name,
-      },
-    });
-
     const draftInvoice = await stripeFetch({
       secretKey: stripeSecretKey,
       path: 'invoices',
@@ -216,8 +201,24 @@ export async function handler(event) {
         customer: customer.stripe_customer_id,
         collection_method: 'send_invoice',
         days_until_due: '7',
-        pending_invoice_items_behavior: 'include',
+        pending_invoice_items_behavior: 'exclude',
         description: `Final setup payment for ${customer.race_name}`,
+        'metadata[startline_payment_type]': 'final_invoice',
+        'metadata[customer_record_id]': customer.id,
+        'metadata[setup_tier]': customer.setup_tier,
+        'metadata[race_name]': customer.race_name,
+      },
+    });
+
+    await stripeFetch({
+      secretKey: stripeSecretKey,
+      path: 'invoiceitems',
+      params: {
+        customer: customer.stripe_customer_id,
+        invoice: draftInvoice.id,
+        amount: String(customer.final_invoice_amount_cents),
+        currency: clean(customer.currency, 10).toLowerCase(),
+        description: `Final 50% setup payment for ${customer.race_name}`,
         'metadata[startline_payment_type]': 'final_invoice',
         'metadata[customer_record_id]': customer.id,
         'metadata[setup_tier]': customer.setup_tier,

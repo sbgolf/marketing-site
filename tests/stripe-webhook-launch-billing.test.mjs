@@ -87,6 +87,8 @@ const installWebhookFetchMock = ({ customer = customerRecord(), subscription = {
       assert.equal(params.get('items[0][price_data][currency]'), 'usd');
       assert.equal(params.get('items[0][price_data][unit_amount]'), '24900');
       assert.equal(params.get('items[0][price_data][recurring][interval]'), 'month');
+      assert.equal(params.get('collection_method'), 'send_invoice');
+      assert.equal(params.get('days_until_due'), '7');
       assert.equal(params.get('metadata[startline_payment_type]'), 'monthly_subscription');
       assert.equal(params.get('metadata[customer_record_id]'), 'customer-record-1');
       return new Response(JSON.stringify(subscription), { status: 200, headers: { 'content-type': 'application/json' } });

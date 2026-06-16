@@ -48,7 +48,7 @@ const installFetchMock = ({ customer = paidCustomer(), invoice = { id: 'in_123',
       assert.equal(params.get('customer'), 'cus_123');
       assert.equal(params.get('collection_method'), 'send_invoice');
       assert.equal(params.get('days_until_due'), '7');
-      assert.equal(params.get('pending_invoice_items_behavior'), 'include');
+      assert.equal(params.get('pending_invoice_items_behavior'), 'exclude');
       assert.equal(params.get('metadata[startline_payment_type]'), 'final_invoice');
       assert.equal(params.get('metadata[customer_record_id]'), 'customer-record-1');
       return new Response(JSON.stringify(invoice), { status: 200, headers: { 'content-type': 'application/json' } });
@@ -56,6 +56,7 @@ const installFetchMock = ({ customer = paidCustomer(), invoice = { id: 'in_123',
     if (String(url).startsWith('https://api.stripe.com/v1/invoiceitems')) {
       const params = new URLSearchParams(options.body);
       assert.equal(params.get('customer'), 'cus_123');
+      assert.equal(params.get('invoice'), 'in_123');
       assert.equal(params.get('amount'), '125000');
       assert.equal(params.get('currency'), 'usd');
       assert.match(params.get('description'), /Final 50% setup payment/);
