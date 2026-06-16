@@ -2,8 +2,8 @@
 
 This is the customer-facing email sent after a processed setup deposit when these Netlify environment variables are configured:
 
-- `STARTLINE_INTAKE_FORM_URL`
-- `STARTLINE_ASSET_CHECKLIST_URL`
+- `STARTLINE_INTAKE_FORM_URL=https://startlinesites.com/intake`
+- `STARTLINE_ASSET_CHECKLIST_URL=https://startlinesites.com/asset-checklist`
 - `RESEND_API_KEY` or `STARTLINE_RESEND_API_KEY`
 
 If either URL is missing, the webhook skips the customer email and leaves the customer record in manual-ready state.

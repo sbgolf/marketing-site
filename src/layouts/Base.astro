@@ -1,15 +1,24 @@
 ---
 import '../styles/base.css';
-const title = 'StartLine Sites — Race websites built to turn interest into registrations';
-const description = 'Fast, SEO-optimized websites for race directors — designed to help runners find your race, trust the details, and click through to register.';
+const defaultTitle = 'StartLine Sites — Race websites built to turn interest into registrations';
+const defaultDescription = 'Fast, SEO-optimized websites for race directors — designed to help runners find your race, trust the details, and click through to register.';
+const {
+  title = defaultTitle,
+  description = defaultDescription,
+  canonicalPath = '/',
+  includeMarketingSchema = true,
+} = Astro.props;
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://startlinesites.com';
 const basePath = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
+const normalizedCanonicalPath = canonicalPath.startsWith('/') ? canonicalPath.slice(1) : canonicalPath;
+const pagePath = normalizedCanonicalPath ? `${basePath}${normalizedCanonicalPath}` : basePath;
 const faviconHref = `${basePath}favicon.svg`;
 const appleTouchIconHref = `${basePath}brand/startline-sites-social-avatar-1024x1024.png`;
 const logoHref = `${siteUrl}${basePath}brand/startline-sites-crest-only.svg`;
-const canonicalUrl = `${siteUrl}${basePath}`;
+const canonicalUrl = `${siteUrl}${pagePath}`;
+const homeUrl = `${siteUrl}${basePath}`;
 const ogImageHref = `${siteUrl}${basePath}og-image.jpg`;
 const organizationId = `${canonicalUrl}#organization`;
 const serviceId = `${canonicalUrl}#service`;
@@ -18,7 +27,7 @@ const orgJson = {
   '@type': 'Organization',
   '@id': organizationId,
   name: 'StartLine Sites',
-  url: canonicalUrl,
+  url: homeUrl,
   logo: logoHref,
   description: 'Modern race websites for race directors.',
   sameAs: ['https://bostonmarathonqualifyingraces.com']
@@ -108,9 +117,9 @@ const faqJson = {
     <meta name="twitter:description" content={description} />
     <link rel="icon" href={faviconHref} type="image/svg+xml" />
     <link rel="apple-touch-icon" href={appleTouchIconHref} />
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(orgJson)} />
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(serviceJson)} />
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJson)} />
+    {includeMarketingSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(orgJson)} />}
+    {includeMarketingSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(serviceJson)} />}
+    {includeMarketingSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJson)} />}
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

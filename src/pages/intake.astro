@@ -1,0 +1,131 @@
+---
+import Base from '../layouts/Base.astro';
+const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
+---
+<Base
+  title="Customer Intake — StartLine Sites"
+  description="Complete the StartLine Sites customer intake form to share race details, registration links, schedule, sponsors, FAQs, and assets for your new race website."
+  canonicalPath="/intake"
+  includeMarketingSchema={false}
+>
+  <nav class="simple-nav" aria-label="Primary">
+    <a href="/" class="brand" aria-label="StartLine Sites home"><img src={brandLogoHref} alt="StartLine Sites" width="1200" height="360" /></a>
+    <div><a href="/asset-checklist">Asset checklist</a><a href="/">Main site</a></div>
+  </nav>
+  <main id="main" class="intake-page">
+    <section class="intake-hero">
+      <div>
+        <p class="kicker">Customer kickoff</p>
+        <h1>StartLine Sites intake</h1>
+        <p class="lead">This plain-English form gives us the race details, links, schedule, sponsors, FAQs, and access notes we need to start your customer site.</p>
+      </div>
+      <aside class="time-card" aria-label="Estimated completion time">
+        <strong>Plan for 20–30 minutes</strong>
+        <span>You can paste rough notes. We’ll follow up if anything needs clarification.</span>
+      </aside>
+    </section>
+
+    <section class="prep-card">
+      <div>
+        <h2>Before you start</h2>
+        <p>No file upload is needed here. Put logos, photos, maps, sponsor marks, and other files in a shared Drive or Dropbox folder, then paste the folder link below.</p>
+      </div>
+      <a class="btn btn-ghost" href="/asset-checklist">Review asset checklist →</a>
+    </section>
+
+    <form id="customerIntakeForm" class="intake-form" novalidate>
+      <input type="text" name="company_website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <input type="hidden" name="landing_page" value="https://startlinesites.com/intake" />
+
+      <fieldset>
+        <legend>Contact and race basics</legend>
+        <div class="grid two">
+          <label>Organization name <input name="organization_name" autocomplete="organization" placeholder="Example Race Events" /></label>
+          <label>Race name <span aria-hidden="true">*</span><input name="race_name" autocomplete="off" placeholder="Example Marathon" required /></label>
+          <label>Your name <span aria-hidden="true">*</span><input name="contact_name" autocomplete="name" placeholder="Race Director" required /></label>
+          <label>Email <span aria-hidden="true">*</span><input name="contact_email" type="email" autocomplete="email" placeholder="director@example.com" required /></label>
+          <label>Phone (optional) <input name="contact_phone" type="tel" autocomplete="tel" placeholder="Best number if a quick call helps" /></label>
+          <label>Event date or target date <span aria-hidden="true">*</span><input name="event_date" placeholder="October 18, 2026 or date TBD" required /></label>
+          <label>Event location <span aria-hidden="true">*</span><input name="event_location" placeholder="City, state / venue" required /></label>
+          <label>Template preference <input name="template_preference" placeholder="Destination Major, Performance, Community, Trail, Charity, or unsure" /></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Registration and race details</legend>
+        <div class="grid two">
+          <label>Registration URL <span aria-hidden="true">*</span><input name="registration_url" type="url" inputmode="url" placeholder="https://runsignup.com/..." required /></label>
+          <label>Registration platform <input name="registration_platform" placeholder="RunSignup, Race Roster, Haku, UltraSignup, custom, etc." /></label>
+        </div>
+        <label>Distances and pricing summary <textarea name="distances_pricing" rows="4" placeholder="Marathon $120 through June 30; Half $95; 5K $35. Include price increases if known."></textarea></label>
+        <label>Course and logistics summary <textarea name="course_logistics" rows="5" placeholder="Start/finish, course type, elevation, aid stations, parking/shuttles, packet pickup, gear check, cutoff times."></textarea></label>
+        <label>BQ, certification, and results notes <textarea name="bq_certification" rows="3" placeholder="USATF certification, Boston qualifier status, timing provider, results history, awards."></textarea></label>
+        <label>Schedule <textarea name="race_schedule" rows="4" placeholder="Expo, packet pickup, race morning times, awards, post-race events."></textarea></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Content, assets, and access</legend>
+        <label>Sponsors and partners <textarea name="sponsors" rows="4" placeholder="Sponsor names, tiers, preferred order, and any required wording."></textarea></label>
+        <label>FAQs <textarea name="faqs" rows="5" placeholder="Common questions: refunds/transfers, headphones, dogs/strollers, parking, weather, deferrals, age limits."></textarea></label>
+        <label>Shared assets folder link <input name="assets_link" type="url" inputmode="url" placeholder="Google Drive, Dropbox, Box, or similar shared folder" /></label>
+        <label>Analytics, DNS, and access notes <textarea name="analytics_access_notes" rows="4" placeholder="Who owns GA4/Search Console/domain/DNS today? Who can grant access? Any pixels or tags needed?"></textarea></label>
+        <label>Anything else we should know? <textarea name="optional_notes" rows="4" placeholder="Timeline constraints, board approvals, brand preferences, accessibility needs, or pages you do/don’t want changed."></textarea></label>
+      </fieldset>
+
+      <div class="submit-row">
+        <button class="btn btn-accent" type="submit">Submit intake</button>
+        <p id="intakeStatus" class="status" role="status" aria-live="polite">Required fields are marked with an asterisk.</p>
+      </div>
+    </form>
+  </main>
+  <footer class="simple-footer">© 2026 StartLine Sites. Built for search, speed, and signups.</footer>
+
+  <script is:inline>
+    const form = document.getElementById('customerIntakeForm');
+    const status = document.getElementById('intakeStatus');
+    const button = form?.querySelector('button[type="submit"]');
+    const setStatus = (message, tone = '') => {
+      status.textContent = message;
+      status.dataset.tone = tone;
+    };
+    form?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        setStatus('Please complete the required fields, then submit again.', 'error');
+        return;
+      }
+      const payload = Object.fromEntries(new FormData(form).entries());
+      button.disabled = true;
+      setStatus('Submitting your intake…', 'loading');
+      try {
+        const response = await fetch('/.netlify/functions/submit-customer-intake', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ ...payload, referrer: document.referrer || '' }),
+        });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok || !body.ok) {
+          const firstFieldError = body.fields ? Object.values(body.fields)[0] : null;
+          throw new Error(firstFieldError || body.error || 'We could not submit the intake. Please try again.');
+        }
+        form.reset();
+        setStatus(body.message || 'Thanks — your intake was received. We’ll follow up if anything is missing.', 'success');
+      } catch (error) {
+        setStatus(error.message || 'We could not submit the intake. Please try again or email support@startlinesites.com.', 'error');
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</Base>
+
+<style>
+  .simple-nav{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px clamp(20px,5vw,56px);background:var(--paper);border-bottom:1px solid var(--line)}
+  .brand img{display:block;width:168px;height:auto}.simple-nav div{display:flex;gap:18px;flex-wrap:wrap}.simple-nav a{font-weight:700;font-size:.92rem}.simple-nav a:hover{color:var(--accent)}
+  .intake-page{background:linear-gradient(180deg,var(--paper),#fff 42%,var(--paper-2));padding:56px clamp(18px,5vw,56px) 80px;overflow:hidden}.intake-hero,.prep-card,.intake-form{max-width:var(--maxw);margin:0 auto}.intake-hero{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;align-items:end;margin-bottom:28px}.intake-hero h1{font-size:clamp(3rem,8vw,6rem);margin-bottom:20px}.lead{font-size:clamp(1.05rem,2vw,1.3rem);color:rgba(14,23,41,.72);max-width:66ch}.time-card{background:var(--ink);color:#fff;border-radius:var(--r-lg);padding:24px;box-shadow:0 24px 70px rgba(14,23,41,.18)}.time-card strong{display:block;font-size:1.2rem;margin-bottom:8px}.time-card span{color:rgba(250,250,247,.78)}
+  .prep-card{display:flex;align-items:center;justify-content:space-between;gap:24px;background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;margin-bottom:24px;box-shadow:0 16px 50px rgba(14,23,41,.06)}.prep-card h2{font-size:2rem;margin-bottom:8px}.prep-card p{color:rgba(14,23,41,.7);max-width:70ch}.intake-form{background:#fff;border:1px solid var(--line);border-radius:32px;padding:clamp(20px,4vw,42px);box-shadow:0 24px 90px rgba(14,23,41,.08)}
+  fieldset{border:0;border-top:1px solid var(--line);padding:30px 0}fieldset:first-of-type{border-top:0;padding-top:0}legend{font-family:"Instrument Serif",Georgia,serif;font-size:2rem;margin-bottom:18px}.grid{display:grid;gap:18px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}label{display:grid;gap:8px;font-weight:700;color:var(--ink)}input,textarea{width:100%;border:1.5px solid var(--line);border-radius:16px;background:#fff;color:var(--ink);padding:13px 14px;resize:vertical}textarea{line-height:1.55}input:focus,textarea:focus{outline:3px solid rgba(31,184,196,.28);border-color:var(--teal)}.hp{position:absolute;left:-10000px;width:1px;height:1px;opacity:0}.submit-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-top:6px}.submit-row .btn:disabled{opacity:.62;cursor:not-allowed;transform:none}.status{color:rgba(14,23,41,.68);max-width:60ch}.status[data-tone="success"]{color:#176d32}.status[data-tone="error"]{color:#b42318}.simple-footer{padding:28px clamp(20px,5vw,56px);background:var(--ink);color:rgba(250,250,247,.78);text-align:center}
+  @media(max-width:760px){.simple-nav{align-items:flex-start;flex-direction:column}.intake-page{padding-top:36px}.intake-hero{grid-template-columns:1fr}.prep-card{align-items:flex-start;flex-direction:column}.grid.two{grid-template-columns:1fr}.intake-form{border-radius:24px}.submit-row{align-items:flex-start;flex-direction:column}.submit-row .btn{width:100%;justify-content:center}}
+</style>
