@@ -5,6 +5,7 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 ## Proposal and billing flow
 
 - Proposal template: `proposals/proposal-one-pager-template.md`
+- Default Standard + Growth customer packet: `proposals/standard-growth-customer-packet.md`
 - Billing SOP: `billing/deposit-final-invoice-monthly-billing-sop.md`
 - Billing checklist: `billing/billing-checklist.md`
 - Invoice wording and monthly start policy: `billing/invoice-wording-and-monthly-start-policy.md`
@@ -16,8 +17,8 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 ## Current implementation status
 
 - `main` is the production/source-of-truth branch.
-- Dynamic Checkout Session creation and Stripe deposit webhook automation are implemented in code.
-- Remaining production readiness work is verification of Netlify env vars, remote Supabase migrations, Stripe webhook secret/delivery, and Resend deliverability.
+- Dynamic Checkout Session creation, Stripe deposit webhook automation, StartLine-owned intake pages, and kickoff email handoff are implemented and have production smoke coverage.
+- Remaining readiness work should focus on first-customer sales packet polish, fulfillment-template readiness, and public trust proof before scaling outreach.
 
 ## Standard flow
 
