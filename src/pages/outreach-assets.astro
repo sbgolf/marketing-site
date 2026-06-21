@@ -1,0 +1,88 @@
+---
+import Base from '../layouts/Base.astro';
+const basePath = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
+const communityRaceImageHref = `${basePath}images/community-road-race-before-after.jpg`;
+const performanceRaceImageHref = `${basePath}images/performance-marathon-before-after.jpg`;
+const assets = [
+  {
+    slug: 'community-before-after-wide',
+    story: 'Community before / after',
+    race: 'Ocean City Half Marathon',
+    headline: 'From “details somewhere on the page” to a race-day homepage runners can trust.',
+    image: communityRaceImageHref,
+    alt: 'Synthetic runners at a fictional community road race start',
+    before: ['Dated mobile layout', 'Registration link buried with PDFs', 'Packet pickup and parking require scanning'],
+    after: ['Start time, parking, and packet pickup surfaced', 'One primary registration path', 'Sponsor and community proof blocks'],
+    accent: 'community'
+  },
+  {
+    slug: 'community-mockup-square',
+    story: 'Private mockup outreach',
+    race: 'Ocean City Half Marathon',
+    headline: 'See how your local race could look before you commit.',
+    image: communityRaceImageHref,
+    alt: 'Synthetic community race pack used for a fictional private mockup card',
+    before: ['Friendly event, unclear next step', 'Race-day details scattered'],
+    after: ['Clear Community template concept', 'Audit + mockup request CTA'],
+    accent: 'community square'
+  },
+  {
+    slug: 'performance-bq-before-after-wide',
+    story: 'Performance / BQ before / after',
+    race: 'Capital City Marathon',
+    headline: 'Make the “fast certified course” story visible before runners click register.',
+    image: performanceRaceImageHref,
+    alt: 'Synthetic marathon pacing group for a fictional performance marathon concept',
+    before: ['BQ claim without proof modules', 'Pacing and elevation hidden behind links', 'Generic registration prompt'],
+    after: ['Certification, pacers, elevation, and cutoff proof', 'BQ-ready copy hierarchy', 'CTA to existing registration platform'],
+    accent: 'performance'
+  },
+  {
+    slug: 'performance-proof-square',
+    story: 'Performance proof modules',
+    race: 'Capital City Marathon',
+    headline: 'Certified course. Pacer details. BQ confidence. One clean registration path.',
+    image: performanceRaceImageHref,
+    alt: 'Synthetic marathon road race image for a fictional BQ outreach asset',
+    before: ['“Flat and fast” claim', 'Course map PDF only'],
+    after: ['USATF certification panel', 'Pace teams and elevation above the fold'],
+    accent: 'performance square'
+  }
+];
+---
+<Base title="StartLine Sites outreach assets" description="Screenshot-ready StartLine Sites outreach cards for fictional community and performance race examples." canonicalPath="/outreach-assets/" includeMarketingSchema={false} noindex={true}>
+  <main id="main" class="outreach-page">
+    <header class="page-head">
+      <img src={brandLogoHref} alt="StartLine Sites" width="1200" height="360" />
+      <div>
+        <p>Screenshot-ready outreach assets</p>
+        <h1>Community + Performance before/after stories</h1>
+        <span>Fictional race examples only · noindex</span>
+      </div>
+    </header>
+    <section class="asset-grid" aria-label="Outreach image assets">
+      {assets.map((asset) => (
+        <article id={asset.slug} class:list={['asset-card', asset.accent]} aria-labelledby={`${asset.slug}-title`}>
+          <div class="asset-topline"><span>{asset.story}</span><strong>{asset.race}</strong></div>
+          <div class="asset-main">
+            <div class="asset-copy">
+              <h2 id={`${asset.slug}-title`}>{asset.headline}</h2>
+              <div class="mini-compare">
+                <div><span>Before</span><ul>{asset.before.map((item) => <li>{item}</li>)}</ul></div>
+                <div><span>After</span><ul>{asset.after.map((item) => <li>{item}</li>)}</ul></div>
+              </div>
+            </div>
+            <div class="asset-photo"><img src={asset.image} alt={asset.alt} width="1536" height="1024" loading="eager" decoding="async" /></div>
+          </div>
+          <footer><span>StartLine Sites private visual mockup</span><b>See how your race could look →</b></footer>
+        </article>
+      ))}
+    </section>
+  </main>
+</Base>
+<style>
+.outreach-page{min-height:100vh;background:#f6f2ea;color:#0e1729;padding:48px clamp(18px,4vw,56px) 80px}.page-head{max-width:1280px;margin:0 auto 34px;display:flex;align-items:center;gap:28px}.page-head img{width:190px;height:auto}.page-head p{margin:0 0 6px;color:#ff4d3d;font-size:.76rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase}.page-head h1{margin:0;font-size:clamp(2rem,4vw,4rem);line-height:.95}.page-head span{display:block;margin-top:10px;color:#657084;font-weight:700}.asset-grid{max-width:1280px;margin:0 auto;display:grid;gap:34px}.asset-card{width:min(100%,1280px);min-height:720px;border-radius:36px;overflow:hidden;background:#fff;box-shadow:0 28px 90px rgba(14,23,41,.14);border:1px solid rgba(14,23,41,.08);display:flex;flex-direction:column}.asset-card.square{width:min(100%,920px);min-height:920px;justify-self:center}.asset-card.performance{background:linear-gradient(135deg,#0b0e13,#18243a);color:#f6f2ea}.asset-card.community{background:linear-gradient(135deg,#fff9ef,#ffffff)}.asset-topline{display:flex;justify-content:space-between;gap:24px;align-items:center;padding:26px 30px;border-bottom:1px solid rgba(14,23,41,.1);font-size:.78rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.performance .asset-topline{border-color:rgba(250,250,247,.14)}.asset-topline span{color:#ff4d3d}.performance .asset-topline span{color:#f0a94b}.asset-main{display:grid;grid-template-columns:1fr .92fr;gap:30px;align-items:stretch;padding:34px;flex:1}.square .asset-main{grid-template-columns:1fr;grid-template-rows:auto 1fr}.asset-copy{display:flex;flex-direction:column;justify-content:center}.asset-copy h2{font-size:clamp(2.55rem,5vw,5.6rem);line-height:.9;letter-spacing:-.07em;margin:0 0 32px;max-width:10ch}.square .asset-copy h2{font-size:clamp(2.6rem,7vw,5rem);max-width:12ch}.mini-compare{display:grid;grid-template-columns:1fr 1fr;gap:16px}.mini-compare div{border:1px solid rgba(14,23,41,.1);border-radius:22px;padding:22px;background:rgba(250,250,247,.72)}.performance .mini-compare div{background:rgba(250,250,247,.08);border-color:rgba(250,250,247,.14)}.mini-compare span{display:block;margin-bottom:12px;font-size:.74rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#ff4d3d}.performance .mini-compare span{color:#f0a94b}.mini-compare ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}.mini-compare li{font-size:1rem;line-height:1.35;color:rgba(14,23,41,.72)}.performance .mini-compare li{color:rgba(250,250,247,.78)}.mini-compare li::before{content:'→';margin-right:8px;color:#ff4d3d;font-weight:900}.performance .mini-compare li::before{color:#f0a94b}.asset-photo{position:relative;min-height:420px;border-radius:28px;overflow:hidden;background:#111827}.square .asset-photo{min-height:430px}.asset-photo::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 48%,rgba(7,10,16,.58))}.asset-photo img{width:100%;height:100%;object-fit:cover;display:block}.asset-card footer{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:24px 30px;background:rgba(14,23,41,.04);font-size:.92rem;font-weight:900}.performance footer{background:rgba(250,250,247,.08)}.asset-card footer span{letter-spacing:.12em;text-transform:uppercase;color:#657084}.performance footer span{color:rgba(250,250,247,.58)}.asset-card footer b{color:#ff4d3d}.performance footer b{color:#f0a94b}@media(max-width:860px){.page-head{align-items:flex-start;flex-direction:column}.asset-card,.asset-card.square{min-height:auto}.asset-main{grid-template-columns:1fr}.mini-compare{grid-template-columns:1fr}.asset-copy h2{font-size:3rem}.asset-card footer,.asset-topline{flex-direction:column;align-items:flex-start}.asset-photo{min-height:320px}}
+</style>
