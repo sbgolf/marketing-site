@@ -8,7 +8,9 @@ export default defineConfig({
     ? 'https://sbgolf.github.io'
     : 'https://startlinesites.com',
   base: isGitHubPages ? '/marketing-site' : undefined,
-  integrations: [sitemap()],
+  integrations: [sitemap({
+    filter: (page) => !page.endsWith('/outreach-assets/'),
+  })],
   output: 'static',
   vite: {
     build: {
