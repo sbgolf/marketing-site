@@ -1,0 +1,87 @@
+---
+import Base from '../layouts/Base.astro';
+const basePath = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const communityRaceImageHref = `${basePath}images/community-road-race-before-after.jpg`;
+const performanceRaceImageHref = `${basePath}images/performance-road-race-before-after.jpg`;
+---
+<Base
+  title="StartLine Sites outreach assets"
+  description="Noindex screenshot-ready private mockup assets for StartLine Sites outreach."
+  canonicalPath="/outreach-assets"
+  includeMarketingSchema={false}
+  noindex={true}
+>
+  <main id="main" class="assets-page">
+    <section class="assets-hero">
+      <p class="kicker">Screenshot-ready outreach assets</p>
+      <h1>Before/after cards Steve can use in race-director outreach.</h1>
+      <p>Fictional examples only. Capture these cards as screenshots for warm BMQR outreach, proposal follow-ups, and private-mockup conversations.</p>
+    </section>
+
+    <section class="asset-grid" aria-label="Outreach screenshot cards">
+      <article class="asset-card community-card" aria-label="Community before and after outreach card">
+        <div class="asset-meta"><span>Community template</span><strong>Ocean City Half Marathon</strong></div>
+        <div class="split-card">
+          <div class="before-mini">
+            <span>Before</span>
+            <img src={communityRaceImageHref} alt="Synthetic small-town race photo for fictional Community example" width="1200" height="800" />
+            <h2>Race info exists, but runners have to hunt.</h2>
+            <p>Registration, packet pickup, parking, and schedule links are scattered across a dated local race page.</p>
+          </div>
+          <div class="after-mini">
+            <span>After</span>
+            <h2>A local race weekend made easy to choose.</h2>
+            <ul>
+              <li>Hero CTA to existing registration platform</li>
+              <li>Distance, schedule, and packet pickup cards</li>
+              <li>SEO and SportsEvent schema foundation</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="asset-card performance-card" aria-label="Performance before and after outreach card">
+        <div class="asset-meta"><span>Performance/BQ template</span><strong>Capital City Marathon</strong></div>
+        <div class="split-card">
+          <div class="before-mini dark-before">
+            <span>Before</span>
+            <h2>Fast-course proof is buried in PDFs.</h2>
+            <p>Certification, pacers, BQ details, and price deadlines are present — but not obvious when runners are deciding.</p>
+          </div>
+          <div class="after-mini performance-after">
+            <img src={performanceRaceImageHref} alt="Synthetic fast road marathon photo for fictional Performance example" width="1400" height="933" />
+            <div>
+              <span>After</span>
+              <h2>Fast. Certified. PR-ready.</h2>
+              <ul>
+                <li>Certification and pacers above the fold</li>
+                <li>BQ-specific trust signals</li>
+                <li>Tracked register clicks</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="asset-card proof-card" aria-label="Registration clarity outreach card">
+        <div class="asset-meta"><span>Registration clarity</span><strong>No platform switch</strong></div>
+        <h2>Your registration platform stays. The website starts doing more of the selling.</h2>
+        <div class="proof-row"><span>RunSignup / Race Roster / Haku / Active</span><strong>→</strong><span>Clear StartLine site CTA</span><strong>→</strong><span>Tracked registration intent</span></div>
+        <p>StartLine Sites improves the website layer that helps runners trust the race and click through to the platform you already use.</p>
+      </article>
+
+      <article class="asset-card cta-card" aria-label="Private mockup CTA outreach card">
+        <div class="asset-meta"><span>Private mockup CTA</span><strong>For outreach email #1</strong></div>
+        <h2>Want to see how your race could look?</h2>
+        <p>Send your current race URL. We’ll review it like a runner deciding whether to register and, when there’s a fit, prepare a private mockup concept.</p>
+        <a class="asset-button" href="/#audit">Request a private mockup →</a>
+      </article>
+    </section>
+  </main>
+</Base>
+
+<style>
+.assets-page{min-height:100vh;background:#0b0e13;color:#fafaf7;padding:80px clamp(18px,4vw,48px)}.assets-hero{max-width:1180px;margin:0 auto 36px}.kicker{font-size:.78rem;text-transform:uppercase;letter-spacing:.18em;color:#f0a94b;font-weight:800;margin:0 0 16px}.assets-hero h1{font-size:clamp(2.4rem,5vw,5rem);line-height:.95;max-width:900px;margin:0 0 18px}.assets-hero p{color:rgba(250,250,247,.72);font-size:1.1rem;max-width:760px;line-height:1.6}.asset-grid{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.asset-card{border:1px solid rgba(250,250,247,.14);border-radius:28px;padding:24px;background:linear-gradient(135deg,rgba(250,250,247,.08),rgba(250,250,247,.03));box-shadow:0 30px 90px rgba(0,0,0,.24);min-height:520px;overflow:hidden}.asset-meta{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(250,250,247,.62);font-weight:800}.asset-meta strong{color:#f0a94b;text-align:right}.split-card{display:grid;grid-template-columns:1fr 1fr;gap:14px;height:calc(100% - 46px)}.before-mini,.after-mini{border-radius:20px;padding:18px;background:#fafaf7;color:#111827;display:flex;flex-direction:column;gap:12px}.before-mini span,.after-mini span{font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;font-weight:900;color:#c6643d}.before-mini img,.performance-after img{width:100%;height:160px;object-fit:cover;border-radius:14px}.before-mini h2,.after-mini h2,.proof-card h2,.cta-card h2{font-size:clamp(1.5rem,3vw,2.2rem);line-height:1;margin:0}.before-mini p,.after-mini p,.proof-card p,.cta-card p{line-height:1.55;color:rgba(17,24,39,.7);margin:0}.after-mini{background:#143226;color:#fff}.after-mini h2,.after-mini p{color:#fff}.after-mini ul{margin:0;padding-left:20px;line-height:1.55;color:rgba(255,255,255,.78)}.after-mini span{color:#e8b89c}.dark-before{background:#f1f5f9}.performance-after{position:relative;background:#05070c;color:#fff;padding:0;overflow:hidden}.performance-after img{height:100%;min-height:320px;border-radius:0;filter:saturate(.95) contrast(1.05)}.performance-after::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,7,12,.92),rgba(5,7,12,.08))}.performance-after div{position:absolute;left:18px;right:18px;bottom:18px;z-index:1}.proof-card,.cta-card{min-height:360px;display:flex;flex-direction:column;justify-content:space-between}.proof-card{background:linear-gradient(135deg,#f8fafc,#fff7ed);color:#111827}.proof-row{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:12px;align-items:center}.proof-row span{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:18px;font-weight:900}.proof-row strong{color:#c6643d;font-size:1.7rem}.cta-card{background:linear-gradient(135deg,#173b2d,#0f261d)}.cta-card p{color:rgba(250,250,247,.72)}.asset-button{align-self:flex-start;border-radius:999px;background:#ff5b2e;color:#fff;padding:14px 18px;font-weight:900;text-decoration:none}@media(max-width:900px){.asset-grid{grid-template-columns:1fr}.split-card{grid-template-columns:1fr}.asset-card{min-height:auto}.proof-row{grid-template-columns:1fr}.proof-row strong{display:none}}@media print{.assets-page{background:#fff;color:#111}.asset-grid{grid-template-columns:1fr}.asset-card{break-inside:avoid}}
+</style>
