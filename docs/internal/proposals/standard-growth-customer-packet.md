@@ -48,8 +48,8 @@ Steve
 
 # [Race Name] website proposal
 
-Prepared for: [Contact Name], [Race Organization]  
-Date: [Date]  
+Prepared for: [Contact Name], [Race Organization]<br>
+Date: [Date]<br>
 Valid through: [Date]
 
 ## Recommendation
