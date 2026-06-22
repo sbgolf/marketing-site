@@ -69,7 +69,7 @@ export const buildCheckoutSessionParams = ({ auditRequestId, setupTier, contactE
   params.set('line_items[0][price_data][currency]', 'usd');
   params.set('line_items[0][price_data][unit_amount]', String(pkg.deposit_amount_cents));
   params.set('line_items[0][price_data][product_data][name]', pkg.name);
-  params.set('line_items[0][price_data][product_data][description]', `${pkg.deposit_amount} deposit toward ${pkg.setup_price} ${pkg.setup_tier} setup. Final balance due at launch.`);
+  params.set('line_items[0][price_data][product_data][description]', `${pkg.deposit_amount} deposit toward the ${pkg.setup_price} ${pkg.setup_tier} first-year race-cycle package. Final balance due at launch.`);
   params.set('metadata[startline_payment_type]', 'deposit');
   params.set('metadata[setup_tier]', pkg.setup_tier);
   params.set('metadata[audit_request_id]', auditId);

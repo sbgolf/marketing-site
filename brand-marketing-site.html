@@ -232,8 +232,8 @@ desc{color:rgba(250,250,247,.6)}
 .tier.featured .price .num{color:var(--paper)}
 .price .per{font-size:.88rem;color:rgba(14,23,41,.5);font-weight:500;margin-left:4px}
 .tier.featured .price .per{color:rgba(250,250,247,.55)}
-.tier .monthly{font-family:"JetBrains Mono",monospace;font-size:.82rem;color:var(--accent);font-weight:500;margin-bottom:24px;display:block}
-.tier.featured .monthly{color:var(--gold)}
+.tier .package-note{font-family:"JetBrains Mono",monospace;font-size:.82rem;color:var(--accent);font-weight:500;margin-bottom:24px;display:block}
+.tier.featured .package-note{color:var(--gold)}
 .tier ul{list-style:none;margin:24px 0;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);padding-top:24px}
 .tier.featured ul{border-color:var(--line-dark)}
 .tier li{font-size:.92rem;display:flex;gap:11px;align-items:flex-start;line-height:1.45;color:rgba(14,23,41,.8)}
@@ -596,23 +596,23 @@ prob-1{grid-row:auto;min-height:auto;padding:40px 32px}
   <div class="section-head reveal">
     <div>
       <div class="kicker">Pricing</div>
-      <h2>Start with the two packages race directors actually need.</h2>
+      <h2>One-time first-year packages for one race cycle.</h2>
     </div>
-    <p class="lead">One-time setup plus a monthly maintenance tier. Standard is recommended for most races that want conversion support after launch.</p>
+    <p class="lead">No required monthly retainer. Standard is recommended for most races that want a clearer website layer and first-year race-cycle support.</p>
   </div>
   <div class="price-grid">
     <div class="tier reveal">
       <h3>Starter</h3>
-      <div class="desc">Smaller races, lean setup</div>
-      <div class="price"><span class="num">$1,500</span><span class="per">setup</span></div>
-      <span class="monthly">+ $99/mo · Foundation</span>
+      <div class="desc">Smaller races, lean first-year package</div>
+      <div class="price"><span class="num">$1,500</span><span class="per">first year</span></div>
+      <span class="package-note">One-time first-year package</span>
       <ul>
         <li>Template + content load</li>
         <li>Registration deep-link</li>
         <li>Schema markup + Search Console</li>
         <li>GA4 + conversion tracking</li>
         <li>One revision pass</li>
-        <li>Hosting on your domain</li>
+        <li>Hosting on your domain for one year</li>
       </ul>
       <button class="btn btn-ghost" onclick="scrollToId('audit')">Request private audit</button>
     </div>
@@ -620,20 +620,20 @@ prob-1{grid-row:auto;min-height:auto;padding:40px 32px}
       <span class="tier-tag">Recommended</span>
       <h3>Standard</h3>
       <div class="desc">Recommended for most mid-size races</div>
-      <div class="price"><span class="num">$2,500</span><span class="per">setup</span></div>
-      <span class="monthly">+ $249/mo · Growth</span>
+      <div class="price"><span class="num">$2,500</span><span class="per">first year</span></div>
+      <span class="package-note">One-time first-year package</span>
       <ul>
         <li>Everything in Starter</li>
         <li>Custom course visualization</li>
         <li>Photo gallery</li>
-        <li>Monthly content updates</li>
-        <li>Monthly conversion reports</li>
+        <li>Race-cycle content updates</li>
+        <li>Conversion review and recommendations</li>
         <li>Quarterly SEO audit + fixes</li>
       </ul>
       <button class="btn btn-accent" onclick="scrollToId('audit')">Request private audit</button>
     </div>
   </div>
-  <p class="lead" style="max-width:920px;margin:28px auto 0"><strong>Need more growth support?</strong> Custom support is available for larger race weekends that need deeper SEO, content, ads, or strategy after Standard.</p>
+  <p class="lead" style="max-width:920px;margin:28px auto 0"><strong>After year one:</strong> Optional one-time services are available for annual race rollover, quarterly website updates, SEO checks and fixes, analytics reviews, pre-race conversion tune-ups, and sponsor visibility refreshes.</p>
 </section>
 
 <section class="audit" id="audit">
@@ -701,8 +701,7 @@ prob-1{grid-row:auto;min-height:auto;padding:40px 32px}
       <div class="faq-item"><button class="faq-q">Who owns the domain and the site?<span class="pm"></span></button><div class="faq-a"><p>You do. Always. We host the site on your domain — you register and own it. If you ever leave, we hand off the final build as static files and your domain stays with you.</p></div></div>
       <div class="faq-item"><button class="faq-q">Who owns GA4 and Search Console data?<span class="pm"></span></button><div class="faq-a"><p>You do. We configure Google Analytics 4 and Google Search Console tracking, but the Google accounts, properties, access, and data remain under your ownership.</p></div></div>
       <div class="faq-item"><button class="faq-q">What if I don't have logos or photos ready?<span class="pm"></span></button><div class="faq-a"><p>Bring what you have. We'll work with low-res versions while better assets get sourced. For races without strong photography, our templates have illustration-based fallbacks that look intentional.</p></div></div>
-      <div class="faq-item"><button class="faq-q">What does the monthly fee actually cover?<span class="pm"></span></button><div class="faq-a"><p>Hosting on your domain, security patches, uptime monitoring, monthly content updates, conversion reporting, and a quarterly SEO audit with fixes implemented (Growth tier). Higher tiers add written content, social graphics, and ads management.
-We send a monthly report so you can see exactly what we did.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Is there a required monthly retainer?<span class="pm"></span></button><div class="faq-a"><p>No. Core packages are one-time first-year race-cycle packages. After year one, optional services are available as one-time scoped work.</p></div></div>
       <div class="faq-item"><button class="faq-q">Can I see what the analytics look like?<span class="pm"></span></button><div class="faq-a"><p>Yes — every customer gets their own Google Analytics 4 property and Search Console setup. You can log in directly anytime.</p></div></div>
       <div class="faq-item"><button class="faq-q">What if my race is in a few weeks and I need this fast?<span class="pm"></span></button><div class="faq-a"><p>Starter goes live in 7 days if your intake and assets are ready on day one. If you're under that wire, talk to us — we'll tell you honestly whether it makes sense to start this year or plan for next.</p></div></div>
       <div class="faq-item"><button class="faq-q">Do you work with non-marathon races?<span class="pm"></span></button><div class="faq-a"><p>Yes. Any road race — 5K, 10K, half, marathon, ultra (trail template coming soon). The Community template in particular is built for multi-distance weekends where you might have a half, 10K, 5K, and kids dash all under one race.</p></div></div>

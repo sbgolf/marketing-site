@@ -143,7 +143,7 @@ form?.addEventListener('submit', async (event) => {
     const checkoutUrl = result.checkout_url || selectedPackageInfo?.url;
     if (selectedPackageInfo && checkoutUrl) {
       setMessage(
-        `<div class="payment-next"><strong>Thanks — your private audit request was received.</strong><span>Ready to start with ${selectedPackageInfo.name}? Pay the ${selectedPackageInfo.deposit} deposit when you're ready.</span><a href="${checkoutUrl}" target="_blank" rel="noopener noreferrer">Pay ${selectedPackageInfo.name} deposit →</a><small>We will still review your race site and follow up by email. The deposit starts the project.</small></div>`,
+        `<div class="payment-next"><strong>Thanks — your private audit request was received.</strong><span>Ready to start with ${selectedPackageInfo.name}? Pay the ${selectedPackageInfo.deposit} first-year package deposit when you're ready.</span><a href="${checkoutUrl}" target="_blank" rel="noopener noreferrer">Pay ${selectedPackageInfo.name} deposit →</a><small>We will still review your race site and follow up by email. The deposit starts the first-year race-cycle package.</small></div>`,
         'success',
         true,
       );
