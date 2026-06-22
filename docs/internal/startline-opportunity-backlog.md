@@ -30,11 +30,11 @@ Logged from Steve's request to keep the next StartLine Sites opportunities track
    - Create tailored landing pages such as `/for-community-races`, `/for-marathons`, `/for-runsignup-races`, or `/for-race-directors`.
    - Primary goal: support personalized outreach and search relevance.
 
-7. **BMQR credibility section expansion** — In review in this PR
+7. **BMQR credibility section expansion** — Completed in PR #43
    - Make the “from the team behind BMQR” proof point more specific without unsupported traffic/performance claims.
    - Primary goal: differentiate StartLine from generic web designers.
 
-8. **Sponsor-value messaging and examples**
+8. **Sponsor-value messaging and examples** — In review in this PR
    - Add stronger copy around sponsor tiers, logos, community partners, charity visibility, and sponsor renewal support.
    - Primary goal: help directors justify the site cost through partner value.
 
