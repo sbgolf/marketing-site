@@ -32,9 +32,9 @@ const showCheckoutReturnMessage = () => {
   banner.setAttribute('aria-live', 'polite');
 
   if (depositState === 'success') {
-    banner.innerHTML = '<strong>Thanks — if your deposit completed, Stripe will confirm it securely.</strong><span>Watch your inbox for StartLine kickoff details. The build timeline starts after complete intake details and usable assets are received.</span>';
+    banner.innerHTML = '<strong>Thanks — if your first-year package deposit completed, Stripe will confirm it securely.</strong><span>Watch your inbox for StartLine kickoff details. The build timeline starts after complete intake details and usable assets are received.</span>';
   } else {
-    banner.innerHTML = '<strong>No problem — the deposit checkout was not completed.</strong><span>You can return to pricing or request a package recommendation before paying.</span>';
+    banner.innerHTML = '<strong>No problem — the first-year package deposit checkout was not completed.</strong><span>You can return to pricing or request a package recommendation before paying.</span>';
   }
 
   document.getElementById('main')?.prepend(banner);
@@ -50,6 +50,7 @@ type PackageInfo = {
   name: string;
   deposit: string;
   url?: string;
+  proposalRequired?: boolean;
 };
 
 const packages: Record<PackageKey, PackageInfo> = {
@@ -66,6 +67,7 @@ const packages: Record<PackageKey, PackageInfo> = {
   premium: {
     name: 'Premium',
     deposit: '$2,250',
+    proposalRequired: true,
   },
 };
 
@@ -75,7 +77,9 @@ const selectPackage = (tier: PackageKey) => {
   const packageInfo = packages[tier];
   if (packageTier) packageTier.value = tier;
   if (selectedPackage && selectedPackageLabel) {
-    selectedPackageLabel.textContent = `${packageInfo.name} (${packageInfo.deposit} deposit)`;
+    selectedPackageLabel.textContent = packageInfo.proposalRequired
+      ? `${packageInfo.name} (reviewed proposal required before any first-year package deposit)`
+      : `${packageInfo.name} (${packageInfo.deposit} first-year package deposit)`;
     selectedPackage.hidden = false;
   }
   document.querySelectorAll<HTMLElement>('[data-package-card]').forEach((card) => {
@@ -143,13 +147,13 @@ form?.addEventListener('submit', async (event) => {
     const checkoutUrl = result.checkout_url || selectedPackageInfo?.url;
     if (selectedPackageInfo && checkoutUrl) {
       setMessage(
-        `<div class="payment-next"><strong>Thanks — your private audit request was received.</strong><span>Ready to start with ${selectedPackageInfo.name}? Pay the ${selectedPackageInfo.deposit} first-year package deposit when you're ready.</span><a href="${checkoutUrl}" target="_blank" rel="noopener noreferrer">Pay ${selectedPackageInfo.name} deposit →</a><small>We will still review your race site and follow up by email. The deposit starts the first-year race-cycle package.</small></div>`,
+        `<div class="payment-next"><strong>Thanks — your private audit request was received.</strong><span>Ready to start with ${selectedPackageInfo.name}? Pay the ${selectedPackageInfo.deposit} first-year package deposit when you're ready.</span><a href="${checkoutUrl}" target="_blank" rel="noopener noreferrer">Pay ${selectedPackageInfo.name} first-year package deposit →</a><small>We will still review your race site and follow up by email. The deposit starts the one-time first-year race-cycle package.</small></div>`,
         'success',
         true,
       );
     } else if (selectedPackageInfo) {
       setMessage(
-        `Thanks — your private audit request was received. ${selectedPackageInfo.name} requires a reviewed proposal before deposit, so we’ll follow up by email with the recommended scope and next step.`,
+        `Thanks — your private audit request was received. ${selectedPackageInfo.name} requires a reviewed proposal before any first-year package deposit, so we’ll follow up by email with the recommended scope and next step.`,
         'success',
       );
     } else {

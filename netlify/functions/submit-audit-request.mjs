@@ -38,6 +38,19 @@ const htmlField = (label, value) => `
 
 const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
+const publicPackageName = (selectedPackage) => selectedPackage?.name
+  ? selectedPackage.name
+    .replace('StartLine Sites ', '')
+    .replace(' First-Year Package Deposit', '')
+    .replace(' Deposit', '')
+  : '';
+
+const publicPackageWithDeposit = (selectedPackage) => {
+  const name = publicPackageName(selectedPackage);
+  if (!name) return null;
+  return `${name}${selectedPackage.deposit_amount ? ` (${selectedPackage.deposit_amount} first-year package deposit)` : ''}`;
+};
+
 const isHttpUrl = (value) => {
   try {
     const url = new URL(value);
@@ -71,9 +84,9 @@ const sendLeadNotification = async ({ record, row }) => {
   const rowId = record?.id || 'Unknown';
   const subject = `New StartLine audit request: ${row.race_name}`;
   const selectedPackage = row.metadata?.selected_package;
-  const packageName = selectedPackage?.name;
+  const packageName = publicPackageName(selectedPackage);
   const packageDeposit = selectedPackage?.deposit_amount;
-  const packageUrl = selectedPackage?.proposal_required ? 'Proposal required before deposit link is sent' : (selectedPackage?.url || selectedPackage?.static_url);
+  const packageUrl = selectedPackage?.proposal_required ? 'Reviewed proposal required before a first-year package deposit link is sent' : (selectedPackage?.url || selectedPackage?.static_url);
   const lines = [
     'A new StartLine Sites audit request was submitted.',
     '',
@@ -81,8 +94,8 @@ const sendLeadNotification = async ({ record, row }) => {
     fieldLine('Current URL', row.current_url),
     fieldLine('Contact name', row.contact_name),
     fieldLine('Contact email', row.contact_email),
-    fieldLine('Selected package', packageName ? `${packageName} (${packageDeposit} deposit)` : null),
-    fieldLine('Stripe deposit link', packageUrl),
+    fieldLine('Selected first-year package', packageName ? `${packageName} (${packageDeposit} first-year package deposit)` : null),
+    fieldLine('Stripe first-year package deposit link', packageUrl),
     fieldLine('Notes', row.notes),
     fieldLine('Landing page', row.landing_page),
     fieldLine('Referrer', row.referrer),
@@ -107,8 +120,8 @@ const sendLeadNotification = async ({ record, row }) => {
         ${htmlField('Current URL', row.current_url)}
         ${htmlField('Contact name', row.contact_name)}
         ${htmlField('Contact email', row.contact_email)}
-        ${htmlField('Selected package', packageName ? `${packageName} (${packageDeposit} deposit)` : null)}
-        ${htmlField('Stripe deposit link', packageUrl)}
+        ${htmlField('Selected first-year package', packageName ? `${packageName} (${packageDeposit} first-year package deposit)` : null)}
+        ${htmlField('Stripe first-year package deposit link', packageUrl)}
         ${htmlField('Notes', row.notes)}
         ${htmlField('Landing page', row.landing_page)}
         ${htmlField('Referrer', row.referrer)}
@@ -140,12 +153,12 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
   const selectedPackage = row.metadata?.selected_package;
   const checkoutUrl = selectedPackage?.proposal_required ? null : (selectedPackage?.url || selectedPackage?.static_url);
   const packageLine = selectedPackage?.name
-    ? `Selected package: ${selectedPackage.name.replace('StartLine Sites ', '').replace(' Deposit', '')}${selectedPackage.deposit_amount ? ` (${selectedPackage.deposit_amount} deposit)` : ''}`
-    : 'Selected package: We will recommend the best fit after reviewing your race.';
+    ? `Selected first-year package: ${publicPackageWithDeposit(selectedPackage)}`
+    : 'Selected first-year package: We will recommend the best fit after reviewing your race.';
   const nextStep = checkoutUrl
-    ? `If you are ready to start, you can pay the setup deposit here: ${checkoutUrl}`
+    ? `If you are ready to start the one-time first-year race-cycle package, you can pay the first-year package deposit here: ${checkoutUrl}`
     : selectedPackage?.proposal_required
-      ? 'Premium projects start with a reviewed proposal before any deposit link is sent.'
+      ? 'Premium projects start with a reviewed proposal before any first-year package deposit link is sent.'
       : 'We will review your race site and follow up with the clearest package recommendation.';
   const lines = [
     `Hi ${row.contact_name},`,
@@ -183,7 +196,7 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
       html: `
         <p>Hi ${escapeHtml(row.contact_name)},</p>
         <p>Thanks — we received the private StartLine Sites audit request for <strong>${escapeHtml(row.race_name)}</strong>.</p>
-        ${htmlField('Selected package', selectedPackage?.name ? `${selectedPackage.name.replace('StartLine Sites ', '').replace(' Deposit', '')}${selectedPackage.deposit_amount ? ` (${selectedPackage.deposit_amount} deposit)` : ''}` : 'We will recommend the best fit after reviewing your race.')}
+        ${htmlField('Selected first-year package', selectedPackage?.name ? publicPackageWithDeposit(selectedPackage) : 'We will recommend the best fit after reviewing your race.')}
         ${htmlField('Current site / registration URL', row.current_url)}
         <p><strong>What happens next:</strong></p>
         <ol>

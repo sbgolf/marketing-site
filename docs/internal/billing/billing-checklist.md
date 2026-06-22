@@ -1,51 +1,49 @@
 # Billing checklist
 
-Quick checklist for StartLine Sites proposals, deposits, final invoices, and monthly subscriptions.
+Quick checklist for StartLine Sites first-year package proposals, deposits, final package invoices, and optional after-year-one services.
+
+> Public pricing note: StartLine’s current public offer is a one-time first-year race-cycle package with no required monthly retainer. Backend fields that still say `monthly`, `subscription`, or tier names like Foundation/Growth/Performance are legacy/internal automation names unless Steve explicitly approves a customer-specific recurring service.
 
 ## Before proposal is sent
 
 - [ ] Race/customer name confirmed
 - [ ] Primary contact confirmed
 - [ ] Billing contact email confirmed
-- [ ] One setup tier selected: [Starter / Standard / Premium]
-- [ ] One monthly tier selected: [Foundation / Growth / Performance]
+- [ ] One first-year package tier selected: [Starter / Standard / Premium]
 - [ ] Recommendation reason is clear
 - [ ] Deposit amount matches selected tier
 - [ ] Final invoice amount matches selected tier
-- [ ] Monthly amount matches selected tier
-- [ ] Correct Stripe deposit link included, or Premium is marked proposal-only
+- [ ] Proposal says no required monthly retainer
+- [ ] Correct Stripe first-year package deposit link included, or Premium is marked proposal-only
 - [ ] No full pricing menu included unless Steve approved it
 - [ ] Any exception approved by Steve before customer communication
 
-## Package amount check
+## First-year package amount check
 
-### Starter + Foundation
+### Starter
 
-- [ ] Setup: $1,500
-- [ ] Deposit: $750
-- [ ] Final: $750
-- [ ] Monthly: $99/mo
+- [ ] One-time first-year package: $1,500
+- [ ] First-year package deposit: $750
+- [ ] Final package balance: $750
 - [ ] Deposit link: https://buy.stripe.com/8x2bIU1Bs0ww3H50UJ9fW00
 
-### Standard + Growth
+### Standard
 
-- [ ] Setup: $2,500
-- [ ] Deposit: $1,250
-- [ ] Final: $1,250
-- [ ] Monthly: $249/mo
+- [ ] One-time first-year package: $2,500
+- [ ] First-year package deposit: $1,250
+- [ ] Final package balance: $1,250
 - [ ] Deposit link: https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01
 
-### Premium + Performance
+### Premium
 
-- [ ] Setup: $4,500
-- [ ] Deposit: $2,250
-- [ ] Final: $2,250
-- [ ] Monthly: $499/mo
+- [ ] One-time first-year package: $4,500 starting point / reviewed proposal required
+- [ ] First-year package deposit: proposal-specific after Steve approval
+- [ ] Final package balance: proposal-specific
 - [ ] Deposit link: **proposal-only**; send only after Steve approves the Premium proposal/scope and ensure Stripe metadata includes `proposal_approved=true` or `deposit_source=approved_proposal`
 
 ## After deposit link is sent
 
-- [ ] Deposit link sent to customer
+- [ ] First-year package deposit link sent to customer
 - [ ] Deposit payment confirmed in Stripe
 - [ ] Stripe webhook event recorded in `stripe_webhook_events` as processed or duplicate (`npm run verify:stripe-webhook -- --event-id evt_...` for a target delivery, or without `--event-id` for endpoint/recent-row verification)
 - [ ] `customer_records.deposit_status = paid`
@@ -65,12 +63,12 @@ Quick checklist for StartLine Sites proposals, deposits, final invoices, and mon
 - [ ] Support email includes the build handoff checklist, missing critical inputs, suggested next steps, Supabase intake ID, and customer record ID (or clearly says not matched)
 - [ ] Missing critical inputs are requested before production starts
 
-## Before launch/final invoice
+## Before launch/final package invoice
 
 - [ ] Staging approved by customer
 - [ ] Steve approved launch
 - [ ] Live URL or launch target confirmed
-- [ ] Final invoice amount confirmed
+- [ ] Final package balance confirmed
 - [ ] Billing contact confirmed again
 - [ ] `STARTLINE_LAUNCH_BILLING_TOKEN` is configured in Netlify and only available internally
 - [ ] Stripe webhook endpoint includes both `checkout.session.completed` and `invoice.paid`
@@ -83,13 +81,10 @@ Quick checklist for StartLine Sites proposals, deposits, final invoices, and mon
 
 - [ ] Production site verified
 - [ ] Go-live date recorded
-- [ ] Final invoice is paid in Stripe
+- [ ] Final package invoice is paid in Stripe
 - [ ] `invoice.paid` webhook is recorded as processed in `stripe_webhook_events`
-- [ ] Correct monthly subscription started automatically
 - [ ] `customer_records.final_invoice_status = paid`
-- [ ] `customer_records.subscription_status = active` (or reviewed if Stripe returned another status)
-- [ ] `customer_records.stripe_subscription_id` is recorded
-- [ ] `customer_records.first_monthly_report_due_at` is recorded
+- [ ] Review any legacy internal subscription fields before use; do not start a recurring subscription unless Steve approved a customer-specific recurring service
 - [ ] Launch confirmation email sent
 
 ## Blockers
@@ -101,7 +96,7 @@ Stop and resolve before moving forward if:
 - [ ] Deposit has not been paid
 - [ ] Stripe link does not match selected tier
 - [ ] Final invoice amount is wrong
-- [ ] Monthly subscription does not match proposal
+- [ ] Customer-facing copy implies a required monthly retainer
 - [ ] Launch date is not confirmed
 - [ ] Customer asks for custom terms
 - [ ] Any exception has not been approved by Steve

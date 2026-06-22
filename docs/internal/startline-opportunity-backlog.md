@@ -9,16 +9,16 @@ Logged from Steve's request to keep the next StartLine Sites opportunities track
    - Show a fictional sample audit deliverable so race directors understand what they receive.
    - Primary goal: improve private audit/mockup conversion.
 
-2. **After-year-one services page or section expansion** — In progress
+2. **After-year-one services page or section expansion** — Completed in PR #38
    - Expand optional one-time services after the included first-year race cycle.
    - Include Annual Race Rollover, Quarterly Website Update, SEO Check + Fixes, Analytics Review, Sponsor Visibility Refresh, and Pre-Race Conversion Tune-Up.
    - Primary goal: support repeat revenue without required monthly retainers.
 
-3. **Pricing/payment consistency audit** — Next
+3. **Pricing/payment consistency audit** — Completed in this PR
    - Review form labels, success copy, deposit language, Stripe-facing copy, and public package language for first-year/race-cycle consistency.
    - Primary goal: avoid trust mismatch between the marketing page and checkout/payment flow.
 
-4. **Race-director segment fit section**
+4. **Race-director segment fit section** — Next
    - Add clearer “who this is for” copy for community races, BQ/certified marathons, multi-distance weekends, sponsor-heavy events, and platform-hosted races that need a stronger marketing layer.
    - Primary goal: help prospects self-qualify and improve SEO language.
 

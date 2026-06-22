@@ -1,6 +1,6 @@
 # StartLine Sites proposal one-pager template
 
-Use this for post-discovery follow-up. Recommend one setup tier and one monthly tier; do not send a package menu unless Steve explicitly approves it for that prospect.
+Use this for post-discovery follow-up. Recommend one one-time first-year race-cycle package. Do not add a required monthly retainer or send a package menu unless Steve explicitly approves it for that prospect.
 
 ## [Race Name] website proposal
 
@@ -10,12 +10,12 @@ Valid through: [Date]
 
 ## Recommendation
 
-For [Race Name], I recommend **[Starter / Standard / Premium] setup** with the **[Foundation / Growth / Performance] monthly plan**.
+For [Race Name], I recommend the **[Starter / Standard / Premium] one-time first-year race-cycle package**.
 
 Why this fit:
 
 - [Reason 1 tied to their current site, registration path, SEO, mobile speed, or content gaps]
-- [Reason 2 tied to the race size, timeline, photos/course assets, or monthly needs]
+- [Reason 2 tied to the race size, timeline, photos/course assets, or race-cycle update needs]
 - [Reason 3 tied to registration click-throughs or race-director maintenance burden]
 
 ## What we’ll build
@@ -29,9 +29,9 @@ A fast, SEO-optimized race website designed to help runners:
 
 We do **not** replace your registration platform. We build the website that sends more qualified runners into it.
 
-## Included setup scope
+## Included first-year package scope
 
-- [Template/archetype]: [Destination Major / Community / Performance / Trail / Charity]
+- [Template/archetype]: [Destination Major / Community / Performance]
 - Mobile-first race website
 - Registration CTAs deep-linked to [registration platform]
 - Race details, distances, pricing, schedule, logistics, FAQs, and final CTA
@@ -39,33 +39,24 @@ We do **not** replace your registration platform. We build the website that send
 - schema.org SportsEvent structured data
 - GA4 registration-click tracking
 - Google Search Console setup support
-- [Tier-specific deliverable]
+- [Tier-specific race-cycle support/update deliverable]
 - [Revision-pass count]
 
-## Monthly plan
+## After year one
 
-Recommended monthly plan: **[Foundation / Growth / Performance] — $[Monthly Amount]/mo**
-
-Monthly work includes:
-
-- [Hosting/SSL/uptime/basic maintenance]
-- [Monthly reporting]
-- [Growth or Performance extras if applicable]
-
-Monthly billing starts when the site goes live.
+No required monthly retainer is included in the proposal. After the first race cycle, optional one-time scoped services can be quoted separately for rollover, SEO, analytics, sponsor visibility, or pre-race conversion updates.
 
 ## Investment
 
-- Setup: **$[Setup Amount]**
-- 50% deposit to start: **$[Deposit Amount]**
-- Final 50% due at launch: **$[Final Amount]**, invoiced through Stripe, net 7
-- Monthly plan starting at go-live: **$[Monthly Amount]/mo**
+- One-time first-year package: **$[Package Amount]**
+- 50% first-year package deposit to start: **$[Deposit Amount]**
+- Final 50% package balance due at launch: **$[Final Amount]**, invoiced through Stripe, net 7
 
 ## Timeline
 
 Estimated launch timeline: **[7 / 14 / 21] days** after:
 
-1. Deposit is paid
+1. First-year package deposit is paid
 2. Intake form is complete
 3. Required assets are received
 4. We have any needed domain/analytics access
@@ -85,7 +76,7 @@ Customer-owned delays pause the delivery clock.
 
 ## How to start
 
-Pay the 50% setup deposit here:
+Pay the 50% first-year package deposit here:
 
 [Stripe Deposit Link]
 
@@ -93,4 +84,4 @@ Once the deposit is paid, we’ll send the intake form and asset checklist and s
 
 ## Notes / exceptions
 
-[Any approved scope, pricing, timeline, or monthly-plan exception. Leave blank if none.]
+[Any approved scope, pricing, timeline, optional after-year-one service, or Premium proposal exception. Leave blank if none.]
