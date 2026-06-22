@@ -17,28 +17,31 @@ const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 export const DEPOSIT_PACKAGES = {
   starter: {
     setup_tier: 'starter',
-    name: 'StartLine Sites Starter Deposit',
+    name: 'StartLine Sites Starter First-Year Package Deposit',
     setup_price: '$1,500',
     deposit_amount: '$750',
     deposit_amount_cents: 75_000,
+    public_package_framing: 'one-time first-year race-cycle package',
     monthly_tier: 'foundation',
     static_url: 'https://buy.stripe.com/8x2bIU1Bs0ww3H50UJ9fW00',
   },
   standard: {
     setup_tier: 'standard',
-    name: 'StartLine Sites Standard Deposit',
+    name: 'StartLine Sites Standard First-Year Package Deposit',
     setup_price: '$2,500',
     deposit_amount: '$1,250',
     deposit_amount_cents: 125_000,
+    public_package_framing: 'one-time first-year race-cycle package',
     monthly_tier: 'growth',
     static_url: 'https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01',
   },
   premium: {
     setup_tier: 'premium',
-    name: 'StartLine Sites Premium Deposit',
+    name: 'StartLine Sites Premium First-Year Package Deposit',
     setup_price: '$4,500',
     deposit_amount: '$2,250',
     deposit_amount_cents: 225_000,
+    public_package_framing: 'one-time first-year race-cycle package',
     monthly_tier: 'performance',
     proposal_required: true,
   },
@@ -69,13 +72,15 @@ export const buildCheckoutSessionParams = ({ auditRequestId, setupTier, contactE
   params.set('line_items[0][price_data][currency]', 'usd');
   params.set('line_items[0][price_data][unit_amount]', String(pkg.deposit_amount_cents));
   params.set('line_items[0][price_data][product_data][name]', pkg.name);
-  params.set('line_items[0][price_data][product_data][description]', `${pkg.deposit_amount} deposit toward the ${pkg.setup_price} ${pkg.setup_tier} first-year race-cycle package. Final balance due at launch.`);
+  params.set('line_items[0][price_data][product_data][description]', `${pkg.deposit_amount} first-year package deposit toward the ${pkg.setup_price} ${pkg.setup_tier} one-time first-year race-cycle package. Final package balance due at launch.`);
   params.set('metadata[startline_payment_type]', 'deposit');
+  params.set('metadata[public_package_framing]', pkg.public_package_framing);
   params.set('metadata[setup_tier]', pkg.setup_tier);
   params.set('metadata[audit_request_id]', auditId);
   params.set('metadata[race_name]', clean(raceName, 160));
   params.set('metadata[current_url]', clean(currentUrl, 500));
   params.set('payment_intent_data[metadata][startline_payment_type]', 'deposit');
+  params.set('payment_intent_data[metadata][public_package_framing]', pkg.public_package_framing);
   params.set('payment_intent_data[metadata][setup_tier]', pkg.setup_tier);
   params.set('payment_intent_data[metadata][audit_request_id]', auditId);
 

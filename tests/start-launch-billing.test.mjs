@@ -59,7 +59,7 @@ const installFetchMock = ({ customer = paidCustomer(), invoice = { id: 'in_123',
       assert.equal(params.get('invoice'), 'in_123');
       assert.equal(params.get('amount'), '125000');
       assert.equal(params.get('currency'), 'usd');
-      assert.match(params.get('description'), /Final 50% setup payment/);
+      assert.match(params.get('description'), /Final 50% first-year package payment/);
       return new Response(JSON.stringify({ id: 'ii_123' }), { status: 200, headers: { 'content-type': 'application/json' } });
     }
     if (String(url) === 'https://api.stripe.com/v1/invoices/in_123/send') {

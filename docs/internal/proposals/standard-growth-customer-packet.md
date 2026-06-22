@@ -1,11 +1,11 @@
-# Standard + Growth customer proposal packet
+# Standard first-year customer proposal packet
 
 Use this packet after a discovery call when the race is a fit for the default StartLine Sites offer:
 
-- **Standard setup:** $2,500
-- **Growth monthly:** $249/mo starting at go-live
-- **Deposit to start:** $1,250 through Stripe Checkout
-- **Final setup balance:** $1,250 invoiced through Stripe at launch, net 7
+- **Standard one-time first-year race-cycle package:** $2,500
+- **First-year package deposit to start:** $1,250 through Stripe Checkout
+- **Final package balance:** $1,250 invoiced through Stripe at launch, net 7
+- **After year one:** optional one-time scoped services only; no required monthly retainer
 
 Do not send this packet until Steve has approved the recommendation for that prospect.
 
@@ -13,9 +13,9 @@ Do not send this packet until Steve has approved the recommendation for that pro
 
 1. Discovery call notes are captured.
 2. Race fits the current fulfillment path: US road race, registration-platform deep link available, and a Community-style first site is acceptable unless another customer-ready template is approved.
-3. Steve has confirmed the recommended setup tier, monthly tier, and any exceptions.
+3. Steve has confirmed the recommended first-year package tier and any exceptions.
 4. Service-agreement terms are not changed in the proposal without Steve approval.
-5. The proposal links only to a working Stripe deposit path for the selected setup tier.
+5. The proposal links only to a working Stripe first-year package deposit path for the selected tier.
 6. The proposal avoids guaranteed traffic, ranking, registration, or revenue claims.
 7. The proposal references StartLine Sites as the site-builder and BMQR only as credibility: “from the team behind BMQR.”
 8. The proposal says we send runners into the customer’s existing registration platform; we do not replace RunSignup, Race Roster, Haku, Active, or similar tools.
@@ -27,14 +27,14 @@ Subject: Proposal for [Race Name]’s new website
 
 Hi [First Name],
 
-Good talking with you about [Race Name]. Based on what you shared, I’d recommend the **Standard setup + Growth monthly plan**.
+Good talking with you about [Race Name]. Based on what you shared, I’d recommend the **Standard one-time first-year race-cycle package**.
 
 The short version:
 
 - We build a fast, mobile-first race website designed to help runners find the race, trust the details, and click through to register.
 - Your registration platform stays in place; the website sends runners into it.
-- Standard setup is **$2,500**. A **$1,250 deposit** starts the project, and the remaining **$1,250** is invoiced at launch.
-- Growth monthly is **$249/mo**, starting when the site goes live.
+- Standard is **$2,500** for the first-year package. A **$1,250 first-year package deposit** starts the project, and the remaining **$1,250** is invoiced at launch.
+- There is **no required monthly retainer**. After the first race cycle, optional one-time scoped services are available if you need rollover, SEO, analytics, sponsor, or conversion updates.
 
 I put the proposal here:
 
@@ -54,13 +54,13 @@ Valid through: [Date]
 
 ## Recommendation
 
-For [Race Name], I recommend **Standard setup** with the **Growth monthly plan**.
+For [Race Name], I recommend the **Standard one-time first-year race-cycle package**.
 
 Why this fit:
 
 - [Their current website or registration listing makes it harder for runners to find/trust the race.]
 - [The race has enough course, schedule, pricing, photo, or sponsor detail to benefit from a stronger dedicated site.]
-- [A monthly Growth plan gives the race a maintained site, reporting, sponsor/content updates, and quarterly SEO improvements without making the race director manage the website.]
+- [The first-year race-cycle support gives the race a stronger website layer without requiring a monthly retainer.]
 
 ## What we’ll build
 
@@ -73,7 +73,7 @@ A fast, SEO-optimized race website designed to help runners:
 
 We do **not** replace your registration platform. We build the website that sends more qualified runners into it.
 
-## Included in Standard setup
+## Included in Standard first-year package
 
 - StartLine Sites **Community** template configured for [Race Name]
 - Mobile-first race website
@@ -85,32 +85,26 @@ We do **not** replace your registration platform. We build the website that send
 - Google Search Console setup support
 - Custom course/elevation presentation from the details you provide
 - Photo gallery when usable race photos are provided
+- Race-cycle content updates as scoped before kickoff
+- Conversion review and recommendations
+- Quarterly SEO check + fixes during the first race cycle
 - One revision pass before launch
 
-## Included in Growth monthly
+## After year one
 
-Growth monthly is **$249/mo**, starting when the site goes live.
-
-It includes:
-
-- Hosting, SSL, uptime monitoring, and routine maintenance
-- Monthly traffic and registration-click report
-- One monthly content update
-- Sponsor logo/content swaps as needed
-- Quarterly SEO audit and prioritized improvements
+There is no required monthly retainer. Optional one-time scoped services can be quoted separately after the first race cycle for annual rollover, SEO checks, analytics reviews, sponsor visibility refreshes, pre-race conversion tune-ups, or specific website updates.
 
 ## Investment
 
-- Standard setup: **$2,500**
-- 50% deposit to start: **$1,250**
-- Final 50% due at launch: **$1,250**, invoiced through Stripe, net 7
-- Growth monthly at go-live: **$249/mo**
+- Standard one-time first-year package: **$2,500**
+- 50% first-year package deposit to start: **$1,250**
+- Final 50% package balance due at launch: **$1,250**, invoiced through Stripe, net 7
 
 ## Timeline
 
 Estimated launch timeline: **14 days** after:
 
-1. Deposit is paid
+1. First-year package deposit is paid
 2. Intake form is complete
 3. Required assets are received
 4. We have any needed domain/analytics access or a DNS contact
@@ -130,7 +124,7 @@ Customer-owned delays pause the delivery clock.
 
 ## How to start
 
-Pay the 50% setup deposit here:
+Pay the 50% first-year package deposit here:
 
 [Stripe Standard Deposit Link]
 
@@ -138,11 +132,11 @@ Once the deposit is paid, we’ll send the intake form and asset checklist and s
 
 ## Notes / exceptions
 
-[Leave blank unless Steve has approved a scope, pricing, timeline, or monthly-plan exception.]
+[Leave blank unless Steve has approved a scope, pricing, timeline, optional after-year-one service, or Premium proposal exception.]
 
 ## Internal handoff after deposit
 
-After Stripe confirms the deposit:
+After Stripe confirms the first-year package deposit:
 
 1. Confirm the customer record was created by the webhook.
 2. Confirm kickoff email was sent with the StartLine-owned intake and asset checklist links:

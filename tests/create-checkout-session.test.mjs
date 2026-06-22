@@ -19,9 +19,13 @@ test('buildCheckoutSessionParams creates exact Standard deposit metadata', () =>
   assert.equal(params.get('success_url'), 'https://startlinesites.com/?deposit=success&session_id={CHECKOUT_SESSION_ID}');
   assert.equal(params.get('cancel_url'), 'https://startlinesites.com/?deposit=cancelled#pricing');
   assert.equal(params.get('line_items[0][price_data][unit_amount]'), '125000');
+  assert.equal(params.get('line_items[0][price_data][product_data][name]'), 'StartLine Sites Standard First-Year Package Deposit');
+  assert.equal(params.get('line_items[0][price_data][product_data][description]'), '$1,250 first-year package deposit toward the $2,500 standard one-time first-year race-cycle package. Final package balance due at launch.');
   assert.equal(params.get('metadata[startline_payment_type]'), 'deposit');
+  assert.equal(params.get('metadata[public_package_framing]'), 'one-time first-year race-cycle package');
   assert.equal(params.get('metadata[setup_tier]'), 'standard');
   assert.equal(params.get('metadata[audit_request_id]'), 'audit-123');
+  assert.equal(params.get('payment_intent_data[metadata][public_package_framing]'), 'one-time first-year race-cycle package');
   assert.equal(params.get('payment_intent_data[metadata][audit_request_id]'), 'audit-123');
 });
 

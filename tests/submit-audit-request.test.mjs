@@ -78,7 +78,7 @@ test('submit-audit-request stores notes and sends admin plus customer confirmati
     assert.deepEqual(emailCalls[1].body.to, ['director@example.com']);
     assert.equal(emailCalls[1].body.reply_to, 'support@startlinesites.com');
     assert.match(emailCalls[1].body.text, /we received the private StartLine Sites audit request/);
-    assert.match(emailCalls[1].body.text, /pay the setup deposit here: https:\/\/buy\.stripe\.com/);
+    assert.match(emailCalls[1].body.text, /pay the first-year package deposit here: https:\/\/buy\.stripe\.com/);
   } finally {
     process.env = originalEnv;
     global.fetch = originalFetch;
