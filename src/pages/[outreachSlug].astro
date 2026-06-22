@@ -1,0 +1,182 @@
+---
+import Base from '../layouts/Base.astro';
+import { outreachLandingPages } from '../data/outreachLandingPages';
+
+export function getStaticPaths() {
+  return outreachLandingPages.map((page) => ({
+    params: { outreachSlug: page.slug },
+    props: { page }
+  }));
+}
+
+const { page } = Astro.props;
+const basePath = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
+const canonicalPath = `/${page.slug}/`;
+const pageUrl = `https://startlinesites.com${canonicalPath}`;
+const faqJson = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: page.faq.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer
+    }
+  }))
+};
+const serviceJson = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: `${page.eyebrow} website service by StartLine Sites`,
+  serviceType: 'Race website design, SEO, analytics, and conversion optimization',
+  url: pageUrl,
+  description: page.description,
+  provider: {
+    '@type': 'Organization',
+    name: 'StartLine Sites',
+    url: 'https://startlinesites.com/'
+  },
+  audience: {
+    '@type': 'Audience',
+    audienceType: page.audience
+  }
+};
+---
+<Base title={`${page.eyebrow} — StartLine Sites`} description={page.description} canonicalPath={canonicalPath} includeMarketingSchema={false}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(serviceJson)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJson)} />
+  <nav id="nav">
+    <a href="/" class="brand" aria-label="StartLine Sites home"><img class="brand-mark" src={brandLogoHref} alt="StartLine Sites" width="1200" height="360" /></a>
+    <div class="nav-links" id="navLinks">
+      <a href="/#pricing">Pricing</a>
+      <a href="/race-website-checklist/">Checklist</a>
+      <a href="/for-race-directors/">For directors</a>
+      <a href="/#audit">Private audit</a>
+      <a class="btn btn-accent" href="/#audit">Request audit</a>
+    </div>
+    <button class="hamburger" id="burger" aria-label="Menu" aria-controls="navLinks" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+
+  <main id="main">
+    <section class="outreach-hero">
+      <div class="outreach-hero-inner reveal">
+        <div>
+          <div class="kicker">{page.eyebrow}</div>
+          <h1>{page.title}</h1>
+          <p class="lead">{page.heroLead}</p>
+          <div class="hero-actions">
+            <a class="btn btn-accent" href="/#audit">{page.primaryCta} →</a>
+            <a class="btn btn-ghost" href="/race-website-checklist/">{page.secondaryCta}</a>
+          </div>
+        </div>
+        <aside class="fit-card" aria-label="Best-fit audience">
+          <span>Best fit</span>
+          <strong>{page.audience}</strong>
+          <p>Built for search, speed, and signups — with your existing registration platform kept in place.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="outreach-proof" aria-labelledby="proof-title">
+      <div class="outreach-proof-inner reveal">
+        <div>
+          <div class="kicker">{page.proofLabel}</div>
+          <h2 id="proof-title">{page.proofTitle}</h2>
+        </div>
+        <p>{page.proofCopy}</p>
+      </div>
+    </section>
+
+    <section class="outreach-section" aria-labelledby="friction-title">
+      <div class="section-head reveal">
+        <div>
+          <div class="kicker">Why this page exists</div>
+          <h2 id="friction-title">Common website friction before runners register.</h2>
+        </div>
+        <p class="lead">These are practical issues StartLine looks for during a private audit. They are not guaranteed growth levers; they are places where runner trust, search clarity, or measurement can often be improved.</p>
+      </div>
+      <div class="friction-grid stagger">
+        {page.painPoints.map((point, index) => (
+          <article class="friction-card">
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <p>{point}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="outcomes-section" aria-labelledby="outcomes-title">
+      <div class="section-head reveal">
+        <div>
+          <div class="kicker">What StartLine improves</div>
+          <h2 id="outcomes-title">A focused website layer around the registration decision.</h2>
+        </div>
+        <p class="lead">StartLine Sites helps race directors organize the public information runners need before they leave for checkout.</p>
+      </div>
+      <div class="outcome-grid stagger">
+        {page.outcomes.map((outcome) => (
+          <article class="outcome-card">
+            <span>→</span>
+            <h3>{outcome.title}</h3>
+            <p>{outcome.copy}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="mini-checklist" aria-labelledby="checklist-title">
+      <div class="mini-checklist-inner reveal">
+        <div>
+          <div class="kicker">Outreach audit prompts</div>
+          <h2 id="checklist-title">What we would check first.</h2>
+          <p>Use these prompts before requesting an audit, or send the current race URL and let StartLine review the highest-friction areas.</p>
+        </div>
+        <ul>
+          {page.checklist.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    </section>
+
+    <section class="outreach-faq" aria-labelledby="faq-title">
+      <div class="section-head reveal">
+        <div>
+          <div class="kicker">Good to know</div>
+          <h2 id="faq-title">Questions before you share the link.</h2>
+        </div>
+        <p class="lead">These outreach pages are designed to make personalized follow-up more relevant while keeping StartLine's offer direct and realistic.</p>
+      </div>
+      <div class="faq-grid stagger">
+        {page.faq.map((item) => (
+          <article>
+            <h3>{item.question}</h3>
+            <p>{item.answer}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="final-cta" aria-labelledby="final-title">
+      <div class="final-cta-inner reveal">
+        <span>Private race website audit</span>
+        <h2 id="final-title">Want StartLine to review your current race website?</h2>
+        <p>Send the race name and current site or registration URL. We’ll look for the clearest registration, SEO, sponsor, and race-week readiness opportunities before recommending a mockup only when there is a fit.</p>
+        <a class="btn btn-accent" href="/#audit">Request a private audit →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="foot"><div><div class="brand footbrand"><img class="brand-mark" src={brandLogoHref} alt="StartLine Sites" width="1200" height="360" /></div><p>Fast, SEO-optimized race websites for race directors — built for search, speed, and signups.</p></div><div><div class="foot-title">Outreach pages</div><ul><li><a href="/for-community-races/">For community races</a></li><li><a href="/for-marathons/">For marathons</a></li><li><a href="/for-runsignup-races/">For RunSignup races</a></li><li><a href="/for-race-directors/">For race directors</a></li></ul></div><div><div class="foot-title">Product</div><ul><li><a href="/#pricing">Pricing</a></li><li><a href="/race-website-checklist/">Race website checklist</a></li><li><a href="/after-year-one/">After year one</a></li><li><a href="/#audit">Private audit</a></li></ul></div></div><div class="foot-bottom"><span>© 2026 StartLine Sites. From the team behind BMQR.</span><span>Built for search, speed, and signups.</span></div></footer>
+
+  <script>
+    import '../scripts/nav.ts';
+    import '../scripts/reveal.ts';
+  </script>
+</Base>
+
+<style>
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:18px clamp(20px,5vw,56px);transition:all .3s ease}nav.scrolled{padding:12px clamp(20px,5vw,56px);background:rgba(250,250,247,.82);backdrop-filter:blur(18px) saturate(140%);box-shadow:0 1px 0 var(--line)}nav.menu-open{z-index:1200;background:var(--paper);box-shadow:0 1px 0 var(--line)}.brand-mark{display:block;width:168px;height:auto}.footbrand .brand-mark{width:150px}.nav-links{display:flex;align-items:center;gap:24px}.nav-links a{font-weight:600;font-size:.92rem}.hamburger{display:none}.outreach-hero{padding:150px clamp(20px,5vw,56px) 92px;background:radial-gradient(circle at top right,rgba(31,184,196,.16),transparent 34%),linear-gradient(180deg,var(--paper),#fffaf4)}.outreach-hero-inner{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(280px,.58fr);gap:54px;align-items:center}.outreach-hero h1{font-size:clamp(2.7rem,5.7vw,5.25rem);max-width:14ch;margin-bottom:24px}.lead{font-size:1.08rem;line-height:1.65;color:rgba(14,23,41,.68)}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}.fit-card{border:1px solid rgba(250,250,247,.14);border-radius:32px;background:var(--ink);color:var(--paper);padding:34px;box-shadow:0 32px 90px rgba(14,23,41,.18)}.fit-card span{font:800 .72rem/1.2 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}.fit-card strong{display:block;font-family:"Instrument Serif",serif;font-size:clamp(2rem,3vw,2.7rem);line-height:1.04;margin:18px 0}.fit-card p{color:rgba(250,250,247,.72);line-height:1.65}.outreach-proof{padding:0 clamp(20px,5vw,56px) 96px;background:#fffaf4}.outreach-proof-inner{max-width:var(--maxw);margin:0 auto;border:1px solid var(--line);border-radius:30px;background:#fff;padding:clamp(26px,4vw,42px);box-shadow:0 20px 65px rgba(14,23,41,.07);display:grid;grid-template-columns:.95fr 1.05fr;gap:34px;align-items:center}.outreach-proof h2{font-size:clamp(2.2rem,4.4vw,3.6rem)}.outreach-proof p{color:rgba(14,23,41,.7);line-height:1.7}.outreach-section,.outcomes-section,.outreach-faq{padding:96px clamp(20px,5vw,56px);background:var(--paper)}.outcomes-section{background:linear-gradient(180deg,#fff,var(--paper-2))}.friction-grid,.outcome-grid,.faq-grid{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.friction-card,.outcome-card,.faq-grid article{border:1px solid var(--line);border-radius:26px;background:rgba(255,255,255,.78);padding:26px;box-shadow:0 18px 55px rgba(14,23,41,.06)}.friction-card span,.outcome-card span{display:inline-flex;width:42px;height:42px;align-items:center;justify-content:center;border-radius:50%;background:var(--ink);color:var(--gold);font:800 .78rem/1 "JetBrains Mono",monospace;margin-bottom:22px}.friction-card p,.outcome-card p,.faq-grid p{color:rgba(14,23,41,.68);line-height:1.62}.outcome-card h3,.faq-grid h3{font-size:1.45rem;margin-bottom:12px}.mini-checklist{padding:96px clamp(20px,5vw,56px);background:var(--ink);color:var(--paper)}.mini-checklist-inner{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1fr);gap:42px;align-items:start}.mini-checklist h2{font-size:clamp(2.4rem,5vw,4rem);color:var(--paper);margin-bottom:18px}.mini-checklist p{color:rgba(250,250,247,.72);line-height:1.65}.mini-checklist ul{display:grid;gap:14px;list-style:none}.mini-checklist li{position:relative;border:1px solid rgba(250,250,247,.13);border-radius:18px;background:rgba(250,250,247,.06);padding:18px 18px 18px 48px;color:rgba(250,250,247,.8);line-height:1.55}.mini-checklist li::before{content:"✓";position:absolute;left:18px;top:18px;color:var(--gold);font-weight:800}.final-cta{padding:96px clamp(20px,5vw,56px);background:linear-gradient(135deg,#fffaf4,#fff)}.final-cta-inner{max-width:920px;margin:0 auto;text-align:center;border:1px solid var(--line);border-radius:34px;background:#fff;padding:clamp(30px,5vw,54px);box-shadow:0 28px 80px rgba(14,23,41,.08)}.final-cta span{font:800 .72rem/1.2 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}.final-cta h2{font-size:clamp(2.3rem,5vw,4rem);margin:16px auto;max-width:12ch}.final-cta p{max-width:62ch;margin:0 auto 28px;color:rgba(14,23,41,.68);line-height:1.65}footer{padding:72px clamp(20px,5vw,56px) 36px;background:var(--ink);color:var(--paper)}.foot{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:1.2fr .75fr .75fr;gap:44px}.foot p{color:rgba(250,250,247,.62);margin-top:16px;max-width:34ch}.foot-title{font-weight:800;margin-bottom:14px;color:var(--gold)}.foot ul{list-style:none;display:grid;gap:10px}.foot a{color:rgba(250,250,247,.72)}.foot-bottom{max-width:var(--maxw);margin:42px auto 0;padding-top:22px;border-top:1px solid rgba(250,250,247,.1);display:flex;justify-content:space-between;gap:18px;color:rgba(250,250,247,.52);font-size:.88rem}@media(max-width:980px){.outreach-hero-inner,.outreach-proof-inner,.mini-checklist-inner,.foot{grid-template-columns:1fr}.friction-grid,.outcome-grid,.faq-grid{grid-template-columns:1fr 1fr}.nav-links{position:fixed;top:76px;left:16px;right:16px;display:none;flex-direction:column;align-items:stretch;gap:8px;background:var(--paper);padding:18px;border:1px solid var(--line);border-radius:22px;box-shadow:0 22px 70px rgba(14,23,41,.16)}.nav-links.open{display:flex}.hamburger{display:flex;flex-direction:column;gap:5px;background:none;border:none;padding:10px;min-width:44px;min-height:44px}.hamburger span{display:block;width:24px;height:2px;background:var(--ink);transition:.3s}}@media(max-width:640px){.outreach-hero{padding-top:126px}.outreach-hero h1{font-size:clamp(2.45rem,14vw,3.5rem)}.friction-grid,.outcome-grid,.faq-grid{grid-template-columns:1fr}.foot-bottom{flex-direction:column}}
+</style>
