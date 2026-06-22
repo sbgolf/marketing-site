@@ -1,0 +1,78 @@
+---
+import Base from '../layouts/Base.astro';
+const basePath = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
+const services = [
+  {
+    name: 'Annual Race Rollover',
+    bestFor: 'Races preparing to open registration for the next year',
+    timing: 'Best 60–120 days before registration opens',
+    outcome: 'A current, credible site for the next race cycle without rebuilding from scratch.',
+    includes: ['Update race date, registration link, price deadlines, schedule, and packet pickup details', 'Refresh sponsors, partners, homepage announcements, and high-priority FAQs', 'Check core registration CTAs and mobile trust signals before outreach resumes']
+  },
+  {
+    name: 'Quarterly Website Update',
+    bestFor: 'Directors who need scoped updates between launch and race week',
+    timing: 'Best during registration, sponsor, or logistics updates',
+    outcome: 'Keeps the site accurate as the event details change.',
+    includes: ['Content edits for deadlines, logistics, course notes, sponsor swaps, or registration messaging', 'CTA and homepage announcement updates for the current registration push', 'A concise change summary so the race team knows what changed']
+  },
+  {
+    name: 'SEO Check + Fixes',
+    bestFor: 'Races that want more search visibility before the next registration cycle',
+    timing: 'Best 90+ days before the race or before registration opens',
+    outcome: 'Finds practical search improvements and fixes the ones that matter most.',
+    includes: ['Search Console and indexing review for top queries, pages, and technical gaps', 'Metadata, schema, heading, and internal-link updates where needed', 'Prioritized opportunity list for future content or race-detail improvements']
+  },
+  {
+    name: 'Analytics Review',
+    bestFor: 'Directors who want to know what runners actually use before they register',
+    timing: 'Best monthly during registration or after a campaign push',
+    outcome: 'Turns traffic and registration-click data into clear next moves.',
+    includes: ['Traffic, device, top-page, and registration CTA click summary', 'Runner-behavior notes for pages or sections causing friction', 'Recommended copy, CTA, or page updates for the next campaign window']
+  },
+  {
+    name: 'Sponsor Visibility Refresh',
+    bestFor: 'Sponsor-heavy races or events preparing renewal conversations',
+    timing: 'Best before sponsorship outreach or race-week promotion',
+    outcome: 'Makes partners easier to see, understand, and renew.',
+    includes: ['Sponsor tier, logo, link, and community partner presentation updates', 'Homepage or partner-section refresh to connect sponsors to runner/community value', 'Light QA for mobile presentation and link accuracy']
+  },
+  {
+    name: 'Pre-Race Conversion Tune-Up',
+    bestFor: 'Races 60–90 days from race day with active registration pressure',
+    timing: 'Best 60–90 days before race day',
+    outcome: 'Removes last-mile friction before runners make the registration decision.',
+    includes: ['CTA, mobile speed, FAQ, trust-signal, and registration-path review', 'High-priority copy or layout fixes tied to runner hesitation points', 'Short tune-up report with what changed and what to watch next']
+  }
+];
+---
+<Base
+  title="After year one services — StartLine Sites"
+  description="Optional one-time StartLine Sites services for race rollover, SEO, analytics, sponsor visibility, and pre-race conversion tune-ups after the first race cycle."
+  canonicalPath="/after-year-one/"
+  includeMarketingSchema={false}
+>
+  <nav id="nav">
+    <a href="/" class="brand" aria-label="StartLine Sites home"><img class="brand-mark" src={brandLogoHref} alt="StartLine Sites" width="1200" height="360" /></a>
+    <div class="nav-links" id="navLinks"><a href="/#pricing">Pricing</a><a href="/#audit">Private audit</a><a href="/#faq">FAQ</a><a href="/after-year-one/">After year one</a><a class="btn btn-accent" href="/#audit">Request private audit</a></div>
+    <button class="hamburger" id="burger" aria-label="Menu" aria-controls="navLinks" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+  <main id="main">
+    <section class="service-hero"><div class="service-hero-inner reveal"><div><div class="kicker">Optional future services</div><h1>Keep the race website useful after launch year — without a required monthly retainer.</h1><p class="lead">StartLine’s first-year packages cover the build and scoped support for your next race cycle. After that, choose the specific one-time update, review, or refresh your race actually needs.</p><div class="hero-actions"><a class="btn btn-accent" href="/#audit">Request a private audit →</a><a class="btn btn-ghost" href="/#pricing">Review first-year packages</a></div></div><aside class="cycle-card" aria-label="Race cycle service model"><span>Race-cycle model</span><strong>Build once. Refresh when the event calendar demands it.</strong><p>Registration opening, sponsor renewal, race week, and next-year rollover each create natural moments for scoped work.</p></aside></div></section>
+    <section class="service-list" aria-labelledby="service-list-title"><div class="section-head reveal"><div><div class="kicker">Service menu</div><h2 id="service-list-title">One-time services tied to real race-cycle moments.</h2></div><p class="lead">Each service is scoped before work begins. No unlimited-edit promise, no automatic subscription, and no platform switch.</p></div><div class="service-grid stagger">{services.map((service)=><article class="service-card"><div class="service-card-head"><h3>{service.name}</h3><span>{service.timing}</span></div><p class="best"><strong>Best for:</strong> {service.bestFor}</p><p>{service.outcome}</p><ul>{service.includes.map((item)=><li>{item}</li>)}</ul></article>)}</div></section>
+    <section class="decision-path" aria-labelledby="decision-path-title"><div class="decision-inner reveal"><div><div class="kicker">How to choose</div><h2 id="decision-path-title">Pick the service that matches the next deadline.</h2><p>Race directors usually do not need website work every month. They need the right update before the next registration push, sponsor conversation, race-week question spike, or rollover cycle.</p></div><div class="decision-grid">{[['Opening registration soon','Annual Race Rollover or SEO Check + Fixes'],['Changing logistics or sponsors','Quarterly Website Update'],['Need to explain sponsor value','Sponsor Visibility Refresh'],['Registration is active now','Analytics Review or Pre-Race Conversion Tune-Up']].map(([moment,service])=><article><span>{moment}</span><strong>{service}</strong></article>)}</div></div></section>
+    <section class="service-cta"><div class="service-cta-inner reveal"><h2>Not sure what your race needs next?</h2><p>Start with the private audit. We’ll point to the right first-year package or the most useful scoped follow-up service when a smaller one-time update is the better fit.</p><a class="btn btn-accent" href="/#audit">Request private audit →</a></div></section>
+  </main>
+  <footer><div class="foot"><div><div class="brand footbrand"><img class="brand-mark" src={brandLogoHref} alt="StartLine Sites" width="1200" height="360" /></div><p>Fast, SEO-optimized race websites for race directors — built for search, speed, and signups.</p></div><div><div class="foot-title">Product</div><ul><li><a href="/#pricing">Pricing</a></li><li><a href="/after-year-one/">After year one</a></li><li><a href="/#audit">Private audit</a></li></ul></div><div><div class="foot-title">Company</div><ul><li><a href="https://bostonmarathonqualifyingraces.com">BMQR</a></li><li><a href="/#why">Why us</a></li><li><a href="/#faq">FAQ</a></li></ul></div></div><div class="foot-bottom"><span>© 2026 StartLine Sites. From the team behind BMQR.</span><span>Built for search, speed, and signups.</span></div></footer>
+  <script>
+    import '../scripts/nav.ts';
+    import '../scripts/smoothScroll.ts';
+    import '../scripts/reveal.ts';
+  </script>
+</Base>
+<style>
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:18px clamp(20px,5vw,56px);transition:all .3s ease}nav.scrolled{padding:12px clamp(20px,5vw,56px);background:rgba(250,250,247,.82);backdrop-filter:blur(18px) saturate(140%);box-shadow:0 1px 0 var(--line)}.brand-mark{display:block;width:168px;height:auto}.nav-links{display:flex;align-items:center;gap:28px}.nav-links a{font-weight:600;font-size:.92rem}.hamburger{display:none}.service-hero{padding:150px clamp(20px,5vw,56px) 92px;background:linear-gradient(180deg,var(--paper),#fffaf4)}.service-hero-inner{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:1.05fr .7fr;gap:54px;align-items:center}.service-hero h1{font-size:clamp(2.8rem,6vw,5.3rem);max-width:12ch;margin-bottom:24px}.lead{font-size:1.08rem;line-height:1.65;color:rgba(14,23,41,.68)}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}.cycle-card{border:1px solid var(--line);border-radius:32px;background:var(--ink);color:var(--paper);padding:34px;box-shadow:0 32px 90px rgba(14,23,41,.18)}.cycle-card span{font:800 .72rem/1.2 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}.cycle-card strong{display:block;font-family:"Instrument Serif",serif;font-size:2.4rem;line-height:1.02;margin:18px 0}.cycle-card p{color:rgba(250,250,247,.72);line-height:1.65}.service-list{padding:96px clamp(20px,5vw,56px);background:var(--paper)}.service-grid{max-width:var(--maxw);margin:46px auto 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.service-card{border:1px solid var(--line);border-radius:26px;background:#fff;padding:26px;box-shadow:0 18px 55px rgba(14,23,41,.06)}.service-card-head{display:grid;gap:10px;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:18px}.service-card h3{font-size:1.35rem;line-height:1.12}.service-card-head span{font:700 .72rem/1.35 "JetBrains Mono",monospace;color:var(--accent);text-transform:uppercase;letter-spacing:.08em}.service-card p{color:rgba(14,23,41,.68);line-height:1.58;margin-bottom:14px}.service-card .best{color:var(--ink)}.service-card ul{list-style:none;display:grid;gap:10px;margin:18px 0 0;padding:0}.service-card li{position:relative;padding-left:22px;color:rgba(14,23,41,.74);line-height:1.5}.service-card li::before{content:"→";position:absolute;left:0;color:var(--accent);font-weight:800}.decision-path{padding:96px clamp(20px,5vw,56px);background:#fffaf4}.decision-inner{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:.82fr 1.18fr;gap:42px;align-items:start}.decision-inner h2{font-size:clamp(2rem,4vw,3.4rem);margin:10px 0 18px}.decision-inner p{color:rgba(14,23,41,.68);line-height:1.65}.decision-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.decision-grid article{border:1px solid var(--line);border-radius:22px;background:var(--paper);padding:22px}.decision-grid span{display:block;font:800 .72rem/1.2 "JetBrains Mono",monospace;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}.decision-grid strong{font-size:1.15rem;line-height:1.28}.service-cta{padding:96px clamp(20px,5vw,56px);background:var(--ink);color:var(--paper);text-align:center}.service-cta-inner{max-width:780px;margin:0 auto}.service-cta h2{font-size:clamp(2.2rem,4vw,3.8rem);color:var(--paper);margin-bottom:18px}.service-cta p{color:rgba(250,250,247,.72);font-size:1.08rem;line-height:1.65;margin-bottom:28px}footer{background:var(--ink);color:rgba(250,250,247,.6);padding:60px clamp(20px,5vw,56px) 32px}.foot{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:48px}.footbrand{margin-bottom:16px}.footbrand .brand-mark{width:150px}.foot p{font-size:.92rem;max-width:32ch}.foot-title{color:var(--paper);font:700 .78rem/1.2 "Plus Jakarta Sans";letter-spacing:.16em;text-transform:uppercase;margin-bottom:18px}.foot ul{list-style:none;display:flex;flex-direction:column;gap:11px}.foot a:hover{color:var(--accent)}.foot-bottom{max-width:var(--maxw);margin:48px auto 0;padding-top:24px;border-top:1px solid var(--line-dark);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:.82rem;color:rgba(250,250,247,.72)}@media(max-width:980px){.service-hero-inner,.decision-inner{grid-template-columns:1fr}.service-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:780px){.nav-links{position:fixed;inset:0;background:var(--paper);flex-direction:column;align-items:stretch;gap:0;transform:translateX(100%);transition:transform .35s cubic-bezier(.6,.05,.1,1);padding:88px 32px 40px;z-index:1100;overflow-y:auto}.nav-links.open{transform:none}.nav-links a{font-family:"Instrument Serif",serif;font-size:1.65rem;padding:20px 0;border-bottom:1px solid var(--line)}.nav-links .btn{margin-top:28px;width:100%;justify-content:center;padding:18px}.hamburger{display:flex;flex-direction:column;gap:5px;background:none;border:none;padding:10px;z-index:1300}.hamburger span{display:block;width:24px;height:2px;background:var(--ink);transition:.3s}nav.menu-open .hamburger span:nth-child(1){transform:translateY(7px) rotate(45deg)}nav.menu-open .hamburger span:nth-child(2){opacity:0}nav.menu-open .hamburger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}body.no-scroll{overflow:hidden;position:fixed;width:100%}.service-grid,.decision-grid,.foot{grid-template-columns:1fr}.service-hero{padding-top:120px}}
+</style>
