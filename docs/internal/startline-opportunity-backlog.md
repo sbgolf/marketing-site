@@ -26,11 +26,11 @@ Logged from Steve's request to keep the next StartLine Sites opportunities track
    - Create an evergreen checklist page covering registration clarity, mobile speed, course/logistics info, FAQ gaps, sponsor visibility, SEO/schema, analytics, and race-week update readiness.
    - Primary goal: SEO asset + outreach follow-up asset.
 
-6. **Outreach-specific landing pages** — In review in this PR
+6. **Outreach-specific landing pages** — Completed in PR #42
    - Create tailored landing pages such as `/for-community-races`, `/for-marathons`, `/for-runsignup-races`, or `/for-race-directors`.
    - Primary goal: support personalized outreach and search relevance.
 
-7. **BMQR credibility section expansion**
+7. **BMQR credibility section expansion** — In review in this PR
    - Make the “from the team behind BMQR” proof point more specific without unsupported traffic/performance claims.
    - Primary goal: differentiate StartLine from generic web designers.
 
