@@ -34,11 +34,11 @@ Logged from Steve's request to keep the next StartLine Sites opportunities track
    - Make the “from the team behind BMQR” proof point more specific without unsupported traffic/performance claims.
    - Primary goal: differentiate StartLine from generic web designers.
 
-8. **Sponsor-value messaging and examples** — In review in this PR
+8. **Sponsor-value messaging and examples** — Completed in PR #44
    - Add stronger copy around sponsor tiers, logos, community partners, charity visibility, and sponsor renewal support.
    - Primary goal: help directors justify the site cost through partner value.
 
-9. **First-year package launch timeline**
+9. **First-year package launch timeline** — In review in this PR
    - Add a concrete timeline from deposit → intake → draft → review → launch → race-cycle support.
    - Primary goal: reduce buying anxiety and make fulfillment feel real.
 
