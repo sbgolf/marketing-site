@@ -14,15 +14,15 @@ Logged from Steve's request to keep the next StartLine Sites opportunities track
    - Include Annual Race Rollover, Quarterly Website Update, SEO Check + Fixes, Analytics Review, Sponsor Visibility Refresh, and Pre-Race Conversion Tune-Up.
    - Primary goal: support repeat revenue without required monthly retainers.
 
-3. **Pricing/payment consistency audit** — Completed in this PR
+3. **Pricing/payment consistency audit** — Completed in PR #39
    - Review form labels, success copy, deposit language, Stripe-facing copy, and public package language for first-year/race-cycle consistency.
    - Primary goal: avoid trust mismatch between the marketing page and checkout/payment flow.
 
-4. **Race-director segment fit section** — In review in this PR
+4. **Race-director segment fit section** — Completed in PR #40
    - Add clearer “who this is for” copy for community races, BQ/certified marathons, multi-distance weekends, sponsor-heavy events, and platform-hosted races that need a stronger marketing layer.
    - Primary goal: help prospects self-qualify and improve SEO language.
 
-5. **Race website checklist lead magnet page**
+5. **Race website checklist lead magnet page** — In review in this PR
    - Create an evergreen checklist page covering registration clarity, mobile speed, course/logistics info, FAQ gaps, sponsor visibility, SEO/schema, analytics, and race-week update readiness.
    - Primary goal: SEO asset + outreach follow-up asset.
 
