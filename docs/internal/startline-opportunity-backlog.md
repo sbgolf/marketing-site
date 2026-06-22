@@ -4,17 +4,17 @@ Logged from Steve's request to keep the next StartLine Sites opportunities track
 
 ## Working order
 
-1. **Audit path clarity + sample audit output**
+1. **Audit path clarity + sample audit output** — Completed in PR #37
    - Add a clearer “what happens after you request an audit?” section.
    - Show a fictional sample audit deliverable so race directors understand what they receive.
    - Primary goal: improve private audit/mockup conversion.
 
-2. **After-year-one services page or section expansion**
+2. **After-year-one services page or section expansion** — In progress
    - Expand optional one-time services after the included first-year race cycle.
    - Include Annual Race Rollover, Quarterly Website Update, SEO Check + Fixes, Analytics Review, Sponsor Visibility Refresh, and Pre-Race Conversion Tune-Up.
    - Primary goal: support repeat revenue without required monthly retainers.
 
-3. **Pricing/payment consistency audit**
+3. **Pricing/payment consistency audit** — Next
    - Review form labels, success copy, deposit language, Stripe-facing copy, and public package language for first-year/race-cycle consistency.
    - Primary goal: avoid trust mismatch between the marketing page and checkout/payment flow.
 
