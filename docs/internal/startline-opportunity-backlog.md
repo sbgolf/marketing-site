@@ -22,11 +22,11 @@ Logged from Steve's request to keep the next StartLine Sites opportunities track
    - Add clearer “who this is for” copy for community races, BQ/certified marathons, multi-distance weekends, sponsor-heavy events, and platform-hosted races that need a stronger marketing layer.
    - Primary goal: help prospects self-qualify and improve SEO language.
 
-5. **Race website checklist lead magnet page** — In review in this PR
+5. **Race website checklist lead magnet page** — Completed in PR #41
    - Create an evergreen checklist page covering registration clarity, mobile speed, course/logistics info, FAQ gaps, sponsor visibility, SEO/schema, analytics, and race-week update readiness.
    - Primary goal: SEO asset + outreach follow-up asset.
 
-6. **Outreach-specific landing pages**
+6. **Outreach-specific landing pages** — In review in this PR
    - Create tailored landing pages such as `/for-community-races`, `/for-marathons`, `/for-runsignup-races`, or `/for-race-directors`.
    - Primary goal: support personalized outreach and search relevance.
 
