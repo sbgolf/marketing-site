@@ -12,6 +12,7 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - Stripe/monthly billing automation audit: `billing/stripe-monthly-billing-automation-audit.md`
 - Automation audit/status: `automation-audit-deposit-to-kickoff.md`
 - StartLine UX conversion audit backlog: `startline-ux-conversion-audit-backlog.md`
+- Cold race-director UX audit backlog: `startline-cold-race-director-ux-audit-backlog.md`
 - Conversion UX PR review prompts: `conversion-ux-pr-review-prompts.md`
 - Customer proof readiness checklist: `customer-proof-readiness-checklist.md`
 - Service agreement draft: `legal/service-agreement-draft.md`
