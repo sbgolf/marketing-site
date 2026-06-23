@@ -76,7 +76,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Low
 - **Category**: Conversion / Navigation
-- **Status**: In review — PR #73 (`ux/h03-l04-cta-consistency`).
+- **Status**: Completed / merged in PR #73 (`ux/h03-l04-cta-consistency`).
 - **Why this matters**: Cold visitors who are not ready to request an audit need a clear proof-oriented next step that does not compete with the primary CTA.
 - **Scope**:
   - Pair primary audit CTAs with a consistent secondary `See sample audit` or equivalent.
@@ -96,7 +96,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Low
 - **Effort**: Low
 - **Category**: Copy / Conversion
-- **Status**: In review — PR #73 (`ux/h03-l04-cta-consistency`).
+- **Status**: Completed / merged in PR #73 (`ux/h03-l04-cta-consistency`).
 - **Why this matters**: Small wording variations are not fatal, but consistency helps users understand the next step.
 - **Scope**:
   - Standardize primary CTA language around `Request a private audit` unless a page context intentionally needs a variant.
@@ -113,6 +113,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Medium
 - **Category**: Navigation / Conversion
+- **Status**: In review — PR #74 (`feat/h04-tighten-homepage-nav`).
 - **Why this matters**: The homepage nav is comprehensive but cognitively heavy for a first-time buyer.
 - **Scope**:
   - Simplify the visible top nav to the highest-intent buyer tasks.

@@ -5,6 +5,7 @@ const navLinks = document.getElementById('navLinks');
 function closeMenu() {
   navLinks?.classList.remove('open');
   nav?.classList.remove('menu-open');
+  navLinks?.querySelectorAll('details[open]').forEach((details) => details.removeAttribute('open'));
   document.body.classList.remove('no-scroll');
   burger?.setAttribute('aria-expanded', 'false');
 }
