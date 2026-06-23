@@ -191,6 +191,7 @@ Every backlog-item PR must include evidence that:
 - **Acceptance criteria**: Checklist separates approved, pending, and blocked proof assets; requires permission/source notes for each real asset; includes fallback proof alternatives when assets are unavailable; protects against fabricated testimonials.
 - **Clarifying questions before starting**: Ask Steve where approved proof assets should be stored/tracked.
 - **Blocked/needs Steve-approved assets**: Any public real testimonial, customer logo, named case study, or live race screenshot.
+- **Status**: In review via `content/p2-15-customer-proof-readiness` — adds an internal checklist using email intake, Google Drive proof storage/approval, repo governance, asset statuses, required metadata, anti-fabrication rules, and safe fallback proof alternatives. PR pending.
 
 ### P3-16 — Expand outreach-page message matching
 
