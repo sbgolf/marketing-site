@@ -1,0 +1,160 @@
+---
+import Base from '../layouts/Base.astro';
+
+const basePath = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
+
+const auditFocusAreas = [
+  {
+    title: 'Registration CTA clarity',
+    status: 'High priority',
+    finding: 'The main register link appears after multiple intro and logistics blocks on mobile, so a ready runner has to scan before taking action.',
+    opportunity: 'Move the primary “Register on platform” CTA into the hero, repeat it after course and FAQ sections, and label it so runners know checkout stays on the existing registration platform.'
+  },
+  {
+    title: 'Mobile speed and readability',
+    status: 'Quick win',
+    finding: 'The first view depends on an oversized hero image and dense paragraph copy, which makes the page feel slower and harder to scan on a phone.',
+    opportunity: 'Compress the hero image, keep the first CTA visible without scrolling, and convert long blocks into compact cards for date, location, distances, and price deadline.'
+  },
+  {
+    title: 'Logistics gaps',
+    status: 'Runner confidence',
+    finding: 'Packet pickup, parking, start-line access, course map, and weather-update notes are split across PDFs and older update posts.',
+    opportunity: 'Create one “Race day details” path with the essentials runners check before registering and before race week.'
+  },
+  {
+    title: 'Sponsor visibility',
+    status: 'Partner value',
+    finding: 'Sponsor logos are present, but tier context and community story are separated from the runner decision path.',
+    opportunity: 'Group sponsor tiers with short plain-language context so partners receive visibility without competing with registration.'
+  },
+  {
+    title: 'Search basics',
+    status: 'Foundation',
+    finding: 'The page title and headings do not fully reflect the race name, city, distance mix, and year that runners are likely to search.',
+    opportunity: 'Tighten the title, meta description, H1, internal headings, and FAQ content around crawlable race details — without claiming rankings or traffic lifts.'
+  },
+  {
+    title: 'Race-week readiness',
+    status: 'Operational',
+    finding: 'There is no obvious home for weather, parking, packet pickup, or schedule-change announcements as race week approaches.',
+    opportunity: 'Add a reusable race-week update block with timestamps, owner/approval notes, and links to the stable source of truth.'
+  }
+];
+
+const deliverableSections = [
+  ['Executive summary', 'A short readout of what is helping or hurting the runner journey before registration.'],
+  ['Top opportunities', 'Prioritized findings grouped by runner impact, effort, and race-cycle timing.'],
+  ['Recommended next step', 'A plain-language recommendation: quick fixes, StartLine package fit, or no-deposit next move.'],
+  ['Optional mockup direction', 'When there is a clear fit, StartLine may include a private template direction for review before deposit.']
+];
+
+const pageUrl = 'https://startlinesites.com/sample-audit/';
+const articleJson = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Fictional Sample Race Website Audit Deliverable',
+  description: 'A fictional generic sample showing how StartLine Sites reviews registration CTA clarity, mobile speed, logistics, sponsor visibility, search basics, and race-week readiness.',
+  url: pageUrl,
+  author: { '@type': 'Organization', name: 'StartLine Sites', url: 'https://startlinesites.com/' },
+  publisher: { '@type': 'Organization', name: 'StartLine Sites', url: 'https://startlinesites.com/' },
+  mainEntityOfPage: pageUrl
+};
+---
+<Base
+  title="Fictional Sample Race Website Audit — StartLine Sites"
+  description="See a fictional generic sample race website audit showing what StartLine notices: registration CTA clarity, mobile speed, logistics gaps, sponsor visibility, search basics, and race-week readiness."
+  canonicalPath="/sample-audit/"
+  includeMarketingSchema={false}
+>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(articleJson)} />
+  <nav id="nav">
+    <a href="/" class="brand" aria-label="StartLine Sites home"><img class="brand-mark" src={brandLogoHref} alt="StartLine Sites" width="1200" height="360" /></a>
+    <div class="nav-links" id="navLinks"><a href="/#pricing">Pricing</a><a href="/race-website-checklist/">Checklist</a><a href="/sample-audit/">Sample audit</a><a href="/#faq">FAQ</a><a class="btn btn-accent" href="/#audit">Request private audit</a></div>
+    <button class="hamburger" id="burger" aria-label="Menu" aria-controls="navLinks" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+
+  <main id="main">
+    <section class="sample-hero">
+      <div class="sample-hero-inner reveal">
+        <div>
+          <div class="kicker">Fictional sample deliverable</div>
+          <h1>See what a StartLine race website audit looks for.</h1>
+          <p class="lead">This public sample is intentionally generic and fictional. It shows the kind of practical review a race director can expect without using real customer names, screenshots, metrics, or private race data.</p>
+          <div class="hero-actions"><a class="btn btn-accent" href="/#audit">Request your private audit →</a><a class="btn btn-ghost" href="#sample-report">Review the sample</a></div>
+        </div>
+        <aside class="fiction-card" aria-label="Fictional sample audit notice">
+          <span>Sample only</span>
+          <strong>Ocean City Half Marathon</strong>
+          <p>Generic community race example. Not a real customer audit, not a critique of any existing race site, and not a promise of specific growth.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="reuse-strip" aria-label="How this sample can be used">
+      <div class="reuse-inner reveal">
+        <h2>Built to share before a sales conversation.</h2>
+        <p>Use this page in outreach when a race director asks, “What do I actually get back?” It previews the deliverable shape, the judgment areas, and the no-pressure recommendation style before anyone pays a deposit.</p>
+      </div>
+    </section>
+
+    <section class="report-section" id="sample-report" aria-labelledby="sample-report-title">
+      <div class="section-head reveal"><div><div class="kicker">Sample report</div><h2 id="sample-report-title">A concise audit, organized around runner decisions.</h2></div><p class="lead">StartLine reviews the public website layer a runner sees before checkout. The goal is not to shame an old site or volunteer effort; it is to find the clearest practical opportunities before the next registration push.</p></div>
+      <div class="report-shell reveal">
+        <div class="report-topline">
+          <div><span>Fictional generic audit</span><h3>Ocean City Half Marathon</h3><p>Reviewed as a sample community half marathon + 5K with external registration already handled on a platform.</p></div>
+          <strong>Recommended direction: Community template / Standard fit</strong>
+        </div>
+        <div class="deliverable-grid">
+          {deliverableSections.map(([title, copy]) => <article><h4>{title}</h4><p>{copy}</p></article>)}
+        </div>
+      </div>
+    </section>
+
+    <section class="findings-section" aria-labelledby="findings-title">
+      <div class="section-head reveal"><div><div class="kicker">What StartLine notices</div><h2 id="findings-title">Six audit lenses that support registration confidence.</h2></div><p class="lead">Each finding is framed as a runner-facing opportunity. No guaranteed registration lift, no disparaging language, and no real customer data.</p></div>
+      <div class="findings-grid stagger">
+        {auditFocusAreas.map((area, index) => (
+          <article class="finding-card">
+            <div class="finding-head"><span>{String(index + 1).padStart(2, '0')}</span><strong>{area.status}</strong></div>
+            <h3>{area.title}</h3>
+            <div class="finding-copy"><h4>Sample observation</h4><p>{area.finding}</p></div>
+            <div class="finding-copy opportunity"><h4>Practical next move</h4><p>{area.opportunity}</p></div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="recommendation" aria-labelledby="recommendation-title">
+      <div class="recommendation-inner reveal">
+        <div>
+          <div class="kicker">Sample recommendation</div>
+          <h2 id="recommendation-title">A useful answer even before there is a deposit.</h2>
+          <p>For this fictional race, StartLine would recommend fixing the hero CTA, consolidating race-day logistics, and reviewing a Community template direction. If the director wants a done-for-you build, the Standard first-year race-cycle package appears to fit. If not, the audit still leaves the team with a focused cleanup list.</p>
+        </div>
+        <div class="next-step-card">
+          <span>No-pressure next step</span>
+          <h3>Request your version</h3>
+          <p>Send the current race URL. StartLine responds within 2 business days with the clearest opportunities and a recommended path only when there is a fit.</p>
+          <a class="btn btn-accent" href="/#audit">Request a private audit →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="foot"><div><div class="brand footbrand"><img class="brand-mark" src={brandLogoHref} alt="StartLine Sites" width="1200" height="360" /></div><p>Fast, SEO-optimized race websites for race directors — built for search, speed, and signups.</p></div><div><div class="foot-title">Product</div><ul><li><a href="/#pricing">Pricing</a></li><li><a href="/after-year-one/">After year one</a></li><li><a href="/race-website-checklist/">Race website checklist</a></li><li><a href="/sample-audit/">Sample audit</a></li><li><a href="/#audit">Private audit</a></li></ul></div><div><div class="foot-title">Company</div><ul><li><a href="https://bostonmarathonqualifyingraces.com">BMQR</a></li><li><a href="/#why">Why us</a></li><li><a href="/#faq">FAQ</a></li></ul></div></div><div class="foot-bottom"><span>© 2026 StartLine Sites. Steve at StartLine Sites.</span><span>Built for search, speed, and signups.</span></div></footer>
+
+  <script>
+    import '../scripts/nav.ts';
+    import '../scripts/reveal.ts';
+  </script>
+</Base>
+
+<style>
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:18px clamp(20px,5vw,56px);transition:all .3s ease}nav.scrolled{padding:12px clamp(20px,5vw,56px);background:rgba(250,250,247,.82);backdrop-filter:blur(18px) saturate(140%);box-shadow:0 1px 0 var(--line)}nav.menu-open{z-index:1200;background:var(--paper);box-shadow:0 1px 0 var(--line)}.brand-mark{display:block;width:168px;height:auto}.footbrand .brand-mark{width:150px}.nav-links{display:flex;align-items:center;gap:24px}.nav-links a{font-weight:600;font-size:.92rem}.hamburger{display:none}.sample-hero{padding:150px clamp(20px,5vw,56px) 92px;background:radial-gradient(circle at top right,rgba(31,184,196,.16),transparent 36%),linear-gradient(180deg,var(--paper),#fffaf4)}.sample-hero-inner{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:1.06fr .64fr;gap:54px;align-items:center}.sample-hero h1{font-size:clamp(2.9rem,6vw,5.6rem);max-width:13ch;margin-bottom:24px}.lead{font-size:1.08rem;line-height:1.65;color:rgba(14,23,41,.68)}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}.fiction-card{border:1px solid rgba(250,250,247,.14);border-radius:32px;background:var(--ink);color:var(--paper);padding:34px;box-shadow:0 32px 90px rgba(14,23,41,.18)}.fiction-card span,.report-topline span,.next-step-card span{font:800 .72rem/1.2 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}.fiction-card strong{display:block;font-family:"Instrument Serif",serif;font-size:2.7rem;line-height:1.02;margin:18px 0}.fiction-card p{color:rgba(250,250,247,.72);line-height:1.65}.reuse-strip{padding:0 clamp(20px,5vw,56px) 92px;background:#fffaf4}.reuse-inner{max-width:var(--maxw);margin:0 auto;border:1px solid var(--line);border-radius:30px;background:#fff;padding:clamp(24px,4vw,38px);box-shadow:0 20px 65px rgba(14,23,41,.07);display:grid;grid-template-columns:.48fr 1fr;gap:28px;align-items:start}.reuse-inner h2{font-size:clamp(2rem,4vw,3.2rem)}.reuse-inner p{color:rgba(14,23,41,.7);line-height:1.65}.report-section,.findings-section{padding:96px clamp(20px,5vw,56px);background:var(--paper)}.report-shell{max-width:var(--maxw);margin:0 auto;border:1px solid var(--line);border-radius:34px;background:#fff;box-shadow:0 28px 85px rgba(14,23,41,.08);overflow:hidden}.report-topline{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;padding:34px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,#101826,#152236);color:var(--paper)}.report-topline h3{font-size:clamp(2rem,4vw,3.4rem);margin:10px 0;color:var(--paper)}.report-topline p{color:rgba(250,250,247,.7);max-width:62ch}.report-topline strong{border:1px solid rgba(91,217,106,.35);border-radius:999px;background:rgba(91,217,106,.12);color:#91f29c;padding:9px 13px;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}.deliverable-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line)}.deliverable-grid article{background:#fff;padding:24px}.deliverable-grid h4{font-family:"Plus Jakarta Sans";font-weight:800;font-size:.96rem;letter-spacing:0;margin-bottom:10px}.deliverable-grid p{color:rgba(14,23,41,.68);line-height:1.6}.findings-section{background:linear-gradient(180deg,var(--paper),#fffaf4)}.findings-grid{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.finding-card{border:1px solid var(--line);border-radius:28px;background:rgba(255,255,255,.78);padding:24px;box-shadow:0 20px 65px rgba(14,23,41,.06)}.finding-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:20px}.finding-head span{display:inline-flex;width:42px;height:42px;align-items:center;justify-content:center;border-radius:50%;background:var(--ink);color:var(--gold);font:800 .78rem/1 "JetBrains Mono",monospace}.finding-head strong{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent)}.finding-card h3{font-size:1.7rem;margin-bottom:20px}.finding-copy{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}.finding-copy h4{font-family:"Plus Jakarta Sans";font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(14,23,41,.56);margin-bottom:8px}.finding-copy p{color:rgba(14,23,41,.7);line-height:1.62}.finding-copy.opportunity p{color:rgba(14,23,41,.82)}.recommendation{padding:96px clamp(20px,5vw,56px);background:var(--ink);color:var(--paper)}.recommendation-inner{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:1fr .62fr;gap:42px;align-items:center}.recommendation h2{font-size:clamp(2.4rem,5vw,4rem);color:var(--paper);max-width:13ch;margin-bottom:22px}.recommendation p{color:rgba(250,250,247,.72);line-height:1.65}.next-step-card{border:1px solid rgba(250,250,247,.14);border-radius:30px;background:rgba(250,250,247,.08);padding:30px}.next-step-card h3{font-size:2.4rem;color:var(--paper);margin:14px 0}.next-step-card .btn{margin-top:22px}.foot{max-width:var(--maxw);margin:0 auto;padding:64px clamp(20px,5vw,56px);display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:40px}.foot p,.foot li,.foot-bottom{color:rgba(14,23,41,.64)}.foot-title{font-weight:800;margin-bottom:14px}.foot ul{list-style:none;display:grid;gap:10px}.foot-bottom{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,5vw,56px) 36px;display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line);padding-top:24px}
+@media(max-width:980px){.sample-hero-inner,.reuse-inner,.recommendation-inner{grid-template-columns:1fr}.deliverable-grid,.findings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.report-topline{display:grid}.report-topline strong{white-space:normal}.foot{grid-template-columns:1fr 1fr}.hamburger{display:flex;flex-direction:column;gap:5px;background:none;border:none;padding:10px;min-width:44px;min-height:44px}.hamburger span{display:block;width:24px;height:2px;background:var(--ink);transition:.3s}.nav-links{position:fixed;top:72px;left:16px;right:16px;display:none;flex-direction:column;align-items:stretch;gap:6px;border:1px solid var(--line);border-radius:22px;background:var(--paper);padding:18px;box-shadow:0 24px 80px rgba(14,23,41,.16)}.nav-links.open{display:flex}.nav-links a{padding:10px 12px}.nav-links .btn{justify-content:center}}
+@media(max-width:640px){.sample-hero{padding-top:124px}.sample-hero h1{font-size:3rem}.deliverable-grid,.findings-grid,.foot{grid-template-columns:1fr}.report-topline,.fiction-card,.next-step-card{padding:24px}.foot-bottom{flex-direction:column}.brand-mark{width:150px}}
+</style>
