@@ -150,7 +150,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Audit public before/after language to ensure it never insults old race sites or volunteer-built pages. Position improvements as clarity, trust, registration confidence, and sponsor value.
 - **Acceptance criteria**: Before/after copy is respectful; no “ugly/bad/broken” style language; improvements are framed around runner trust and race-director workload; fictional examples remain labeled as examples.
 - **Clarifying questions before starting**: None.
-- **Status**: In review via `feat/p1-11-before-after-guardrails` — audits public before/after and audit/checklist/outreach wording for respectful framing and adds reusable internal guardrails.
+- **Status**: Completed in PR #62 — adds respectful before/after framing guardrails for public and outreach copy, including internal review prompts and claim-safety reminders.
 
 ### P2-12 — Improve mobile-first scanning and section density
 
@@ -160,6 +160,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Review mobile layouts for dense sections, long paragraphs, CTA visibility, card stacking, and tap-target spacing. Prioritize reducing cognitive load on the lead path.
 - **Acceptance criteria**: Mobile viewports at 375, 414, and 768 are checked; no horizontal overflow; key CTAs are visible after persuasive sections; dense paragraphs are broken into scannable units; visual hierarchy remains intact.
 - **Clarifying questions before starting**: None unless a visual redesign is needed.
+- **Status**: In review via `feat/p2-12-mobile-scanning` — reduces homepage paragraph density, adds scannable fit/audit lists, improves post-section audit CTAs, and adds mobile smoke coverage for 375/414/768 overflow checks.
 
 ### P2-13 — Reinforce SEO/performance credibility with evidence-safe language
 
