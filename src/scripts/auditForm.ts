@@ -147,17 +147,17 @@ form?.addEventListener('submit', async (event) => {
     const checkoutUrl = result.checkout_url || selectedPackageInfo?.url;
     if (selectedPackageInfo && checkoutUrl) {
       setMessage(
-        `<div class="payment-next"><strong>Thanks — your private audit request was received.</strong><span>Ready to start with ${selectedPackageInfo.name}? Pay the ${selectedPackageInfo.deposit} first-year package deposit when you're ready.</span><a href="${checkoutUrl}" target="_blank" rel="noopener noreferrer">Pay ${selectedPackageInfo.name} first-year package deposit →</a><small>We will still review your race site and follow up by email. The deposit starts the one-time first-year race-cycle package.</small></div>`,
+        `<div class="payment-next"><strong>Thanks — your private audit request was received.</strong><span>We’ll review/respond within 2 business days with findings and the recommended next step.</span><a href="${checkoutUrl}" target="_blank" rel="noopener noreferrer">Pay ${selectedPackageInfo.name} first-year package deposit when ready →</a><small>No deposit is required for the audit response. If you choose to move forward, the deposit starts the one-time first-year race-cycle package.</small></div>`,
         'success',
         true,
       );
     } else if (selectedPackageInfo) {
       setMessage(
-        `Thanks — your private audit request was received. ${selectedPackageInfo.name} requires a reviewed proposal before any first-year package deposit, so we’ll follow up by email with the recommended scope and next step.`,
+        `Thanks — your private audit request was received. We’ll review/respond within 2 business days with findings, recommended scope, and the next step. ${selectedPackageInfo.name} requires a reviewed proposal before any first-year package deposit.`,
         'success',
       );
     } else {
-      setMessage('Thanks — your private audit request was received. We’ll review it and follow up by email with a package recommendation.', 'success');
+      setMessage('Thanks — your private audit request was received. We’ll review/respond within 2 business days by email with findings and a recommended next step.', 'success');
     }
 
     form.reset();

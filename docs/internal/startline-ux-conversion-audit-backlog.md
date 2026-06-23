@@ -56,6 +56,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Strengthen the explanation of what a prospect receives after requesting an audit/private mockup: review window, deliverable shape, what StartLine looks for, and what happens next. Reuse the existing fictional sample audit/example deliverable pattern rather than inventing real customer examples.
 - **Acceptance criteria**: Page explains deliverable contents, expected next step, and no-pressure nature; sample/example is clearly fictional or generic; form-adjacent copy reduces uncertainty; no promises of specific registration lift; success/confirmation copy remains consistent with the offer.
 - **Clarifying questions before starting**: Ask Steve if review timing or response window should be stated more specifically.
+- **Status**: In review via `feat/p0-02-audit-offer-clarity` — adds Steve-approved “within 2 business days” timing, clearer deliverable/next-step/no-pressure copy, fictional sample labeling, and aligned request-form success copy.
 
 ### P0-03 — Add trust/proof without fake testimonials
 
