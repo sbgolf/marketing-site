@@ -113,7 +113,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Medium
 - **Category**: Navigation / Conversion
-- **Status**: In review — PR #74 (`feat/h04-tighten-homepage-nav`).
+- **Status**: Completed / merged in PR #74 (`feat/h04-tighten-homepage-nav`).
 - **Why this matters**: The homepage nav is comprehensive but cognitively heavy for a first-time buyer.
 - **Scope**:
   - Simplify the visible top nav to the highest-intent buyer tasks.
@@ -134,6 +134,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Low
 - **Category**: Navigation / Conversion
+- **Status**: In review — PR #75 (`feat/h-05-homepage-persona-links`).
 - **Why this matters**: Strong segment pages exist but are not prominent in the main buyer journey.
 - **Scope**:
   - Link relevant homepage fit/segment cards to `/for-community-races/`, `/for-marathons/`, `/for-runsignup-races/`, and `/for-race-directors/`.
