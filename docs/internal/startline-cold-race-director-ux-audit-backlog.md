@@ -12,7 +12,7 @@ Recommended working assumption until Steve changes strategy: keep **Request a pr
 
 ## Operating rules for agents and sub-agents
 
-- Start with **High Impact** items in priority order, then Medium, then Low.
+- Work in the **dependency-safe sequence** below rather than pure High/Medium/Low order.
 - Pick one focused item per branch/PR unless Steve explicitly groups related items.
 - Preserve the primary conversion event unless Steve explicitly changes it.
 - Keep all public proof honest: no fabricated testimonials, no unapproved real customer names/logos/screenshots/metrics, no guaranteed registration-lift claims.
@@ -20,6 +20,11 @@ Recommended working assumption until Steve changes strategy: keep **Request a pr
 - Respect existing race directors, volunteers, and staff. Frame improvements as clarity, trust, organization, and registration confidence — not as shaming old sites.
 - Ask Steve before changing package names, prices, payment structure, service scope, response-time promise, or proof claims.
 - Branch + PR only. Do not merge without Steve's explicit approval.
+
+## Sequencing rationale
+
+Steve approved sequencing this backlog by dependency safety instead of raw impact tier. The order starts with foundational CTA and information architecture work, then separates customer kickoff paths from cold-prospect paths, groups pricing and scope clarifications together, adds trust/proof once the architecture is clearer, and leaves homepage density plus final mobile consolidation for last so earlier structural decisions are not reworked.
+
 
 ## Global Definition of Done for every item
 
@@ -39,13 +44,16 @@ Each implementation PR spawned from this backlog is done only when:
 
 ---
 
-# High Impact backlog
+# Dependency-safe implementation backlog
 
-## H-01 — Clarify the primary funnel above the fold
+## Phase 0 — Completed foundation
+
+### 1. H-01 — Clarify the primary funnel above the fold
 
 - **Impact**: High
 - **Effort**: Low
 - **Category**: Conversion / Copy
+- **Status**: Completed / merged foundation (`feat: clarify homepage audit funnel`, #71)
 - **Why this matters**: A busy race director should understand the path in seconds: request audit, get recommendation, choose package/deposit, complete intake/assets, launch.
 - **Scope**:
   - Add or tighten a concise funnel explanation near the hero or first major CTA.
@@ -61,26 +69,9 @@ Each implementation PR spawned from this backlog is done only when:
   - Desktop and mobile first-screen screenshots or DOM checks confirm primary CTA visibility and readable funnel copy.
   - `npm run build` passes.
 
-## H-02 — Add compact trust/proof near the first CTA
+## Phase 1 — CTA system and buyer information architecture
 
-- **Impact**: High
-- **Effort**: Low
-- **Category**: Trust / Conversion
-- **Why this matters**: The site is honest about not having fake testimonials, but skeptical buyers need a credibility bridge before submitting a form.
-- **Scope**:
-  - Add a concise trust strip near the hero or first audit CTA.
-  - Use approved-safe proof only: founder/process credibility, BMQR context if appropriate, sample audit, transparent pricing, no platform switch, fictional-example disclaimer.
-- **Acceptance criteria**:
-  - Trust block appears before or near the first primary CTA follow-up.
-  - It includes at least 3 concrete, supportable trust cues.
-  - It does not imply real customers, testimonials, or case studies unless Steve-approved assets exist.
-  - It links or points to the sample audit as proof of deliverable shape.
-- **Definition of Done**:
-  - Trust block is implemented with evidence-safe language.
-  - Copy/demo hygiene check confirms no fabricated proof or unsupported claims.
-  - `npm run build` passes.
-
-## H-03 — Make “See sample audit” the consistent secondary CTA
+### 2a. H-03 — Make “See sample audit” the consistent secondary CTA
 
 - **Impact**: High
 - **Effort**: Low
@@ -99,7 +90,23 @@ Each implementation PR spawned from this backlog is done only when:
   - Click/smoke checks confirm primary and secondary CTA destinations.
   - `npm run build` passes.
 
-## H-04 — Tighten homepage nav and reduce decision overload
+### 2b. L-04 — CTA wording consistency polish
+
+- **Impact**: Low
+- **Effort**: Low
+- **Category**: Copy / Conversion
+- **Why this matters**: Small wording variations are not fatal, but consistency helps users understand the next step.
+- **Scope**:
+  - Standardize primary CTA language around `Request a private audit` unless a page context intentionally needs a variant.
+- **Acceptance criteria**:
+  - Primary CTA variants are intentional and documented in PR notes.
+  - Secondary CTA wording remains clearly lower commitment.
+  - No page-specific CTA becomes misleading.
+- **Definition of Done**:
+  - CTA label inventory is included in the PR notes.
+  - `npm run build` passes.
+
+### 3. H-04 — Tighten homepage nav and reduce decision overload
 
 - **Impact**: High
 - **Effort**: Medium
@@ -119,7 +126,7 @@ Each implementation PR spawned from this backlog is done only when:
   - Internal link checks confirm no broken or orphaned key pages.
   - `npm run build` passes.
 
-## H-05 — Make persona pages discoverable from homepage fit cards
+### 4. H-05 — Make persona pages discoverable from homepage fit cards
 
 - **Impact**: High
 - **Effort**: Low
@@ -138,25 +145,41 @@ Each implementation PR spawned from this backlog is done only when:
   - Mobile layout check confirms segment links do not clutter cards.
   - `npm run build` passes.
 
-## H-06 — Clarify acceptable audit-form URLs
+### 5. L-03 — Footer grouping cleanup
 
-- **Impact**: High
-- **Effort**: Low
-- **Category**: Conversion / Copy
-- **Why this matters**: `Current URL` may block races that only have a RunSignup/Race Roster/BikeReg listing or a placeholder page.
+- **Impact**: Low
+- **Effort**: Medium
+- **Category**: Navigation / Visual
+- **Why this matters**: Footer grouping can help agents and users understand which pages are buyer resources vs. customer kickoff resources.
 - **Scope**:
-  - Add helper copy near `Current URL` explaining that a race website, RunSignup page, registration-platform page, or best available public link is acceptable.
-  - Avoid changing data-capture fields unless Steve approves.
+  - Group footer links into Buyer resources, Customer kickoff, and Company/Credibility if the current footer supports it.
 - **Acceptance criteria**:
-  - Field label/helper copy reduces uncertainty for platform-only races.
-  - Existing field name, required status, endpoint payload, honeypot, success/error flow, and routing are preserved unless explicitly scoped.
-  - Copy remains concise on mobile.
+  - Footer groups make page purpose clearer.
+  - Key pages remain accessible.
+  - Mobile footer remains compact and readable.
 - **Definition of Done**:
-  - Form-adjacent copy is updated only.
-  - Empty-required-field validation and form rendering are smoke-checked.
+  - Footer links are smoke-checked.
   - `npm run build` passes.
 
-## H-07 — Reframe public `/intake/` and `/asset-checklist/` as customer kickoff pages
+### 6. L-01 — Add redirects for likely guessed paths
+
+- **Impact**: Low
+- **Effort**: Low
+- **Category**: Technical / Navigation
+- **Why this matters**: Common guessed paths currently return 404 even though they map to real sections/pages.
+- **Scope**:
+  - Add redirects for likely paths such as `/pricing/`, `/audit/`, `/private-audit/`, `/checklist/`, `/thank-you/` if appropriate.
+- **Acceptance criteria**:
+  - Redirects point to the most relevant live page/section.
+  - No existing route is broken.
+  - Redirect behavior works in local/build/deploy environment.
+- **Definition of Done**:
+  - Redirects are tested with status/location checks.
+  - `npm run build` passes.
+
+## Phase 2 — Customer/prospect path separation and form confidence
+
+### 7. H-07 — Reframe public `/intake/` and `/asset-checklist/` as customer kickoff pages
 
 - **Impact**: High
 - **Effort**: Low
@@ -176,7 +199,183 @@ Each implementation PR spawned from this backlog is done only when:
   - Client-side required-field behavior on intake is smoke-checked without submitting real data.
   - `npm run build` passes.
 
-## H-08 — Add a RunSignup / registration-platform flow diagram
+### 8. L-02 — Decide whether customer kickoff pages should be noindex
+
+- **Impact**: Low
+- **Effort**: Low
+- **Category**: Technical / Navigation
+- **Why this matters**: `/intake/` and `/asset-checklist/` are useful publicly only if framed correctly; otherwise search discovery may confuse prospects.
+- **Scope**:
+  - Decide with Steve whether these should remain indexed, be noindexed, or simply be reframed.
+- **Acceptance criteria**:
+  - Decision is recorded in the PR or docs.
+  - If noindex is implemented, metadata is correct and does not affect buyer pages.
+  - If pages remain indexed, copy clearly identifies them as kickoff/customer resources.
+- **Definition of Done**:
+  - Metadata/rendered HTML is checked if changed.
+  - `npm run build` passes.
+
+### 9. M-06 — Improve post-deposit handoff clarity
+
+- **Impact**: Medium
+- **Effort**: Low
+- **Category**: Conversion / Technical
+- **Why this matters**: After deposit, the customer should immediately understand intake/assets next steps.
+- **Scope**:
+  - Improve deposit success state and supporting copy/links to `/intake/`, `/asset-checklist/`, and support.
+  - Do not alter Stripe behavior unless explicitly scoped.
+- **Acceptance criteria**:
+  - `?deposit=success` state clearly explains what happens next.
+  - Links to intake and asset checklist are present where appropriate.
+  - Copy states the build timeline starts after complete intake details and usable assets are received.
+  - Cancelled state remains reassuring and routes back to pricing/audit.
+- **Definition of Done**:
+  - Success and cancelled query states are smoke-tested.
+  - `npm run build` passes.
+
+### 10. H-06 — Clarify acceptable audit-form URLs
+
+- **Impact**: High
+- **Effort**: Low
+- **Category**: Conversion / Copy
+- **Why this matters**: `Current URL` may block races that only have a RunSignup/Race Roster/BikeReg listing or a placeholder page.
+- **Scope**:
+  - Add helper copy near `Current URL` explaining that a race website, RunSignup page, registration-platform page, or best available public link is acceptable.
+  - Avoid changing data-capture fields unless Steve approves.
+- **Acceptance criteria**:
+  - Field label/helper copy reduces uncertainty for platform-only races.
+  - Existing field name, required status, endpoint payload, honeypot, success/error flow, and routing are preserved unless explicitly scoped.
+  - Copy remains concise on mobile.
+- **Definition of Done**:
+  - Form-adjacent copy is updated only.
+  - Empty-required-field validation and form rendering are smoke-checked.
+  - `npm run build` passes.
+
+### 11. M-07 — Add support/contact fallback near forms
+
+- **Impact**: Medium
+- **Effort**: Low
+- **Category**: Conversion / Trust
+- **Why this matters**: If a form fails or a director has a non-standard situation, they need a fallback.
+- **Scope**:
+  - Add concise support/contact fallback near audit and intake forms.
+  - Keep spam exposure and existing Resend/Supabase flow in mind.
+- **Acceptance criteria**:
+  - Audit form has a clear fallback if submission fails or the URL situation is unusual.
+  - Intake form has a customer-support fallback.
+  - Error-state copy remains consistent with visible fallback.
+- **Definition of Done**:
+  - Form error/success copy is checked for consistency.
+  - `npm run build` passes.
+
+### 12. L-05 — Add “no sales call required for the audit” reassurance if true
+
+- **Impact**: Low
+- **Effort**: Low
+- **Category**: Conversion / Copy
+- **Why this matters**: This may reduce form anxiety, but only if it matches Steve's actual sales process.
+- **Scope**:
+  - Ask Steve whether the audit can be promised without a required sales call.
+  - If approved, add concise reassurance near the audit form.
+- **Acceptance criteria**:
+  - Steve confirms the claim before implementation.
+  - Copy does not prevent StartLine from offering a call when useful.
+  - Form-adjacent copy remains concise.
+- **Definition of Done**:
+  - Approval note is referenced in PR body.
+  - `npm run build` passes.
+
+## Phase 3 — Pricing, scope, and qualification clarity
+
+### 13. M-01 — Add package recommendation guidance before pricing cards
+
+- **Impact**: Medium
+- **Effort**: Low
+- **Category**: Pricing / Copy
+- **Why this matters**: Transparent prices are good, but directors may not know which package fits their race.
+- **Scope**:
+  - Add concise “which package usually fits” guidance without changing package names, prices, inclusions, or payment terms.
+- **Acceptance criteria**:
+  - Starter, Standard, and Premium each have plain-English fit guidance.
+  - Standard can be identified as common/recommended only if existing strategy supports that.
+  - Premium remains proposal-gated.
+  - No package scope/pricing changes are made without Steve approval.
+- **Definition of Done**:
+  - Pricing copy is updated and checked against existing billing/payment language.
+  - `npm run build` passes.
+
+### 14. M-02 — Make Premium proposal gating visually distinct
+
+- **Impact**: Medium
+- **Effort**: Low
+- **Category**: Pricing / Trust
+- **Why this matters**: Premium mentions deposit math but requires proposal review, which should feel intentionally different from Starter/Standard.
+- **Scope**:
+  - Clarify Premium as proposal-first and not a direct checkout path.
+  - Keep deposit/final-payment language consistent with current policy.
+- **Acceptance criteria**:
+  - Premium card clearly says proposal/audit review comes before any deposit.
+  - Starter and Standard direct-deposit paths remain distinct.
+  - No Premium Stripe link is implied unless one exists and is approved.
+- **Definition of Done**:
+  - Pricing-card CTA and helper copy are smoke-checked.
+  - `npm run build` passes.
+
+### 15. M-05 — Clarify first-year vs. after-year-one cost boundary
+
+- **Impact**: Medium
+- **Effort**: Medium
+- **Category**: Pricing / Trust
+- **Why this matters**: Buyers need to know what is included in year one and what may cost extra later.
+- **Scope**:
+  - Add a compact comparison or callout linking pricing to after-year-one services.
+  - Avoid required-retainer framing.
+- **Acceptance criteria**:
+  - First-year build/support scope is clear.
+  - Optional future services are clearly optional and scoped.
+  - Existing after-year-one policy is not changed without Steve approval.
+- **Definition of Done**:
+  - Pricing and after-year-one page language are checked for consistency.
+  - `npm run build` passes.
+
+### 16. M-04 — Add “who this is not for” qualification copy
+
+- **Impact**: Medium
+- **Effort**: Low
+- **Category**: Copy / Trust
+- **Why this matters**: Clear disqualification can increase trust and reduce poor-fit leads.
+- **Scope**:
+  - Add concise not-for guidance, such as races needing custom registration software, urgent same-day rebuilds, unsupported real-time race ops, or unlimited edits.
+- **Acceptance criteria**:
+  - Copy is respectful and does not reject good-fit prospects accidentally.
+  - It reinforces StartLine as a public marketing website layer.
+  - It does not introduce new legal/service commitments.
+- **Definition of Done**:
+  - Copy is reviewed for tone and claim safety.
+  - `npm run build` passes.
+
+## Phase 4 — Trust, platform proof, and proof substitutes
+
+### 17. H-02 — Add compact trust/proof near the first CTA
+
+- **Impact**: High
+- **Effort**: Low
+- **Category**: Trust / Conversion
+- **Why this matters**: The site is honest about not having fake testimonials, but skeptical buyers need a credibility bridge before submitting a form.
+- **Scope**:
+  - Add a concise trust strip near the hero or first audit CTA.
+  - Use approved-safe proof only: founder/process credibility, BMQR context if appropriate, sample audit, transparent pricing, no platform switch, fictional-example disclaimer.
+- **Acceptance criteria**:
+  - Trust block appears before or near the first primary CTA follow-up.
+  - It includes at least 3 concrete, supportable trust cues.
+  - It does not imply real customers, testimonials, or case studies unless Steve-approved assets exist.
+  - It links or points to the sample audit as proof of deliverable shape.
+- **Definition of Done**:
+  - Trust block is implemented with evidence-safe language.
+  - Copy/demo hygiene check confirms no fabricated proof or unsupported claims.
+  - `npm run build` passes.
+
+### 18. H-08 — Add a RunSignup / registration-platform flow diagram
 
 - **Impact**: High
 - **Effort**: Medium
@@ -195,7 +394,41 @@ Each implementation PR spawned from this backlog is done only when:
   - Accessibility/text fallback is present.
   - `npm run build` passes.
 
-## H-09 — Trim homepage section density before the audit form
+### 19. M-08 — Add segment-specific proof substitutes to persona pages
+
+- **Impact**: Medium
+- **Effort**: Medium
+- **Category**: Trust / Copy
+- **Why this matters**: Persona pages are good, but they can feel generic without segment-specific proof or process cues.
+- **Scope**:
+  - Add evidence-safe proof substitutes per segment: community logistics checklist, marathon certification/logistics review cues, RunSignup handoff map, race-director workload cues.
+- **Acceptance criteria**:
+  - Each persona page includes a segment-specific reason to trust StartLine's process.
+  - Examples remain fictional/generic unless approved.
+  - CTAs still route to audit/sample audit.
+- **Definition of Done**:
+  - Persona pages are smoke-checked for internal links and CTA destinations.
+  - `npm run build` passes.
+
+### 20. M-03 — Strengthen checklist-to-audit conversion bridge
+
+- **Impact**: Medium
+- **Effort**: Low
+- **Category**: Conversion / Copy
+- **Why this matters**: The checklist is useful, but it should more clearly tell a self-auditing director when to request help.
+- **Scope**:
+  - Add a clear bridge such as “If you marked 2+ yellow/red areas, request a private audit.”
+- **Acceptance criteria**:
+  - Checklist page helps users interpret their result.
+  - Audit CTA appears after meaningful self-diagnosis moments.
+  - Copy does not shame existing sites or overstate urgency.
+- **Definition of Done**:
+  - Checklist path and CTA destination are click-tested.
+  - `npm run build` passes.
+
+## Phase 5 — Homepage density and final mobile QA
+
+### 21. H-09 — Trim homepage section density before the audit form
 
 - **Impact**: High
 - **Effort**: Medium
@@ -219,141 +452,7 @@ Each implementation PR spawned from this backlog is done only when:
 
 # Medium Impact backlog
 
-## M-01 — Add package recommendation guidance before pricing cards
-
-- **Impact**: Medium
-- **Effort**: Low
-- **Category**: Pricing / Copy
-- **Why this matters**: Transparent prices are good, but directors may not know which package fits their race.
-- **Scope**:
-  - Add concise “which package usually fits” guidance without changing package names, prices, inclusions, or payment terms.
-- **Acceptance criteria**:
-  - Starter, Standard, and Premium each have plain-English fit guidance.
-  - Standard can be identified as common/recommended only if existing strategy supports that.
-  - Premium remains proposal-gated.
-  - No package scope/pricing changes are made without Steve approval.
-- **Definition of Done**:
-  - Pricing copy is updated and checked against existing billing/payment language.
-  - `npm run build` passes.
-
-## M-02 — Make Premium proposal gating visually distinct
-
-- **Impact**: Medium
-- **Effort**: Low
-- **Category**: Pricing / Trust
-- **Why this matters**: Premium mentions deposit math but requires proposal review, which should feel intentionally different from Starter/Standard.
-- **Scope**:
-  - Clarify Premium as proposal-first and not a direct checkout path.
-  - Keep deposit/final-payment language consistent with current policy.
-- **Acceptance criteria**:
-  - Premium card clearly says proposal/audit review comes before any deposit.
-  - Starter and Standard direct-deposit paths remain distinct.
-  - No Premium Stripe link is implied unless one exists and is approved.
-- **Definition of Done**:
-  - Pricing-card CTA and helper copy are smoke-checked.
-  - `npm run build` passes.
-
-## M-03 — Strengthen checklist-to-audit conversion bridge
-
-- **Impact**: Medium
-- **Effort**: Low
-- **Category**: Conversion / Copy
-- **Why this matters**: The checklist is useful, but it should more clearly tell a self-auditing director when to request help.
-- **Scope**:
-  - Add a clear bridge such as “If you marked 2+ yellow/red areas, request a private audit.”
-- **Acceptance criteria**:
-  - Checklist page helps users interpret their result.
-  - Audit CTA appears after meaningful self-diagnosis moments.
-  - Copy does not shame existing sites or overstate urgency.
-- **Definition of Done**:
-  - Checklist path and CTA destination are click-tested.
-  - `npm run build` passes.
-
-## M-04 — Add “who this is not for” qualification copy
-
-- **Impact**: Medium
-- **Effort**: Low
-- **Category**: Copy / Trust
-- **Why this matters**: Clear disqualification can increase trust and reduce poor-fit leads.
-- **Scope**:
-  - Add concise not-for guidance, such as races needing custom registration software, urgent same-day rebuilds, unsupported real-time race ops, or unlimited edits.
-- **Acceptance criteria**:
-  - Copy is respectful and does not reject good-fit prospects accidentally.
-  - It reinforces StartLine as a public marketing website layer.
-  - It does not introduce new legal/service commitments.
-- **Definition of Done**:
-  - Copy is reviewed for tone and claim safety.
-  - `npm run build` passes.
-
-## M-05 — Clarify first-year vs. after-year-one cost boundary
-
-- **Impact**: Medium
-- **Effort**: Medium
-- **Category**: Pricing / Trust
-- **Why this matters**: Buyers need to know what is included in year one and what may cost extra later.
-- **Scope**:
-  - Add a compact comparison or callout linking pricing to after-year-one services.
-  - Avoid required-retainer framing.
-- **Acceptance criteria**:
-  - First-year build/support scope is clear.
-  - Optional future services are clearly optional and scoped.
-  - Existing after-year-one policy is not changed without Steve approval.
-- **Definition of Done**:
-  - Pricing and after-year-one page language are checked for consistency.
-  - `npm run build` passes.
-
-## M-06 — Improve post-deposit handoff clarity
-
-- **Impact**: Medium
-- **Effort**: Low
-- **Category**: Conversion / Technical
-- **Why this matters**: After deposit, the customer should immediately understand intake/assets next steps.
-- **Scope**:
-  - Improve deposit success state and supporting copy/links to `/intake/`, `/asset-checklist/`, and support.
-  - Do not alter Stripe behavior unless explicitly scoped.
-- **Acceptance criteria**:
-  - `?deposit=success` state clearly explains what happens next.
-  - Links to intake and asset checklist are present where appropriate.
-  - Copy states the build timeline starts after complete intake details and usable assets are received.
-  - Cancelled state remains reassuring and routes back to pricing/audit.
-- **Definition of Done**:
-  - Success and cancelled query states are smoke-tested.
-  - `npm run build` passes.
-
-## M-07 — Add support/contact fallback near forms
-
-- **Impact**: Medium
-- **Effort**: Low
-- **Category**: Conversion / Trust
-- **Why this matters**: If a form fails or a director has a non-standard situation, they need a fallback.
-- **Scope**:
-  - Add concise support/contact fallback near audit and intake forms.
-  - Keep spam exposure and existing Resend/Supabase flow in mind.
-- **Acceptance criteria**:
-  - Audit form has a clear fallback if submission fails or the URL situation is unusual.
-  - Intake form has a customer-support fallback.
-  - Error-state copy remains consistent with visible fallback.
-- **Definition of Done**:
-  - Form error/success copy is checked for consistency.
-  - `npm run build` passes.
-
-## M-08 — Add segment-specific proof substitutes to persona pages
-
-- **Impact**: Medium
-- **Effort**: Medium
-- **Category**: Trust / Copy
-- **Why this matters**: Persona pages are good, but they can feel generic without segment-specific proof or process cues.
-- **Scope**:
-  - Add evidence-safe proof substitutes per segment: community logistics checklist, marathon certification/logistics review cues, RunSignup handoff map, race-director workload cues.
-- **Acceptance criteria**:
-  - Each persona page includes a segment-specific reason to trust StartLine's process.
-  - Examples remain fictional/generic unless approved.
-  - CTAs still route to audit/sample audit.
-- **Definition of Done**:
-  - Persona pages are smoke-checked for internal links and CTA destinations.
-  - `npm run build` passes.
-
-## M-09 — Review mobile section density and tap-target usability
+### 22. M-09 — Review mobile section density and tap-target usability
 
 - **Impact**: Medium
 - **Effort**: Medium
@@ -375,86 +474,7 @@ Each implementation PR spawned from this backlog is done only when:
 
 # Low Impact backlog
 
-## L-01 — Add redirects for likely guessed paths
-
-- **Impact**: Low
-- **Effort**: Low
-- **Category**: Technical / Navigation
-- **Why this matters**: Common guessed paths currently return 404 even though they map to real sections/pages.
-- **Scope**:
-  - Add redirects for likely paths such as `/pricing/`, `/audit/`, `/private-audit/`, `/checklist/`, `/thank-you/` if appropriate.
-- **Acceptance criteria**:
-  - Redirects point to the most relevant live page/section.
-  - No existing route is broken.
-  - Redirect behavior works in local/build/deploy environment.
-- **Definition of Done**:
-  - Redirects are tested with status/location checks.
-  - `npm run build` passes.
-
-## L-02 — Decide whether customer kickoff pages should be noindex
-
-- **Impact**: Low
-- **Effort**: Low
-- **Category**: Technical / Navigation
-- **Why this matters**: `/intake/` and `/asset-checklist/` are useful publicly only if framed correctly; otherwise search discovery may confuse prospects.
-- **Scope**:
-  - Decide with Steve whether these should remain indexed, be noindexed, or simply be reframed.
-- **Acceptance criteria**:
-  - Decision is recorded in the PR or docs.
-  - If noindex is implemented, metadata is correct and does not affect buyer pages.
-  - If pages remain indexed, copy clearly identifies them as kickoff/customer resources.
-- **Definition of Done**:
-  - Metadata/rendered HTML is checked if changed.
-  - `npm run build` passes.
-
-## L-03 — Footer grouping cleanup
-
-- **Impact**: Low
-- **Effort**: Medium
-- **Category**: Navigation / Visual
-- **Why this matters**: Footer grouping can help agents and users understand which pages are buyer resources vs. customer kickoff resources.
-- **Scope**:
-  - Group footer links into Buyer resources, Customer kickoff, and Company/Credibility if the current footer supports it.
-- **Acceptance criteria**:
-  - Footer groups make page purpose clearer.
-  - Key pages remain accessible.
-  - Mobile footer remains compact and readable.
-- **Definition of Done**:
-  - Footer links are smoke-checked.
-  - `npm run build` passes.
-
-## L-04 — CTA wording consistency polish
-
-- **Impact**: Low
-- **Effort**: Low
-- **Category**: Copy / Conversion
-- **Why this matters**: Small wording variations are not fatal, but consistency helps users understand the next step.
-- **Scope**:
-  - Standardize primary CTA language around `Request a private audit` unless a page context intentionally needs a variant.
-- **Acceptance criteria**:
-  - Primary CTA variants are intentional and documented in PR notes.
-  - Secondary CTA wording remains clearly lower commitment.
-  - No page-specific CTA becomes misleading.
-- **Definition of Done**:
-  - CTA label inventory is included in the PR notes.
-  - `npm run build` passes.
-
-## L-05 — Add “no sales call required for the audit” reassurance if true
-
-- **Impact**: Low
-- **Effort**: Low
-- **Category**: Conversion / Copy
-- **Why this matters**: This may reduce form anxiety, but only if it matches Steve's actual sales process.
-- **Scope**:
-  - Ask Steve whether the audit can be promised without a required sales call.
-  - If approved, add concise reassurance near the audit form.
-- **Acceptance criteria**:
-  - Steve confirms the claim before implementation.
-  - Copy does not prevent StartLine from offering a call when useful.
-  - Form-adjacent copy remains concise.
-- **Definition of Done**:
-  - Approval note is referenced in PR body.
-  - `npm run build` passes.
+---
 
 ## Blocked / approval-dependent proof opportunities
 
