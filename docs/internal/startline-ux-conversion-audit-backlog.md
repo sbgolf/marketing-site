@@ -98,7 +98,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Surface target segments and pain points more clearly: community races, marathons, multi-distance weekends, sponsor-heavy events, platform-hosted races needing a stronger marketing layer, and directors who need a reliable launch/update process.
 - **Acceptance criteria**: Segments are visible and scannable; copy helps prospects self-identify; no segment feels excluded unintentionally; language supports SEO without keyword stuffing; CTAs from the section point to the audit/mockup path.
 - **Clarifying questions before starting**: None unless segment priority changes.
-- **Status**: In review via `feat/p0-06-scannable-audience` — makes the homepage “who this is for” section more scannable, adds fit signals for each segment, includes launch/update-process directors, and points section CTAs to the private audit/sample audit path.
+- **Status**: Completed in PR #56 — makes the homepage “who this is for” section more scannable, adds fit signals for each segment, includes launch/update-process directors, and points section CTAs to the private audit/sample audit path.
 
 ### P1-07 — Improve narrative flow from problem to solution to action
 
@@ -108,6 +108,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Review section order so the page moves from race-director problem to StartLine solution, proof/process, package fit, and CTA. Remove duplicated or competing messages where they weaken momentum.
 - **Acceptance criteria**: Page has a clear conversion narrative; each section has a unique job; CTAs appear after persuasive sections; no major content needed for a decision is buried; mobile scroll order still makes sense.
 - **Clarifying questions before starting**: Ask Steve before removing entire public sections.
+- **Status**: In review via `feat/p1-07-narrative-flow` — reorders the homepage narrative from problem to outcomes/fit, examples/proof, process, pricing/package fit, and private-audit action without removing public sections.
 
 ### P1-08 — Add objection handling for common race-director concerns
 
