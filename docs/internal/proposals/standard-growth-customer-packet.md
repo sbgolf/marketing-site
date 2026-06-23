@@ -5,7 +5,7 @@ Use this packet after a discovery call when the race is a fit for the default St
 - **Standard one-time first-year race-cycle package:** $2,500
 - **First-year package deposit to start:** $1,250 through Stripe Checkout
 - **Final package balance:** $1,250 invoiced through Stripe at launch, net 7
-- **After year one:** optional one-time scoped services only; no required monthly retainer
+- **After year one:** optional one-time scoped services only
 
 Do not send this packet until Steve has approved the recommendation for that prospect.
 
@@ -34,7 +34,7 @@ The short version:
 - We build a fast, mobile-first race website designed to help runners find the race, trust the details, and click through to register.
 - Your registration platform stays in place; the website sends runners into it.
 - Standard is **$2,500** for the first-year package. A **$1,250 first-year package deposit** starts the project, and the remaining **$1,250** is invoiced at launch.
-- There is **no required monthly retainer**. After the first race cycle, optional one-time scoped services are available if you need rollover, SEO, analytics, sponsor, or conversion updates.
+- After the first race cycle, optional one-time scoped services are available if you need rollover, SEO, analytics, sponsor, or conversion updates.
 
 I put the proposal here:
 
@@ -92,7 +92,7 @@ We do **not** replace your registration platform. We build the website that send
 
 ## After year one
 
-There is no required monthly retainer. Optional one-time scoped services can be quoted separately after the first race cycle for annual rollover, SEO checks, analytics reviews, sponsor visibility refreshes, pre-race conversion tune-ups, or specific website updates.
+Optional one-time scoped services can be quoted separately after the first race cycle for annual rollover, SEO checks, analytics reviews, sponsor visibility refreshes, pre-race conversion tune-ups, or specific website updates.
 
 ## Investment
 

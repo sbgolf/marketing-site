@@ -47,7 +47,7 @@ Logged from Steve's request to keep the next StartLine Sites opportunities track
     - Primary goal: prevent backend billing assumptions from drifting away from public pricing.
     - Output: `docs/internal/billing/stripe-monthly-billing-automation-audit.md` and dormant-by-default guardrails for legacy monthly subscription automation.
 
-11. **Pricing-copy consistency tests**
+11. **Pricing-copy consistency tests** — In review in this PR
     - Add lightweight checks to prevent forbidden public monthly-retainer phrasing from returning unintentionally.
     - Primary goal: protect the pricing strategy in future PRs.
 
