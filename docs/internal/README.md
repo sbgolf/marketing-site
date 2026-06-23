@@ -11,6 +11,7 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - Invoice wording and legacy monthly start policy: `billing/invoice-wording-and-monthly-start-policy.md`
 - Stripe/monthly billing automation audit: `billing/stripe-monthly-billing-automation-audit.md`
 - Automation audit/status: `automation-audit-deposit-to-kickoff.md`
+- StartLine UX conversion audit backlog: `startline-ux-conversion-audit-backlog.md`
 - Service agreement draft: `legal/service-agreement-draft.md`
 - Service agreement source notes: `legal/source-notes.md`
 - Current blockers: `blockers.md`
