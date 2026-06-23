@@ -132,27 +132,27 @@ export const outreachLandingPages: OutreachLandingPage[] = [
   {
     slug: 'for-runsignup-races',
     eyebrow: 'For RunSignup races',
-    title: 'A stronger marketing layer around your existing RunSignup registration flow.',
+    title: 'A clearer race website layer for races already using RunSignup.',
     description:
-      'StartLine Sites helps RunSignup races keep checkout in place while adding a faster, SEO-optimized website layer for trust, logistics, sponsors, and tracked registration clicks.',
+      'StartLine Sites helps RunSignup races keep registration, payments, waivers, and participant management in RunSignup while adding a faster, SEO-optimized website layer for search visibility, runner trust, sponsors, and tracked registration clicks.',
     heroLead:
-      'RunSignup can remain the registration and payment system. StartLine Sites builds the race website layer around it: search-friendly pages, clearer event context, sponsor value, FAQ answers, and direct tracked links into registration.',
-    audience: 'Race directors using RunSignup who want stronger SEO, storytelling, sponsor visibility, and mobile-first race details.',
+      'RunSignup can remain the registration and payment system. StartLine Sites complements it with the public marketing layer runners see before checkout: search-friendly pages, clear race context, sponsor value, FAQ answers, and direct tracked links into the right RunSignup actions.',
+    audience: 'Race directors using RunSignup who want stronger SEO, runner trust, sponsor visibility, and mobile-first race details before the registration click.',
     primaryCta: 'Request a private audit',
     secondaryCta: 'Review the checklist',
     proofLabel: 'Generic platform-fit example',
     proofTitle: 'Keep RunSignup for checkout. Use StartLine for the pre-registration decision path.',
     proofCopy:
-      'This is a generic positioning example, not customer proof. The goal is not to replace your registration platform. The goal is to make more of the runner-facing context indexable, organized, fast, and measurable before the final click into RunSignup.',
+      'This is a generic positioning example, not customer proof. The goal is not to replace RunSignup. The private audit reviews the current public website, the RunSignup listing, and the outbound registration path so StartLine can recommend the smallest useful marketing-site layer around checkout.',
     painPoints: [
-      'The registration listing carries homepage, race-story, FAQ, and sponsor context in addition to checkout.',
-      'Search content, local story, and race logistics are thinner than what runners need before committing.',
-      'The race team cannot easily see which website sections are sending serious runners into registration.'
+      'The RunSignup listing may be carrying homepage, race-story, FAQ, and sponsor context in addition to registration operations.',
+      'Search content, local story, and race logistics may be thinner than what runners need before committing.',
+      'The race team may not be able to distinguish which website sections send serious runners into RunSignup.'
     ],
     outcomes: [
       {
         title: 'SEO pages before checkout',
-        copy: 'Create a crawlable race website with clear event language, schema-friendly structure, and internal paths.'
+        copy: 'Create a crawlable race website with clear event language, schema-friendly structure, and internal paths that point runners toward RunSignup.'
       },
       {
         title: 'Cleaner runner decisions',
@@ -160,25 +160,25 @@ export const outreachLandingPages: OutreachLandingPage[] = [
       },
       {
         title: 'Tracked outbound clicks',
-        copy: 'Separate registration CTA clicks from general outbound links so the race team can understand intent.'
+        copy: 'Separate RunSignup registration CTA clicks from general outbound links so the race team can understand intent without changing checkout systems.'
       }
     ],
     checklist: [
-      'Primary CTAs link to the right RunSignup page and use consistent wording.',
+      'Primary CTAs link to the right RunSignup registration action and use consistent wording.',
       'Registration, donation, volunteer, results, and transfer paths are not competing with each other.',
       'Event details on the website match the RunSignup listing and race-week emails.',
-      'Analytics can distinguish RunSignup registration clicks from other outbound traffic.'
+      'Analytics can distinguish RunSignup registration clicks from other outbound traffic without implying a guaranteed registration lift.'
     ],
     faq: [
       {
         question: 'Do we have to leave RunSignup?',
         answer:
-          'No. StartLine is designed to work as the marketing site in front of the platform you already use for registration, payment, donations, and participant management.'
+          'No. StartLine is designed to work as the marketing/search/trust layer in front of RunSignup while RunSignup continues to handle registration, payment, donations, waivers, transfers, and participant management.'
       },
       {
         question: 'Can StartLine deep-link to specific RunSignup actions?',
         answer:
-          'Yes, when the public links are available. CTAs can point to registration, donation, volunteer, results, or race info paths while keeping the main registration step prioritized.'
+          'Yes, when the public links are available. CTAs can point to registration, donation, volunteer, results, or race info paths while keeping the main RunSignup registration step prioritized.'
       }
     ]
   },
