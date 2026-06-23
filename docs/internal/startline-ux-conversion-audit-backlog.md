@@ -118,7 +118,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Address concerns such as “we already use RunSignup/Bikereg/etc.”, “we have a volunteer webmaster,” “we only need updates once a year,” “what if our race details are not final?”, “can sponsors/charity content be included?”, and “what happens after year one?”
 - **Acceptance criteria**: FAQ/objection copy is respectful and concise; answers reinforce StartLine as a marketing layer rather than replacing registration platforms; after-year-one language matches current policy; no unsupported promises or legal commitments are introduced.
 - **Clarifying questions before starting**: Ask Steve if any objection answer affects service scope or policy.
-- **Status**: In review via `feat/p1-08-objection-handling` — expands homepage FAQ objection handling while keeping service scope/policy unchanged.
+- **Status**: Completed in PR #58 — expanded homepage FAQ objection handling while keeping service scope/policy unchanged.
 
 ### P1-09 — Create a stronger sample deliverable path
 
@@ -127,7 +127,8 @@ Every backlog-item PR must include evidence that:
 - **Category**: Proof, lead magnet, conversion support
 - **Details/scope**: Make the fictional sample audit/example deliverable easier to find and use in outreach. Consider a dedicated section or page that previews what StartLine notices: registration CTA clarity, mobile speed, logistics gaps, sponsor visibility, search basics, and race-week readiness.
 - **Acceptance criteria**: Sample is clearly fictional/generic; it demonstrates the value of the audit without disparaging existing race sites; linked from relevant CTA/supporting areas; can be reused in outreach; no real customer data is used.
-- **Clarifying questions before starting**: Ask Steve if this should be a public page, downloadable asset, or inline section.
+- **Clarifying questions before starting**: Public page option approved by Steve.
+- **Status**: In review via `feat/p1-09-sample-deliverable-page` — adds a public fictional/generic sample audit deliverable page and links it from relevant supporting areas.
 
 ### P1-10 — Tighten CTA labels and placement across pages
 
