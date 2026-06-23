@@ -29,5 +29,22 @@ test('mobile CSS stacks scan units and CTAs at narrow widths', () => {
   assert.match(indexSource, /@media\(max-width:520px\)/);
   assert.match(indexSource, /\.scan-list,\.audit-scan-list\{grid-template-columns:1fr\}/);
   assert.match(indexSource, /\.section-cta\{display:grid\}/);
+  assert.match(indexSource, /\.segment-grid\{grid-template-columns:1fr\}/);
+  assert.match(indexSource, /\.segment-link\{align-self:stretch;justify-content:center;text-align:center\}/);
   assert.match(baseCss, /\.lead-stack\{display:grid;gap:12px/);
+});
+
+test('homepage fit cards link to public persona pages without replacing audit CTA', () => {
+  for (const [href, label] of [
+    ['/for-community-races/', 'Explore community race website fit'],
+    ['/for-marathons/', 'Explore marathon website fit'],
+    ['/for-runsignup-races/', 'Explore RunSignup marketing layer fit'],
+    ['/for-race-directors/', 'Explore race director website fit']
+  ]) {
+    assert.match(indexSource, new RegExp(`personaHref: '${href}'`));
+    assert.match(indexSource, new RegExp(`personaLabel: '${label}'`));
+  }
+
+  assert.match(indexSource, /<a class="segment-link" href=\{item\.personaHref\}>\{item\.personaLabel\} →<\/a>/);
+  assert.match(indexSource, /<div class="fit-actions"><button class="btn btn-accent" data-scroll="audit">Request a private audit<\/button><a class="btn btn-ghost" href="\/sample-audit\/">See sample audit<\/a><\/div>/);
 });
