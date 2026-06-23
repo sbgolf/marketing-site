@@ -34,10 +34,10 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     audience: '5Ks, 10Ks, half marathons, charity runs, local road races, and annual community events.',
     primaryCta: 'Request a community race audit',
     secondaryCta: 'Review the race website checklist',
-    proofLabel: 'Community template fit',
+    proofLabel: 'Fictional community template fit',
     proofTitle: 'Keep the event approachable while making registration easier to find.',
     proofCopy:
-      'The Community template focuses on schedule, parking, packet pickup, local story, sponsor context, volunteer calls-to-action, and a direct route to the registration platform you already use.',
+      'This is a fictional/generic template example, not customer proof. The Community direction focuses on schedule, parking, packet pickup, local story, sponsor context, volunteer calls-to-action, and a direct route to the registration platform you already use.',
     painPoints: [
       'Race-day details exist, but runners have to scan multiple pages, PDFs, or social posts to find them.',
       'Sponsor and charity value is present, but not explained in a polished runner-facing section.',
@@ -87,10 +87,10 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     audience: 'Marathons, half marathons, certified road races, BQ-focused events, and multi-distance race weekends.',
     primaryCta: 'Request a marathon site audit',
     secondaryCta: 'See checklist areas',
-    proofLabel: 'Performance template fit',
+    proofLabel: 'Fictional performance template fit',
     proofTitle: 'Bring course confidence and registration clarity into one focused runner path.',
     proofCopy:
-      'The Performance template is built for clear course information, certification or qualifying context where applicable, pacer and timing details, travel notes, and repeated registration calls-to-action.',
+      'This is a fictional/generic template example, not customer proof. The Performance direction is built for clear course information, certification or qualifying context where applicable, pacer and timing details, travel notes, and repeated registration calls-to-action.',
     painPoints: [
       'Course, elevation, pacer, certification, and schedule details are split across PDFs or dated updates.',
       'Runners cannot quickly tell whether the race fits their goal, travel plan, or registration timeline.',
@@ -140,10 +140,10 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     audience: 'Race directors using RunSignup who want stronger SEO, storytelling, sponsor visibility, and mobile-first race details.',
     primaryCta: 'Request a RunSignup race audit',
     secondaryCta: 'Read the checklist',
-    proofLabel: 'No platform switch required',
+    proofLabel: 'Generic platform-fit example',
     proofTitle: 'Keep RunSignup for checkout. Use StartLine for the pre-registration decision path.',
     proofCopy:
-      'The goal is not to replace your registration platform. The goal is to make more of the runner-facing context indexable, organized, fast, and measurable before the final click into RunSignup.',
+      'This is a generic positioning example, not customer proof. The goal is not to replace your registration platform. The goal is to make more of the runner-facing context indexable, organized, fast, and measurable before the final click into RunSignup.',
     painPoints: [
       'The registration listing is doing too much work as the homepage, sales page, FAQ, and sponsor page.',
       'Search content, local story, and race logistics are thinner than what runners need before committing.',
@@ -193,10 +193,10 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     audience: 'Race directors, event producers, nonprofit race teams, timing partners, and endurance event organizers.',
     primaryCta: 'Request a private audit',
     secondaryCta: 'Use the race website checklist',
-    proofLabel: 'Director-first scope',
+    proofLabel: 'Generic director-first scope',
     proofTitle: 'A practical website layer for search, speed, signups, and race-week clarity.',
     proofCopy:
-      'StartLine focuses on what race directors need the site to do: explain the event, reduce avoidable questions, support sponsors, measure intent, and send runners to the existing registration path.',
+      'This is a generic scope example, not customer proof. StartLine focuses on what race directors need the site to do: explain the event, reduce avoidable questions, support sponsors, measure intent, and send runners to the existing registration path.',
     painPoints: [
       'Important race details are scattered across the website, registration platform, PDFs, social posts, and email updates.',
       'The site is hard to update or hard to trust on mobile when runner questions increase.',
