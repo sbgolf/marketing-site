@@ -47,6 +47,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Make the first screen answer “who is this for?”, “what outcome does StartLine create?”, “what do I do next?”, and “why trust this enough to request an audit?” Keep the locked positioning and avoid overpromising registration growth. Ensure the primary CTA is the audit/private mockup path and the secondary CTA supports lower-intent exploration.
 - **Acceptance criteria**: Hero clearly names race directors/race websites; primary CTA appears without scrolling on desktop and mobile; CTA label matches the audit/mockup offer; supporting line reinforces search/speed/signups without guarantees; secondary CTA does not compete with the primary path; mobile first screen remains readable and tap targets are usable.
 - **Clarifying questions before starting**: Confirm preferred primary CTA wording if changing from current copy.
+- **Status**: Completed in PR #50.
 
 ### P0-02 — Make the audit/mockup offer feel concrete and low-risk
 
@@ -56,7 +57,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Strengthen the explanation of what a prospect receives after requesting an audit/private mockup: review window, deliverable shape, what StartLine looks for, and what happens next. Reuse the existing fictional sample audit/example deliverable pattern rather than inventing real customer examples.
 - **Acceptance criteria**: Page explains deliverable contents, expected next step, and no-pressure nature; sample/example is clearly fictional or generic; form-adjacent copy reduces uncertainty; no promises of specific registration lift; success/confirmation copy remains consistent with the offer.
 - **Clarifying questions before starting**: Ask Steve if review timing or response window should be stated more specifically.
-- **Status**: In review via `feat/p0-02-audit-offer-clarity` — adds Steve-approved “within 2 business days” timing, clearer deliverable/next-step/no-pressure copy, fictional sample labeling, and aligned request-form success copy.
+- **Status**: Completed in PR #51 — adds Steve-approved “within 2 business days” timing, clearer deliverable/next-step/no-pressure copy, fictional sample labeling, and aligned request-form success copy.
 
 ### P0-03 — Add trust/proof without fake testimonials
 
@@ -67,6 +68,7 @@ Every backlog-item PR must include evidence that:
 - **Acceptance criteria**: Proof section includes non-fabricated credibility; any examples are fictional/generic; no real testimonial/customer/logo appears without approval; founder/BMQR language is factual and not inflated; blocked testimonial/customer-proof placeholders are not shown publicly as if real.
 - **Clarifying questions before starting**: Ask Steve whether a founder note should be signed by name and whether any real proof assets are approved.
 - **Blocked/needs Steve-approved assets**: Real testimonials, customer logos, named case studies, and real screenshots.
+- **Status**: Completed in PR #53 for evidence-safe founder/BMQR/process proof. Real testimonials, customer logos, named case studies, and real screenshots remain blocked until Steve approves assets.
 
 ### P0-04 — Strengthen form-section motivation and friction audit
 
@@ -76,6 +78,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Audit the request form and surrounding copy for required-field friction, privacy reassurance, expectations, CTA clarity, and mobile usability. Keep the form focused on what is necessary to evaluate the race site and send a useful response.
 - **Acceptance criteria**: Required fields are justified and minimal; labels are plain-language; CTA matches the requested action; privacy/no-spam reassurance appears near the form if appropriate; error/success states are understandable; mobile keyboard/input behavior is checked; existing data capture requirements are not broken.
 - **Clarifying questions before starting**: Ask before removing fields or changing lead-routing requirements.
+- **Status**: Completed in PR #54.
 
 ### P0-05 — Clarify pricing/package value and reduce purchase anxiety
 
@@ -85,6 +88,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Ensure package copy connects price to tangible deliverables, timeline, and race-director outcomes. Make deposit/final-payment language consistent with the existing billing SOP and avoid drift toward legacy monthly-retainer language.
 - **Acceptance criteria**: Pricing copy makes scope, first-year/race-cycle coverage, deposit/final-payment mechanics, and next steps clear; no forbidden monthly-retainer framing returns; package recommendations are easy to compare; claims remain supportable.
 - **Clarifying questions before starting**: Ask Steve before changing package names, prices, payment structure, or included services.
+- **Status**: In review via `p0-05-pricing-value-clarity` — clarifies package value, first-year scope, 50% deposit/final-invoice mechanics, Premium proposal gating, no-default-monthly-retainer language, and package comparison without changing package names, prices, payment structure, or included services.
 
 ### P0-06 — Make “who this is for” immediately scannable
 
