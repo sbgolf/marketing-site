@@ -201,7 +201,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Review outreach landing pages for message match with likely email/DM outreach angles. Segment pages should speak to the visitor's specific context while preserving shared StartLine positioning.
 - **Acceptance criteria**: Each outreach page has a clear audience, pain point, proof/process cue, and CTA; no page contains contradictory package/payment copy; generic pages do not pretend to be personalized to a real recipient.
 - **Clarifying questions before starting**: Ask Steve which outreach segment is highest priority.
-- **Status**: In review via `content/p3-16-runsignup-message-match` — prioritizes the RunSignup outreach segment per Steve's clarification and strengthens platform-complement message match without personalized/customer-specific claims.
+- **Status**: Completed in PR #67 — prioritizes the RunSignup outreach segment per Steve's clarification and strengthens platform-complement message match without personalized/customer-specific claims.
 
 ### P3-17 — Improve internal QA prompts for future UX work
 
@@ -211,6 +211,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Add reusable PR/self-review prompts for conversion UX changes: audience clarity, CTA consistency, claim safety, mobile scan, proof authenticity, form friction, and Definition of Done mapping.
 - **Acceptance criteria**: Prompt/checklist is easy to copy into future PRs; it references acceptance criteria and Definition of Done; it reinforces Steve approval before merge; it does not add process overhead for tiny fixes beyond what is useful.
 - **Clarifying questions before starting**: None.
+- **Status**: In review via `docs/p3-17-ux-review-prompts` — adds reusable conversion UX PR review prompts for audience clarity, CTA consistency, claim safety, proof authenticity, form friction, mobile scanning, and Definition of Done mapping.
 
 ## Blocked proof assets list
 
