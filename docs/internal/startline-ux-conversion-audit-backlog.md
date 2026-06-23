@@ -128,7 +128,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Make the fictional sample audit/example deliverable easier to find and use in outreach. Consider a dedicated section or page that previews what StartLine notices: registration CTA clarity, mobile speed, logistics gaps, sponsor visibility, search basics, and race-week readiness.
 - **Acceptance criteria**: Sample is clearly fictional/generic; it demonstrates the value of the audit without disparaging existing race sites; linked from relevant CTA/supporting areas; can be reused in outreach; no real customer data is used.
 - **Clarifying questions before starting**: Public page option approved by Steve.
-- **Status**: In review via `feat/p1-09-sample-deliverable-page` — adds a public fictional/generic sample audit deliverable page and links it from relevant supporting areas.
+- **Status**: Completed in PR #59 — adds a public fictional/generic sample audit deliverable page and links it from relevant supporting areas.
 
 ### P1-10 — Tighten CTA labels and placement across pages
 
@@ -138,6 +138,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Inventory CTA labels and destinations across homepage, checklist, outreach pages, pricing/intake-related pages, and ensure they consistently point to the intended next step for the visitor's stage.
 - **Acceptance criteria**: Primary CTAs use consistent language for audit/private mockup; secondary CTAs are intentionally lower commitment; nav/sticky CTA does not conflict with page-specific goals; no dead or confusing CTA paths remain.
 - **Clarifying questions before starting**: Ask Steve before changing the primary conversion event.
+- **Status**: In review via `feat/p1-10-cta-consistency` — tightens CTA language and removes confusing/dead CTA paths while preserving the private audit/request conversion event.
 
 ### P1-11 — Add respectful before/after framing guardrails
 

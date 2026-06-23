@@ -32,8 +32,8 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     heroLead:
       'Community races often have the strongest local story and the thinnest website layer. StartLine Sites helps organize the details runners, sponsors, volunteers, and city partners need before they click through to register.',
     audience: '5Ks, 10Ks, half marathons, charity runs, local road races, and annual community events.',
-    primaryCta: 'Request a community race audit',
-    secondaryCta: 'Review the race website checklist',
+    primaryCta: 'Request a private audit',
+    secondaryCta: 'Review the checklist',
     proofLabel: 'Fictional community template fit',
     proofTitle: 'Keep the event approachable while making registration easier to find.',
     proofCopy:
@@ -85,8 +85,8 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     heroLead:
       'Marathoners compare more than a checkout page. They look for course proof, timing, travel details, pacers, certification notes, policies, and whether the race feels organized enough to commit months ahead.',
     audience: 'Marathons, half marathons, certified road races, BQ-focused events, and multi-distance race weekends.',
-    primaryCta: 'Request a marathon site audit',
-    secondaryCta: 'See checklist areas',
+    primaryCta: 'Request a private audit',
+    secondaryCta: 'Review the checklist',
     proofLabel: 'Fictional performance template fit',
     proofTitle: 'Bring course confidence and registration clarity into one focused runner path.',
     proofCopy:
@@ -138,8 +138,8 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     heroLead:
       'RunSignup can remain the registration and payment system. StartLine Sites builds the race website layer around it: search-friendly pages, clearer event context, sponsor value, FAQ answers, and direct tracked links into registration.',
     audience: 'Race directors using RunSignup who want stronger SEO, storytelling, sponsor visibility, and mobile-first race details.',
-    primaryCta: 'Request a RunSignup race audit',
-    secondaryCta: 'Read the checklist',
+    primaryCta: 'Request a private audit',
+    secondaryCta: 'Review the checklist',
     proofLabel: 'Generic platform-fit example',
     proofTitle: 'Keep RunSignup for checkout. Use StartLine for the pre-registration decision path.',
     proofCopy:
@@ -192,7 +192,7 @@ export const outreachLandingPages: OutreachLandingPage[] = [
       'Race directors already manage permits, sponsors, volunteers, vendors, registration, email, and race-week pressure. The website should make that job easier by answering runner questions earlier and moving serious interest toward registration.',
     audience: 'Race directors, event producers, nonprofit race teams, timing partners, and endurance event organizers.',
     primaryCta: 'Request a private audit',
-    secondaryCta: 'Use the race website checklist',
+    secondaryCta: 'Review the checklist',
     proofLabel: 'Generic director-first scope',
     proofTitle: 'A practical website layer for search, speed, signups, and race-week clarity.',
     proofCopy:
