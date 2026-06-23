@@ -88,7 +88,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Ensure package copy connects price to tangible deliverables, timeline, and race-director outcomes. Make deposit/final-payment language consistent with the existing billing SOP and avoid drift toward legacy monthly-retainer language.
 - **Acceptance criteria**: Pricing copy makes scope, first-year/race-cycle coverage, deposit/final-payment mechanics, and next steps clear; no forbidden monthly-retainer framing returns; package recommendations are easy to compare; claims remain supportable.
 - **Clarifying questions before starting**: Ask Steve before changing package names, prices, payment structure, or included services.
-- **Status**: In review via `p0-05-pricing-value-clarity` — clarifies package value, first-year scope, 50% deposit/final-invoice mechanics, Premium proposal gating, no-default-monthly-retainer language, and package comparison without changing package names, prices, payment structure, or included services.
+- **Status**: Completed in PR #55 — clarified package value, first-year scope, 50% deposit/final-invoice mechanics, Premium proposal gating, no-default-monthly-retainer language, and package comparison without changing package names, prices, payment structure, or included services.
 
 ### P0-06 — Make “who this is for” immediately scannable
 
@@ -98,6 +98,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Surface target segments and pain points more clearly: community races, marathons, multi-distance weekends, sponsor-heavy events, platform-hosted races needing a stronger marketing layer, and directors who need a reliable launch/update process.
 - **Acceptance criteria**: Segments are visible and scannable; copy helps prospects self-identify; no segment feels excluded unintentionally; language supports SEO without keyword stuffing; CTAs from the section point to the audit/mockup path.
 - **Clarifying questions before starting**: None unless segment priority changes.
+- **Status**: In review via `feat/p0-06-scannable-audience` — makes the homepage “who this is for” section more scannable, adds fit signals for each segment, includes launch/update-process directors, and points section CTAs to the private audit/sample audit path.
 
 ### P1-07 — Improve narrative flow from problem to solution to action
 
