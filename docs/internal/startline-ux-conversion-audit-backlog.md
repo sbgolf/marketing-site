@@ -170,7 +170,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Explain StartLine's SEO/performance discipline in plain language: clean structure, fast pages, metadata/schema where appropriate, content hierarchy, and analytics readiness. Avoid claiming rankings or traffic lifts.
 - **Acceptance criteria**: Technical proof is understandable to race directors; no ranking guarantees; any metrics shown are from tooling/demo context or approved real assets; section supports “Built for search, speed, and signups.”
 - **Clarifying questions before starting**: Ask Steve before publishing specific performance scores or benchmarks.
-- **Status**: In review via `feat/p2-13-seo-performance-credibility` — adds evidence-safe technical credibility copy for clean structure, fast pages, metadata/schema, content hierarchy, and analytics readiness without ranking guarantees, traffic promises, or numeric scores.
+- **Status**: Completed in PR #64 — adds evidence-safe technical credibility copy for clean structure, fast pages, metadata/schema, content hierarchy, and analytics readiness without ranking guarantees, traffic promises, or numeric scores.
 
 ### P2-14 — Add analytics/learning loop messaging
 
@@ -180,6 +180,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Clarify how StartLine can support race-cycle learning: analytics review, registration CTA observations, sponsor visibility review, and pre-race tune-up opportunities after launch/year one.
 - **Acceptance criteria**: Copy aligns with existing after-year-one services; no required monthly retainer is implied; next-step CTA remains clear; optional services are described as optional.
 - **Clarifying questions before starting**: Ask Steve before changing after-year-one package/service policy.
+- **Status**: In review via `content/p2-14-analytics-learning-loop` — clarifies optional analytics/learning-loop messaging for after-year-one services without changing service policy or implying a required retainer.
 
 ### P2-15 — Build a customer-proof readiness checklist
 
