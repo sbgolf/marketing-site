@@ -30,7 +30,7 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     description:
       'StartLine Sites builds fast, SEO-optimized websites for community races that need clearer registration paths, race-day details, sponsor visibility, and mobile trust.',
     heroLead:
-      'Community races often have the strongest local story and the thinnest website layer. StartLine Sites helps organize the details runners, sponsors, volunteers, and city partners need before they click through to register.',
+      'Community races often have the strongest local story and a website that has grown around many seasonal needs. StartLine Sites helps organize the details runners, sponsors, volunteers, and city partners need before they click through to register.',
     audience: '5Ks, 10Ks, half marathons, charity runs, local road races, and annual community events.',
     primaryCta: 'Request a private audit',
     secondaryCta: 'Review the checklist',
@@ -92,7 +92,7 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     proofCopy:
       'This is a fictional/generic template example, not customer proof. The Performance direction is built for clear course information, certification or qualifying context where applicable, pacer and timing details, travel notes, and repeated registration calls-to-action.',
     painPoints: [
-      'Course, elevation, pacer, certification, and schedule details are split across PDFs or dated updates.',
+      'Course, elevation, pacer, certification, and schedule details live across PDFs or prior-season updates.',
       'Runners cannot quickly tell whether the race fits their goal, travel plan, or registration timeline.',
       'Important trust signals are present, but they appear after generic copy or low-priority links.'
     ],
@@ -113,7 +113,7 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     checklist: [
       'Race name, year, location, distance, and registration status are clear in the first screen.',
       'Course, elevation, certification, timing, pacer, and aid station details are factual and easy to find.',
-      'Travel/logistics content is grouped instead of scattered across old announcements.',
+      'Travel/logistics content is grouped instead of spread across prior announcements.',
       'FAQ answers cover refunds, transfers, deferrals, weather, packet pickup, and race-week changes.'
     ],
     faq: [
@@ -145,7 +145,7 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     proofCopy:
       'This is a generic positioning example, not customer proof. The goal is not to replace your registration platform. The goal is to make more of the runner-facing context indexable, organized, fast, and measurable before the final click into RunSignup.',
     painPoints: [
-      'The registration listing is doing too much work as the homepage, sales page, FAQ, and sponsor page.',
+      'The registration listing carries homepage, race-story, FAQ, and sponsor context in addition to checkout.',
       'Search content, local story, and race logistics are thinner than what runners need before committing.',
       'The race team cannot easily see which website sections are sending serious runners into registration.'
     ],
@@ -198,8 +198,8 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     proofCopy:
       'This is a generic scope example, not customer proof. StartLine focuses on what race directors need the site to do: explain the event, reduce avoidable questions, support sponsors, measure intent, and send runners to the existing registration path.',
     painPoints: [
-      'Important race details are scattered across the website, registration platform, PDFs, social posts, and email updates.',
-      'The site is hard to update or hard to trust on mobile when runner questions increase.',
+      'Important race details live across the website, registration platform, PDFs, social posts, and email updates.',
+      'The site needs a simpler update path and clearer mobile trust signals when runner questions increase.',
       'Sponsors, charities, and community partners need visibility, but the runner path still has to stay clear.'
     ],
     outcomes: [

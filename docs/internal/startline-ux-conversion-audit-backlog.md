@@ -34,6 +34,8 @@ Every backlog-item PR must include evidence that:
 - Public copy keeps StartLine's positioning intact: “Race websites built to turn interest into registrations.”
 - Claims remain supportable: no guaranteed growth, no fabricated customers, no unapproved real testimonials, and respectful before/after language.
 - Demo/proof examples use fictional or generic assets unless Steve-approved real assets are provided.
+- Before/after framing respects existing race-director, staff, and volunteer effort: describe the current state as a clarity or organization opportunity, not as ugly, broken, bad, neglected, or embarrassing.
+- Improvement language connects to runner trust, registration confidence, race-director workload reduction, and sponsor value rather than promising growth.
 - No secrets, private customer data, Stripe IDs, credentials, or sensitive operational notes were introduced.
 - Steve approval is still required before merge.
 
@@ -138,7 +140,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Inventory CTA labels and destinations across homepage, checklist, outreach pages, pricing/intake-related pages, and ensure they consistently point to the intended next step for the visitor's stage.
 - **Acceptance criteria**: Primary CTAs use consistent language for audit/private mockup; secondary CTAs are intentionally lower commitment; nav/sticky CTA does not conflict with page-specific goals; no dead or confusing CTA paths remain.
 - **Clarifying questions before starting**: Ask Steve before changing the primary conversion event.
-- **Status**: In review via `feat/p1-10-cta-consistency` — tightens CTA language and removes confusing/dead CTA paths while preserving the private audit/request conversion event.
+- **Status**: Completed in PR #60 — tightens CTA language and removes confusing/dead CTA paths while preserving the private audit/request conversion event.
 
 ### P1-11 — Add respectful before/after framing guardrails
 
@@ -148,6 +150,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Audit public before/after language to ensure it never insults old race sites or volunteer-built pages. Position improvements as clarity, trust, registration confidence, and sponsor value.
 - **Acceptance criteria**: Before/after copy is respectful; no “ugly/bad/broken” style language; improvements are framed around runner trust and race-director workload; fictional examples remain labeled as examples.
 - **Clarifying questions before starting**: None.
+- **Status**: In review via `feat/p1-11-before-after-guardrails` — audits public before/after and audit/checklist/outreach wording for respectful framing and adds reusable internal guardrails.
 
 ### P2-12 — Improve mobile-first scanning and section density
 
