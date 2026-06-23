@@ -38,16 +38,16 @@ Logged from Steve's request to keep the next StartLine Sites opportunities track
    - Add stronger copy around sponsor tiers, logos, community partners, charity visibility, and sponsor renewal support.
    - Primary goal: help directors justify the site cost through partner value.
 
-9. **First-year package launch timeline** — In review in this PR
+9. **First-year package launch timeline** — Completed in PR #45
    - Add a concrete timeline from deposit → intake → draft → review → launch → race-cycle support.
    - Primary goal: reduce buying anxiety and make fulfillment feel real.
 
-10. **Stripe/monthly billing automation audit** — In review in this PR
+10. **Stripe/monthly billing automation audit** — Completed in PR #46
     - Inventory subscription/monthly/final-invoice logic and decide what should remain, change, or become dormant after the public pricing pivot.
     - Primary goal: prevent backend billing assumptions from drifting away from public pricing.
     - Output: `docs/internal/billing/stripe-monthly-billing-automation-audit.md` and dormant-by-default guardrails for legacy monthly subscription automation.
 
-11. **Pricing-copy consistency tests** — In review in this PR
+11. **Pricing-copy consistency tests** — Completed in PR #47
     - Add lightweight checks to prevent forbidden public monthly-retainer phrasing from returning unintentionally.
     - Primary goal: protect the pricing strategy in future PRs.
 
