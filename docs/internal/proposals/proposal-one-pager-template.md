@@ -1,6 +1,6 @@
 # StartLine Sites proposal one-pager template
 
-Use this for post-discovery follow-up. Recommend one one-time first-year race-cycle package. Do not add a required monthly retainer or send a package menu unless Steve explicitly approves it for that prospect.
+Use this for post-discovery follow-up. Recommend one one-time first-year race-cycle package. Do not add ongoing support requirements or send a package menu unless Steve explicitly approves it for that prospect.
 
 ## [Race Name] website proposal
 
@@ -44,7 +44,7 @@ We do **not** replace your registration platform. We build the website that send
 
 ## After year one
 
-No required monthly retainer is included in the proposal. After the first race cycle, optional one-time scoped services can be quoted separately for rollover, SEO, analytics, sponsor visibility, or pre-race conversion updates.
+After the first race cycle, optional one-time scoped services can be quoted separately for rollover, SEO, analytics, sponsor visibility, or pre-race conversion updates.
 
 ## Investment
 

@@ -229,7 +229,7 @@ export const outreachLandingPages: OutreachLandingPage[] = [
           'StartLine reviews the current race website like a runner, identifies the clearest opportunities, and recommends a next move only when there is a practical fit.'
       },
       {
-        question: 'Is this a required monthly retainer?',
+        question: 'Is this a one-time package?',
         answer:
           'No. Public packages are one-time first-year race-cycle packages. Optional scoped services can be considered after year one when the race needs them.'
       }

@@ -46,7 +46,7 @@ Logged from Steve's request to keep the next StartLine Sites opportunities track
     - Inventory subscription/monthly/final-invoice logic and decide what should remain, change, or become dormant after the public pricing pivot.
     - Primary goal: prevent backend billing assumptions from drifting away from public pricing.
 
-11. **Pricing-copy consistency tests**
+11. **Pricing-copy consistency tests** — In review in this PR
     - Add lightweight checks to prevent forbidden public monthly-retainer phrasing from returning unintentionally.
     - Primary goal: protect the pricing strategy in future PRs.
 
