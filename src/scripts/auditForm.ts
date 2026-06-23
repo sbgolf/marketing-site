@@ -108,7 +108,7 @@ form?.addEventListener('submit', async (event) => {
   event.preventDefault();
 
   if (!form.checkValidity()) {
-    setMessage('Please fill in all required fields.', 'error');
+    setMessage('Please complete the required race name, URL, name, and email fields so we can send the audit response.', 'error');
     form.reportValidity();
     return;
   }
@@ -129,7 +129,7 @@ form?.addEventListener('submit', async (event) => {
   };
 
   submitButton?.setAttribute('disabled', 'true');
-  setMessage('Sending your request…', 'info');
+  setMessage('Sending your private audit request…', 'info');
 
   try {
     const response = await fetch('/.netlify/functions/submit-audit-request', {
@@ -165,7 +165,7 @@ form?.addEventListener('submit', async (event) => {
     document.querySelectorAll<HTMLElement>('[data-package-card]').forEach((card) => card.classList.remove('selected'));
   } catch (error) {
     console.error(error);
-    setMessage('Sorry, the request could not be sent. Please try again or email us directly.', 'error');
+    setMessage('Sorry, the audit request could not be sent. Please try again or email Steve directly so your race details are not lost.', 'error');
   } finally {
     submitButton?.removeAttribute('disabled');
   }
