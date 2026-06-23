@@ -51,4 +51,4 @@ Before enabling terms acknowledgement in Stripe Checkout:
 - Do not publish the internal draft service agreement as final public terms.
 - Do not require customers to accept incomplete legal placeholders.
 - Do not expose a public Premium checkout link.
-- Do not start monthly billing before go-live unless Steve explicitly changes the commercial terms.
+- Do not start monthly billing unless Steve explicitly approves a customer-specific recurring service and the customer record has approval metadata.

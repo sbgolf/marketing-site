@@ -103,10 +103,38 @@ test.afterEach(() => {
   delete global.fetch;
 });
 
-test('stripe webhook processes final invoice.paid and starts monthly subscription', async () => {
+test('stripe webhook processes final invoice.paid and leaves legacy monthly subscription dormant by default', async () => {
   configureEnv();
   const { handler } = await import('../netlify/functions/stripe-webhook.mjs');
   const calls = installWebhookFetchMock();
+
+  const response = await handler(signEvent(invoicePaidEvent()));
+  const body = JSON.parse(response.body);
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(body.ok, true);
+  assert.equal(body.status, 'processed');
+  assert.equal(body.customer_record_id, 'customer-record-1');
+  assert.equal(body.subscription_status, 'dormant');
+  assert.equal(body.monthly_subscription_reason, 'legacy_monthly_subscription_automation_disabled');
+  assert.equal(calls.some((call) => call.url === 'https://api.stripe.com/v1/subscriptions'), false);
+
+  const patches = calls
+    .filter((call) => call.options.method === 'PATCH' && call.url.includes('/rest/v1/customer_records?'))
+    .map((call) => JSON.parse(call.options.body));
+  assert.equal(patches.length, 2);
+  assert.equal(patches[0].final_invoice_status, 'paid');
+  assert.ok(patches[0].final_invoice_paid_at);
+  assert.equal(patches[1].customer_status, 'active');
+  assert.equal(patches[1].subscription_status, 'dormant');
+  assert.equal(patches[1].metadata.monthly_subscription.status, 'dormant');
+});
+
+test('stripe webhook starts legacy monthly subscription only when enabled and recurring service is approved', async () => {
+  configureEnv();
+  process.env.STARTLINE_ENABLE_LEGACY_MONTHLY_SUBSCRIPTIONS = 'true';
+  const { handler } = await import('../netlify/functions/stripe-webhook.mjs');
+  const calls = installWebhookFetchMock({ customer: customerRecord({ metadata: { recurring_service_approved: true } }) });
 
   const response = await handler(signEvent(invoicePaidEvent()));
   const body = JSON.parse(response.body);
@@ -148,6 +176,7 @@ test('stripe webhook ignores invoice.paid events that are not StartLine final in
 
 test('stripe webhook marks final invoice paid processing failed when subscription creation fails', async () => {
   configureEnv();
+  process.env.STARTLINE_ENABLE_LEGACY_MONTHLY_SUBSCRIPTIONS = 'true';
   const { handler } = await import('../netlify/functions/stripe-webhook.mjs');
   const calls = installWebhookFetchMock();
   global.fetch = async (url, options = {}) => {
@@ -160,7 +189,7 @@ test('stripe webhook marks final invoice paid processing failed when subscriptio
     }
     if (String(url).includes('/rest/v1/stripe_webhook_events?')) return new Response(null, { status: 204 });
     if (String(url).includes('/rest/v1/customer_records?') && options.method !== 'PATCH') {
-      return new Response(JSON.stringify([customerRecord()]), { status: 200, headers: { 'content-type': 'application/json' } });
+      return new Response(JSON.stringify([customerRecord({ metadata: { recurring_service_approved: true } })]), { status: 200, headers: { 'content-type': 'application/json' } });
     }
     if (String(url).includes('/rest/v1/customer_records?') && options.method === 'PATCH') return new Response(null, { status: 204 });
     throw new Error(`Unexpected fetch ${url}`);

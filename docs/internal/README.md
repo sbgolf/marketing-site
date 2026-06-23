@@ -8,7 +8,8 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - Default Standard + Growth customer packet: `proposals/standard-growth-customer-packet.md`
 - Billing SOP: `billing/deposit-final-invoice-monthly-billing-sop.md`
 - Billing checklist: `billing/billing-checklist.md`
-- Invoice wording and monthly start policy: `billing/invoice-wording-and-monthly-start-policy.md`
+- Invoice wording and legacy monthly start policy: `billing/invoice-wording-and-monthly-start-policy.md`
+- Stripe/monthly billing automation audit: `billing/stripe-monthly-billing-automation-audit.md`
 - Automation audit/status: `automation-audit-deposit-to-kickoff.md`
 - Service agreement draft: `legal/service-agreement-draft.md`
 - Service agreement source notes: `legal/source-notes.md`
@@ -22,12 +23,12 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 
 ## Standard flow
 
-1. Recommend one setup tier and one monthly tier.
+1. Recommend one first-year package tier.
 2. Send the matching Stripe deposit link as the proposal CTA.
 3. Confirm deposit payment in Stripe before production work starts.
 4. Kick off intake/assets collection.
 5. At launch, send the customer-specific final 50% Stripe Invoice, due net 7.
-6. Start the selected monthly subscription at go-live.
+6. Mark the final invoice paid when Stripe sends `invoice.paid`; leave monthly subscription fields dormant unless Steve explicitly approved a customer-specific recurring service.
 
 ## Data hygiene
 

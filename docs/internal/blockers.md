@@ -35,12 +35,12 @@ Final 50% balance for StartLine Sites [Starter / Standard / Premium] website set
 
 ### 3. Monthly subscription start policy
 
-Status: draft created for Steve review.
+Status: superseded by the public pricing pivot; monthly billing is dormant unless Steve approves a customer-specific recurring service.
 
 Default policy:
 
 ```text
-The StartLine Sites monthly plan starts on the go-live date. The go-live date is the date the customer site is made available on the production domain or otherwise launched under the approved launch plan. Monthly billing renews each month until cancelled under the agreement.
+No StartLine Sites monthly plan starts by default. Any recurring service requires Steve approval and customer-specific written scope/billing confirmation before billing starts.
 ```
 
 ### 4. Customer records system
