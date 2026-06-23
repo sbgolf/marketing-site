@@ -108,7 +108,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Review section order so the page moves from race-director problem to StartLine solution, proof/process, package fit, and CTA. Remove duplicated or competing messages where they weaken momentum.
 - **Acceptance criteria**: Page has a clear conversion narrative; each section has a unique job; CTAs appear after persuasive sections; no major content needed for a decision is buried; mobile scroll order still makes sense.
 - **Clarifying questions before starting**: Ask Steve before removing entire public sections.
-- **Status**: In review via `feat/p1-07-narrative-flow` — reorders the homepage narrative from problem to outcomes/fit, examples/proof, process, pricing/package fit, and private-audit action without removing public sections.
+- **Status**: Completed in PR #57 — reorders the homepage narrative from problem to outcomes/fit, examples/proof, process, pricing/package fit, and private-audit action without removing public sections.
 
 ### P1-08 — Add objection handling for common race-director concerns
 
@@ -118,6 +118,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Address concerns such as “we already use RunSignup/Bikereg/etc.”, “we have a volunteer webmaster,” “we only need updates once a year,” “what if our race details are not final?”, “can sponsors/charity content be included?”, and “what happens after year one?”
 - **Acceptance criteria**: FAQ/objection copy is respectful and concise; answers reinforce StartLine as a marketing layer rather than replacing registration platforms; after-year-one language matches current policy; no unsupported promises or legal commitments are introduced.
 - **Clarifying questions before starting**: Ask Steve if any objection answer affects service scope or policy.
+- **Status**: In review via `feat/p1-08-objection-handling` — expands homepage FAQ objection handling while keeping service scope/policy unchanged.
 
 ### P1-09 — Create a stronger sample deliverable path
 
