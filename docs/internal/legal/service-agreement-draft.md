@@ -67,17 +67,17 @@ Default invoice wording:
 Final 50% balance for StartLine Sites [Starter / Standard / Premium] website setup for [Race Name]. Site launched at [Live URL] on [Launch Date]. Due net 7.
 ```
 
-### Monthly subscription
+### Legacy monthly subscription
 
-The monthly plan starts on the go-live date. The go-live date is the date the customer site is made available on the production domain or otherwise launched under the approved launch plan.
+No monthly plan starts by default. Any recurring service requires Steve approval and customer-specific written scope/billing confirmation before billing starts.
 
-Default monthly-start wording:
+Approved recurring-service wording:
 
 ```text
-Your StartLine Sites [Foundation / Growth / Performance] monthly plan starts on the go-live date: [Launch Date]. Monthly billing renews each month until cancelled under the agreement.
+Steve approved the StartLine Sites [Foundation / Growth / Performance / custom] recurring service for [Race Name]. Monthly billing is $[Amount]/month, starts on [Start Date], and renews each month until cancelled under the agreement.
 ```
 
-Monthly fees are billed through Stripe and renew monthly until cancelled. Monthly fees already billed are non-refundable except where required by law or agreed in writing.
+Monthly fees are billed through Stripe only for approved recurring services and renew monthly until cancelled. Monthly fees already billed are non-refundable except where required by law or agreed in writing.
 
 ## 4. Customer responsibilities
 

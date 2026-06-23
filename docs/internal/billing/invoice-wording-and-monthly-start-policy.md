@@ -1,6 +1,8 @@
-# Invoice wording and monthly start policy
+# Invoice wording and legacy monthly start policy
 
 Steve review draft for StartLine Sites billing language.
+
+> Public pricing note: StartLine’s current public offer is a one-time first-year race-cycle package with no required monthly retainer. Monthly plan wording below is legacy/internal and should be used only when Steve explicitly approves a customer-specific recurring service.
 
 ## Final setup invoice wording
 
@@ -26,18 +28,18 @@ I just sent the final 50% setup invoice through Stripe:
 - Terms: Net 7
 - Due date: [Due Date]
 
-Your [Foundation / Growth / Performance] monthly plan starts on the go-live date: [Launch Date].
+No monthly retainer starts by default. If we agree on a separate recurring service later, we’ll document that scope and billing before it starts.
 
 Thanks,
 Steve
 ```
 
-## Monthly subscription start policy
+## Legacy monthly subscription start policy
 
 Default policy:
 
 ```text
-The StartLine Sites monthly plan starts on the go-live date. The go-live date is the date the customer site is made available on the production domain or otherwise launched under the approved launch plan. Monthly billing renews each month until cancelled under the agreement.
+No StartLine Sites monthly plan starts by default. The go-live date is the date the customer site is made available on the production domain or otherwise launched under the approved launch plan. Any recurring service requires Steve approval and customer-specific written scope/billing confirmation before billing starts.
 ```
 
 ## Monthly subscription confirmation wording
@@ -45,22 +47,24 @@ The StartLine Sites monthly plan starts on the go-live date. The go-live date is
 Use this when confirming the monthly plan:
 
 ```text
-Your StartLine Sites [Foundation / Growth / Performance] monthly plan starts on [Launch Date], the site go-live date. Monthly billing is $[Amount]/month and renews each month until cancelled under the agreement.
+Steve approved the StartLine Sites [Foundation / Growth / Performance / custom] recurring service for [Race Name]. Monthly billing is $[Amount]/month, starts on [Start Date], and renews each month until cancelled under the agreement.
 ```
 
-## Package-specific defaults
+## Legacy package-specific monthly amounts
+
+Use only for Steve-approved recurring service exceptions.
 
 ### Starter + Foundation
 
 - Final invoice: $750
-- Monthly starts at go-live: $99/month
+- Legacy recurring amount, if approved: $99/month
 
 ### Standard + Growth
 
 - Final invoice: $1,250
-- Monthly starts at go-live: $249/month
+- Legacy recurring amount, if approved: $249/month
 
 ### Premium + Performance
 
 - Final invoice: $2,250
-- Monthly starts at go-live: $499/month
+- Legacy recurring amount, if approved: $499/month

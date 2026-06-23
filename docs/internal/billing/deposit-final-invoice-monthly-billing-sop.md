@@ -1,15 +1,17 @@
-# Deposit, final invoice, and monthly billing SOP
+# Deposit, final invoice, and legacy monthly billing SOP
 
 Internal operating procedure for StartLine Sites billing. This file is sanitized for repo storage; keep customer-specific payment IDs, private notes, and legal exceptions out of committed docs.
+
+> Public pricing note: StartLine’s current public offer is a one-time first-year race-cycle package with no required monthly retainer. Monthly/subscription language below is legacy/internal and applies only when Steve explicitly approves a customer-specific recurring service.
 
 ## Purpose
 
 Keep the close-to-launch payment flow simple and repeatable:
 
-1. Customer pays 50% setup deposit through a Stripe Payment Link.
+1. Customer pays 50% first-year package deposit through Stripe.
 2. Production starts only after deposit is confirmed.
 3. Customer pays final 50% through a customer-specific Stripe Invoice at launch, due net 7.
-4. Monthly subscription starts at go-live.
+4. No monthly subscription starts by default; recurring service setup requires Steve approval.
 
 ## Standard package map
 
@@ -39,9 +41,9 @@ Keep the close-to-launch payment flow simple and repeatable:
 
 ## Commercial rule
 
-Every proposal should recommend **one setup tier and one monthly tier**.
+Every proposal should recommend **one first-year package tier**.
 
-Do not present all packages as a menu in a proposal unless Steve explicitly approves it for that customer.
+Do not present all packages as a menu in a proposal unless Steve explicitly approves it for that customer. Do not include a required monthly tier unless Steve explicitly approves a customer-specific recurring service.
 
 ## Step 1 — Confirm the package before proposal
 
@@ -51,10 +53,10 @@ Confirm:
 - Customer organization: [Organization]
 - Billing contact: [Name + Email]
 - Setup tier: [Starter / Standard / Premium]
-- Monthly tier: [Foundation / Growth / Performance]
+- Monthly/recurring tier: [None by default / Steve-approved recurring service]
 - Deposit amount: [$Amount]
 - Final invoice amount: [$Amount]
-- Monthly amount: [$Amount/mo]
+- Monthly amount: [$Amount/mo, only if Steve-approved]
 - Deposit link: [Stripe Payment Link]
 - Approved exceptions: [None / Details]
 
@@ -121,17 +123,17 @@ Invoice terms:
 
 Send final invoice when the site is launched or ready to launch per the approved launch plan.
 
-## Step 6 — Start monthly subscription at go-live
+## Step 6 — Review legacy monthly subscription fields at go-live
 
-Monthly billing starts at go-live.
+Monthly billing does **not** start by default.
 
-Create/start the correct Stripe subscription under the same Stripe customer when practical:
+Only create/start a Stripe subscription under the same Stripe customer when Steve has explicitly approved a customer-specific recurring service and the customer record has approval metadata. Legacy internal tiers were:
 
 - Foundation: $99/mo
 - Growth: $249/mo
 - Performance: $499/mo
 
-Record in Stripe and `customer_records`:
+If approved, record in Stripe and `customer_records`:
 
 - Stripe customer ID
 - Stripe subscription ID
@@ -141,14 +143,16 @@ Record in Stripe and `customer_records`:
 - Go-live URL
 - First monthly report date
 
+If not approved, leave `subscription_status = dormant`.
+
 ## Step 7 — Launch billing confirmation
 
 After launch and billing setup, send customer-facing launch confirmation with:
 
 - Live URL
 - Final invoice note
-- Monthly plan start date
-- First monthly report timing
+- Confirmation that no monthly retainer starts by default, or approved recurring-service details if Steve approved them
+- First recurring report timing only if an approved recurring service exists
 - Support/contact path
 
 Keep it short and factual.
@@ -162,7 +166,7 @@ Stop and resolve before moving forward if:
 - Deposit has not been confirmed in Stripe.
 - Deposit link does not match selected tier.
 - Final invoice amount does not match selected tier.
-- Monthly subscription tier does not match proposal.
+- Customer-facing copy implies a required monthly subscription.
 - Launch date/go-live status is unclear.
 - Customer asks for different payment terms.
 - Steve has not approved an exception.

@@ -36,10 +36,10 @@ Customer-facing email behavior:
 - Email failures are logged but do not block the Supabase lead record or customer form response.
 - Starter/Standard confirmations include the active deposit link. Premium confirmations say a proposal is required before a deposit link is sent.
 
-Required for Stripe deposit, launch billing, and monthly subscription automation:
+Required for Stripe deposit and launch billing automation:
 
 - `STRIPE_WEBHOOK_SECRET` from the Stripe webhook endpoint signing secret.
-- `STRIPE_SECRET_KEY` for server-created Checkout Sessions, final invoices, and monthly subscriptions.
+- `STRIPE_SECRET_KEY` for server-created Checkout Sessions and final invoices.
 - `STARTLINE_LAUNCH_BILLING_TOKEN` for the internal launch billing trigger.
 - Configure Stripe to POST `checkout.session.completed` and `invoice.paid` events to `https://startlinesites.com/.netlify/functions/stripe-webhook`.
 - Run the Supabase migrations through `20260614190000_add_stripe_deposit_webhook_support.sql` before enabling the webhook.
@@ -96,7 +96,7 @@ curl -X POST https://startlinesites.com/.netlify/functions/start-launch-billing 
 
 The function requires a paid deposit, a Stripe customer id, final invoice amount, currency, race name, and setup tier. It creates a dedicated Stripe invoice, attaches the final 50% setup payment invoice item to that invoice, sends a net-7 Stripe invoice with `metadata.startline_payment_type=final_invoice`, then updates `customer_records.final_invoice_status = sent`, `stripe_final_invoice_id`, `final_invoice_sent_at`, and `customer_status = launch_billing`. If a final invoice was already sent or paid, the function returns the existing invoice id without creating a duplicate.
 
-When Stripe sends `invoice.paid` for that final invoice, the webhook marks the final invoice paid and creates the stored monthly subscription using inline Stripe price data from `monthly_amount_cents`, `currency`, and `monthly_tier`. Monthly subscriptions are created as Stripe `send_invoice` subscriptions with net-7 monthly invoices so they do not depend on a saved card from the initial deposit. Successful creation sets `customer_status = active`, records `stripe_subscription_id`, `subscription_started_at`, and `first_monthly_report_due_at`. Subscription creation failures mark `subscription_status = failed` and fail the webhook processing so the billing error is visible instead of silently lost.
+When Stripe sends `invoice.paid` for that final invoice, the webhook marks the final invoice paid and sets the customer active. Legacy monthly subscription creation is dormant by default so backend behavior matches the public no-required-monthly-retainer pricing. A Stripe Subscription is created only when both `STARTLINE_ENABLE_LEGACY_MONTHLY_SUBSCRIPTIONS=true` is set and the customer record has explicit recurring-service approval (`approved_exception=true`, `metadata.recurring_service_approved=true`, or `metadata.monthly_subscription_approved=true`). Without both approvals, the webhook records `subscription_status = dormant` and does not call Stripe Subscriptions.
 
 ## Stripe webhook verification
 

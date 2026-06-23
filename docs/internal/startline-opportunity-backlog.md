@@ -42,9 +42,10 @@ Logged from Steve's request to keep the next StartLine Sites opportunities track
    - Add a concrete timeline from deposit → intake → draft → review → launch → race-cycle support.
    - Primary goal: reduce buying anxiety and make fulfillment feel real.
 
-10. **Stripe/monthly billing automation audit**
+10. **Stripe/monthly billing automation audit** — In review in this PR
     - Inventory subscription/monthly/final-invoice logic and decide what should remain, change, or become dormant after the public pricing pivot.
     - Primary goal: prevent backend billing assumptions from drifting away from public pricing.
+    - Output: `docs/internal/billing/stripe-monthly-billing-automation-audit.md` and dormant-by-default guardrails for legacy monthly subscription automation.
 
 11. **Pricing-copy consistency tests**
     - Add lightweight checks to prevent forbidden public monthly-retainer phrasing from returning unintentionally.

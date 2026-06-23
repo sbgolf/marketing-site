@@ -210,6 +210,17 @@ const addOneMonthDate = (now = new Date()) => {
   return date.toISOString().slice(0, 10);
 };
 
+const legacyMonthlySubscriptionsEnabled = () => process.env.STARTLINE_ENABLE_LEGACY_MONTHLY_SUBSCRIPTIONS === 'true';
+
+const hasApprovedRecurringService = (customer) => {
+  const metadata = normalizeMetadata(customer?.metadata);
+  return customer?.approved_exception === true
+    || metadata.recurring_service_approved === true
+    || metadata.recurring_service_approved === 'true'
+    || metadata.monthly_subscription_approved === true
+    || metadata.monthly_subscription_approved === 'true';
+};
+
 const isFinalInvoicePaid = (invoice) => {
   const metadata = normalizeMetadata(invoice?.metadata);
   return invoice?.status === 'paid' && clean(metadata.startline_payment_type || '', 80).toLowerCase() === 'final_invoice';
@@ -237,10 +248,14 @@ const findCustomerForFinalInvoice = async ({ supabaseUrl, serviceKey, invoice })
   return null;
 };
 
-const validateCustomerForSubscription = (customer, invoice) => {
+const validateCustomerForFinalInvoicePaid = (customer, invoice) => {
   if (!customer) return 'customer_record_not_found';
   if (customer.deposit_status !== 'paid') return 'deposit_not_paid';
   if (customer.stripe_final_invoice_id && customer.stripe_final_invoice_id !== invoice.id) return 'final_invoice_mismatch';
+  return null;
+};
+
+const validateCustomerForLegacySubscription = (customer) => {
   if (!clean(customer.stripe_customer_id, 200)) return 'missing_stripe_customer_id';
   if (!Number.isInteger(customer.monthly_amount_cents) || customer.monthly_amount_cents <= 0) return 'missing_monthly_amount_cents';
   if (!clean(customer.currency, 10)) return 'missing_currency';
@@ -260,20 +275,10 @@ const patchCustomerRecord = async ({ supabaseUrl, serviceKey, customerId, body }
 
 const processFinalInvoicePaid = async ({ supabaseUrl, serviceKey, stripeSecretKey, stripeEvent, invoice }) => {
   if (!isFinalInvoicePaid(invoice)) return { status: 'ignored', reason: 'not_final_invoice' };
-  if (!stripeSecretKey) throw new Error('STRIPE_SECRET_KEY is required to start monthly subscriptions.');
 
   const customer = await findCustomerForFinalInvoice({ supabaseUrl, serviceKey, invoice });
-  const validationError = validateCustomerForSubscription(customer, invoice);
-  if (validationError === 'subscription_already_started') {
-    return {
-      status: 'processed',
-      customer_record_id: customer.id,
-      stripe_subscription_id: customer.stripe_subscription_id,
-      subscription_status: customer.subscription_status,
-      idempotent: true,
-    };
-  }
-  if (validationError) throw new Error(validationError);
+  const finalInvoiceValidationError = validateCustomerForFinalInvoicePaid(customer, invoice);
+  if (finalInvoiceValidationError) throw new Error(finalInvoiceValidationError);
 
   const paidAt = stripeEvent.created ? new Date(stripeEvent.created * 1000).toISOString() : new Date().toISOString();
   await patchCustomerRecord({
@@ -281,6 +286,7 @@ const processFinalInvoicePaid = async ({ supabaseUrl, serviceKey, stripeSecretKe
     serviceKey,
     customerId: customer.id,
     body: {
+      customer_status: 'active',
       final_invoice_status: 'paid',
       final_invoice_paid_at: paidAt,
       stripe_final_invoice_id: invoice.id,
@@ -294,6 +300,57 @@ const processFinalInvoicePaid = async ({ supabaseUrl, serviceKey, stripeSecretKe
       },
     },
   });
+
+  if (!legacyMonthlySubscriptionsEnabled() || !hasApprovedRecurringService(customer)) {
+    await patchCustomerRecord({
+      supabaseUrl,
+      serviceKey,
+      customerId: customer.id,
+      body: {
+        customer_status: 'active',
+        subscription_status: 'dormant',
+        metadata: {
+          ...(customer.metadata || {}),
+          final_invoice_paid: {
+            event_id: stripeEvent.id,
+            invoice_id: invoice.id,
+            paid_at: paidAt,
+          },
+          monthly_subscription: {
+            status: 'dormant',
+            reason: legacyMonthlySubscriptionsEnabled()
+              ? 'recurring_service_not_approved'
+              : 'legacy_monthly_subscription_automation_disabled',
+            source_event_id: stripeEvent.id,
+          },
+        },
+      },
+    });
+
+    return {
+      status: 'processed',
+      customer_record_id: customer.id,
+      subscription_status: 'dormant',
+      monthly_subscription_status: 'dormant',
+      monthly_subscription_reason: legacyMonthlySubscriptionsEnabled()
+        ? 'recurring_service_not_approved'
+        : 'legacy_monthly_subscription_automation_disabled',
+    };
+  }
+
+  if (!stripeSecretKey) throw new Error('STRIPE_SECRET_KEY is required to start legacy monthly subscriptions.');
+
+  const subscriptionValidationError = validateCustomerForLegacySubscription(customer);
+  if (subscriptionValidationError === 'subscription_already_started') {
+    return {
+      status: 'processed',
+      customer_record_id: customer.id,
+      stripe_subscription_id: customer.stripe_subscription_id,
+      subscription_status: customer.subscription_status,
+      idempotent: true,
+    };
+  }
+  if (subscriptionValidationError) throw new Error(subscriptionValidationError);
 
   try {
     const subscription = await stripeFetch({
