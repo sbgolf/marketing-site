@@ -191,7 +191,7 @@ Every backlog-item PR must include evidence that:
 - **Acceptance criteria**: Checklist separates approved, pending, and blocked proof assets; requires permission/source notes for each real asset; includes fallback proof alternatives when assets are unavailable; protects against fabricated testimonials.
 - **Clarifying questions before starting**: Ask Steve where approved proof assets should be stored/tracked.
 - **Blocked/needs Steve-approved assets**: Any public real testimonial, customer logo, named case study, or live race screenshot.
-- **Status**: In review via `content/p2-15-customer-proof-readiness` — adds an internal checklist using email intake, Google Drive proof storage/approval, repo governance, asset statuses, required metadata, anti-fabrication rules, and safe fallback proof alternatives. PR pending.
+- **Status**: Completed in PR #66 — adds an internal checklist using email intake, Google Drive proof storage/approval, repo governance, asset statuses, required metadata, anti-fabrication rules, and safe fallback proof alternatives.
 
 ### P3-16 — Expand outreach-page message matching
 
@@ -201,6 +201,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Review outreach landing pages for message match with likely email/DM outreach angles. Segment pages should speak to the visitor's specific context while preserving shared StartLine positioning.
 - **Acceptance criteria**: Each outreach page has a clear audience, pain point, proof/process cue, and CTA; no page contains contradictory package/payment copy; generic pages do not pretend to be personalized to a real recipient.
 - **Clarifying questions before starting**: Ask Steve which outreach segment is highest priority.
+- **Status**: In review via `content/p3-16-runsignup-message-match` — prioritizes the RunSignup outreach segment per Steve's clarification and strengthens platform-complement message match without personalized/customer-specific claims.
 
 ### P3-17 — Improve internal QA prompts for future UX work
 
