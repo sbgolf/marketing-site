@@ -180,7 +180,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Clarify how StartLine can support race-cycle learning: analytics review, registration CTA observations, sponsor visibility review, and pre-race tune-up opportunities after launch/year one.
 - **Acceptance criteria**: Copy aligns with existing after-year-one services; no required monthly retainer is implied; next-step CTA remains clear; optional services are described as optional.
 - **Clarifying questions before starting**: Ask Steve before changing after-year-one package/service policy.
-- **Status**: In review via `content/p2-14-analytics-learning-loop` — clarifies optional analytics/learning-loop messaging for after-year-one services without changing service policy or implying a required retainer.
+- **Status**: Completed in PR #65 — clarifies optional analytics/learning-loop messaging for after-year-one services without changing service policy or implying a required retainer.
 
 ### P2-15 — Build a customer-proof readiness checklist
 
@@ -211,7 +211,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Add reusable PR/self-review prompts for conversion UX changes: audience clarity, CTA consistency, claim safety, mobile scan, proof authenticity, form friction, and Definition of Done mapping.
 - **Acceptance criteria**: Prompt/checklist is easy to copy into future PRs; it references acceptance criteria and Definition of Done; it reinforces Steve approval before merge; it does not add process overhead for tiny fixes beyond what is useful.
 - **Clarifying questions before starting**: None.
-- **Status**: In review via `docs/p3-17-ux-review-prompts` — adds reusable conversion UX PR review prompts for audience clarity, CTA consistency, claim safety, proof authenticity, form friction, mobile scanning, and Definition of Done mapping.
+- **Status**: Completed in PR #68 — adds reusable conversion UX PR review prompts for audience clarity, CTA consistency, claim safety, proof authenticity, form friction, mobile scanning, and Definition of Done mapping.
 
 ## Blocked proof assets list
 
