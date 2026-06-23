@@ -160,7 +160,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Review mobile layouts for dense sections, long paragraphs, CTA visibility, card stacking, and tap-target spacing. Prioritize reducing cognitive load on the lead path.
 - **Acceptance criteria**: Mobile viewports at 375, 414, and 768 are checked; no horizontal overflow; key CTAs are visible after persuasive sections; dense paragraphs are broken into scannable units; visual hierarchy remains intact.
 - **Clarifying questions before starting**: None unless a visual redesign is needed.
-- **Status**: In review via `feat/p2-12-mobile-scanning` — reduces homepage paragraph density, adds scannable fit/audit lists, improves post-section audit CTAs, and adds mobile smoke coverage for 375/414/768 overflow checks.
+- **Status**: Completed in PR #63 — reduces homepage paragraph density, adds scannable fit/audit lists, improves post-section audit CTAs, and adds mobile smoke coverage for 375/414/768 overflow checks.
 
 ### P2-13 — Reinforce SEO/performance credibility with evidence-safe language
 
@@ -170,6 +170,7 @@ Every backlog-item PR must include evidence that:
 - **Details/scope**: Explain StartLine's SEO/performance discipline in plain language: clean structure, fast pages, metadata/schema where appropriate, content hierarchy, and analytics readiness. Avoid claiming rankings or traffic lifts.
 - **Acceptance criteria**: Technical proof is understandable to race directors; no ranking guarantees; any metrics shown are from tooling/demo context or approved real assets; section supports “Built for search, speed, and signups.”
 - **Clarifying questions before starting**: Ask Steve before publishing specific performance scores or benchmarks.
+- **Status**: In review via `feat/p2-13-seo-performance-credibility` — adds evidence-safe technical credibility copy for clean structure, fast pages, metadata/schema, content hierarchy, and analytics readiness without ranking guarantees, traffic promises, or numeric scores.
 
 ### P2-14 — Add analytics/learning loop messaging
 
