@@ -154,7 +154,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Low
 - **Effort**: Medium
 - **Category**: Navigation / Visual
-- **Status**: In review — PR #77 (`feat/l03-footer-grouping`).
+- **Status**: Completed / merged in PR #77 (`feat/l03-footer-grouping`).
 - **Why this matters**: Footer grouping can help agents and users understand which pages are buyer resources vs. customer kickoff resources.
 - **Scope**:
   - Group footer links into Buyer resources, Customer kickoff, and Company/Credibility if the current footer supports it.
@@ -171,6 +171,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Low
 - **Effort**: Low
 - **Category**: Technical / Navigation
+- **Status**: In review — PR #78 (`seo/l01-guessed-path-redirects`).
 - **Why this matters**: Common guessed paths currently return 404 even though they map to real sections/pages.
 - **Scope**:
   - Add redirects for likely paths such as `/pricing/`, `/audit/`, `/private-audit/`, `/checklist/`, `/thank-you/` if appropriate.
