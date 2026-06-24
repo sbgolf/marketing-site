@@ -25,6 +25,13 @@ test('asset checklist page is framed as customer kickoff preparation with prospe
   assert.match(assetChecklistSource, /href="\/sample-audit\/">See sample audit/);
 });
 
+test('intake form support fallback appears near form and error copy stays aligned', () => {
+  assert.match(intakeSource, /If the form fails or a field does not fit your race/);
+  assert.match(intakeSource, /mailto:support@startlinesites\.com\?subject=Customer%20intake%20fallback/);
+  assert.match(intakeSource, /with your race name and project link/);
+  assert.match(intakeSource, /email support@startlinesites\.com with your race name/);
+});
+
 test('intake form wiring and required-field attributes remain intact', () => {
   assert.match(intakeSource, /<form id="customerIntakeForm" class="intake-form" novalidate>/);
   assert.match(intakeSource, /name="company_website" class="hp"/);

@@ -181,7 +181,7 @@ form?.addEventListener('submit', async (event) => {
     document.querySelectorAll<HTMLElement>('[data-package-card]').forEach((card) => card.classList.remove('selected'));
   } catch (error) {
     console.error(error);
-    setMessage('Sorry, the audit request could not be sent. Please try again or email Steve directly so your race details are not lost.', 'error');
+    setMessage('Sorry, the audit request could not be sent. Please try again or email support@startlinesites.com with your race name and best public link.', 'error');
   } finally {
     submitButton?.removeAttribute('disabled');
   }

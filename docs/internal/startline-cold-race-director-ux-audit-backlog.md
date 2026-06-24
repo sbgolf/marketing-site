@@ -229,7 +229,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Low
 - **Category**: Conversion / Technical
-- **Status**: In review — PR pending for `feat/m06-post-deposit-handoff`.
+- **Status**: Completed in PR #80 (`feat/m06-post-deposit-handoff`).
 - **Why this matters**: After deposit, the customer should immediately understand intake/assets next steps.
 - **Scope**:
   - Improve deposit success state and supporting copy/links to `/intake/`, `/asset-checklist/`, and support.
@@ -248,6 +248,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Low
 - **Category**: Conversion / Copy
+- **Status**: Completed in PR #81 (`feat/h06-audit-url-helper`).
 - **Why this matters**: `Current URL` may block races that only have a RunSignup/Race Roster/BikeReg listing or a placeholder page.
 - **Scope**:
   - Add helper copy near `Current URL` explaining that a race website, RunSignup page, registration-platform page, or best available public link is acceptable.
