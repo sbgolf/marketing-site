@@ -14,6 +14,28 @@ test('homepage keeps mobile scanning helpers and post-section audit CTAs', () =>
   assert.match(indexSource, /Need proof specific to your current site\?/);
 });
 
+test('H-09 adds a compact section-purpose jump path before dense proof and pricing sections', () => {
+  assert.match(indexSource, /class="section-purpose-strip" aria-label="Fast homepage scan paths"/);
+  assert.match(indexSource, /const sectionPurposeLinks = \[/);
+  for (const [label, href] of [
+    ['Proof', '#proof-points'],
+    ['Process', '#how'],
+    ['Pricing', '#pricing'],
+    ['Audit form', '#audit']
+  ]) {
+    assert.match(indexSource, new RegExp(`\\['${label}', '${href}'`));
+  }
+  assert.match(indexSource, /Already know what you need\?/);
+  assert.match(indexSource, /go straight to the private audit form/);
+});
+
+test('H-09 trims repeated pre-audit disclaimers into shorter scan copy', () => {
+  assert.match(indexSource, /Illustrative cards use synthetic assets and respectful before states/);
+  assert.match(indexSource, /Illustrative cards use sample details and synthetic assets; the before state shows an opportunity, not a failing\./);
+  assert.doesNotMatch(indexSource, /The before\/after cards are illustrative placeholder proof only:[\s\S]*The before state represents normal race-site growth over time/);
+  assert.doesNotMatch(indexSource, /These cards are illustrative placeholder proof only,[\s\S]*The before state shows an opportunity to reorganize useful information, not a failing/);
+});
+
 test('homepage hero makes the primary audit path clear', () => {
   assert.match(indexSource, /data-scroll="audit">Request a private audit/);
   assert.match(indexSource, /data-scroll="sample-audit">See sample audit/);
@@ -44,6 +66,9 @@ test('mobile CSS stacks scan units and CTAs at narrow widths', () => {
   assert.match(indexSource, /\.section-cta\{display:grid\}/);
   assert.match(indexSource, /\.segment-grid\{grid-template-columns:1fr\}/);
   assert.match(indexSource, /\.segment-link\{align-self:stretch;justify-content:center;text-align:center\}/);
+  assert.match(indexSource, /\.section-purpose-links\{grid-template-columns:1fr\}/);
+  assert.match(indexSource, /\.outcome-card,\.segment-card,\.trust-proof-card,\.technical-proof-card,\.timeline-card,\.audit-path-card\{padding:18px\}/);
+  assert.match(indexSource, /\.templates,\.built-for,\.finale,\.trust-proof,\.cred,\.how,\.pricing,\.sample-audit\{padding-top:64px;padding-bottom:64px\}/);
   assert.match(baseCss, /\.lead-stack\{display:grid;gap:12px/);
 });
 
