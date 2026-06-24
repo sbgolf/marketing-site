@@ -455,6 +455,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Medium
 - **Category**: Copy / Visual / Conversion
+- **Status**: In review in PR #92 (`feat/h09-homepage-density-trim`).
 - **Why this matters**: The homepage is persuasive but very long. Busy directors may understand the offer and still not reach the form.
 - **Scope**:
   - Audit sections before `#audit` for repeated messages.
