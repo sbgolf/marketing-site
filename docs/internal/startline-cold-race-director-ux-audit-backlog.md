@@ -171,7 +171,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Low
 - **Effort**: Low
 - **Category**: Technical / Navigation
-- **Status**: In review — PR #78 (`seo/l01-guessed-path-redirects`).
+- **Status**: Completed / merged in PR #78 (`seo/l01-guessed-path-redirects`).
 - **Why this matters**: Common guessed paths currently return 404 even though they map to real sections/pages.
 - **Scope**:
   - Add redirects for likely paths such as `/pricing/`, `/audit/`, `/private-audit/`, `/checklist/`, `/thank-you/` if appropriate.
@@ -190,6 +190,8 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Low
 - **Category**: Conversion / Navigation
+- **Status**: In review — PR #79 (`content/h07-kickoff-pages`).
+- **Noindex decision**: Remain indexable for now because copy clearly frames them as kickoff/customer resources; leave L-02 for a future explicit noindex decision if Steve wants these removed from search discovery.
 - **Why this matters**: These pages are useful after purchase but can confuse cold prospects if discovered early.
 - **Scope**:
   - Make both pages clearly say they are for customers after audit/package approval or StartLine kickoff.

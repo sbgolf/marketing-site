@@ -4,32 +4,45 @@ const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_U
 const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
 ---
 <Base
-  title="Customer Intake — StartLine Sites"
-  description="Complete the StartLine Sites customer intake form to share race details, registration links, schedule, sponsors, FAQs, and assets for your new race website."
+  title="Customer Kickoff Intake — StartLine Sites"
+  description="Customer kickoff intake for approved StartLine Sites projects after audit, package recommendation, and launch kickoff."
   canonicalPath="/intake"
   includeMarketingSchema={false}
 >
   <nav class="simple-nav" aria-label="Primary">
     <a href="/" class="brand" aria-label="StartLine Sites home"><img src={brandLogoHref} alt="StartLine Sites" width="1200" height="360" /></a>
-    <div><a href="/asset-checklist">Asset checklist</a><a href="/">Main site</a></div>
+    <div><a href="/asset-checklist">Asset checklist</a><a href="/#audit">Request audit</a><a href="/#pricing">Pricing</a><a href="/sample-audit/">Sample audit</a></div>
   </nav>
   <main id="main" class="intake-page">
     <section class="intake-hero">
       <div>
-        <p class="kicker">Customer kickoff</p>
-        <h1>StartLine Sites intake</h1>
-        <p class="lead">This plain-English form gives us the race details, links, schedule, sponsors, FAQs, and access notes we need to start your customer site.</p>
+        <p class="kicker">Customer kickoff resource</p>
+        <h1>StartLine Sites kickoff intake</h1>
+        <p class="lead">Complete this form after your private audit, package recommendation, and StartLine kickoff confirm that we are ready to begin your customer site.</p>
       </div>
       <aside class="time-card" aria-label="Estimated completion time">
         <strong>Plan for 20–30 minutes</strong>
-        <span>You can paste rough notes. We’ll follow up if anything needs clarification.</span>
+        <span>You can paste rough notes after kickoff. We’ll follow up if anything needs clarification.</span>
       </aside>
+    </section>
+
+    <section class="prospect-card" aria-labelledby="prospect-card-title">
+      <div>
+        <p class="kicker">Not a customer yet?</p>
+        <h2 id="prospect-card-title">Start with the private audit path.</h2>
+        <p>If you are still evaluating StartLine Sites, please request a private audit first instead of completing customer intake. The audit helps confirm fit, package scope, and next steps before any kickoff details are needed.</p>
+      </div>
+      <div class="prospect-actions" aria-label="Prospect resources">
+        <a class="btn btn-accent" href="/#audit">Request a private audit →</a>
+        <a class="btn btn-ghost" href="/#pricing">View pricing</a>
+        <a class="btn btn-ghost" href="/sample-audit/">See sample audit</a>
+      </div>
     </section>
 
     <section class="prep-card">
       <div>
-        <h2>Before you start</h2>
-        <p>No file upload is needed here. Put logos, photos, maps, sponsor marks, and other files in a shared Drive or Dropbox folder, then paste the folder link below.</p>
+        <h2>Before customer kickoff intake</h2>
+        <p>No file upload is needed here. Once StartLine has asked you to complete kickoff, put logos, photos, maps, sponsor marks, and other files in a shared Drive or Dropbox folder, then paste the folder link below.</p>
       </div>
       <a class="btn btn-ghost" href="/asset-checklist">Review asset checklist →</a>
     </section>
@@ -124,8 +137,8 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
 <style>
   .simple-nav{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px clamp(20px,5vw,56px);background:var(--paper);border-bottom:1px solid var(--line)}
   .brand img{display:block;width:168px;height:auto}.simple-nav div{display:flex;gap:18px;flex-wrap:wrap}.simple-nav a{font-weight:700;font-size:.92rem}.simple-nav a:hover{color:var(--accent)}
-  .intake-page{background:linear-gradient(180deg,var(--paper),#fff 42%,var(--paper-2));padding:56px clamp(18px,5vw,56px) 80px;overflow:hidden}.intake-hero,.prep-card,.intake-form{max-width:var(--maxw);margin:0 auto}.intake-hero{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;align-items:end;margin-bottom:28px}.intake-hero h1{font-size:clamp(3rem,8vw,6rem);margin-bottom:20px}.lead{font-size:clamp(1.05rem,2vw,1.3rem);color:rgba(14,23,41,.72);max-width:66ch}.time-card{background:var(--ink);color:#fff;border-radius:var(--r-lg);padding:24px;box-shadow:0 24px 70px rgba(14,23,41,.18)}.time-card strong{display:block;font-size:1.2rem;margin-bottom:8px}.time-card span{color:rgba(250,250,247,.78)}
-  .prep-card{display:flex;align-items:center;justify-content:space-between;gap:24px;background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;margin-bottom:24px;box-shadow:0 16px 50px rgba(14,23,41,.06)}.prep-card h2{font-size:2rem;margin-bottom:8px}.prep-card p{color:rgba(14,23,41,.7);max-width:70ch}.intake-form{background:#fff;border:1px solid var(--line);border-radius:32px;padding:clamp(20px,4vw,42px);box-shadow:0 24px 90px rgba(14,23,41,.08)}
+  .intake-page{background:linear-gradient(180deg,var(--paper),#fff 42%,var(--paper-2));padding:56px clamp(18px,5vw,56px) 80px;overflow:hidden}.intake-hero,.prospect-card,.prep-card,.intake-form{max-width:var(--maxw);margin:0 auto}.intake-hero{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;align-items:end;margin-bottom:28px}.intake-hero h1{font-size:clamp(3rem,8vw,6rem);margin-bottom:20px}.lead{font-size:clamp(1.05rem,2vw,1.3rem);color:rgba(14,23,41,.72);max-width:66ch}.time-card{background:var(--ink);color:#fff;border-radius:var(--r-lg);padding:24px;box-shadow:0 24px 70px rgba(14,23,41,.18)}.time-card strong{display:block;font-size:1.2rem;margin-bottom:8px}.time-card span{color:rgba(250,250,247,.78)}
+  .prospect-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center;background:linear-gradient(135deg,#fff,rgba(31,184,196,.09));border:1px solid rgba(31,184,196,.26);border-radius:28px;padding:24px;margin-bottom:24px;box-shadow:0 16px 50px rgba(14,23,41,.06)}.prospect-card h2,.prep-card h2{font-size:2rem;margin-bottom:8px}.prospect-card p,.prep-card p{color:rgba(14,23,41,.7);max-width:72ch}.prospect-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}.prep-card{display:flex;align-items:center;justify-content:space-between;gap:24px;background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;margin-bottom:24px;box-shadow:0 16px 50px rgba(14,23,41,.06)}.intake-form{background:#fff;border:1px solid var(--line);border-radius:32px;padding:clamp(20px,4vw,42px);box-shadow:0 24px 90px rgba(14,23,41,.08)}
   fieldset{border:0;border-top:1px solid var(--line);padding:30px 0}fieldset:first-of-type{border-top:0;padding-top:0}legend{font-family:"Instrument Serif",Georgia,serif;font-size:2rem;margin-bottom:18px}.grid{display:grid;gap:18px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}label{display:grid;gap:8px;font-weight:700;color:var(--ink)}input,textarea{width:100%;border:1.5px solid var(--line);border-radius:16px;background:#fff;color:var(--ink);padding:13px 14px;resize:vertical}textarea{line-height:1.55}input:focus,textarea:focus{outline:3px solid rgba(31,184,196,.28);border-color:var(--teal)}.hp{position:absolute;left:-10000px;width:1px;height:1px;opacity:0}.submit-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-top:6px}.submit-row .btn:disabled{opacity:.62;cursor:not-allowed;transform:none}.status{color:rgba(14,23,41,.68);max-width:60ch}.status[data-tone="success"]{color:#176d32}.status[data-tone="error"]{color:#b42318}.simple-footer{padding:28px clamp(20px,5vw,56px);background:var(--ink);color:rgba(250,250,247,.78);text-align:center}
-  @media(max-width:760px){.simple-nav{align-items:flex-start;flex-direction:column}.intake-page{padding-top:36px}.intake-hero{grid-template-columns:1fr}.prep-card{align-items:flex-start;flex-direction:column}.grid.two{grid-template-columns:1fr}.intake-form{border-radius:24px}.submit-row{align-items:flex-start;flex-direction:column}.submit-row .btn{width:100%;justify-content:center}}
+  @media(max-width:760px){.simple-nav{align-items:flex-start;flex-direction:column}.intake-page{padding-top:36px}.intake-hero,.prospect-card{grid-template-columns:1fr}.prospect-actions{justify-content:flex-start}.prospect-actions .btn{width:100%;justify-content:center}.prep-card{align-items:flex-start;flex-direction:column}.grid.two{grid-template-columns:1fr}.intake-form{border-radius:24px}.submit-row{align-items:flex-start;flex-direction:column}.submit-row .btn{width:100%;justify-content:center}}
 </style>
