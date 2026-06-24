@@ -324,7 +324,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Low
 - **Category**: Pricing / Trust
-- **Status**: In review on branch `feat/m02-premium-proposal-gating` (PR pending).
+- **Status**: Completed / merged in PR #85 (`feat/m02-premium-proposal-gating`).
 - **Why this matters**: Premium mentions deposit math but requires proposal review, which should feel intentionally different from Starter/Standard.
 - **Scope**:
   - Clarify Premium as proposal-first and not a direct checkout path.
@@ -342,7 +342,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Medium
 - **Category**: Pricing / Trust
-- **Status**: In review on branch `content/m05-year-one-cost-boundary`.
+- **Status**: Completed / merged in PR #86 (`content/m05-year-one-cost-boundary`).
 - **Why this matters**: Buyers need to know what is included in year one and what may cost extra later.
 - **Scope**:
   - Add a compact comparison or callout linking pricing to after-year-one services.
@@ -360,6 +360,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Low
 - **Category**: Copy / Trust
+- **Status**: In review on branch `content/m04-not-for`.
 - **Why this matters**: Clear disqualification can increase trust and reduce poor-fit leads.
 - **Scope**:
   - Add concise not-for guidance, such as races needing custom registration software, urgent same-day rebuilds, unsupported real-time race ops, or unlimited edits.
