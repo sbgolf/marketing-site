@@ -379,7 +379,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Low
 - **Category**: Trust / Conversion
-- **Status**: In review in PR TBD (`feat/h02-hero-trust-strip`).
+- **Status**: In review in PR #88 (`feat/h02-hero-trust-strip`).
 - **Why this matters**: The site is honest about not having fake testimonials, but skeptical buyers need a credibility bridge before submitting a form.
 - **Scope**:
   - Add a concise trust strip near the hero or first audit CTA.
