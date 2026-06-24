@@ -10,6 +10,17 @@ export type OutreachLandingPage = {
   proofLabel: string;
   proofTitle: string;
   proofCopy: string;
+  platformFlow?: {
+    kicker: string;
+    title: string;
+    lead: string;
+    steps: Array<{
+      label: string;
+      title: string;
+      copy: string;
+    }>;
+    note: string;
+  };
   painPoints: string[];
   outcomes: Array<{
     title: string;
@@ -144,6 +155,31 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     proofTitle: 'Keep RunSignup for checkout. Use StartLine for the pre-registration decision path.',
     proofCopy:
       'This is a generic positioning example, not customer proof. The goal is not to replace RunSignup. The private audit reviews the current public website, the RunSignup listing, and the outbound registration path so StartLine can recommend the smallest useful marketing-site layer around checkout.',
+    platformFlow: {
+      kicker: 'How StartLine fits with RunSignup',
+      title: 'Marketing path first. RunSignup checkout stays in place.',
+      lead:
+        'Registration is handled; the marketing path still has to earn the click. StartLine gives runners a clearer public website before handing them to RunSignup for registration and payment operations.',
+      steps: [
+        {
+          label: 'Search, social, and email',
+          title: 'Runners discover the race',
+          copy: 'Campaign links, organic search, partner mentions, and race emails point interested runners toward the public race website.'
+        },
+        {
+          label: 'StartLine race website',
+          title: 'They confirm the details',
+          copy: 'The StartLine layer explains date, location, course, FAQs, sponsors, updates, and why the race is worth the next click.'
+        },
+        {
+          label: 'RunSignup registration checkout',
+          title: 'They register where operations live',
+          copy: 'RunSignup continues to handle registration, payments, waivers, participant records, and related race operations.'
+        }
+      ],
+      note:
+        'StartLine does not replace RunSignup or claim a special integration here; it creates the marketing/search/trust layer around public links into your existing RunSignup flow.'
+    },
     painPoints: [
       'The RunSignup listing may be carrying homepage, race-story, FAQ, and sponsor context in addition to registration operations.',
       'Search content, local story, and race logistics may be thinner than what runners need before committing.',

@@ -379,7 +379,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Low
 - **Category**: Trust / Conversion
-- **Status**: In review in PR #88 (`feat/h02-hero-trust-strip`).
+- **Status**: Completed / merged in PR #88 (`feat/h02-hero-trust-strip`).
 - **Why this matters**: The site is honest about not having fake testimonials, but skeptical buyers need a credibility bridge before submitting a form.
 - **Scope**:
   - Add a concise trust strip near the hero or first audit CTA.
@@ -399,6 +399,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Medium
 - **Category**: Visual / Trust / Copy
+- **Status**: In review in PR #89 (`feat/h08-runsignup-flow-diagram`).
 - **Why this matters**: One of the strongest buyer objections is “we already use RunSignup.” A simple visual can explain StartLine as the marketing layer before checkout.
 - **Scope**:
   - Add a simple, accessible diagram to the RunSignup page and/or homepage: Search/social/email → StartLine race website → RunSignup/registration checkout.
