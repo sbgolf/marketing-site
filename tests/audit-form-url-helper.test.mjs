@@ -23,6 +23,13 @@ test('audit form current URL helper clarifies accepted public links', () => {
   }
 });
 
+test('audit form support fallback appears near form without changing wiring', () => {
+  assert.match(indexSource, /Form not fitting your situation\? Email/);
+  assert.match(indexSource, /mailto:support@startlinesites\.com\?subject=Private%20audit%20fallback/);
+  assert.match(indexSource, /with your race name and best public link/);
+  assert.match(auditFormSource, /email support@startlinesites\.com with your race name and best public link/);
+});
+
 test('audit form current URL wiring stays intact', () => {
   assert.match(indexSource, /<label for="currentUrl">Current race site or registration URL<\/label>/);
   assert.match(
