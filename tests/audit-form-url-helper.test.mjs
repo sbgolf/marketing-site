@@ -30,18 +30,38 @@ test('audit form support fallback appears near form without changing wiring', ()
   assert.match(auditFormSource, /email support@startlinesites\.com with your race name and best public link/);
 });
 
+test('audit form no-sales-call reassurance appears without blocking optional package conversation', () => {
+  assert.match(indexSource, /<p class="sales-reassurance"><strong>No sales call required for the audit\.<\/strong> You’ll get a written review within 2 business days first, and we can talk only if a package looks like a fit\.<\/p>/);
+  assert.match(indexSource, /responds within 2 business days/);
+  assert.match(indexSource, /private written review/);
+
+  assert.match(auditFormSource, /written review within 2 business days[\s\S]*no sales call required for the audit/);
+  assert.match(auditFormSource, /No deposit is required for the audit response/);
+});
+
 test('audit form current URL wiring stays intact', () => {
+  assert.match(indexSource, /<form class="audit-form" id="auditForm">/);
   assert.match(indexSource, /<label for="currentUrl">Current race site or registration URL<\/label>/);
   assert.match(
     indexSource,
     /<input id="currentUrl" name="currentUrl" type="url" inputmode="url" autocomplete="url" placeholder="https:\/\/\.\.\." aria-describedby="currentUrlHelp" required \/>/,
   );
+  assert.match(indexSource, /<input id="raceName" name="raceName" type="text"[^>]+required \/>/);
+  assert.match(indexSource, /<input id="auditName" name="auditName" type="text"[^>]+required \/>/);
+  assert.match(indexSource, /<input id="auditEmail" name="auditEmail" type="email"[^>]+required \/>/);
   assert.match(indexSource, /<input id="packageTier" name="packageTier" type="hidden" value="" \/>/);
+  assert.match(indexSource, /<textarea id="notes" name="notes" rows="3" maxlength="1200"/);
   assert.match(indexSource, /<input id="companyWebsite" name="companyWebsite" type="text" tabindex="-1" autocomplete="off" \/>/);
+  assert.match(indexSource, /<button type="submit" class="btn btn-accent">Send audit request →<\/button>/);
   assert.match(indexSource, /<div class="form-msg" id="formMsg" role="status" aria-live="polite"><\/div>/);
 
+  assert.match(auditFormSource, /race_name: String\(formData\.get\('raceName'\) \|\| ''\)/);
   assert.match(auditFormSource, /current_url: String\(formData\.get\('currentUrl'\) \|\| ''\)/);
+  assert.match(auditFormSource, /contact_name: String\(formData\.get\('auditName'\) \|\| ''\)/);
+  assert.match(auditFormSource, /contact_email: String\(formData\.get\('auditEmail'\) \|\| ''\)/);
+  assert.match(auditFormSource, /notes: String\(formData\.get\('notes'\) \|\| ''\)/);
   assert.match(auditFormSource, /company_website: String\(formData\.get\('companyWebsite'\) \|\| ''\)/);
+  assert.match(auditFormSource, /package_tier: isPackageKey\(selectedTier\) \? selectedTier : ''/);
   assert.match(auditFormSource, /fetch\('\/.netlify\/functions\/submit-audit-request'/);
   assert.match(auditFormSource, /if \(!form\.checkValidity\(\)\)/);
 });
