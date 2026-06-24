@@ -342,6 +342,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Medium
 - **Category**: Pricing / Trust
+- **Status**: In review on branch `content/m05-year-one-cost-boundary`.
 - **Why this matters**: Buyers need to know what is included in year one and what may cost extra later.
 - **Scope**:
   - Add a compact comparison or callout linking pricing to after-year-one services.

@@ -174,6 +174,22 @@ test('homepage package guidance preserves pricing and payment language', async (
   }
 });
 
+test('pricing copy clarifies first-year boundary and links to optional after-year-one services', async () => {
+  const homepage = await readFile(path.join(repoRoot, 'src/pages/index.astro'), 'utf8');
+  const afterYearOne = await readFile(path.join(repoRoot, 'src/pages/after-year-one.astro'), 'utf8');
+
+  assert.match(homepage, /Cost boundary:/);
+  assert.match(homepage, /first-year package pricing covers the listed build and scoped race-cycle support/i);
+  assert.match(homepage, /href="\/after-year-one\/">request optional scoped one-time services/i);
+  assert.match(homepage, /No monthly retainer by default/i);
+  assert.match(homepage, /Optional scoped one-time rollover, SEO, analytics, sponsor, or tune-up services/i);
+
+  assert.match(afterYearOne, /first-year packages cover the build and scoped support/i);
+  assert.match(afterYearOne, /There is no monthly retainer by default after that/i);
+  assert.match(afterYearOne, /One-time services tied to real race-cycle moments/i);
+  assert.match(afterYearOne, /No unlimited-edit promise, no automatic support plan/i);
+});
+
 test('homepage makes Premium proposal gating visually and semantically distinct', async () => {
   const homepage = await readFile(path.join(repoRoot, 'src/pages/index.astro'), 'utf8');
 
