@@ -14,6 +14,10 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - StartLine UX conversion audit backlog: `startline-ux-conversion-audit-backlog.md`
 - Cold race-director UX audit backlog: `startline-cold-race-director-ux-audit-backlog.md`
 - Live-site audit backlog: `startline-live-site-audit-backlog-2026-06-24.md`
+- CDO self-improvement system: `startline-site-improvement-system.md`
+- CDO audit prompt: `prompts/chief-design-officer-site-audit.md`
+- CDO audit report template: `templates/cdo-audit-report-template.md`
+- CDO backlog template: `templates/cdo-backlog-template.md`
 - Conversion UX PR review prompts: `conversion-ux-pr-review-prompts.md`
 - Customer proof readiness checklist: `customer-proof-readiness-checklist.md`
 - Service agreement draft: `legal/service-agreement-draft.md`
