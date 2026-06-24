@@ -285,7 +285,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Low
 - **Effort**: Low
 - **Category**: Conversion / Copy
-- **Status**: In review in PR #83 (`content/l05-no-sales-call-audit`).
+- **Status**: Completed in PR #83 (`content/l05-no-sales-call-audit`).
 - **Confirmation**: StartLine marketing-site positioning confirms the private audit response is a concise written review within 2 business days, with no sales call or deposit required for the audit response.
 - **Why this matters**: This may reduce form anxiety, but only if it matches Steve's actual sales process.
 - **Scope**:
@@ -306,6 +306,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Low
 - **Category**: Pricing / Copy
+- **Status**: In review in PR #84 (`feat/m01-package-fit-guidance`).
 - **Why this matters**: Transparent prices are good, but directors may not know which package fits their race.
 - **Scope**:
   - Add concise “which package usually fits” guidance without changing package names, prices, inclusions, or payment terms.

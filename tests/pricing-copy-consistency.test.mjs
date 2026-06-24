@@ -138,3 +138,38 @@ test('homepage pricing copy keeps one-time first-year race-cycle signals', async
     assert.match(homepage, signal);
   }
 });
+
+test('homepage package recommendation guidance appears before pricing cards', async () => {
+  const homepage = await readFile(path.join(repoRoot, 'src/pages/index.astro'), 'utf8');
+
+  const guidanceIndex = homepage.indexOf('Which package usually fits?');
+  const cardsIndex = homepage.indexOf('class="price-grid"');
+
+  assert.notEqual(guidanceIndex, -1, 'package fit guidance heading should be present');
+  assert.notEqual(cardsIndex, -1, 'pricing cards grid should be present');
+  assert.ok(guidanceIndex < cardsIndex, 'package fit guidance should appear before pricing cards');
+  assert.match(homepage, /Starter usually fits/);
+  assert.match(homepage, /Standard is the recommended fit/);
+  assert.match(homepage, /Premium is proposal-gated/);
+  assert.match(homepage, /scoped after the audit before any deposit/i);
+});
+
+test('homepage package guidance preserves pricing and payment language', async () => {
+  const homepage = await readFile(path.join(repoRoot, 'src/pages/index.astro'), 'utf8');
+
+  for (const expectedCopy of [
+    '$1,500',
+    '$750 deposit',
+    '$750 final invoice at launch',
+    '$2,500',
+    '$1,250 deposit',
+    '$1,250 final invoice at launch',
+    '$4,500',
+    '$2,250 final invoice at launch after approved scope',
+    'Reviewed proposal required before deposit',
+    '50% deposit starts work; the final 50% is invoiced at launch, due net 7. Premium requires a reviewed proposal before any deposit.',
+    'Audit + reviewed proposal before deposit',
+  ]) {
+    assert.ok(homepage.includes(expectedCopy), `Expected pricing/payment copy to remain: ${expectedCopy}`);
+  }
+});
