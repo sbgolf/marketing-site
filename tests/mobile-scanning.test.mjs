@@ -49,6 +49,25 @@ test('homepage fit cards link to public persona pages without replacing audit CT
   assert.match(indexSource, /<div class="fit-actions"><button class="btn btn-accent" data-scroll="audit">Request a private audit<\/button><a class="btn btn-ghost" href="\/sample-audit\/">See sample audit<\/a><\/div>/);
 });
 
+test('homepage qualification copy respectfully explains who StartLine is not for', () => {
+  assert.match(indexSource, /Who this is not for/);
+  assert.match(indexSource, /StartLine is a marketing website layer, not every race-operations tool\./);
+
+  for (const phrase of [
+    'Custom registration software',
+    'Same-day emergency rebuilds',
+    'Real-time race operations',
+    'Unlimited edits or open-ended retainers'
+  ]) {
+    assert.match(indexSource, new RegExp(phrase));
+  }
+
+  assert.match(indexSource, /not the replacement for that operations system/);
+  assert.match(indexSource, /private audit will say so when that is the better next step/);
+  const notForChunk = indexSource.match(/const notForGuidance = \[[\s\S]*?\];/)?.[0] ?? '';
+  assert.doesNotMatch(notForChunk, /guarantee|guaranteed|must buy|unlimited support/i);
+});
+
 test('homepage footer groups buyer, race, kickoff, and credibility links', () => {
   for (const label of ['Buyer resources', 'For race types', 'Customer kickoff', 'Company / credibility']) {
     assert.match(indexSource, new RegExp(`<div class="foot-title">${label}<\\/div>`));
