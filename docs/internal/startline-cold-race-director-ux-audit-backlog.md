@@ -419,7 +419,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Medium
 - **Category**: Trust / Copy
-- **Status**: In review in PR #90 (`feat/m08-persona-proof-substitutes`).
+- **Status**: Completed / merged in PR #90 (`feat/m08-persona-proof-substitutes`).
 - **Why this matters**: Persona pages are good, but they can feel generic without segment-specific proof or process cues.
 - **Scope**:
   - Add evidence-safe proof substitutes per segment: community logistics checklist, marathon certification/logistics review cues, RunSignup handoff map, race-director workload cues.
@@ -436,6 +436,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Low
 - **Category**: Conversion / Copy
+- **Status**: In review in PR #91 (`feat/m03-checklist-audit-bridge`).
 - **Why this matters**: The checklist is useful, but it should more clearly tell a self-auditing director when to request help.
 - **Scope**:
   - Add a clear bridge such as “If you marked 2+ yellow/red areas, request a private audit.”
