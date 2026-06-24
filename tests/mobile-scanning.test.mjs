@@ -25,8 +25,21 @@ test('homepage hero makes the primary audit path clear', () => {
   assert.doesNotMatch(indexSource, /data-scroll="templates">Explore example templates/);
 });
 
+test('homepage hero adds compact evidence-safe trust cues near the first CTA', () => {
+  assert.match(indexSource, /const heroTrustCues = \[/);
+  assert.match(indexSource, /Why race directors can trust the private audit path/);
+  assert.match(indexSource, /Audit-first review/);
+  assert.match(indexSource, /No platform switch/);
+  assert.match(indexSource, /Proof you can preview/);
+  assert.match(indexSource, /href="\/sample-audit\/">Preview the sample audit →/);
+
+  const trustCueChunk = indexSource.match(/const heroTrustCues = \[[\s\S]*?\];/)?.[0] ?? '';
+  assert.doesNotMatch(trustCueChunk, /testimonial|customer logo|case stud|guarantee|guaranteed/i);
+});
+
 test('mobile CSS stacks scan units and CTAs at narrow widths', () => {
   assert.match(indexSource, /@media\(max-width:520px\)/);
+  assert.match(indexSource, /\.hero-trust-cues\{grid-template-columns:1fr\}/);
   assert.match(indexSource, /\.scan-list,\.audit-scan-list\{grid-template-columns:1fr\}/);
   assert.match(indexSource, /\.section-cta\{display:grid\}/);
   assert.match(indexSource, /\.segment-grid\{grid-template-columns:1fr\}/);

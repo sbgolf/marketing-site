@@ -360,7 +360,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Low
 - **Category**: Copy / Trust
-- **Status**: In review on branch `content/m04-not-for`.
+- **Status**: Completed / merged in PR #87 (`content/m04-not-for`).
 - **Why this matters**: Clear disqualification can increase trust and reduce poor-fit leads.
 - **Scope**:
   - Add concise not-for guidance, such as races needing custom registration software, urgent same-day rebuilds, unsupported real-time race ops, or unlimited edits.
@@ -379,6 +379,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Low
 - **Category**: Trust / Conversion
+- **Status**: In review in PR TBD (`feat/h02-hero-trust-strip`).
 - **Why this matters**: The site is honest about not having fake testimonials, but skeptical buyers need a credibility bridge before submitting a form.
 - **Scope**:
   - Add a concise trust strip near the hero or first audit CTA.
