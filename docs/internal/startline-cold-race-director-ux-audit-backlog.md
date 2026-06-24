@@ -190,8 +190,8 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Low
 - **Category**: Conversion / Navigation
-- **Status**: In review — PR #79 (`content/h07-kickoff-pages`).
-- **Noindex decision**: Remain indexable for now because copy clearly frames them as kickoff/customer resources; leave L-02 for a future explicit noindex decision if Steve wants these removed from search discovery.
+- **Status**: Completed in PR #79 (`content/h07-kickoff-pages`).
+- **Noindex decision**: Remain indexable for now because PR #79 framed them clearly as kickoff/customer resources; L-02 is recorded as decided with no metadata change unless Steve later asks to remove these pages from search discovery.
 - **Why this matters**: These pages are useful after purchase but can confuse cold prospects if discovered early.
 - **Scope**:
   - Make both pages clearly say they are for customers after audit/package approval or StartLine kickoff.
@@ -212,6 +212,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Low
 - **Effort**: Low
 - **Category**: Technical / Navigation
+- **Status**: Decided in PR #79 and recorded in this PR — remain indexable for now because `/intake/` and `/asset-checklist/` are clearly framed as kickoff/customer resources.
 - **Why this matters**: `/intake/` and `/asset-checklist/` are useful publicly only if framed correctly; otherwise search discovery may confuse prospects.
 - **Scope**:
   - Decide with Steve whether these should remain indexed, be noindexed, or simply be reframed.
@@ -228,6 +229,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Low
 - **Category**: Conversion / Technical
+- **Status**: In review — PR pending for `feat/m06-post-deposit-handoff`.
 - **Why this matters**: After deposit, the customer should immediately understand intake/assets next steps.
 - **Scope**:
   - Improve deposit success state and supporting copy/links to `/intake/`, `/asset-checklist/`, and support.

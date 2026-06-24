@@ -32,9 +32,25 @@ const showCheckoutReturnMessage = () => {
   banner.setAttribute('aria-live', 'polite');
 
   if (depositState === 'success') {
-    banner.innerHTML = '<strong>Thanks — if your first-year package deposit completed, Stripe will confirm it securely.</strong><span>Watch your inbox for StartLine kickoff details. The build timeline starts after complete intake details and usable assets are received.</span>';
+    banner.innerHTML = `
+      <strong>Deposit received — here is what happens next.</strong>
+      <span>Stripe confirms the payment securely, and StartLine will use your kickoff details to move the project from deposit to build-ready. Complete the intake form, gather the assets/access we need, and email support if anything looks unusual.</span>
+      <span>The build timeline starts after complete intake details and usable assets are received.</span>
+      <div class="checkout-status-actions">
+        <a class="btn btn-accent" href="/intake/">Complete customer intake →</a>
+        <a class="btn btn-ghost" href="/asset-checklist/">Review asset checklist</a>
+        <a class="checkout-support-link" href="mailto:support@startlinesites.com">Email support</a>
+      </div>
+    `;
   } else {
-    banner.innerHTML = '<strong>No problem — the first-year package deposit checkout was not completed.</strong><span>You can return to pricing or request a package recommendation before paying.</span>';
+    banner.innerHTML = `
+      <strong>No problem — the first-year package deposit checkout was not completed.</strong>
+      <span>Your audit request or package conversation can continue. Return to pricing when you are ready, or request a private audit/package recommendation before paying.</span>
+      <div class="checkout-status-actions">
+        <a class="btn btn-accent" href="/#pricing">Return to pricing</a>
+        <a class="btn btn-ghost" href="/#audit">Request a private audit</a>
+      </div>
+    `;
   }
 
   document.getElementById('main')?.prepend(banner);
