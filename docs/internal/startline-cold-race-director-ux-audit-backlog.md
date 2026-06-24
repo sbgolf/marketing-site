@@ -399,7 +399,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Medium
 - **Category**: Visual / Trust / Copy
-- **Status**: In review in PR #89 (`feat/h08-runsignup-flow-diagram`).
+- **Status**: Completed / merged in PR #89 (`feat/h08-runsignup-flow-diagram`).
 - **Why this matters**: One of the strongest buyer objections is “we already use RunSignup.” A simple visual can explain StartLine as the marketing layer before checkout.
 - **Scope**:
   - Add a simple, accessible diagram to the RunSignup page and/or homepage: Search/social/email → StartLine race website → RunSignup/registration checkout.
@@ -419,6 +419,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Medium
 - **Category**: Trust / Copy
+- **Status**: In review in PR #90 (`feat/m08-persona-proof-substitutes`).
 - **Why this matters**: Persona pages are good, but they can feel generic without segment-specific proof or process cues.
 - **Scope**:
   - Add evidence-safe proof substitutes per segment: community logistics checklist, marathon certification/logistics review cues, RunSignup handoff map, race-director workload cues.
