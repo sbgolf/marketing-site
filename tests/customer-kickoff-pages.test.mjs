@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 
 const intakeSource = await readFile(new URL('../src/pages/intake.astro', import.meta.url), 'utf8');
 const assetChecklistSource = await readFile(new URL('../src/pages/asset-checklist.astro', import.meta.url), 'utf8');
+const astroConfigSource = await readFile(new URL('../astro.config.mjs', import.meta.url), 'utf8');
 
 test('intake page is framed as a customer kickoff resource with prospect escape routes', () => {
   assert.match(intakeSource, /Customer Kickoff Intake — StartLine Sites/);
@@ -13,6 +14,19 @@ test('intake page is framed as a customer kickoff resource with prospect escape 
   assert.match(intakeSource, /href="\/#audit">Request a private audit/);
   assert.match(intakeSource, /href="\/#pricing">View pricing/);
   assert.match(intakeSource, /href="\/sample-audit\/">See sample audit/);
+});
+
+test('customer kickoff pages opt out of search indexing while remaining static routes', () => {
+  assert.match(intakeSource, /canonicalPath="\/intake"/);
+  assert.match(intakeSource, /noindex=\{true\}/);
+  assert.match(assetChecklistSource, /canonicalPath="\/asset-checklist"/);
+  assert.match(assetChecklistSource, /noindex=\{true\}/);
+});
+
+test('customer kickoff pages are excluded from generated sitemap output', () => {
+  assert.match(astroConfigSource, /['"]\/intake\/['"]/);
+  assert.match(astroConfigSource, /['"]\/asset-checklist\/['"]/);
+  assert.match(astroConfigSource, /filter: \(page\) => !sitemapExcludedPaths\.some/);
 });
 
 test('asset checklist page is framed as customer kickoff preparation with prospect escape routes', () => {

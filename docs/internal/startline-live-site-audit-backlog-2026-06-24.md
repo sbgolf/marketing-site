@@ -33,7 +33,7 @@ Do not implement metadata, sitemap, robots, route, link, or copy changes from th
 
 ### P0-01 — De-index customer kickoff pages while keeping direct links live
 
-- **Status**: Proposed / approval needed before implementation.
+- **Status**: In review — PR #96.
 - **Impact**: High if Steve wants customer kickoff resources excluded from organic discovery; reduces chance that cold prospects land first on post-deposit/customer-only workflows.
 - **Effort**: Low to medium.
 - **Category**: SEO / index hygiene / customer-prospect path separation.

@@ -2,6 +2,11 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 const isGitHubPages = process.env.GITHUB_PAGES === 'true';
+const sitemapExcludedPaths = [
+  '/asset-checklist/',
+  '/intake/',
+  '/outreach-assets/',
+];
 
 export default defineConfig({
   site: isGitHubPages
@@ -9,7 +14,7 @@ export default defineConfig({
     : 'https://startlinesites.com',
   base: isGitHubPages ? '/marketing-site' : undefined,
   integrations: [sitemap({
-    filter: (page) => !page.endsWith('/outreach-assets/'),
+    filter: (page) => !sitemapExcludedPaths.some((path) => page.endsWith(path)),
   })],
   output: 'static',
   vite: {
