@@ -173,3 +173,25 @@ test('homepage package guidance preserves pricing and payment language', async (
     assert.ok(homepage.includes(expectedCopy), `Expected pricing/payment copy to remain: ${expectedCopy}`);
   }
 });
+
+test('homepage makes Premium proposal gating visually and semantically distinct', async () => {
+  const homepage = await readFile(path.join(repoRoot, 'src/pages/index.astro'), 'utf8');
+
+  assert.match(homepage, /'proposal-tier':t\.proposalOnly/);
+  assert.match(homepage, /proposal-gate/);
+  assert.match(homepage, /Proposal-gated/);
+  assert.match(homepage, /StartLine reviews the audit findings and scope with you first/);
+  assert.match(homepage, /approved proposal defines the deposit path before any payment is requested/);
+  assert.match(homepage, /aria-label="Premium proposal gate"/);
+});
+
+test('homepage keeps Starter and Standard as direct-deposit paths distinct from Premium', async () => {
+  const homepage = await readFile(path.join(repoRoot, 'src/pages/index.astro'), 'utf8');
+
+  assert.match(homepage, /50% deposit to start: \$\{t\.deposit\}/);
+  assert.match(homepage, /\$750 deposit/);
+  assert.match(homepage, /\$1,250 deposit/);
+  assert.match(homepage, /Audit \+ reviewed proposal before deposit/);
+  assert.match(homepage, /t\.proposalOnly \? 'Audit \+ reviewed proposal before deposit' : `50% deposit to start: \$\{t\.deposit\}`/);
+  assert.doesNotMatch(homepage, /data-package-card=\{t\.key\}[^\n]+checkout/i);
+});

@@ -306,7 +306,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Low
 - **Category**: Pricing / Copy
-- **Status**: In review in PR #84 (`feat/m01-package-fit-guidance`).
+- **Status**: Completed in PR #84 (`feat/m01-package-fit-guidance`).
 - **Why this matters**: Transparent prices are good, but directors may not know which package fits their race.
 - **Scope**:
   - Add concise “which package usually fits” guidance without changing package names, prices, inclusions, or payment terms.
@@ -324,6 +324,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Low
 - **Category**: Pricing / Trust
+- **Status**: In review on branch `feat/m02-premium-proposal-gating` (PR pending).
 - **Why this matters**: Premium mentions deposit math but requires proposal review, which should feel intentionally different from Starter/Standard.
 - **Scope**:
   - Clarify Premium as proposal-first and not a direct checkout path.
