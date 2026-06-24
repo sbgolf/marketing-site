@@ -21,6 +21,16 @@ export type OutreachLandingPage = {
     }>;
     note: string;
   };
+  processProof: {
+    kicker: string;
+    title: string;
+    lead: string;
+    cues: Array<{
+      title: string;
+      copy: string;
+    }>;
+    note: string;
+  };
   painPoints: string[];
   outcomes: Array<{
     title: string;
@@ -49,6 +59,28 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     proofTitle: 'Keep the event approachable while making registration easier to find.',
     proofCopy:
       'This is a fictional/generic template example, not customer proof. The Community direction focuses on schedule, parking, packet pickup, local story, sponsor context, volunteer calls-to-action, and a direct route to the registration platform you already use.',
+    processProof: {
+      kicker: 'Process cue for community races',
+      title: 'A logistics-first review before design decisions.',
+      lead:
+        'For community events, trust often comes from organized details. StartLine reviews the public race path like a local runner, sponsor, volunteer, and city partner would.',
+      cues: [
+        {
+          title: 'Local logistics checklist',
+          copy: 'Check whether parking, packet pickup, start-line location, course basics, weather/update paths, and race-day timing are findable on mobile.'
+        },
+        {
+          title: 'Volunteer and sponsor clarity',
+          copy: 'Look for clear sponsor recognition, charity context, volunteer asks, and community story without burying the registration button.'
+        },
+        {
+          title: 'Generic example, not customer proof',
+          copy: 'Recommendations are framed as process observations from the current public URL, not fabricated quotes, unsupported examples, or promised registration outcomes.'
+        }
+      ],
+      note:
+        'The audit keeps your registration platform in place and focuses on the public details that make a hometown race feel prepared.'
+    },
     painPoints: [
       'Race-day details exist, but runners have to scan multiple pages, PDFs, or social posts to find them.',
       'Sponsor and charity value is present, but not explained in a polished runner-facing section.',
@@ -102,6 +134,28 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     proofTitle: 'Bring course confidence and registration clarity into one focused runner path.',
     proofCopy:
       'This is a fictional/generic template example, not customer proof. The Performance direction is built for clear course information, certification or qualifying context where applicable, pacer and timing details, travel notes, and repeated registration calls-to-action.',
+    processProof: {
+      kicker: 'Process cue for marathons',
+      title: 'Course, certification, and race-week clarity get checked together.',
+      lead:
+        'Marathon buyers need confidence before committing months ahead. StartLine reviews whether the site supports that decision with factual, easy-to-find race details.',
+      cues: [
+        {
+          title: 'Certification and course review',
+          copy: 'Confirm that course maps, elevation, certification or qualifying notes, timing support, pacers, aid stations, and distance details are factual and easy to compare.'
+        },
+        {
+          title: 'Travel and logistics sequence',
+          copy: 'Group lodging, parking, packet pickup, expo, start corrals, spectator notes, and race-week updates into a runner planning path.'
+        },
+        {
+          title: 'No performance promises',
+          copy: 'The copy can clarify certified or qualifying context when true, but it should not claim BQ, PR, sellout, traffic, or registration results.'
+        }
+      ],
+      note:
+        'The audit substitutes a transparent review checklist for unapproved marathon proof assets or performance metrics.'
+    },
     painPoints: [
       'Course, elevation, pacer, certification, and schedule details live across PDFs or prior-season updates.',
       'Runners cannot quickly tell whether the race fits their goal, travel plan, or registration timeline.',
@@ -155,6 +209,28 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     proofTitle: 'Keep RunSignup for checkout. Use StartLine for the pre-registration decision path.',
     proofCopy:
       'This is a generic positioning example, not customer proof. The goal is not to replace RunSignup. The private audit reviews the current public website, the RunSignup listing, and the outbound registration path so StartLine can recommend the smallest useful marketing-site layer around checkout.',
+    processProof: {
+      kicker: 'Process cue for RunSignup races',
+      title: 'A handoff map shows what stays in RunSignup and what the website explains first.',
+      lead:
+        'The proof substitute is operational clarity: StartLine maps the runner path into RunSignup without implying a platform replacement or special integration.',
+      cues: [
+        {
+          title: 'Public path inventory',
+          copy: 'Review search/social/email entry points, the race website, the RunSignup listing, and the exact registration, donation, volunteer, and results links runners may see.'
+        },
+        {
+          title: 'Checkout handoff cue',
+          copy: 'Prioritize the main registration CTA and label secondary RunSignup paths so runners understand when they are leaving the marketing site for checkout operations.'
+        },
+        {
+          title: 'Platform-safe language',
+          copy: 'Keep registration, payments, waivers, participant records, and race operations in RunSignup while StartLine improves search, trust, and tracked outbound clicks.'
+        }
+      ],
+      note:
+        'This is a generic handoff map, not a claim of customer proof, special RunSignup access, or promised registration gains.'
+    },
     platformFlow: {
       kicker: 'How StartLine fits with RunSignup',
       title: 'Marketing path first. RunSignup checkout stays in place.',
@@ -233,6 +309,28 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     proofTitle: 'A practical website layer for search, speed, signups, and race-week clarity.',
     proofCopy:
       'This is a generic scope example, not customer proof. StartLine focuses on what race directors need the site to do: explain the event, reduce avoidable questions, support sponsors, measure intent, and send runners to the existing registration path.',
+    processProof: {
+      kicker: 'Process cue for race directors',
+      title: 'Reduce decision load before the team is deep in race week.',
+      lead:
+        'StartLine reviews the website around the jobs a director is already juggling: registration clarity, stakeholder updates, sponsor visibility, and the next useful decision.',
+      cues: [
+        {
+          title: 'Workload scan',
+          copy: 'Identify repeated runner questions, stale update areas, hard-to-find policies, and content that forces the race team to answer the same thing in email or social posts.'
+        },
+        {
+          title: 'Decision-path audit',
+          copy: 'Check whether first-time visitors can understand who the race is for, when it happens, where to go, what to expect, and how to register without extra hunting.'
+        },
+        {
+          title: 'Practical recommendation',
+          copy: 'The audit recommends a useful next move only when there is fit; it does not invent proof assets, named examples, or urgency claims.'
+        }
+      ],
+      note:
+        'The process cue is intentionally evidence-safe: it shows how StartLine thinks through a director’s site without implying unapproved customer results.'
+    },
     painPoints: [
       'Important race details live across the website, registration platform, PDFs, social posts, and email updates.',
       'The site needs a simpler update path and clearer mobile trust signals when runner questions increase.',
