@@ -480,6 +480,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Medium
 - **Category**: Visual / Technical
+- **Status**: Completed / merged in PR #93 (`feat/m09-mobile-tap-usability`).
 - **Why this matters**: Race directors may review the site on mobile between tasks; long dense cards and small CTAs can reduce completion.
 - **Scope**:
   - Review homepage and forms at 375, 414, 768, and desktop widths.
@@ -496,6 +497,8 @@ Each implementation PR spawned from this backlog is done only when:
 ---
 
 # Low Impact backlog
+
+No unblocked low-impact items remain from this audit backlog; the remaining proof opportunities require Steve-approved assets and wording.
 
 ---
 
