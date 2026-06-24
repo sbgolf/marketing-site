@@ -48,3 +48,32 @@ test('homepage fit cards link to public persona pages without replacing audit CT
   assert.match(indexSource, /<a class="segment-link" href=\{item\.personaHref\}>\{item\.personaLabel\} →<\/a>/);
   assert.match(indexSource, /<div class="fit-actions"><button class="btn btn-accent" data-scroll="audit">Request a private audit<\/button><a class="btn btn-ghost" href="\/sample-audit\/">See sample audit<\/a><\/div>/);
 });
+
+test('homepage footer groups buyer, kickoff, and credibility links distinctly', () => {
+  for (const label of ['Buyer resources', 'Race fit pages', 'Customer kickoff', 'Company / credibility']) {
+    assert.match(indexSource, new RegExp(label.replace('/', '\\/')));
+  }
+
+  for (const href of [
+    '#audit',
+    '#pricing',
+    '#faq',
+    '#problem',
+    '/sample-audit/',
+    '/race-website-checklist/',
+    '/after-year-one/',
+    '/for-race-directors/',
+    '/for-community-races/',
+    '/for-marathons/',
+    '/for-runsignup-races/',
+    '/intake/',
+    '/asset-checklist/'
+  ]) {
+    assert.match(indexSource, new RegExp(`href="${href.replaceAll('/', '\\/')}"`));
+  }
+
+  assert.match(indexSource, /class="foot-cta"/);
+  assert.match(indexSource, /Request a private audit<\/a><a class="foot-secondary" href="\/sample-audit\/">See sample audit/);
+  assert.match(indexSource, /\.foot\{grid-template-columns:1fr;gap:28px\}/);
+  assert.match(indexSource, /\.foot-cta\{display:grid\}/);
+});

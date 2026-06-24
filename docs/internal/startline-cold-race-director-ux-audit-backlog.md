@@ -134,7 +134,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Low
 - **Category**: Navigation / Conversion
-- **Status**: In review — PR #75 (`feat/h-05-homepage-persona-links`).
+- **Status**: Completed/merged — PR #75 (`feat/h-05-homepage-persona-links`).
 - **Why this matters**: Strong segment pages exist but are not prominent in the main buyer journey.
 - **Scope**:
   - Link relevant homepage fit/segment cards to `/for-community-races/`, `/for-marathons/`, `/for-runsignup-races/`, and `/for-race-directors/`.
@@ -154,6 +154,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Low
 - **Effort**: Medium
 - **Category**: Navigation / Visual
+- **Status**: In review — PR #76 (`ux/l03-footer-grouping`).
 - **Why this matters**: Footer grouping can help agents and users understand which pages are buyer resources vs. customer kickoff resources.
 - **Scope**:
   - Group footer links into Buyer resources, Customer kickoff, and Company/Credibility if the current footer supports it.
