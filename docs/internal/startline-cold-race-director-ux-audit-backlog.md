@@ -436,7 +436,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: Medium
 - **Effort**: Low
 - **Category**: Conversion / Copy
-- **Status**: In review in PR #91 (`feat/m03-checklist-audit-bridge`).
+- **Status**: Completed / merged in PR #91 (`feat/m03-checklist-audit-bridge`).
 - **Why this matters**: The checklist is useful, but it should more clearly tell a self-auditing director when to request help.
 - **Scope**:
   - Add a clear bridge such as “If you marked 2+ yellow/red areas, request a private audit.”
@@ -455,6 +455,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Medium
 - **Category**: Copy / Visual / Conversion
+- **Status**: In review in PR #92 (`feat/h09-homepage-density-trim`).
 - **Why this matters**: The homepage is persuasive but very long. Busy directors may understand the offer and still not reach the form.
 - **Scope**:
   - Audit sections before `#audit` for repeated messages.
