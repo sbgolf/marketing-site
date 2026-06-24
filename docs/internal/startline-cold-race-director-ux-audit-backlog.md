@@ -134,7 +134,7 @@ Each implementation PR spawned from this backlog is done only when:
 - **Impact**: High
 - **Effort**: Low
 - **Category**: Navigation / Conversion
-- **Status**: In review — PR #75 (`feat/h-05-homepage-persona-links`).
+- **Status**: Completed / merged in PR #75 (`feat/h-05-homepage-persona-links`).
 - **Why this matters**: Strong segment pages exist but are not prominent in the main buyer journey.
 - **Scope**:
   - Link relevant homepage fit/segment cards to `/for-community-races/`, `/for-marathons/`, `/for-runsignup-races/`, and `/for-race-directors/`.
