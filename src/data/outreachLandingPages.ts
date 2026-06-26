@@ -60,7 +60,7 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     proofCopy:
       'This is a fictional/generic template example, not customer proof. The Community direction focuses on schedule, parking, packet pickup, local story, sponsor context, volunteer calls-to-action, and a direct route to the registration platform you already use.',
     processProof: {
-      kicker: 'Process cue for community races',
+      kicker: 'How the review works for community races',
       title: 'A logistics-first review before design decisions.',
       lead:
         'For community events, trust often comes from organized details. StartLine reviews the public race path like a local runner, sponsor, volunteer, and city partner would.',
@@ -135,7 +135,7 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     proofCopy:
       'This is a fictional/generic template example, not customer proof. The Performance direction is built for clear course information, certification or qualifying context where applicable, pacer and timing details, travel notes, and repeated registration calls-to-action.',
     processProof: {
-      kicker: 'Process cue for marathons',
+      kicker: 'How the review works for marathons',
       title: 'Course, certification, and race-week clarity get checked together.',
       lead:
         'Marathon buyers need confidence before committing months ahead. StartLine reviews whether the site supports that decision with factual, easy-to-find race details.',
