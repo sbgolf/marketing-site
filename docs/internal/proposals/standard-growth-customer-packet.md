@@ -71,7 +71,7 @@ A fast, SEO-optimized race website designed to help runners:
 - Understand the course, distances, pricing, schedule, logistics, FAQs, and sponsors
 - Click through to register on [RunSignup / Race Roster / Haku / Active / Other platform]
 
-We do **not** replace your registration platform. We build the website that sends more qualified runners into it.
+We do **not** replace your registration platform. We build the website layer that helps interested runners reach your registration platform with more context and confidence.
 
 ## Included in Standard first-year package
 
@@ -80,11 +80,13 @@ We do **not** replace your registration platform. We build the website that send
 - Registration CTAs deep-linked to [registration platform]
 - Race details, distances, pricing, schedule, logistics, FAQs, sponsor area, and final CTA
 - SEO metadata, sitemap, robots.txt, and social sharing metadata
-- schema.org SportsEvent structured data
+- schema.org Event/SportsEvent structured data
 - GA4 registration-click tracking
 - Google Search Console setup support
-- Custom course/elevation presentation from the details you provide
+- Course/elevation section using the maps, route links, and elevation details you provide, when applicable
+- Sponsor section/logos when provided
 - Photo gallery when usable race photos are provided
+- 3–5 one-time launch announcement graphics
 - Race-cycle content updates as scoped before kickoff
 - Conversion review and recommendations
 - Quarterly SEO check + fixes during the first race cycle
@@ -115,9 +117,9 @@ Customer-owned delays pause the delivery clock.
 
 - Completed intake form
 - Logo files
-- Hero/race photos
-- Sponsor logos, if applicable
-- Course map/elevation details, if applicable
+- Hero/race photos, including the preferred hero image if one should lead the page
+- Sponsor logos, approved display names, tiers, destination URLs, and usage rights, if applicable
+- Course map, route link, and elevation details if available/applicable
 - Registration link
 - Domain/DNS access or someone who can make DNS updates
 - One primary decision-maker for approvals
@@ -143,4 +145,5 @@ After Stripe confirms the first-year package deposit:
    - `https://startlinesites.com/intake`
    - `https://startlinesites.com/asset-checklist`
 3. Create/confirm the customer build record and selected template.
-4. Do not begin launch/domain work until the site passes the technical launch gate and Steve gives final approval after customer review.
+4. Organize final build assets relative to `customers/[slug]/assets/`.
+5. Do not begin launch/domain work until the site passes the technical launch gate and Steve gives final approval after customer review.

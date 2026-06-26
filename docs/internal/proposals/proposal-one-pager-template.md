@@ -27,7 +27,7 @@ A fast, SEO-optimized race website designed to help runners:
 - Understand the course, schedule, pricing, and logistics
 - Click through to register on [RunSignup / Race Roster / Other platform]
 
-We do **not** replace your registration platform. We build the website that sends more qualified runners into it.
+We do **not** replace your registration platform. We build the website layer that helps interested runners reach your registration platform with more context and confidence.
 
 ## Included first-year package scope
 
@@ -36,9 +36,10 @@ We do **not** replace your registration platform. We build the website that send
 - Registration CTAs deep-linked to [registration platform]
 - Race details, distances, pricing, schedule, logistics, FAQs, and final CTA
 - SEO metadata, sitemap, robots.txt, OpenGraph/Twitter cards
-- schema.org SportsEvent structured data
+- schema.org Event/SportsEvent structured data
 - GA4 registration-click tracking
 - Google Search Console setup support
+- 3–5 one-time launch announcement graphics
 - [Tier-specific race-cycle support/update deliverable]
 - [Revision-pass count]
 
@@ -67,9 +68,9 @@ Customer-owned delays pause the delivery clock.
 
 - Completed intake form
 - Logo files
-- Hero/race photos
-- Sponsor logos, if applicable
-- Course map/elevation details, if applicable
+- Hero/race photos, including the preferred hero image if one should lead the page
+- Sponsor logos, approved display names, tiers, destination URLs, and usage rights, if applicable
+- Course map, route link, and elevation details if available/applicable
 - Registration link
 - Domain/DNS access or someone who can make DNS updates
 - One primary decision-maker for approvals

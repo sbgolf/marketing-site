@@ -1,4 +1,4 @@
-# Deposit, final invoice, and legacy monthly billing SOP
+# Deposit, final invoice, and optional recurring-service SOP
 
 Internal operating procedure for StartLine Sites billing. This file is sanitized for repo storage; keep customer-specific payment IDs, private notes, and legal exceptions out of committed docs.
 
@@ -15,28 +15,28 @@ Keep the close-to-launch payment flow simple and repeatable:
 
 ## Standard package map
 
-### Starter + Foundation
+### Starter first-year package
 
-- Setup fee: **$1,500**
+- First-year package: **$1,500**
 - Deposit: **$750**
 - Final invoice: **$750**
-- Monthly plan: **Foundation — $99/mo**
+- Optional recurring service: **none by default**
 - Deposit link: https://buy.stripe.com/8x2bIU1Bs0ww3H50UJ9fW00
 
-### Standard + Growth
+### Standard first-year package
 
-- Setup fee: **$2,500**
+- First-year package: **$2,500**
 - Deposit: **$1,250**
 - Final invoice: **$1,250**
-- Monthly plan: **Growth — $249/mo**
+- Optional recurring service: **none by default**
 - Deposit link: https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01
 
-### Premium + Performance
+### Premium first-year package
 
-- Setup fee: **$4,500**
+- First-year package: **$4,500**
 - Deposit: **$2,250**
 - Final invoice: **$2,250**
-- Monthly plan: **Performance — $499/mo**
+- Optional recurring service: **proposal-only / Steve-approved**
 - Deposit link: **proposal-only**. Do not send a Premium deposit link until Steve approves the customer-specific proposal/scope. Any approved Premium Checkout Session/Payment Link must include Stripe metadata `proposal_approved=true` or `deposit_source=approved_proposal`.
 
 ## Commercial rule
@@ -52,11 +52,11 @@ Confirm:
 - Race: [Race Name]
 - Customer organization: [Organization]
 - Billing contact: [Name + Email]
-- Setup tier: [Starter / Standard / Premium]
-- Monthly/recurring tier: [None by default / Steve-approved recurring service]
+- First-year package tier: [Starter / Standard / Premium]
+- First-year package amount: [$Amount]
 - Deposit amount: [$Amount]
-- Final invoice amount: [$Amount]
-- Monthly amount: [$Amount/mo, only if Steve-approved]
+- Final package balance: [$Amount]
+- Approved optional after-year-one or recurring service: [None / Details]
 - Deposit link: [Stripe Payment Link]
 - Approved exceptions: [None / Details]
 
@@ -99,15 +99,22 @@ Send the customer:
 - Expected delivery timeline for their tier
 - Note that the delivery clock starts after complete intake and usable assets are received
 
-Required kickoff fields:
+Required intake fields:
 
 - Race name
-- Race website URL
-- Registration platform URL
-- Primary decision-maker
-- Billing contact
-- Preferred launch target
-- Domain/DNS contact
+- Contact name and email
+- Event date or target date
+- Event location and timezone
+- Current race website/domain
+- Registration URL and platform
+
+Critical build inputs:
+
+- Shared asset folder
+- Distances/pricing, ideally longest-to-shortest
+- Course/logistics summary, with community builds allowed to use a simple logistics section when detailed maps/elevation are not available
+- Schedule notes with distance applicability when relevant
+- Sponsors, FAQs, volunteer info, email capture preference, preferred hero image, and access notes when available
 
 ## Step 5 — Create final invoice at launch
 
@@ -123,27 +130,22 @@ Invoice terms:
 
 Send final invoice when the site is launched or ready to launch per the approved launch plan.
 
-## Step 6 — Review legacy monthly subscription fields at go-live
+## Step 6 — Record launch and optional follow-up status
 
-Monthly billing does **not** start by default.
+Monthly billing does **not** start by default. Leave `subscription_status = dormant` unless Steve has explicitly approved a customer-specific recurring service and the customer record has approval metadata.
 
-Only create/start a Stripe subscription under the same Stripe customer when Steve has explicitly approved a customer-specific recurring service and the customer record has approval metadata. Legacy internal tiers were:
+If a legacy reporting service is approved, use this scope guard:
 
-- Foundation: $99/mo
-- Growth: $249/mo
-- Performance: $499/mo
+- Foundation: automated reporting snapshot only, maximum 30 minutes per month; no narrative, insights, recommendations, or strategy review.
+- Growth/Performance: full base report may include narrative, insights, recommendations, and scoped fixes described in the approved proposal.
 
-If approved, record in Stripe and `customer_records`:
+At go-live, record in Stripe and `customer_records`:
 
-- Stripe customer ID
-- Stripe subscription ID
-- Subscription start date
-- Monthly tier
-- Monthly amount
-- Go-live URL
-- First monthly report date
-
-If not approved, leave `subscription_status = dormant`.
+- Live URL
+- Launch date
+- Final package invoice status
+- Approved optional after-year-one or recurring service, if any
+- First follow-up/reporting timing only if included in approved scope
 
 ## Step 7 — Launch billing confirmation
 
@@ -152,7 +154,7 @@ After launch and billing setup, send customer-facing launch confirmation with:
 - Live URL
 - Final invoice note
 - Confirmation that no monthly retainer starts by default, or approved recurring-service details if Steve approved them
-- First recurring report timing only if an approved recurring service exists
+- First follow-up/reporting timing only if included in an approved recurring-service scope
 - Support/contact path
 
 Keep it short and factual.
@@ -180,9 +182,9 @@ Examples:
 - Discounted setup fee
 - Different deposit percentage
 - Deferred final balance
-- Monthly billing waived or delayed
+- Customer-specific recurring service requested
+- Optional after-year-one service requested before approval
 - Custom payment schedule
-- Different monthly tier pairing
 - Presenting multiple package options instead of one recommendation
 
 Record exception details in the customer record/CRM:

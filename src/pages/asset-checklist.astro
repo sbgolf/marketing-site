@@ -4,9 +4,9 @@ const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_U
 const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
 const requiredAssets = [
   ['Logo files', 'SVG, EPS, or high-resolution PNG. Include horizontal, stacked, one-color, and light/dark versions if available.', 'Example: race-logo-primary.svg and race-logo-white.png'],
-  ['Hero and race photos', 'At least 6–12 usable images, 2000px wide when possible. Prioritize start line, finish line, course scenery, runners, volunteers, and community moments.', 'Example: finish-line-crowd.jpg, course-ridge-mile-9.jpg'],
-  ['Sponsor logos', 'Transparent PNG or SVG, grouped by tier with exact display names and destination URLs.', 'Example: Premier Sponsor — Example Running Store — https://example.com'],
-  ['Course map and elevation', 'PDF, image, GPX, Strava route, MapMyRun link, or official certified map. Include elevation profile if you have one.', 'Example: marathon-course-map.pdf and elevation-profile.png'],
+  ['Hero and race photos', 'At least 6–12 usable images, 2000px wide when possible. Prioritize start line, finish line, course scenery, runners, volunteers, and community moments. Mark the preferred hero image if there is one.', 'Example: finish-line-crowd.jpg, course-ridge-mile-9.jpg'],
+  ['Sponsor logos', 'Transparent PNG or SVG, grouped by tier with exact display names, destination URLs, and confirmation that you have the rights to display them.', 'Example: Premier Sponsor — Example Running Store — https://example.com'],
+  ['Course map and elevation', 'PDF, image, GPX, Strava route, MapMyRun link, or official certified map. Include elevation profile if you have one; simple community/logistics sections are fine when detailed course assets are not available.', 'Example: marathon-course-map.pdf and elevation-profile.png'],
   ['Brand colors and fonts', 'HEX colors, font names, brand guide, or examples you like. If you do not have this, tell us “use StartLine recommendation.”', 'Example: Primary #0E1729, Accent #FF4D3D, Font: Montserrat'],
   ['Registration URL', 'Final public registration link plus platform name and any tracking requirements.', 'Example: RunSignup registration page URL'],
   ['Policies and legal copy', 'Refunds, transfers, deferrals, weather, cancellation, accessibility, privacy, waiver links, and safety rules.', 'Example: “No refunds after September 1; transfers allowed through September 15.”'],
@@ -47,7 +47,7 @@ const requiredAssets = [
 
     <section class="folder-card">
       <h2>Recommended folder setup</h2>
-      <p>Once StartLine has asked you to prepare kickoff assets, create one shared folder and make sure StartLine Sites can view it. If there are private working files you do not want published, place them in a clearly labeled “Reference only” folder.</p>
+      <p>Once StartLine has asked you to prepare kickoff assets, create one shared folder and make sure StartLine Sites can view it. If there are private working files you do not want published, place them in a clearly labeled “Reference only” folder. Internally, final build files are organized relative to <code>customers/[slug]/assets/</code>.</p>
       <ol>
         <li><strong>01 Logos & brand</strong> — race logo, marks, colors, fonts, brand guide.</li>
         <li><strong>02 Photos</strong> — hero candidates, race day, course, community, medals/shirts.</li>
@@ -74,7 +74,7 @@ const requiredAssets = [
         <ul>
           <li>Use original files when possible. Screenshots of logos or photos are usually too small.</li>
           <li>Photos should be licensed for your race to use on the public website.</li>
-          <li>Sponsor logos should include the correct tier/order and link destination.</li>
+          <li>Sponsor logos should include the correct tier/order, display name, link destination, and usage rights.</li>
           <li>Course and policy details should match your registration platform to avoid runner confusion.</li>
           <li>If something is missing, write “not available yet” in the intake instead of delaying the whole form.</li>
         </ul>

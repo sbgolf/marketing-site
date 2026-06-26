@@ -11,6 +11,8 @@ const validPayload = (overrides = {}) => ({
   contact_phone: '555-0100',
   event_date: '2026-10-18',
   event_location: 'Example City, OR',
+  event_timezone: 'America/Los_Angeles',
+  current_domain: 'https://www.examplemarathon.com',
   template_preference: 'Destination Major',
   distances_pricing: 'Marathon $120, Half Marathon $95, 5K $35.',
   registration_url: 'https://runsignup.com/example-marathon',
@@ -20,6 +22,9 @@ const validPayload = (overrides = {}) => ({
   race_schedule: 'Expo Saturday, marathon Sunday at 7:00 AM.',
   sponsors: 'Example Running Store, Example Health.',
   faqs: 'Are headphones allowed? Yes where safe. Is there gear check? Yes.',
+  volunteer_info: 'Volunteer signup opens in August.',
+  email_capture: 'No email capture needed for launch.',
+  identity_hero_image: 'finish-line-crowd.jpg',
   assets_link: 'https://drive.google.com/drive/folders/example',
   analytics_access_notes: 'GA4 access can be shared after kickoff.',
   optional_notes: 'Please use generic placeholder copy where details are missing.',
@@ -116,6 +121,12 @@ test('submit-customer-intake stores intake and sends support plus customer email
     assert.equal(insert.body.registration_url, 'https://runsignup.com/example-marathon');
     assert.equal(insert.body.metadata.form_version, 'customer_intake_v1');
     assert.equal(insert.body.metadata.assets_link, 'https://drive.google.com/drive/folders/example');
+    assert.equal(insert.body.metadata.event_timezone, 'America/Los_Angeles');
+    assert.equal(insert.body.metadata.current_domain, 'https://www.examplemarathon.com');
+    assert.equal(insert.body.metadata.derived_current_domain_host, 'examplemarathon.com');
+    assert.equal(insert.body.metadata.volunteer_info, 'Volunteer signup opens in August.');
+    assert.equal(insert.body.metadata.email_capture, 'No email capture needed for launch.');
+    assert.equal(insert.body.metadata.identity_hero_image, 'finish-line-crowd.jpg');
     assert.equal(insert.body.metadata.submitted_from, 'startlinesites.com/intake');
 
     const update = calls.find((call) => call.url.endsWith('/customer_records?id=eq.customer-123') && call.method === 'PATCH');
@@ -124,6 +135,8 @@ test('submit-customer-intake stores intake and sends support plus customer email
     assert.equal(update.body.build_status, 'ready_for_build');
     assert.equal(update.body.customer_intake_submission_id, 'intake-123');
     assert.equal(update.body.build_handoff_checklist.assets_link_present, true);
+    assert.equal(update.body.build_handoff_checklist.event_timezone_present, true);
+    assert.equal(update.body.build_handoff_checklist.current_domain_present, true);
     assert.equal(update.body.build_handoff_checklist.missing_critical_inputs.length, 0);
 
     const emailCalls = calls.filter((call) => call.url === 'https://api.resend.com/emails');
@@ -135,6 +148,8 @@ test('submit-customer-intake stores intake and sends support plus customer email
     assert.match(emailCalls[0].body.text, /Missing critical inputs: None/);
     assert.match(emailCalls[0].body.text, /Suggested next steps/);
     assert.match(emailCalls[0].body.text, /RunSignup/);
+    assert.match(emailCalls[0].body.text, /Current domain: https:\/\/www.examplemarathon.com/);
+    assert.match(emailCalls[0].body.text, /Volunteer info: Volunteer signup opens in August/);
     assert.deepEqual(emailCalls[1].body.to, ['director@example.com']);
     assert.equal(emailCalls[1].body.reply_to, 'kickoff@startlinesites.com');
     assert.match(emailCalls[1].body.text, /20–30 minute intake/);

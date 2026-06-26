@@ -37,6 +37,18 @@ const isHttpUrl = (value) => {
   }
 };
 
+const normalizeDomain = (value) => {
+  const cleaned = clean(value, 500);
+  if (!cleaned) return null;
+  try {
+    const candidate = cleaned.includes('://') ? cleaned : `https://${cleaned}`;
+    const url = new URL(candidate);
+    return url.hostname.replace(/^www\./, '').toLowerCase() || null;
+  } catch {
+    return null;
+  }
+};
+
 const fieldLine = (label, value) => `${label}: ${value || 'Not provided'}`;
 const htmlField = (label, value) => `<p><strong>${escapeHtml(label)}:</strong><br>${escapeHtml(value || 'Not provided')}</p>`;
 const normalizeMatchValue = (value) => clean(value, 240).toLowerCase();
@@ -74,6 +86,9 @@ const buildRow = (payload, event) => {
       submitted_from: 'startlinesites.com/intake',
       form_version: 'customer_intake_v1',
       contact_phone: optionalClean(payload.contact_phone, 80),
+      event_timezone: optionalClean(payload.event_timezone, 120),
+      current_domain: optionalClean(payload.current_domain, 500),
+      derived_current_domain_host: normalizeDomain(payload.current_domain),
       template_preference: optionalClean(payload.template_preference, 120),
       distances_pricing: optionalClean(payload.distances_pricing, 2500),
       registration_platform: optionalClean(payload.registration_platform, 160),
@@ -82,6 +97,9 @@ const buildRow = (payload, event) => {
       race_schedule: optionalClean(payload.race_schedule, 2500),
       sponsors: optionalClean(payload.sponsors, 2000),
       faqs: optionalClean(payload.faqs, 2500),
+      volunteer_info: optionalClean(payload.volunteer_info, 1200),
+      email_capture: optionalClean(payload.email_capture, 1200),
+      identity_hero_image: optionalClean(payload.identity_hero_image, 500),
       assets_link: optionalClean(payload.assets_link, 800),
       analytics_access_notes: optionalClean(payload.analytics_access_notes, 1200),
       optional_notes: optionalClean(payload.optional_notes, 2000),
@@ -97,6 +115,7 @@ const validateRow = (row) => {
   if (!row.event_date) errors.event_date = 'Event date or target date is required.';
   if (!row.event_location) errors.event_location = 'Event location is required.';
   if (!row.registration_url || !isHttpUrl(row.registration_url)) errors.registration_url = 'A valid registration URL is required.';
+  if (row.metadata.current_domain && !isHttpUrl(row.metadata.current_domain)) errors.current_domain = 'Use a valid current race website/domain URL.';
   if (row.metadata.assets_link && !isHttpUrl(row.metadata.assets_link)) errors.assets_link = 'Use a valid shared Drive, Dropbox, or folder URL.';
   return errors;
 };
@@ -109,6 +128,8 @@ const buildHandoffChecklist = ({ row, intakeId }) => {
   if (!row.event_location) missing.push('event location');
   if (!row.registration_url) missing.push('registration URL');
   if (!row.metadata.assets_link) missing.push('shared asset folder');
+  if (!row.metadata.event_timezone) missing.push('event timezone');
+  if (!row.metadata.current_domain) missing.push('current race website/domain');
   if (!row.metadata.distances_pricing) missing.push('distances/pricing');
   if (!row.metadata.course_logistics) missing.push('course/logistics');
 
@@ -118,6 +139,8 @@ const buildHandoffChecklist = ({ row, intakeId }) => {
     contact_email: row.contact_email,
     event_date_present: Boolean(row.event_date),
     event_location_present: Boolean(row.event_location),
+    event_timezone_present: Boolean(row.metadata.event_timezone),
+    current_domain_present: Boolean(row.metadata.current_domain),
     registration_url_present: Boolean(row.registration_url),
     assets_link_present: Boolean(row.metadata.assets_link),
     missing_critical_inputs: missing,
@@ -245,7 +268,8 @@ const sendSupportNotification = async ({ record, row, customerRecord, checklist 
     'Build handoff checklist',
     fieldLine('Race', row.race_name),
     fieldLine('Contact', `${row.contact_name} <${row.contact_email}>`),
-    fieldLine('Event date/location', [row.event_date, row.event_location].filter(Boolean).join(' — ')),
+    fieldLine('Event date/location/timezone', [row.event_date, row.event_location, row.metadata.event_timezone].filter(Boolean).join(' — ')),
+    fieldLine('Current domain', row.metadata.current_domain),
     fieldLine('Registration URL', row.registration_url),
     fieldLine('Asset link', row.metadata.assets_link),
     fieldLine('Missing critical inputs', missingCriticalInputs),
@@ -260,6 +284,9 @@ const sendSupportNotification = async ({ record, row, customerRecord, checklist 
     fieldLine('Contact', `${row.contact_name} <${row.contact_email}>`),
     fieldLine('Event date', row.event_date),
     fieldLine('Location', row.event_location),
+    fieldLine('Event timezone', row.metadata.event_timezone),
+    fieldLine('Current domain', row.metadata.current_domain),
+    fieldLine('Derived domain host', row.metadata.derived_current_domain_host),
     fieldLine('Template preference', row.metadata.template_preference),
     fieldLine('Distances/pricing', row.metadata.distances_pricing),
     fieldLine('Registration platform', row.metadata.registration_platform),
@@ -269,6 +296,9 @@ const sendSupportNotification = async ({ record, row, customerRecord, checklist 
     fieldLine('Schedule', row.metadata.race_schedule),
     fieldLine('Sponsors', row.metadata.sponsors),
     fieldLine('FAQs', row.metadata.faqs),
+    fieldLine('Volunteer info', row.metadata.volunteer_info),
+    fieldLine('Email capture preference', row.metadata.email_capture),
+    fieldLine('Preferred hero image', row.metadata.identity_hero_image),
     fieldLine('Assets link', row.metadata.assets_link),
     fieldLine('Analytics/access notes', row.metadata.analytics_access_notes),
     fieldLine('Optional notes', row.metadata.optional_notes),
@@ -290,7 +320,8 @@ const sendSupportNotification = async ({ record, row, customerRecord, checklist 
       html: `<h2>New StartLine Sites customer intake</h2><h3>Build handoff checklist</h3>${[
         ['Race', row.race_name],
         ['Contact', `${row.contact_name} <${row.contact_email}>`],
-        ['Event date/location', [row.event_date, row.event_location].filter(Boolean).join(' — ')],
+        ['Event date/location/timezone', [row.event_date, row.event_location, row.metadata.event_timezone].filter(Boolean).join(' — ')],
+        ['Current domain', row.metadata.current_domain],
         ['Registration URL', row.registration_url],
         ['Asset link', row.metadata.assets_link],
         ['Missing critical inputs', missingCriticalInputs],
@@ -303,6 +334,9 @@ const sendSupportNotification = async ({ record, row, customerRecord, checklist 
         ['Contact', `${row.contact_name} <${row.contact_email}>`],
         ['Event date', row.event_date],
         ['Location', row.event_location],
+        ['Event timezone', row.metadata.event_timezone],
+        ['Current domain', row.metadata.current_domain],
+        ['Derived domain host', row.metadata.derived_current_domain_host],
         ['Template preference', row.metadata.template_preference],
         ['Distances/pricing', row.metadata.distances_pricing],
         ['Registration platform', row.metadata.registration_platform],
@@ -312,6 +346,9 @@ const sendSupportNotification = async ({ record, row, customerRecord, checklist 
         ['Schedule', row.metadata.race_schedule],
         ['Sponsors', row.metadata.sponsors],
         ['FAQs', row.metadata.faqs],
+        ['Volunteer info', row.metadata.volunteer_info],
+        ['Email capture preference', row.metadata.email_capture],
+        ['Preferred hero image', row.metadata.identity_hero_image],
         ['Assets link', row.metadata.assets_link],
         ['Analytics/access notes', row.metadata.analytics_access_notes],
         ['Optional notes', row.metadata.optional_notes],
