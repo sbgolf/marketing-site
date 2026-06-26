@@ -1,4 +1,4 @@
-# Invoice wording and legacy monthly start policy
+# Final package invoice wording and optional recurring-service policy
 
 Steve review draft for StartLine Sites billing language.
 
@@ -34,7 +34,7 @@ Thanks,
 Steve
 ```
 
-## Legacy monthly subscription start policy
+## Optional recurring-service start policy
 
 Default policy:
 
@@ -42,29 +42,25 @@ Default policy:
 No StartLine Sites monthly plan starts by default. The go-live date is the date the customer site is made available on the production domain or otherwise launched under the approved launch plan. Any recurring service requires Steve approval and customer-specific written scope/billing confirmation before billing starts.
 ```
 
-## Monthly subscription confirmation wording
+## Optional recurring-service confirmation wording
 
-Use this when confirming the monthly plan:
+Use this only when confirming a Steve-approved recurring service:
 
 ```text
 Steve approved the StartLine Sites [Foundation / Growth / Performance / custom] recurring service for [Race Name]. Monthly billing is $[Amount]/month, starts on [Start Date], and renews each month until cancelled under the agreement.
 ```
 
-## Legacy package-specific monthly amounts
+## Legacy reporting-scope guardrails
 
 Use only for Steve-approved recurring service exceptions.
 
-### Starter + Foundation
+### Foundation
 
-- Final invoice: $750
-- Legacy recurring amount, if approved: $99/month
+- Automated reporting snapshot only
+- Maximum 30 minutes/month
+- No narrative, insights, recommendations, or strategy review
 
-### Standard + Growth
+### Growth / Performance
 
-- Final invoice: $1,250
-- Legacy recurring amount, if approved: $249/month
-
-### Premium + Performance
-
-- Final invoice: $2,250
-- Legacy recurring amount, if approved: $499/month
+- Full base report may include narrative, insights, recommendations, and scoped fixes described in the approved proposal
+- Monthly amount and scope must match the customer-specific written approval

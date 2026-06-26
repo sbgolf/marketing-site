@@ -17,15 +17,15 @@ Race/site: [Race Name] — [Current URL]
 
 ## 1. What StartLine Sites does
 
-StartLine Sites builds and maintains fast, SEO-optimized race websites that help runners find the race, trust the details, and click through to register on the customer's existing registration platform.
+StartLine Sites builds fast, SEO-optimized race websites and provides any approved race-cycle support described in the proposal to help runners find the race, trust the details, and click through to register on the customer's existing registration platform.
 
 StartLine Sites does not replace RunSignup, Race Roster, Haku, Active, Let’s Do This, or any other registration platform. Registration, refunds, transfers, race operations, athlete communications, safety, and race-day execution remain the customer's responsibility.
 
-## 2. Package and monthly plan
+## 2. First-year package and approved services
 
 The selected setup package is: **[Starter / Standard / Premium]**.
 
-The selected monthly plan is: **[Foundation / Growth / Performance]**.
+Any optional after-year-one or recurring service is: **[None / Details, if Steve-approved]**.
 
 ### Setup packages
 
@@ -33,13 +33,11 @@ The selected monthly plan is: **[Foundation / Growth / Performance]**.
 - Standard setup: $2,500
 - Premium setup: $4,500
 
-### Monthly plans
+### Optional services
 
-- Foundation: $99/month
-- Growth: $249/month
-- Performance: $499/month
+Optional after-year-one or recurring services are separately scoped and are not required unless included in the approved proposal or otherwise approved in writing by Steve.
 
-The selected package and monthly plan are described in the proposal or order summary. If the proposal conflicts with this agreement, the narrower customer-specific proposal controls only for price, selected tier, timeline, and approved scope exceptions.
+The selected first-year package and any approved optional service are described in the proposal or order summary. If the proposal conflicts with this agreement, the narrower customer-specific proposal controls only for price, selected tier, timeline, and approved scope exceptions.
 
 ## 3. Payment terms
 
@@ -67,7 +65,7 @@ Default invoice wording:
 Final 50% balance for StartLine Sites [Starter / Standard / Premium] website setup for [Race Name]. Site launched at [Live URL] on [Launch Date]. Due net 7.
 ```
 
-### Legacy monthly subscription
+### Optional recurring service
 
 No monthly plan starts by default. Any recurring service requires Steve approval and customer-specific written scope/billing confirmation before billing starts.
 
@@ -77,7 +75,7 @@ Approved recurring-service wording:
 Steve approved the StartLine Sites [Foundation / Growth / Performance / custom] recurring service for [Race Name]. Monthly billing is $[Amount]/month, starts on [Start Date], and renews each month until cancelled under the agreement.
 ```
 
-Monthly fees are billed through Stripe only for approved recurring services and renew monthly until cancelled. Monthly fees already billed are non-refundable except where required by law or agreed in writing.
+Recurring fees are billed through Stripe only for approved recurring services and renew under the written approved scope until cancelled. Recurring fees already billed are non-refundable except where required by law or agreed in writing.
 
 ## 4. Customer responsibilities
 
@@ -86,14 +84,14 @@ The customer agrees to provide accurate and timely:
 - Race name, date, location, distances, schedule, logistics, policies, and FAQs
 - Registration URL and registration platform details
 - Pricing, deadlines, caps, refund/transfer policies, and race-day details
-- Logos, photos, sponsor logos, course maps, elevation data, and brand assets
+- Logos, photos, sponsor logos with display rights/details, available course maps/route links/elevation details, and brand assets
 - Domain/DNS access or a responsible person who can make DNS changes
 - GA4/GSC/analytics access where needed
 - Review feedback and approvals
 - A primary decision-maker for approvals
 - A valid payment method and current billing contact
 
-The customer confirms it has the rights to use all content and assets it provides, including logos, photos, sponsor materials, maps, copy, trademarks, and race information.
+The customer confirms it has the rights to use all content and assets it provides, including logos, photos, sponsor materials/logos, maps/route files, copy, trademarks, and race information.
 
 Customer-owned delays extend the timeline. The delivery clock starts when deposit is paid and StartLine Sites has complete intake answers, usable assets, and required access.
 
@@ -106,8 +104,8 @@ StartLine Sites agrees to:
 - Connect registration CTAs to the customer's registration platform
 - Set up core metadata, structured data, sitemap, and launch essentials included in the selected package
 - Provide the included revision rounds
-- Host and maintain the site while the monthly subscription is active
-- Provide monthly services included in the selected monthly plan
+- Host/support the site as described in the approved first-year package scope
+- Provide optional follow-up or recurring services only if separately approved in writing
 - Respond to routine support requests within 2 business days
 
 StartLine Sites may make technical changes needed for security, uptime, performance, accessibility, browser compatibility, or hosting reliability.
@@ -129,7 +127,7 @@ The following are not included unless specifically listed in the proposal:
 - New integrations
 - Ad spend
 - Legal, tax, privacy, accessibility, or race-operation advice
-- Ongoing work outside the selected monthly plan
+- Ongoing work outside the approved first-year package or separately approved follow-up scope
 
 Out-of-scope work requires written approval and may be quoted separately.
 
@@ -194,7 +192,7 @@ StartLine Sites may terminate or suspend service immediately for nonpayment, unl
 
 If the customer cancels before launch, the customer is responsible for work completed and approved expenses through the cancellation date. The deposit is applied against work performed and is not refundable once work has begun.
 
-If the customer cancels after launch, monthly service continues through the paid period or required notice period. Fees already billed are non-refundable except where required by law or agreed in writing.
+If the customer cancels after launch, any approved ongoing service follows the written terms for that service; otherwise no recurring service is assumed. Fees already billed are non-refundable except where required by law or agreed in writing.
 
 After termination, StartLine Sites may stop hosting and maintenance unless a separate transition arrangement is agreed. The customer is responsible for DNS changes and third-party account continuity.
 
@@ -208,7 +206,7 @@ This correction obligation does not cover customer-supplied errors, customer cha
 
 To the fullest extent allowed by law, StartLine Sites is not liable for lost profits, lost registrations, lost revenue, lost data, business interruption, indirect damages, consequential damages, third-party outages, search engine changes, registrar issues, payment processor issues, registration platform issues, customer-supplied content claims, or race-operation issues.
 
-StartLine Sites' total liability is limited to the amount the customer paid to StartLine Sites for the affected setup project or, for monthly-service claims, the amount paid in the three months before the claim.
+StartLine Sites' total liability is limited to the amount the customer paid to StartLine Sites for the affected setup project or, for separately approved recurring-service claims, the amount paid for that service in the three months before the claim.
 
 Some jurisdictions do not allow certain limitations, so this section applies only to the extent permitted by law.
 
@@ -235,7 +233,7 @@ These placeholders should be finalized before use with paying customers.
 
 ## 19. Entire agreement
 
-This agreement, the approved proposal/order summary, and any written approved exceptions are the full agreement between the parties for the selected StartLine Sites project and monthly service.
+This agreement, the approved proposal/order summary, and any written approved exceptions are the full agreement between the parties for the selected StartLine Sites project and any separately approved optional service.
 
 ## Signatures
 

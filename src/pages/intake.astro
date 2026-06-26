@@ -61,7 +61,9 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
           <label>Email <span aria-hidden="true">*</span><input name="contact_email" type="email" autocomplete="email" placeholder="director@example.com" required /></label>
           <label>Phone (optional) <input name="contact_phone" type="tel" autocomplete="tel" placeholder="Best number if a quick call helps" /></label>
           <label>Event date or target date <span aria-hidden="true">*</span><input name="event_date" placeholder="October 18, 2026 or date TBD" required /></label>
+          <label>Event timezone <input name="event_timezone" placeholder="America/Chicago, Central Time, or local timezone" /></label>
           <label>Event location <span aria-hidden="true">*</span><input name="event_location" placeholder="City, state / venue" required /></label>
+          <label>Current race website/domain <input name="current_domain" type="url" inputmode="url" placeholder="https://examplemarathon.com or current race page" /></label>
           <label>Template preference <input name="template_preference" placeholder="Destination Major, Performance, Community, Trail, Charity, or unsure" /></label>
         </div>
       </fieldset>
@@ -72,17 +74,20 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
           <label>Registration URL <span aria-hidden="true">*</span><input name="registration_url" type="url" inputmode="url" placeholder="https://runsignup.com/..." required /></label>
           <label>Registration platform <input name="registration_platform" placeholder="RunSignup, Race Roster, Haku, UltraSignup, custom, etc." /></label>
         </div>
-        <label>Distances and pricing summary <textarea name="distances_pricing" rows="4" placeholder="Marathon $120 through June 30; Half $95; 5K $35. Include price increases if known."></textarea></label>
-        <label>Course and logistics summary <textarea name="course_logistics" rows="5" placeholder="Start/finish, course type, elevation, aid stations, parking/shuttles, packet pickup, gear check, cutoff times."></textarea></label>
+        <label>Distances and pricing summary <textarea name="distances_pricing" rows="4" placeholder="List distances longest to shortest when possible: Marathon $120 through June 30; Half $95; 5K $35. Include price increases if known."></textarea></label>
+        <label>Course and logistics summary <textarea name="course_logistics" rows="5" placeholder="Start/finish, course type, elevation if available, aid stations, parking/shuttles, packet pickup, gear check, cutoff times. Community builds can use a simple logistics section if detailed maps/elevation are not available."></textarea></label>
         <label>BQ, certification, and results notes <textarea name="bq_certification" rows="3" placeholder="USATF certification, Boston qualifier status, timing provider, results history, awards."></textarea></label>
-        <label>Schedule <textarea name="race_schedule" rows="4" placeholder="Expo, packet pickup, race morning times, awards, post-race events."></textarea></label>
+        <label>Schedule <textarea name="race_schedule" rows="4" placeholder="Expo, packet pickup, race morning times, awards, post-race events. Note which distance(s) each item applies to when applicable."></textarea></label>
       </fieldset>
 
       <fieldset>
         <legend>Content, assets, and access</legend>
-        <label>Sponsors and partners <textarea name="sponsors" rows="4" placeholder="Sponsor names, tiers, preferred order, and any required wording."></textarea></label>
-        <label>FAQs <textarea name="faqs" rows="5" placeholder="Common questions: refunds/transfers, headphones, dogs/strollers, parking, weather, deferrals, age limits."></textarea></label>
-        <label>Shared assets folder link <input name="assets_link" type="url" inputmode="url" placeholder="Google Drive, Dropbox, Box, or similar shared folder" /></label>
+        <label>Sponsors and partners <textarea name="sponsors" rows="4" placeholder="Sponsor names, tiers, preferred order, destination URLs, usage rights, and any required wording. Sponsor logos are used when provided."></textarea></label>
+        <label>FAQs <textarea name="faqs" rows="5" placeholder="Provide at least 5 common questions if possible: refunds/transfers, headphones, dogs/strollers, parking, weather, deferrals, age limits. We can use fallback FAQs where details are missing."></textarea></label>
+        <label>Volunteer information <textarea name="volunteer_info" rows="3" placeholder="Volunteer registration link, roles, shift notes, or write not applicable."></textarea></label>
+        <label>Email capture preference <textarea name="email_capture" rows="3" placeholder="Optional: newsletter/waitlist signup provider, audience, copy, or write not needed."></textarea></label>
+        <label>Preferred hero image <input name="identity_hero_image" placeholder="Filename or shared-folder note for the preferred hero image" /></label>
+        <label>Shared assets folder link <input name="assets_link" type="url" inputmode="url" placeholder="Google Drive, Dropbox, Box, or similar shared folder; build asset paths are organized relative to customers/[slug]/assets/" /></label>
         <label>Analytics, DNS, and access notes <textarea name="analytics_access_notes" rows="4" placeholder="Who owns GA4/Search Console/domain/DNS today? Who can grant access? Any pixels or tags needed?"></textarea></label>
         <label>Anything else we should know? <textarea name="optional_notes" rows="4" placeholder="Timeline constraints, board approvals, brand preferences, accessibility needs, or pages you do/don’t want changed."></textarea></label>
       </fieldset>

@@ -5,10 +5,10 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 ## Proposal and billing flow
 
 - Proposal template: `proposals/proposal-one-pager-template.md`
-- Default Standard + Growth customer packet: `proposals/standard-growth-customer-packet.md`
+- Default Standard first-year customer packet: `proposals/standard-growth-customer-packet.md`
 - Billing SOP: `billing/deposit-final-invoice-monthly-billing-sop.md`
 - Billing checklist: `billing/billing-checklist.md`
-- Invoice wording and legacy monthly start policy: `billing/invoice-wording-and-monthly-start-policy.md`
+- Invoice wording and optional recurring-service policy: `billing/invoice-wording-and-monthly-start-policy.md`
 - Stripe/monthly billing automation audit: `billing/stripe-monthly-billing-automation-audit.md`
 - Automation audit/status: `automation-audit-deposit-to-kickoff.md`
 - StartLine UX conversion audit backlog: `startline-ux-conversion-audit-backlog.md`
