@@ -208,12 +208,12 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     proofLabel: 'Generic platform-fit example',
     proofTitle: 'Keep RunSignup for checkout. Use StartLine for the pre-registration decision path.',
     proofCopy:
-      'This is a generic positioning example, not customer proof. The goal is not to replace RunSignup. The private audit reviews the current public website, the RunSignup listing, and the outbound registration path so StartLine can recommend the smallest useful marketing-site layer around checkout.',
+      'This is a generic platform-fit example, not customer proof. The goal is not to replace RunSignup. The private audit reviews the current public website, the RunSignup listing, and the outbound registration path so StartLine can recommend the smallest useful marketing-site layer around checkout.',
     processProof: {
-      kicker: 'Process cue for RunSignup races',
+      kicker: 'How the review works for RunSignup races',
       title: 'A handoff map shows what stays in RunSignup and what the website explains first.',
       lead:
-        'The proof substitute is operational clarity: StartLine maps the runner path into RunSignup without implying a platform replacement or special integration.',
+        'The useful proof is operational clarity: StartLine maps the runner path into RunSignup without implying a platform replacement or special integration.',
       cues: [
         {
           title: 'Public path inventory',
@@ -264,7 +264,7 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     outcomes: [
       {
         title: 'SEO pages before checkout',
-        copy: 'Create a crawlable race website with clear event language, schema-friendly structure, and internal paths that point runners toward RunSignup.'
+        copy: 'Create a crawlable race website with clear event language, schema-friendly structure, and runner paths that point toward RunSignup.'
       },
       {
         title: 'Cleaner runner decisions',
@@ -310,7 +310,7 @@ export const outreachLandingPages: OutreachLandingPage[] = [
     proofCopy:
       'This is a generic scope example, not customer proof. StartLine focuses on what race directors need the site to do: explain the event, reduce avoidable questions, support sponsors, measure intent, and send runners to the existing registration path.',
     processProof: {
-      kicker: 'Process cue for race directors',
+      kicker: 'How the review works for race directors',
       title: 'Reduce decision load before the team is deep in race week.',
       lead:
         'StartLine reviews the website around the jobs a director is already juggling: registration clarity, stakeholder updates, sponsor visibility, and the next useful decision.',
@@ -329,7 +329,7 @@ export const outreachLandingPages: OutreachLandingPage[] = [
         }
       ],
       note:
-        'The process cue is intentionally evidence-safe: it shows how StartLine thinks through a director’s site without implying unapproved customer results.'
+        'This keeps the review evidence-safe: it shows how StartLine thinks through a director’s site without implying unapproved customer results.'
     },
     painPoints: [
       'Important race details live across the website, registration platform, PDFs, social posts, and email updates.',
