@@ -256,6 +256,13 @@ const patchAuditRecord = async ({ auditId, supabaseUrl, serviceKey, record, to, 
       customer_delivery_blocked_until: 'final_owner_approval',
     },
   };
+  const auditSummary = {
+    ...(record.audit_summary || {}),
+    owner_preview_status: 'sent',
+    owner_preview_sent_at: sentAt,
+    final_approval_status: 'required_before_customer_delivery',
+    customer_delivery_status: 'blocked_until_final_approval',
+  };
 
   const response = await fetch(`${supabaseUrl}/rest/v1/audit_requests?id=eq.${encodeURIComponent(auditId)}`, {
     method: 'PATCH',
@@ -269,6 +276,7 @@ const patchAuditRecord = async ({ auditId, supabaseUrl, serviceKey, record, to, 
       status: 'owner_preview_sent',
       outreach_status: 'final_approval_required',
       metadata,
+      audit_summary: auditSummary,
     }),
   });
 
