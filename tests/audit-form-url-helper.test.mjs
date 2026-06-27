@@ -65,3 +65,15 @@ test('audit form current URL wiring stays intact', () => {
   assert.match(auditFormSource, /fetch\('\/.netlify\/functions\/submit-audit-request'/);
   assert.match(auditFormSource, /if \(!form\.checkValidity\(\)\)/);
 });
+
+test('audit form hides honeypot and shows unmistakable success overlay copy', () => {
+  assert.match(indexSource, /<div class="field hp-field" aria-hidden="true">/);
+  assert.match(indexSource, /\.hp-field\{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;/);
+  assert.match(auditFormSource, /className = 'audit-success-overlay'/);
+  assert.match(auditFormSource, /role', 'dialog'/);
+  assert.match(auditFormSource, /Your private audit request is in\./);
+  assert.match(auditFormSource, /email a written review within 2 business days/);
+  assert.match(auditFormSource, /Steve reviews the findings before your response is sent/);
+  assert.match(indexSource, /Every recommendation is tied to specific outcomes we identify on your current site, with a private written response before any deposit decision\./);
+  assert.doesNotMatch(indexSource, /Every mockup direction is tied to specific outcomes/);
+});

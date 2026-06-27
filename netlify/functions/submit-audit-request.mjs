@@ -33,8 +33,30 @@ const escapeHtml = (value) => String(value ?? '')
 
 const fieldLine = (label, value) => `${label}: ${value || 'Not provided'}`;
 
-const htmlField = (label, value) => `
-  <p><strong>${escapeHtml(label)}:</strong><br>${escapeHtml(value || 'Not provided')}</p>`;
+const emailShell = ({ preheader, heading, eyebrow = 'StartLine Sites', body }) => `
+  <div style="display:none;max-height:0;overflow:hidden;color:transparent;opacity:0;">${escapeHtml(preheader)}</div>
+  <div style="margin:0;padding:0;background:#f7f2e8;color:#0b0e13;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
+    <div style="max-width:640px;margin:0 auto;padding:28px 18px;">
+      <div style="border:1px solid #eadfce;border-radius:24px;overflow:hidden;background:#fffaf4;box-shadow:0 18px 48px rgba(14,23,41,.08);">
+        <div style="padding:26px 28px;background:linear-gradient(135deg,#0b0e13,#182236);color:#fffaf4;">
+          <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#f5b041;font-weight:800;">${escapeHtml(eyebrow)}</div>
+          <h1 style="margin:10px 0 0;font-size:26px;line-height:1.15;font-weight:800;">${escapeHtml(heading)}</h1>
+        </div>
+        <div style="padding:26px 28px;font-size:16px;line-height:1.62;color:#233043;">
+          ${body}
+        </div>
+        <div style="padding:18px 28px;border-top:1px solid #eadfce;background:#f7f2e8;color:#6b7280;font-size:13px;line-height:1.5;">
+          StartLine Sites · Race websites built to turn interest into registrations.
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+const actionCard = (label, value) => `
+  <div style="border:1px solid #eadfce;border-radius:16px;background:#ffffff;padding:14px 16px;margin:0 0 12px;">
+    <div style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#8a5d16;font-weight:800;margin-bottom:5px;">${escapeHtml(label)}</div>
+    <div style="color:#0b0e13;word-break:break-word;">${escapeHtml(value || 'Not provided')}</div>
+  </div>`;
 
 const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
@@ -90,6 +112,11 @@ const sendLeadNotification = async ({ record, row }) => {
   const lines = [
     'A new StartLine Sites audit request was submitted.',
     '',
+    'Owner-approved workflow foundation:',
+    '1. Agent may scrape/review the submitted public URL for an internal draft only.',
+    '2. Agent drafts audit findings for Steve review.',
+    '3. Steve approval is required before any findings or recommendations go to the race director.',
+    '',
     fieldLine('Race name', row.race_name),
     fieldLine('Current URL', row.current_url),
     fieldLine('Contact name', row.contact_name),
@@ -99,8 +126,39 @@ const sendLeadNotification = async ({ record, row }) => {
     fieldLine('Notes', row.notes),
     fieldLine('Landing page', row.landing_page),
     fieldLine('Referrer', row.referrer),
+    fieldLine('Pipeline status', row.status),
+    fieldLine('Outreach status', row.outreach_status),
+    fieldLine('Audit workflow', JSON.stringify(row.metadata?.audit_workflow || {})),
     fieldLine('Supabase row ID', rowId),
   ];
+
+  const adminHtml = emailShell({
+    preheader: `New audit request for ${row.race_name}. Steve approval is required before customer delivery.`,
+    heading: `New private audit request: ${row.race_name}`,
+    eyebrow: 'StartLine audit intake',
+    body: `
+      <p style="margin:0 0 18px;">A new private audit request is ready for the internal review workflow. Do not send agent-drafted findings to the customer until Steve approves the response.</p>
+      ${actionCard('Race name', row.race_name)}
+      ${actionCard('Submitted URL', row.current_url)}
+      ${actionCard('Contact', `${row.contact_name} · ${row.contact_email}`)}
+      ${actionCard('Selected first-year package', packageName ? `${packageName} (${packageDeposit} first-year package deposit)` : 'Recommend after review')}
+      ${actionCard('Stripe first-year package deposit link', packageUrl)}
+      ${actionCard('Notes', row.notes)}
+      <div style="border:1px solid rgba(245,176,65,.45);border-radius:18px;background:#fff7e6;padding:16px 18px;margin:18px 0;">
+        <strong style="display:block;color:#0b0e13;margin-bottom:8px;">Agent-audit workflow foundation</strong>
+        <ol style="margin:0;padding-left:20px;color:#233043;">
+          <li>Scrape/review the submitted public URL for internal findings only.</li>
+          <li>Draft the audit response and recommended next step.</li>
+          <li>Email Steve for approval before anything goes to the race director.</li>
+        </ol>
+      </div>
+      ${actionCard('Pipeline status', row.status)}
+      ${actionCard('Outreach status', row.outreach_status)}
+      ${actionCard('Supabase row ID', rowId)}
+      ${actionCard('Landing page', row.landing_page)}
+      ${actionCard('Referrer', row.referrer)}
+    `,
+  });
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -114,19 +172,7 @@ const sendLeadNotification = async ({ record, row }) => {
       to: [to],
       subject,
       text: lines.join('\n'),
-      html: `
-        <h2>New StartLine Sites audit request</h2>
-        ${htmlField('Race name', row.race_name)}
-        ${htmlField('Current URL', row.current_url)}
-        ${htmlField('Contact name', row.contact_name)}
-        ${htmlField('Contact email', row.contact_email)}
-        ${htmlField('Selected first-year package', packageName ? `${packageName} (${packageDeposit} first-year package deposit)` : null)}
-        ${htmlField('Stripe first-year package deposit link', packageUrl)}
-        ${htmlField('Notes', row.notes)}
-        ${htmlField('Landing page', row.landing_page)}
-        ${htmlField('Referrer', row.referrer)}
-        ${htmlField('Supabase row ID', rowId)}
-      `,
+      html: adminHtml,
     }),
   });
 
@@ -170,8 +216,8 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
     '',
     'What happens next:',
     '1. We review the current race page like a runner deciding whether to register.',
-    '2. We identify the clearest opportunities around trust, search visibility, mobile experience, and registration flow.',
-    '3. We follow up with the recommended next step.',
+    '2. Steve reviews the findings before your response is sent.',
+    '3. We email your written audit within 2 business days with the recommended next step.',
     '',
     nextStep,
     '',
@@ -179,6 +225,28 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
     '',
     '— StartLine Sites',
   ];
+
+  const customerHtml = emailShell({
+    preheader: `We received your private StartLine audit request for ${row.race_name}.`,
+    heading: `Your private audit request is in`,
+    body: `
+      <p style="margin:0 0 16px;">Hi ${escapeHtml(row.contact_name)},</p>
+      <p style="margin:0 0 18px;">Thanks — we received the private StartLine Sites audit request for <strong>${escapeHtml(row.race_name)}</strong>.</p>
+      ${actionCard('Current site / registration URL', row.current_url)}
+      ${actionCard('Selected first-year package', selectedPackage?.name ? publicPackageWithDeposit(selectedPackage) : 'We will recommend the best fit after reviewing your race.')}
+      <div style="border:1px solid rgba(31,184,196,.32);border-radius:18px;background:#eefbfc;padding:16px 18px;margin:18px 0;">
+        <strong style="display:block;color:#0b0e13;margin-bottom:8px;">What happens next</strong>
+        <ol style="margin:0;padding-left:20px;color:#233043;">
+          <li>We review the current race page like a runner deciding whether to register.</li>
+          <li>Steve reviews the findings before your response is sent.</li>
+          <li>We email your written audit within 2 business days with the recommended next step.</li>
+        </ol>
+      </div>
+      <p style="margin:0 0 16px;">${escapeHtml(nextStep)}</p>
+      <p style="margin:0;">Reply to this email if anything about the request should change.</p>
+      <p style="margin:18px 0 0;color:#0b0e13;font-weight:800;">— StartLine Sites</p>
+    `,
+  });
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -193,21 +261,7 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
       ...(replyTo ? { reply_to: replyTo } : {}),
       subject: `We received your StartLine audit request for ${row.race_name}`,
       text: lines.join('\n'),
-      html: `
-        <p>Hi ${escapeHtml(row.contact_name)},</p>
-        <p>Thanks — we received the private StartLine Sites audit request for <strong>${escapeHtml(row.race_name)}</strong>.</p>
-        ${htmlField('Selected first-year package', selectedPackage?.name ? publicPackageWithDeposit(selectedPackage) : 'We will recommend the best fit after reviewing your race.')}
-        ${htmlField('Current site / registration URL', row.current_url)}
-        <p><strong>What happens next:</strong></p>
-        <ol>
-          <li>We review the current race page like a runner deciding whether to register.</li>
-          <li>We identify the clearest opportunities around trust, search visibility, mobile experience, and registration flow.</li>
-          <li>We follow up with the recommended next step.</li>
-        </ol>
-        <p>${escapeHtml(nextStep)}</p>
-        <p>Reply to this email if anything about the request should change.</p>
-        <p>— StartLine Sites</p>
-      `,
+      html: customerHtml,
     }),
   });
 
@@ -307,12 +361,19 @@ export async function handler(event) {
     landing_page: landingPage,
     user_agent: userAgent,
     ip_hash: hashIp(event),
-    status: 'new',
-    outreach_status: 'not_started',
+    status: 'queued_for_site_review',
+    outreach_status: 'steve_approval_required',
     deposit_status: 'not_sent',
     metadata: {
       submitted_from: 'startlinesites.com',
       form_version: 'audit_request_v2',
+      audit_workflow: {
+        current_url_scrape_status: 'queued',
+        findings_draft_status: 'pending_url_review',
+        steve_approval_status: 'required_before_customer_delivery',
+        customer_delivery_status: 'blocked_until_steve_approval',
+        automation_scope: 'internal_draft_only_no_customer_send',
+      },
       selected_package: selectedPackage ? {
         tier: packageTier,
         name: selectedPackage.name,

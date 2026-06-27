@@ -70,6 +70,12 @@ test('submit-audit-request stores notes and sends admin plus customer confirmati
 
     const insert = calls.find((call) => call.url.includes('/audit_requests') && call.method === 'POST');
     assert.equal(insert.body.notes, 'Race is in October and uses RunSignup.');
+    assert.equal(insert.body.status, 'queued_for_site_review');
+    assert.equal(insert.body.outreach_status, 'steve_approval_required');
+    assert.equal(insert.body.metadata.audit_workflow.current_url_scrape_status, 'queued');
+    assert.equal(insert.body.metadata.audit_workflow.steve_approval_status, 'required_before_customer_delivery');
+    assert.equal(insert.body.metadata.audit_workflow.customer_delivery_status, 'blocked_until_steve_approval');
+    assert.equal(insert.body.metadata.audit_workflow.automation_scope, 'internal_draft_only_no_customer_send');
     assert.equal(insert.body.metadata.selected_package.tier, 'starter');
 
     const emailCalls = calls.filter((call) => call.url === 'https://api.resend.com/emails');
@@ -77,8 +83,14 @@ test('submit-audit-request stores notes and sends admin plus customer confirmati
     assert.deepEqual(emailCalls[0].body.to, ['steve@example.com']);
     assert.deepEqual(emailCalls[1].body.to, ['director@example.com']);
     assert.equal(emailCalls[1].body.reply_to, 'support@startlinesites.com');
+    assert.match(emailCalls[0].body.text, /Owner-approved workflow foundation/);
+    assert.match(emailCalls[0].body.text, /Steve approval is required before any findings/);
+    assert.match(emailCalls[0].body.html, /Agent-audit workflow foundation/);
     assert.match(emailCalls[1].body.text, /we received the private StartLine Sites audit request/);
+    assert.match(emailCalls[1].body.text, /Steve reviews the findings before your response is sent/);
     assert.match(emailCalls[1].body.text, /pay the first-year package deposit here: https:\/\/buy\.stripe\.com/);
+    assert.doesNotMatch(emailCalls[1].body.text, /agent|\bAI\b|scrape/i);
+    assert.match(emailCalls[1].body.html, /Your private audit request is in/);
   } finally {
     process.env = originalEnv;
     global.fetch = originalFetch;
