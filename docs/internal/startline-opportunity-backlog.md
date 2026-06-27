@@ -51,6 +51,12 @@ Logged from Steve's request to keep the next StartLine Sites opportunities track
     - Add lightweight checks to prevent forbidden public monthly-retainer phrasing from returning unintentionally.
     - Primary goal: protect the pricing strategy in future PRs.
 
+12. **Runner decision path positioning** — Proposed / hold for now
+    - Add a lightweight, non-interactive framework that explains how StartLine improves the runner decision path before registration: find the race, trust the details, understand fit, see sponsor/community value, and click through to the existing registration platform.
+    - Primary goal: sharpen StartLine's value-based, outcome-focused positioning without adding a confusing feature, new nav item, heavy dependency, or extra form step.
+    - Scope guardrail: do not build a full Runner Confidence Score, quiz, calculator, dashboard, or lead-capture tool yet. Keep any future implementation clean, intuitive, and directly useful to race directors.
+    - Timing: revisit in a day or two, or after the next customer-readiness review, and only implement if it improves clarity rather than inflating the site.
+
 ## Execution rule
 
 Each item should become its own small branch/PR when practical. Do not merge without Steve's explicit approval.
