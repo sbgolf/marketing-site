@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { handler, validatePreviewReady } from '../netlify/functions/send-owner-audit-preview.mjs';
+import { getPrivateMockupUrl, handler, validatePreviewReady } from '../netlify/functions/send-owner-audit-preview.mjs';
 
 const event = (body = {}, headers = {}) => ({
   httpMethod: 'POST',
@@ -46,7 +46,7 @@ const readyRecord = (overrides = {}) => ({
 
 const parseRequestBody = (body) => (body ? JSON.parse(body) : null);
 
-const withEnvAndFetch = async (fn) => {
+const withEnvAndFetch = async (fn, auditRecord = readyRecord()) => {
   const originalEnv = { ...process.env };
   const originalFetch = global.fetch;
   const calls = [];
@@ -69,7 +69,7 @@ const withEnvAndFetch = async (fn) => {
     calls.push(call);
 
     if (call.url.includes('/audit_requests?id=eq.31ffdc07-cf19-47d9-bad5-282e11ec19ac&select=*') && call.method === 'GET') {
-      return new Response(JSON.stringify([readyRecord()]), { status: 200 });
+      return new Response(JSON.stringify([auditRecord]), { status: 200 });
     }
     if (call.url === 'https://api.resend.com/emails' && call.method === 'POST') {
       return new Response(JSON.stringify({ id: 'email-owner-preview-123' }), { status: 200 });
@@ -96,6 +96,34 @@ test('validatePreviewReady requires both a customer-ready draft and top 3 findin
     validatePreviewReady(readyRecord({ audit_summary: { customer_ready_draft: 'Draft only', top_3_findings: ['One', 'Two'] }, top_opportunities: [] })).missing,
     ['top 3 findings'],
   );
+});
+
+test('validatePreviewReady requires a private mockup URL from an approved audit field', () => {
+  const withoutTopLevel = readyRecord({
+    private_mockup_url: '',
+    metadata: { audit_workflow: { private_mockup_url: 'https://mockups.startlinesites.com/private/from-metadata/' } },
+  });
+  assert.equal(getPrivateMockupUrl(withoutTopLevel), 'https://mockups.startlinesites.com/private/from-metadata/');
+  assert.deepEqual(validatePreviewReady(withoutTopLevel).missing, []);
+
+  const fromSummary = readyRecord({
+    private_mockup_url: '',
+    metadata: { audit_workflow: {} },
+    audit_summary: {
+      customer_ready_draft: 'Hi Race Director — here is the owner-reviewed draft once Steve approves final delivery.',
+      private_mockup_url: 'https://mockups.startlinesites.com/private/from-summary/',
+    },
+  });
+  assert.equal(getPrivateMockupUrl(fromSummary), 'https://mockups.startlinesites.com/private/from-summary/');
+  assert.deepEqual(validatePreviewReady(fromSummary).missing, []);
+
+  const missingMockup = readyRecord({
+    private_mockup_url: '',
+    metadata: { audit_workflow: {} },
+    audit_summary: { customer_ready_draft: 'Draft is ready, but the mockup URL is not.' },
+  });
+  assert.equal(validatePreviewReady(missingMockup).ok, false);
+  assert.deepEqual(validatePreviewReady(missingMockup).missing, ['private_mockup_url']);
 });
 
 test('send-owner-audit-preview sends owner/admin preview only and patches final approval gate', async () => {
@@ -174,6 +202,27 @@ test('send-owner-audit-preview blocks when customer-ready draft/top 3 are missin
     process.env = originalEnv;
     global.fetch = originalFetch;
   }
+});
+
+test('send-owner-audit-preview blocks when private mockup URL is missing and does not send email', async () => {
+  const auditRecord = readyRecord({
+    private_mockup_url: '',
+    metadata: { audit_workflow: { customer_delivery_status: 'blocked_until_steve_approval' } },
+    audit_summary: { customer_ready_draft: 'Draft is ready, but the mockup URL is not.' },
+  });
+
+  await withEnvAndFetch(async (calls) => {
+    const response = await handler(event());
+    const body = JSON.parse(response.body);
+
+    assert.equal(response.statusCode, 409);
+    assert.equal(body.ok, false);
+    assert.match(body.error, /missing private_mockup_url/);
+    assert.deepEqual(body.missing, ['private_mockup_url']);
+    assert.equal(body.sent, false);
+    assert.equal(calls.filter((call) => call.url === 'https://api.resend.com/emails').length, 0);
+    assert.equal(calls.filter((call) => call.method === 'PATCH').length, 0);
+  }, auditRecord);
 });
 
 test('send-owner-audit-preview rejects missing internal token before touching Supabase', async () => {

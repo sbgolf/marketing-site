@@ -113,17 +113,27 @@ const getTopFindings = (record) => {
     .slice(0, 3);
 };
 
+export const getPrivateMockupUrl = (record) => clean(
+  record?.private_mockup_url
+    || record?.metadata?.audit_workflow?.private_mockup_url
+    || record?.audit_summary?.private_mockup_url,
+  1_000,
+);
+
 export const validatePreviewReady = (record) => {
   const customerReadyDraft = clean(getCustomerReadyDraft(record), 10_000);
   const topFindings = getTopFindings(record);
+  const privateMockupUrl = getPrivateMockupUrl(record);
   const missing = [];
   if (!customerReadyDraft) missing.push('customer-ready draft');
   if (topFindings.length < 3) missing.push('top 3 findings');
+  if (!privateMockupUrl) missing.push('private_mockup_url');
   return {
     ok: missing.length === 0,
     missing,
     customerReadyDraft,
     topFindings,
+    privateMockupUrl,
   };
 };
 
@@ -155,7 +165,7 @@ export const buildOwnerPreviewEmail = ({ record, customerReadyDraft, topFindings
   const currentUrl = clean(record?.current_url, 500) || 'Not provided';
   const contactName = clean(record?.contact_name, 160) || 'Not provided';
   const contactEmail = clean(record?.contact_email, 254) || 'Not provided';
-  const privateMockupUrl = clean(record?.private_mockup_url || record?.metadata?.audit_workflow?.private_mockup_url, 1_000);
+  const privateMockupUrl = getPrivateMockupUrl(record);
   const top3Text = topFindings.map((finding, index) => `${index + 1}. ${finding}`).join('\n');
   const subject = `Owner audit preview ready: ${raceName}`;
   const text = [
