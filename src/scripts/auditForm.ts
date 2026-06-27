@@ -120,6 +120,51 @@ const setMessage = (content: string, type: 'success' | 'error' | 'info' = 'info'
   msg.dataset.state = type;
 };
 
+const closeSuccessPanel = (panel: HTMLElement | null) => {
+  panel?.remove();
+};
+
+const showSuccessPanel = ({ checkoutUrl, packageName, proposalRequired }: { checkoutUrl?: string; packageName?: string; proposalRequired?: boolean }) => {
+  const existing = document.getElementById('auditSuccessPanel');
+  if (existing) existing.remove();
+
+  const panel = document.createElement('div');
+  panel.className = 'audit-success-overlay';
+  panel.id = 'auditSuccessPanel';
+  panel.setAttribute('role', 'dialog');
+  panel.setAttribute('aria-modal', 'true');
+  panel.setAttribute('aria-labelledby', 'auditSuccessTitle');
+  panel.innerHTML = `
+    <div class="audit-success-card">
+      <button class="audit-success-close" type="button" aria-label="Close success message">×</button>
+      <div class="audit-success-kicker">Request received</div>
+      <h3 id="auditSuccessTitle">Your private audit request is in.</h3>
+      <p>StartLine will review the race URL and email a written review within 2 business days with findings and a recommended next step — no sales call required for the audit.</p>
+      <ul>
+        <li>We review the current page like a runner deciding whether to register.</li>
+        <li>Steve reviews the findings before your response is sent.</li>
+        <li>No deposit is required for the audit response.</li>
+      </ul>
+      ${checkoutUrl && packageName ? `<a class="btn btn-accent" href="${checkoutUrl}" target="_blank" rel="noopener noreferrer">Pay ${packageName} first-year package deposit when ready →</a>` : ''}
+      ${proposalRequired && packageName ? `<p class="audit-success-note">${packageName} requires a reviewed proposal before any first-year package deposit.</p>` : ''}
+      <button class="btn btn-ghost audit-success-done" type="button">Done</button>
+    </div>
+  `;
+
+  document.body.append(panel);
+  document.body.classList.add('audit-success-open');
+  const close = () => {
+    document.body.classList.remove('audit-success-open');
+    closeSuccessPanel(panel);
+  };
+  panel.addEventListener('click', (event) => {
+    if (event.target === panel) close();
+  });
+  panel.querySelector<HTMLButtonElement>('.audit-success-close')?.addEventListener('click', close);
+  panel.querySelector<HTMLButtonElement>('.audit-success-done')?.addEventListener('click', close);
+  panel.querySelector<HTMLButtonElement>('.audit-success-close')?.focus();
+};
+
 form?.addEventListener('submit', async (event) => {
   event.preventDefault();
 
@@ -162,18 +207,14 @@ form?.addEventListener('submit', async (event) => {
     const selectedPackageInfo = isPackageKey(payload.package_tier) ? packages[payload.package_tier] : null;
     const checkoutUrl = result.checkout_url || selectedPackageInfo?.url;
     if (selectedPackageInfo && checkoutUrl) {
-      setMessage(
-        `<div class="payment-next"><strong>Thanks — your private audit request was received.</strong><span>We’ll send a written review within 2 business days with findings and the recommended next step — no sales call required for the audit.</span><a href="${checkoutUrl}" target="_blank" rel="noopener noreferrer">Pay ${selectedPackageInfo.name} first-year package deposit when ready →</a><small>No deposit is required for the audit response. If you choose to move forward, the deposit starts the one-time first-year race-cycle package.</small></div>`,
-        'success',
-        true,
-      );
+      setMessage('Success — your private audit request was received. We’ll email the written response within 2 business days.', 'success');
+      showSuccessPanel({ checkoutUrl, packageName: selectedPackageInfo.name });
     } else if (selectedPackageInfo) {
-      setMessage(
-        `Thanks — your private audit request was received. We’ll send a written review within 2 business days with findings, recommended scope, and the next step — no sales call required for the audit. ${selectedPackageInfo.name} requires a reviewed proposal before any first-year package deposit.`,
-        'success',
-      );
+      setMessage('Success — your private audit request was received. We’ll email the written response within 2 business days.', 'success');
+      showSuccessPanel({ packageName: selectedPackageInfo.name, proposalRequired: true });
     } else {
-      setMessage('Thanks — your private audit request was received. We’ll send a written review within 2 business days by email with findings and a recommended next step — no sales call required for the audit.', 'success');
+      setMessage('Success — your private audit request was received. We’ll email the written response within 2 business days.', 'success');
+      showSuccessPanel({});
     }
 
     form.reset();
