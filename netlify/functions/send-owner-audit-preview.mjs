@@ -92,6 +92,8 @@ const getCustomerReadyDraft = (record) => firstString(
 const getTopFindings = (record) => {
   const summary = record?.audit_summary || {};
   const candidates = [
+    record?.top_opportunities,
+    summary.top_opportunities,
     summary.top_3_findings,
     summary.top_three_findings,
     summary.top3_findings,
