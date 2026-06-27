@@ -129,6 +129,9 @@ test('send-owner-audit-preview sends owner/admin preview only and patches final 
     assert.equal(patch.body.metadata.audit_workflow.owner_preview_resend_id, 'email-owner-preview-123');
     assert.equal(patch.body.metadata.audit_workflow.final_approval_status, 'required_before_customer_delivery');
     assert.equal(patch.body.metadata.audit_workflow.customer_delivery_status, 'blocked_until_final_approval');
+    assert.equal(patch.body.audit_summary.owner_preview_status, 'sent');
+    assert.equal(patch.body.audit_summary.final_approval_status, 'required_before_customer_delivery');
+    assert.equal(patch.body.audit_summary.customer_delivery_status, 'blocked_until_final_approval');
   });
 });
 
