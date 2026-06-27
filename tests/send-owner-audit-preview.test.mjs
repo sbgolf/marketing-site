@@ -24,13 +24,22 @@ const readyRecord = (overrides = {}) => ({
       customer_delivery_status: 'blocked_until_steve_approval',
     },
   },
+  top_opportunities: [
+    {
+      title: 'Make the registration CTA visible above the fold.',
+      recommendation: 'Keep the next registration action obvious on mobile and desktop.',
+    },
+    {
+      title: 'Clarify race-day logistics before runners leave the page.',
+      recommendation: 'Move parking, packet pickup, and schedule answers into a scannable runner FAQ.',
+    },
+    {
+      title: 'Add social proof near the decision point.',
+      recommendation: 'Use sponsor/community trust signals near the registration path.',
+    },
+  ],
   audit_summary: {
     customer_ready_draft: 'Hi Race Director — here is the owner-reviewed draft once Steve approves final delivery.',
-    top_3_findings: [
-      'Make the registration CTA visible above the fold.',
-      'Clarify race-day logistics before runners leave the page.',
-      'Add social proof near the decision point.',
-    ],
   },
   ...overrides,
 });
