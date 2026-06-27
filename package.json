@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "lighthouse": "lhci autorun --config=./lighthouserc.cjs",
     "verify:stripe-webhook": "node scripts/verify-stripe-webhook.mjs",
+    "audit:private-mockup": "node scripts/audit-private-mockup-handoff.mjs",
     "test": "node --test"
   },
   "dependencies": {

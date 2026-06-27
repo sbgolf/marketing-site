@@ -48,6 +48,48 @@ Audited the StartLine Sites lead-to-deposit path for manual steps that can be au
 - **Stripe webhook secret and delivery:** add the production `STRIPE_WEBHOOK_SECRET`, configure Stripe to send `checkout.session.completed` to `https://startlinesites.com/.netlify/functions/stripe-webhook`, and run one live/test-mode delivery smoke test.
 - **Resend deliverability:** verify the production sender/domain and delivery to Steve/customer inboxes for lead notifications, customer confirmations, and kickoff emails.
 
+## Private mockup owner-preview bridge
+
+The audit workflow now has a manual bridge for the post-submission private mockup handoff without adding a schema-breaking migration.
+
+Use it after an audit row exists and a race-templates branch/deploy preview origin is known:
+
+```bash
+# From marketing-site
+STARTLINE_PRIVATE_MOCKUP_BASE_URL=https://<race-templates-branch-or-deploy-preview-host> \
+  npm run audit:private-mockup -- --audit-id <audit_requests.id>
+```
+
+What the script does:
+
+1. Fetches the `audit_requests` row from Supabase using `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`.
+2. Runs the sibling race-templates generator by default:
+   `npm run mockup:private -- --url <audit current_url> --slug <generated-slug>`.
+3. Builds the private route URL as `/private/mockups/<slug>/` on `STARTLINE_PRIVATE_MOCKUP_BASE_URL`, or stores an explicit `--mockup-url` if generation/deploy already happened elsewhere.
+4. Stores the URL in all currently available JSON/record surfaces:
+   - `private_mockup_url`
+   - `metadata.audit_workflow.private_mockup_url`
+   - `audit_summary.private_mockup_url`
+5. Adds `metadata.audit_workflow.private_mockup_status=steve_review_only` and `customer_delivery_blocked_until=steve_approval` so the customer handoff remains blocked until Steve approves.
+6. Prints a Steve owner-preview handoff that includes the private mockup URL and the delivery block. Passing `--send-owner-preview` also sends it through configured owner email/Telegram channels when those env vars are present.
+
+Useful options:
+
+- `--slug <slug>`: force a stable private mockup slug.
+- `--template community|performance|destination-major`: forward a template choice to race-templates.
+- `--race-templates-dir ../race-templates`: override the sibling repo path.
+- `--mockup-url https://.../private/mockups/<slug>/`: store a known deployed URL instead of deriving one from `STARTLINE_PRIVATE_MOCKUP_BASE_URL`.
+- `--no-generate`: skip race-templates generation and only store/preview the URL.
+- `--dry-run`: print the owner handoff without patching Supabase.
+- `--send-owner-preview`: send the owner preview through Resend and/or Telegram if `STARTLINE_OWNER_PREVIEW_EMAIL`, `STARTLINE_ADMIN_EMAIL`, `STARTLINE_TELEGRAM_BOT_TOKEN`, and `STARTLINE_TELEGRAM_OWNER_CHAT_ID` are configured.
+
+Guardrails:
+
+- Do not use localhost as the stored mockup URL.
+- Do not send the private mockup URL to the race director until Steve approves it.
+- Use public race data/assets only; race-templates falls back safely when public image capture is unavailable.
+- The private race-templates route is expected to remain noindex/nofollow.
+
 ## Implemented automation increment
 
 The server-side `create-checkout-session` path is implemented. With `STRIPE_SECRET_KEY` configured, the audit flow returns a customer-specific Stripe Checkout URL instead of relying only on static Payment Links, making lead-to-payment matching exact while preserving fallback behavior.
