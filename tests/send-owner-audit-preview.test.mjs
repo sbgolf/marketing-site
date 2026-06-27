@@ -91,9 +91,9 @@ const withEnvAndFetch = async (fn) => {
 
 test('validatePreviewReady requires both a customer-ready draft and top 3 findings', () => {
   assert.deepEqual(validatePreviewReady(readyRecord()).missing, []);
-  assert.equal(validatePreviewReady(readyRecord({ audit_summary: { top_3_findings: ['One', 'Two', 'Three'] } })).ok, false);
+  assert.equal(validatePreviewReady(readyRecord({ audit_summary: { top_3_findings: ['One', 'Two', 'Three'] }, top_opportunities: [] })).ok, false);
   assert.deepEqual(
-    validatePreviewReady(readyRecord({ audit_summary: { customer_ready_draft: 'Draft only', top_3_findings: ['One', 'Two'] } })).missing,
+    validatePreviewReady(readyRecord({ audit_summary: { customer_ready_draft: 'Draft only', top_3_findings: ['One', 'Two'] }, top_opportunities: [] })).missing,
     ['top 3 findings'],
   );
 });
@@ -152,7 +152,7 @@ test('send-owner-audit-preview blocks when customer-ready draft/top 3 are missin
     calls.push(call);
 
     if (call.url.includes('/audit_requests') && call.method === 'GET') {
-      return new Response(JSON.stringify([readyRecord({ audit_summary: { customer_ready_draft: '', top_3_findings: ['Only one'] } })]), { status: 200 });
+      return new Response(JSON.stringify([readyRecord({ audit_summary: { customer_ready_draft: '', top_3_findings: ['Only one'] }, top_opportunities: [] })]), { status: 200 });
     }
 
     return new Response(JSON.stringify({ error: 'unexpected call' }), { status: 500 });
