@@ -67,8 +67,8 @@ test('audit form current URL wiring stays intact', () => {
 });
 
 test('audit form hides honeypot and shows unmistakable success overlay copy', () => {
-  assert.match(indexSource, /<div class="field hp-field" aria-hidden="true">/);
-  assert.match(indexSource, /\.hp-field\{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;/);
+  assert.match(indexSource, /<div class="field hp-field" hidden aria-hidden="true">/);
+  assert.match(indexSource, /\.hp-field\{display:none!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;/);
   assert.match(auditFormSource, /className = 'audit-success-overlay'/);
   assert.match(auditFormSource, /role', 'dialog'/);
   assert.match(auditFormSource, /Your private audit request is in\./);

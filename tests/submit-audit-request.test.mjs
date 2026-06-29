@@ -144,6 +144,34 @@ test('customer confirmation failure does not fail audit submission', async () =>
   }
 });
 
+test('submit-audit-request quietly accepts honeypot spam without persistence or email', async () => {
+  const originalEnv = { ...process.env };
+  const originalFetch = global.fetch;
+  const calls = [];
+
+  process.env.SUPABASE_URL = 'https://supabase.example';
+  process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
+  process.env.RESEND_API_KEY = 're_test';
+  delete process.env['STRIPE_SECRET_KEY'];
+
+  global.fetch = async (url, options = {}) => {
+    calls.push({ url: String(url), method: options.method || 'GET' });
+    return new Response(JSON.stringify({ error: 'honeypot should not call downstream services' }), { status: 500 });
+  };
+
+  try {
+    const response = await handler(validEvent({ company_website: 'https://spam.example' }));
+    const body = JSON.parse(response.body);
+
+    assert.equal(response.statusCode, 200);
+    assert.equal(body.ok, true);
+    assert.equal(calls.length, 0);
+  } finally {
+    process.env = originalEnv;
+    global.fetch = originalFetch;
+  }
+});
+
 test('submit-audit-request works when Resend is not configured', async () => {
   const originalEnv = { ...process.env };
   const originalFetch = global.fetch;
