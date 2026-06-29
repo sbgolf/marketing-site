@@ -83,7 +83,7 @@ Checked direct customer resources in browser snapshots/text extraction.
 
 #### [H1] Hide the private-audit honeypot from users and accessibility output
 
-- **Status:** Agent-actionable.
+- **Status:** Completed / merged in PR #114 (`56fdb35008e6084dbc89e768b70b7554e63ae28c`).
 - **Page/path:** `https://startlinesites.com/#audit`.
 - **Problem:** The anti-spam `companyWebsite` field is visible enough to appear as `COMPANY WEBSITE` in browser snapshots/text and has a measurable input rectangle. This can confuse real race directors at the exact conversion point and may hurt form completion confidence.
 - **Evidence from audit:** Live browser inspection of the audit form listed `companyWebsite` with visible label text `COMPANY WEBSITE`. The form text exposed the label immediately before `Send audit request →`.
@@ -108,7 +108,7 @@ Checked direct customer resources in browser snapshots/text extraction.
 
 #### [H2] Add a first-customer audit-request smoke gate before outreach
 
-- **Status:** Agent-actionable.
+- **Status:** In review in PR for `ops/audit-request-smoke-gate`.
 - **Page/path:** `https://startlinesites.com/#audit`, Netlify audit-request function, Supabase/Resend owner workflow.
 - **Problem:** The live form is the primary conversion path and appears to depend on JavaScript/runtime handling rather than a meaningful non-JS form action. Before using the site with a real prospect, the team needs a repeatable safe smoke test that proves a normal request creates the expected owner/customer-review workflow while spam/honeypot submissions remain blocked.
 - **Evidence from audit:** Live form inspection showed required race/name/email/URL fields and a `method="get"` / `#audit` fallback action. The site copy promises a written review within 2 business days, so the runtime path must be verified rather than assumed.

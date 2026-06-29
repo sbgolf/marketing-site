@@ -10,6 +10,7 @@
     "lighthouse": "lhci autorun --config=./lighthouserc.cjs",
     "verify:stripe-webhook": "node scripts/verify-stripe-webhook.mjs",
     "audit:private-mockup": "node scripts/audit-private-mockup-handoff.mjs",
+    "smoke:audit-request": "node scripts/smoke-audit-request.mjs",
     "test": "node --test"
   },
   "dependencies": {
