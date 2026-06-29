@@ -36,6 +36,20 @@ test('H-09 trims repeated pre-audit disclaimers into shorter scan copy', () => {
   assert.doesNotMatch(indexSource, /These cards are illustrative placeholder proof only,[\s\S]*The before state shows an opportunity to reorganize useful information, not a failing/);
 });
 
+test('homepage explore menu section links have explicit accessible names', () => {
+  for (const [href, label] of [
+    ['#problem', 'Jump to why StartLine matters'],
+    ['#fit', 'Jump to who StartLine fits'],
+    ['#templates', 'Jump to template examples'],
+    ['#proof-points', 'Jump to proof points'],
+    ['#how', 'Jump to how StartLine works'],
+    ['/after-year-one/', 'Read about after-year-one services'],
+    ['/race-website-checklist/', 'Open the race website checklist']
+  ]) {
+    assert.match(indexSource, new RegExp(`<a href="${href.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}" aria-label="${label}">`));
+  }
+});
+
 test('homepage hero makes the primary audit path clear', () => {
   assert.match(indexSource, /data-scroll="audit">Request a private audit/);
   assert.match(indexSource, /data-scroll="sample-audit">See sample audit/);

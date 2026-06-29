@@ -108,7 +108,7 @@ Checked direct customer resources in browser snapshots/text extraction.
 
 #### [H2] Add a first-customer audit-request smoke gate before outreach
 
-- **Status:** In review in PR for `ops/audit-request-smoke-gate`.
+- **Status:** Completed / merged in PR #115 (`7549a071219ca079ad036ff63a7e1bcc8414cc75`).
 - **Page/path:** `https://startlinesites.com/#audit`, Netlify audit-request function, Supabase/Resend owner workflow.
 - **Problem:** The live form is the primary conversion path and appears to depend on JavaScript/runtime handling rather than a meaningful non-JS form action. Before using the site with a real prospect, the team needs a repeatable safe smoke test that proves a normal request creates the expected owner/customer-review workflow while spam/honeypot submissions remain blocked.
 - **Evidence from audit:** Live form inspection showed required race/name/email/URL fields and a `method="get"` / `#audit` fallback action. The site copy promises a written review within 2 business days, so the runtime path must be verified rather than assumed.
@@ -134,7 +134,7 @@ Checked direct customer resources in browser snapshots/text extraction.
 
 #### [M1] Give homepage section-link cards accessible names
 
-- **Status:** Agent-actionable.
+- **Status:** In review in PR for `fix/homepage-section-link-accessible-names`.
 - **Page/path:** `https://startlinesites.com/`.
 - **Problem:** Several homepage anchor elements have visible dimensions but no text, `aria-label`, or title. They link to important decision/support resources but may be announced poorly by assistive tech and automated QA.
 - **Evidence from audit:** Live browser DOM inspection found visible-size anchors with empty accessible text for `#problem`, `#fit`, `#templates`, `#proof-points`, `#how`, `/after-year-one/`, and `/race-website-checklist/`.
