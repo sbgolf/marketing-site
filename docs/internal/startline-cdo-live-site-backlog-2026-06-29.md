@@ -37,7 +37,7 @@ No new high-priority agent-actionable item was found in the 2026-06-29 CDO audit
 
 #### [M1] Replace internal/outreach section labels on persona pages
 
-- **Status:** Agent-actionable
+- **Status:** In review — PR #120 (polish/persona-buyer-facing-labels)
 - **Page/path:** `/for-race-directors/`, `/for-community-races/`, `/for-marathons/`, `/for-runsignup-races/`
 - **Problem:** Several public persona-page section kickers still expose internal/outreach framing, especially `WHY THIS PAGE EXISTS` and `OUTREACH AUDIT PROMPTS`. The sections themselves are useful, but the labels feel more like sales-enablement notes than buyer-facing page copy.
 - **Evidence from audit:** Live snapshots of persona pages showed labels such as `WHY THIS PAGE EXISTS` before buyer decision content and `OUTREACH AUDIT PROMPTS` before `What we would check first.` The CDO audit records this as the only new material agent-actionable polish issue.
