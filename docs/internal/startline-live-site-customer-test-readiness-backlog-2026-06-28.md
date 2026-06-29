@@ -181,7 +181,7 @@ Checked direct customer resources in browser snapshots/text extraction.
 
 #### [L1] Reduce repeated sample-audit self-links
 
-- **Status:** Agent-actionable after higher-priority form/accessibility fixes.
+- **Status:** In review — PR #118 (`polish/sample-audit-anchor-cta`).
 - **Page/path:** `https://startlinesites.com/sample-audit/`.
 - **Problem:** The sample-audit page includes both a nav `Sample audit` link and a hero `See sample audit` link on the same page. This is not broken, but it is slightly redundant once the visitor is already there.
 - **Evidence from audit:** Browser snapshot for `/sample-audit/` showed hero links `Request a private audit →` and `See sample audit`; the latter routes to an anchor on the same page.
