@@ -134,7 +134,7 @@ Checked direct customer resources in browser snapshots/text extraction.
 
 #### [M1] Give homepage section-link cards accessible names
 
-- **Status:** In review in PR for `fix/homepage-section-link-accessible-names`.
+- **Status:** Completed / merged in PR #116 (`e02b09c59baddb6ce6f75e48b804a6cbb87e1028`).
 - **Page/path:** `https://startlinesites.com/`.
 - **Problem:** Several homepage anchor elements have visible dimensions but no text, `aria-label`, or title. They link to important decision/support resources but may be announced poorly by assistive tech and automated QA.
 - **Evidence from audit:** Live browser DOM inspection found visible-size anchors with empty accessible text for `#problem`, `#fit`, `#templates`, `#proof-points`, `#how`, `/after-year-one/`, and `/race-website-checklist/`.
