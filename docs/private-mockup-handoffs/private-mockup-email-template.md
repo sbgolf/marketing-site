@@ -91,16 +91,39 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>[Race name] private StartLine preview</title>
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+    <style>
+      :root { color-scheme: light dark; supported-color-schemes: light dark; }
+      @media (prefers-color-scheme: dark) {
+        .sl-body, .sl-page { background:#0B1220 !important; color:#FAFAF7 !important; }
+        .sl-card, .sl-content { background:#111B2E !important; border-color:rgba(250,250,247,.14) !important; }
+        .sl-panel, .sl-package { background:#162237 !important; border-color:rgba(250,250,247,.14) !important; }
+        .sl-recommended { background:#1A263D !important; border-color:rgba(255,77,61,.38) !important; }
+        .sl-content p, .sl-content h2, .sl-panel div, .sl-package div { color:#DDE5F4 !important; }
+        .sl-content h2 { color:#FAFAF7 !important; }
+        .sl-content .sl-label, .sl-panel .sl-label, .sl-recommended .sl-label { color:#FF8A7D !important; }
+        .sl-muted { color:rgba(221,229,244,.76) !important; }
+      }
+      [data-ogsc] .sl-body, [data-ogsc] .sl-page { background:#0B1220 !important; color:#FAFAF7 !important; }
+      [data-ogsc] .sl-card, [data-ogsc] .sl-content { background:#111B2E !important; border-color:rgba(250,250,247,.14) !important; }
+      [data-ogsc] .sl-panel, [data-ogsc] .sl-package { background:#162237 !important; border-color:rgba(250,250,247,.14) !important; }
+      [data-ogsc] .sl-recommended { background:#1A263D !important; border-color:rgba(255,77,61,.38) !important; }
+      [data-ogsc] .sl-content p, [data-ogsc] .sl-content h2, [data-ogsc] .sl-panel div, [data-ogsc] .sl-package div { color:#DDE5F4 !important; }
+      [data-ogsc] .sl-content h2 { color:#FAFAF7 !important; }
+      [data-ogsc] .sl-content .sl-label, [data-ogsc] .sl-panel .sl-label, [data-ogsc] .sl-recommended .sl-label { color:#FF8A7D !important; }
+      [data-ogsc] .sl-muted { color:rgba(221,229,244,.76) !important; }
+    </style>
   </head>
-  <body style="margin:0;padding:0;background:#F0EDE5;color:#0E1729;font-family:'Plus Jakarta Sans','Inter','Segoe UI',Arial,sans-serif;">
+  <body class="sl-body" style="margin:0;padding:0;background:#F0EDE5;color:#0E1729;font-family:'Plus Jakarta Sans','Inter','Segoe UI',Arial,sans-serif;">
     <div style="display:none;max-height:0;overflow:hidden;color:transparent;opacity:0;">
       Review your private StartLine preview, compare package options, and see the recommended next step.
     </div>
 
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#F0EDE5;padding:28px 12px;">
+    <table class="sl-page" role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#F0EDE5;padding:28px 12px;">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:680px;background:#FAFAF7;border:1px solid rgba(14,23,41,.12);border-radius:28px;overflow:hidden;box-shadow:0 24px 70px rgba(14,23,41,.12);">
+          <table class="sl-card" role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:680px;background:#FAFAF7;border:1px solid rgba(14,23,41,.12);border-radius:28px;overflow:hidden;box-shadow:0 24px 70px rgba(14,23,41,.12);">
             <tr>
               <td style="background:#0E1729;padding:26px 26px 30px;color:#FAFAF7;">
                 <div style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:#F5C04A;margin-bottom:16px;">StartLine Sites private preview</div>
@@ -113,20 +136,20 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
             </tr>
 
             <tr>
-              <td style="padding:28px 26px 8px;">
+              <td class="sl-content" style="padding:28px 26px 8px;">
                 <p style="margin:0 0 16px;font-size:16px;line-height:1.65;color:#1A2438;">Hi [Contact name],</p>
                 <p style="margin:0 0 18px;font-size:16px;line-height:1.65;color:#1A2438;">The preview focuses on the runner questions that often matter most before registration: what makes the race worth the trip, how logistics fit together, and where the official registration handoff happens.</p>
 
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:22px 0;border-collapse:separate;border-spacing:0 10px;">
                   <tr>
-                    <td style="background:#ffffff;border:1px solid rgba(14,23,41,.10);border-radius:18px;padding:16px 18px;">
-                      <div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#D43B2D;margin-bottom:5px;">What improves</div>
+                    <td class="sl-panel" style="background:#ffffff;border:1px solid rgba(14,23,41,.10);border-radius:18px;padding:16px 18px;">
+                      <div class="sl-label" style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#D43B2D;margin-bottom:5px;">What improves</div>
                       <div style="font-size:15px;line-height:1.6;color:#1A2438;">The page makes the race-weekend experience, ferry/travel planning, course context, and Race Roster path easier to scan on mobile.</div>
                     </td>
                   </tr>
                   <tr>
-                    <td style="background:#ffffff;border:1px solid rgba(14,23,41,.10);border-radius:18px;padding:16px 18px;">
-                      <div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#D43B2D;margin-bottom:5px;">Package fit</div>
+                    <td class="sl-panel" style="background:#ffffff;border:1px solid rgba(14,23,41,.10);border-radius:18px;padding:16px 18px;">
+                      <div class="sl-label" style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#D43B2D;margin-bottom:5px;">Package fit</div>
                       <div style="font-size:15px;line-height:1.6;color:#1A2438;">StartLine can support this preview with either package below. [Recommended package] is the recommended fit because [package-fit reason].</div>
                     </td>
                   </tr>
@@ -134,7 +157,7 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
 
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:24px 0 0;border-collapse:separate;border-spacing:0 12px;">
                   <tr>
-                    <td style="background:#ffffff;border:1px solid rgba(14,23,41,.12);border-radius:22px;padding:20px;">
+                    <td class="sl-package" style="background:#ffffff;border:1px solid rgba(14,23,41,.12);border-radius:22px;padding:20px;">
                       <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:#1A2438;margin-bottom:8px;">Option: [Alternative package]</div>
                       <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:26px;line-height:1.1;color:#0E1729;">[Alternative package] first-year package</h2>
                       <p style="margin:0;font-size:15px;line-height:1.65;color:#1A2438;">[Alternative package summary and deposit terms]</p>
@@ -142,12 +165,12 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
                   </tr>
                 </table>
 
-                <div style="background:linear-gradient(135deg,rgba(255,77,61,.10),rgba(245,192,74,.18));border:1px solid rgba(255,77,61,.20);border-radius:24px;padding:22px;margin:12px 0 24px;">
-                  <div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:900;color:#D43B2D;margin-bottom:8px;">Recommended option</div>
+                <div class="sl-recommended" style="background:linear-gradient(135deg,rgba(255,77,61,.10),rgba(245,192,74,.18));border:1px solid rgba(255,77,61,.20);border-radius:24px;padding:22px;margin:12px 0 24px;">
+                  <div class="sl-label" style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:900;color:#D43B2D;margin-bottom:8px;">Recommended option</div>
                   <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:30px;line-height:1.08;color:#0E1729;">Start the [Recommended package] first-year package.</h2>
                   <p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#1A2438;">[Package summary and deposit terms]</p>
                   <a href="[Primary package/deposit URL]" style="display:inline-block;background:#FF4D3D;color:#ffffff;text-decoration:none;font-weight:900;border-radius:999px;padding:14px 20px;font-size:15px;">Start with the deposit →</a>
-                  <p style="margin:14px 0 0;font-size:13px;line-height:1.55;color:rgba(26,36,56,.72);">Prefer to talk through changes before choosing a package? Reply to this email with notes or questions, and a StartLine team member will follow up to schedule a short time to discuss.</p>
+                  <p class="sl-muted" style="margin:14px 0 0;font-size:13px;line-height:1.55;color:rgba(26,36,56,.72);">Prefer to talk through changes before choosing a package? Reply to this email with notes or questions, and a StartLine team member will follow up to schedule a short time to discuss.</p>
                 </div>
 
                 <p style="margin:0 0 18px;font-size:16px;line-height:1.65;color:#1A2438;">No pressure if you want edits first. Reply with what you would like to discuss, and StartLine will schedule time to review what should stay, what should change, and which package feels like the right fit.</p>
