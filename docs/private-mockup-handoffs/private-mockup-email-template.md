@@ -1,16 +1,18 @@
 # Private mockup handoff email template
 
-Use this as the customer-facing email shape when a race director receives an approved private StartLine mockup.
+Use this as the customer-facing email shape when a race team receives an approved private StartLine mockup.
 
 ## Conversion goal
 
-The email should not simply say “here is a preview.” It should guide the director through one clear decision path:
+The email should not simply say “here is a preview.” It should guide the team through one clear decision path:
 
 1. Review the private mockup.
-2. Compare the relevant first-year package options.
-3. See which package StartLine recommends for the race and why.
-4. Click the recommended deposit / package CTA when ready.
-5. Reply if they want changes, scope questions, or a short review before paying.
+2. Confirm whether the direction feels right.
+3. Compare all first-year package options.
+4. See which package StartLine recommends for the race and why.
+5. Review the additional package options that can be requested later when needed.
+6. Click through to the pricing section when ready.
+7. Reply if they want changes, scope questions, or a short review before choosing a package.
 
 ## Brand tokens
 
@@ -36,9 +38,11 @@ Email-safe fonts:
 - **Preheader:** concrete next step, not generic preview language.
 - **Hero card:** race name, private preview CTA, short benefit statement.
 - **Why this matters:** 3–4 concise bullets tied to runner clarity and registration confidence.
-- **Package options:** present the relevant package options side by side or in a clear list, with one clearly marked as StartLine's recommendation.
-- **Recommended package:** identify the recommended fit and deposit amount when known.
-- **Primary CTA:** direct payment/deposit URL when a non-proposal package is recommended and approved.
+- **Package options:** compare Starter, Standard, and Premium in a clear list, with Standard clearly marked as StartLine's recommendation for Madeline Island.
+- **Premium gate:** present Premium as proposal-gated with a reviewed proposal required before any deposit.
+- **Recommended package:** identify Standard as the recommended fit and explain why.
+- **Additional packages:** include a short customer-facing section for optional scoped services after the first-year package, such as rollover, SEO/analytics, sponsor/content refresh, and pre-race tune-up support.
+- **Primary CTA:** link to `/#pricing` for now, not a Stripe deposit URL.
 - **Secondary CTA:** private mockup URL.
 - **Reply fallback:** clear language that they can reply with questions or requested changes.
 - **Footer:** StartLine Sites brand line, respectful no-pressure note, no internal workflow terms.
@@ -46,7 +50,7 @@ Email-safe fonts:
 ## Plain-text fallback
 
 ```text
-Subject: Madeline Island Marathon preview + recommended next step
+Subject: Madeline Island Marathon preview + package options
 
 Hi [Contact name],
 
@@ -55,25 +59,45 @@ I put together a private StartLine Sites preview for Madeline Island Marathon & 
 
 The preview shows how the race website could make the destination experience, ferry planning, race-day logistics, and official Race Roster path easier for runners to understand before they register.
 
-What I would recommend next:
-StartLine can support this preview through either of these first-year package options. For Madeline Island Marathon & Half Marathon, I would recommend Standard because this race needs more than a basic landing page: destination logistics, course/registration confidence, mobile clarity, and room for race-cycle updates.
+If the direction feels right, the next step is to compare the first-year package options and choose the fit that matches how much support you want around launch.
+
+Recommended for Madeline Island: Standard
+I would recommend Standard because this race needs more than a basic landing page: destination logistics, course and registration confidence, mobile clarity, sponsor/photo areas when available, and room for race-cycle updates.
 
 Starter first-year package:
 - $1,500 first year
 - $750 deposit to start
 - Final $750 invoice at launch
+- Best for a clearer first impression and dependable launch foundation.
 - Includes the website foundation, registration deep-link, tracking setup, one revision pass, launch announcement graphics, domain hosting for one year, and first-year support for launch-critical fixes.
 
 Recommended: Standard first-year package:
 - $2,500 first year
 - $1,250 deposit to start
 - Final $1,250 invoice at launch
-- Includes the website build, richer race details/logistics sections, sponsor/photo areas when provided, conversion review, tracking setup, and scoped first-year race-cycle support.
+- Best for richer race detail, logistics, planned updates, and conversion review.
+- Includes everything in Starter, plus richer race details/logistics sections, sponsor/photo areas when provided, race-cycle content updates, conversion review and recommendations, and quarterly SEO check + fixes.
 
-If you like the direction and want StartLine to move this toward a polished production version, you can start here:
-[Standard deposit URL]
+Premium first-year package:
+- $4,500 first year
+- Proposal-gated
+- Reviewed proposal required before any deposit
+- Final $2,250 invoice at launch after approved scope
+- Best for larger race weekends that need deeper sponsor visibility, content support, reporting, copy support, and two revision passes.
 
-If you want to talk through changes before choosing a package, just reply to this email with any notes or questions. A StartLine team member will follow up to schedule a short time to discuss what should stay, what should change, and which package is the right fit.
+Additional package options can be requested later if needed:
+- Annual rollover and registration-opening updates
+- SEO and analytics tune-ups
+- Sponsor/content refreshes
+- Pre-race conversion or race-week clarity reviews
+
+To compare packages on the StartLine pricing section, start here:
+[/#pricing]
+
+You can also revisit the private preview here:
+[Private mockup URL]
+
+If you want to talk through changes before choosing a package, just reply to this email with any notes or questions. StartLine will follow up to schedule a short time to discuss what should stay, what should change, and which package is the right fit.
 
 Thanks,
 Steve
@@ -98,26 +122,26 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
       @media (prefers-color-scheme: dark) {
         .sl-body, .sl-page { background:#0B1220 !important; color:#FAFAF7 !important; }
         .sl-card, .sl-content { background:#111B2E !important; border-color:rgba(250,250,247,.14) !important; }
-        .sl-panel, .sl-package { background:#162237 !important; border-color:rgba(250,250,247,.14) !important; }
+        .sl-panel, .sl-package, .sl-extra { background:#162237 !important; border-color:rgba(250,250,247,.14) !important; }
         .sl-recommended { background:#1A263D !important; border-color:rgba(255,77,61,.38) !important; }
-        .sl-content p, .sl-content h2, .sl-panel div, .sl-package div { color:#DDE5F4 !important; }
+        .sl-content p, .sl-content h2, .sl-panel div, .sl-package div, .sl-extra div, .sl-extra li { color:#DDE5F4 !important; }
         .sl-content h2 { color:#FAFAF7 !important; }
-        .sl-content .sl-label, .sl-panel .sl-label, .sl-recommended .sl-label { color:#FF8A7D !important; }
+        .sl-content .sl-label, .sl-panel .sl-label, .sl-recommended .sl-label, .sl-extra .sl-label { color:#FF8A7D !important; }
         .sl-muted { color:rgba(221,229,244,.76) !important; }
       }
       [data-ogsc] .sl-body, [data-ogsc] .sl-page { background:#0B1220 !important; color:#FAFAF7 !important; }
       [data-ogsc] .sl-card, [data-ogsc] .sl-content { background:#111B2E !important; border-color:rgba(250,250,247,.14) !important; }
-      [data-ogsc] .sl-panel, [data-ogsc] .sl-package { background:#162237 !important; border-color:rgba(250,250,247,.14) !important; }
+      [data-ogsc] .sl-panel, [data-ogsc] .sl-package, [data-ogsc] .sl-extra { background:#162237 !important; border-color:rgba(250,250,247,.14) !important; }
       [data-ogsc] .sl-recommended { background:#1A263D !important; border-color:rgba(255,77,61,.38) !important; }
-      [data-ogsc] .sl-content p, [data-ogsc] .sl-content h2, [data-ogsc] .sl-panel div, [data-ogsc] .sl-package div { color:#DDE5F4 !important; }
+      [data-ogsc] .sl-content p, [data-ogsc] .sl-content h2, [data-ogsc] .sl-panel div, [data-ogsc] .sl-package div, [data-ogsc] .sl-extra div, [data-ogsc] .sl-extra li { color:#DDE5F4 !important; }
       [data-ogsc] .sl-content h2 { color:#FAFAF7 !important; }
-      [data-ogsc] .sl-content .sl-label, [data-ogsc] .sl-panel .sl-label, [data-ogsc] .sl-recommended .sl-label { color:#FF8A7D !important; }
+      [data-ogsc] .sl-content .sl-label, [data-ogsc] .sl-panel .sl-label, [data-ogsc] .sl-recommended .sl-label, [data-ogsc] .sl-extra .sl-label { color:#FF8A7D !important; }
       [data-ogsc] .sl-muted { color:rgba(221,229,244,.76) !important; }
     </style>
   </head>
   <body class="sl-body" style="margin:0;padding:0;background:#F0EDE5;color:#0E1729;font-family:'Plus Jakarta Sans','Inter','Segoe UI',Arial,sans-serif;">
     <div style="display:none;max-height:0;overflow:hidden;color:transparent;opacity:0;">
-      Review your private StartLine preview, compare package options, and see the recommended next step.
+      Review your private StartLine preview, compare all package options, and choose the next step when ready.
     </div>
 
     <table class="sl-page" role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#F0EDE5;padding:28px 12px;">
@@ -149,28 +173,53 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
                   </tr>
                   <tr>
                     <td class="sl-panel" style="background:#ffffff;border:1px solid rgba(14,23,41,.10);border-radius:18px;padding:16px 18px;">
-                      <div class="sl-label" style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#D43B2D;margin-bottom:5px;">Package fit</div>
-                      <div style="font-size:15px;line-height:1.6;color:#1A2438;">StartLine can support this preview with either package below. [Recommended package] is the recommended fit because [package-fit reason].</div>
+                      <div class="sl-label" style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#D43B2D;margin-bottom:5px;">Recommended fit</div>
+                      <div style="font-size:15px;line-height:1.6;color:#1A2438;">[Recommended package] is the recommended fit because [package-fit reason]. If the direction feels right, compare the options below and use the pricing link when you are ready.</div>
                     </td>
                   </tr>
                 </table>
 
-                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:24px 0 0;border-collapse:separate;border-spacing:0 12px;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:24px 0 12px;border-collapse:separate;border-spacing:0 12px;">
                   <tr>
                     <td class="sl-package" style="background:#ffffff;border:1px solid rgba(14,23,41,.12);border-radius:22px;padding:20px;">
-                      <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:#1A2438;margin-bottom:8px;">Option: [Alternative package]</div>
-                      <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:26px;line-height:1.1;color:#0E1729;">[Alternative package] first-year package</h2>
-                      <p style="margin:0;font-size:15px;line-height:1.65;color:#1A2438;">[Alternative package summary and deposit terms]</p>
+                      <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:#1A2438;margin-bottom:8px;">Option: Starter</div>
+                      <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:26px;line-height:1.1;color:#0E1729;">Starter first-year package</h2>
+                      <p style="margin:0;font-size:15px;line-height:1.65;color:#1A2438;">$1,500 first year. The $750 deposit starts the project; the final $750 invoice is due at launch. Best for the core website foundation, registration deep-link, tracking setup, one revision pass, launch announcement graphics, domain hosting for one year, and launch-critical fixes.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="sl-package sl-recommended" style="background:linear-gradient(135deg,rgba(255,77,61,.10),rgba(245,192,74,.18));border:1px solid rgba(255,77,61,.20);border-radius:22px;padding:20px;">
+                      <div class="sl-label" style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:#D43B2D;margin-bottom:8px;">Recommended: Standard</div>
+                      <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:26px;line-height:1.1;color:#0E1729;">Standard first-year package</h2>
+                      <p style="margin:0;font-size:15px;line-height:1.65;color:#1A2438;">$2,500 first year. The $1,250 deposit starts the project; the final $1,250 invoice is due at launch. Best for richer race details, logistics sections, sponsor/photo areas when provided, race-cycle content updates, conversion review and recommendations, and quarterly SEO check + fixes.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="sl-package" style="background:#ffffff;border:1px solid rgba(14,23,41,.12);border-radius:22px;padding:20px;">
+                      <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:#1A2438;margin-bottom:8px;">Option: Premium · proposal-gated</div>
+                      <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:26px;line-height:1.1;color:#0E1729;">Premium first-year package</h2>
+                      <p style="margin:0;font-size:15px;line-height:1.65;color:#1A2438;">$4,500 first year. A reviewed proposal is required before any deposit. The final $2,250 invoice is due at launch after approved scope. Best for larger race weekends that need deeper sponsor visibility, content support, reporting, copy support, and two revision passes.</p>
                     </td>
                   </tr>
                 </table>
 
+                <div class="sl-extra" style="background:#ffffff;border:1px solid rgba(14,23,41,.12);border-radius:22px;padding:20px;margin:12px 0 24px;">
+                  <div class="sl-label" style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:#D43B2D;margin-bottom:8px;">Additional package options</div>
+                  <div style="font-size:15px;line-height:1.65;color:#1A2438;margin-bottom:10px;">After the first-year package, StartLine can scope one-time help when needed instead of locking you into a default retainer.</div>
+                  <ul style="margin:0;padding-left:20px;font-size:15px;line-height:1.65;color:#1A2438;">
+                    <li>Annual rollover and registration-opening updates</li>
+                    <li>SEO and analytics tune-ups</li>
+                    <li>Sponsor/content refreshes</li>
+                    <li>Pre-race conversion or race-week clarity reviews</li>
+                  </ul>
+                </div>
+
                 <div class="sl-recommended" style="background:linear-gradient(135deg,rgba(255,77,61,.10),rgba(245,192,74,.18));border:1px solid rgba(255,77,61,.20);border-radius:24px;padding:22px;margin:12px 0 24px;">
-                  <div class="sl-label" style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:900;color:#D43B2D;margin-bottom:8px;">Recommended option</div>
-                  <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:30px;line-height:1.08;color:#0E1729;">Start the [Recommended package] first-year package.</h2>
-                  <p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#1A2438;">[Package summary and deposit terms]</p>
-                  <a href="[Primary package/deposit URL]" style="display:inline-block;background:#FF4D3D;color:#ffffff;text-decoration:none;font-weight:900;border-radius:999px;padding:14px 20px;font-size:15px;">Start with the deposit →</a>
-                  <p class="sl-muted" style="margin:14px 0 0;font-size:13px;line-height:1.55;color:rgba(26,36,56,.72);">Prefer to talk through changes before choosing a package? Reply to this email with notes or questions, and a StartLine team member will follow up to schedule a short time to discuss.</p>
+                  <div class="sl-label" style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:900;color:#D43B2D;margin-bottom:8px;">Next step</div>
+                  <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:30px;line-height:1.08;color:#0E1729;">Compare the StartLine packages.</h2>
+                  <p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#1A2438;">If the direction feels right, use the pricing section to compare Starter, Standard, and proposal-gated Premium before choosing the next step.</p>
+                  <a href="/#pricing" style="display:inline-block;background:#FF4D3D;color:#ffffff;text-decoration:none;font-weight:900;border-radius:999px;padding:14px 20px;font-size:15px;">Compare packages →</a>
+                  <p class="sl-muted" style="margin:14px 0 0;font-size:13px;line-height:1.55;color:rgba(26,36,56,.72);">Prefer to talk through changes before choosing a package? Reply to this email with notes or questions, and StartLine will follow up to schedule a short time to discuss.</p>
                 </div>
 
                 <p style="margin:0 0 18px;font-size:16px;line-height:1.65;color:#1A2438;">No pressure if you want edits first. Reply with what you would like to discuss, and StartLine will schedule time to review what should stay, what should change, and which package feels like the right fit.</p>
@@ -199,14 +248,12 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
 - `[Private mockup URL]`: `https://mockups.startlinesites.com/private/mockups/1df440859d5fc4a775302c32796ae129/?v=600cc75`
 - `[Recommended package]`: `Standard`
 - `[package-fit reason]`: `the race benefits from richer destination logistics, mobile planning clarity, course/registration confidence, sponsor/photo areas when provided, and a conversion review before launch.`
-- `[Alternative package]`: `Starter`
-- `[Alternative package summary and deposit terms]`: `Starter is a $1,500 first-year package. The $750 deposit starts the project; the final $750 invoice is due at launch. It covers the core website foundation, registration deep-link, tracking setup, one revision pass, launch announcement graphics, domain hosting for one year, and first-year support for launch-critical fixes.`
-- `[Package summary and deposit terms]`: `Standard is a $2,500 first-year package. The $1,250 deposit starts the project; the final $1,250 invoice is due at launch.`
-- `[Primary package/deposit URL]`: `https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01`
+- `[Primary package/pricing URL]`: `/#pricing`
 
 ## Do not include
 
 - Repository, PR, Supabase, Resend, analytics-debug, or internal approval details.
 - Guaranteed registration growth.
 - Language that shames the current race website.
+- Stripe deposit URLs until Steve confirms the payment path.
 - A vague ending like “No pressure either way” without a concrete CTA.
