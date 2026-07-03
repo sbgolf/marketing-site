@@ -32,9 +32,16 @@ https://mockups.startlinesites.com/private/mockups/1df440859d5fc4a775302c32796ae
 The preview shows how the race website could make the destination experience, ferry planning, race-day logistics, and official Race Roster path easier for runners to understand before they register.
 
 What I would recommend next:
-The Standard first-year package looks like the best fit because this race needs more than a basic landing page: destination logistics, course and registration confidence, mobile clarity, and room for race-cycle updates.
+StartLine can support this preview through either of these first-year package options. For Madeline Island Marathon & Half Marathon, I would recommend Standard because this race needs more than a basic landing page: destination logistics, course and registration confidence, mobile clarity, and room for race-cycle updates.
 
-Standard first-year package:
+Starter first-year package:
+
+- $1,500 first year
+- $750 deposit to start
+- Final $750 invoice at launch
+- Includes the website foundation, registration deep-link, tracking setup, one revision pass, launch announcement graphics, domain hosting for one year, and first-year support for launch-critical fixes.
+
+Recommended: Standard first-year package:
 
 - $2,500 first year
 - $1,250 deposit to start
@@ -44,7 +51,7 @@ Standard first-year package:
 If you like the direction and want StartLine to move this toward a polished production version, you can start here:
 https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01
 
-If you want to talk through changes first, reply with any notes and I’ll help confirm what should stay, what should change, and whether Standard is still the right fit.
+If you want to talk through changes before choosing a package, just reply to this email with any notes or questions. A StartLine team member will follow up to schedule a short time to discuss what should stay, what should change, and which package is the right fit.
 
 Thanks,
 Steve

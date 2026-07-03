@@ -7,9 +7,10 @@ Use this as the customer-facing email shape when a race director receives an app
 The email should not simply say “here is a preview.” It should guide the director through one clear decision path:
 
 1. Review the private mockup.
-2. See why the recommended first-year package fits.
-3. Click the recommended deposit / package CTA when ready.
-4. Reply if they want changes, scope questions, or a short review before paying.
+2. Compare the relevant first-year package options.
+3. See which package StartLine recommends for the race and why.
+4. Click the recommended deposit / package CTA when ready.
+5. Reply if they want changes, scope questions, or a short review before paying.
 
 ## Brand tokens
 
@@ -35,6 +36,7 @@ Email-safe fonts:
 - **Preheader:** concrete next step, not generic preview language.
 - **Hero card:** race name, private preview CTA, short benefit statement.
 - **Why this matters:** 3–4 concise bullets tied to runner clarity and registration confidence.
+- **Package options:** present the relevant package options side by side or in a clear list, with one clearly marked as StartLine's recommendation.
 - **Recommended package:** identify the recommended fit and deposit amount when known.
 - **Primary CTA:** direct payment/deposit URL when a non-proposal package is recommended and approved.
 - **Secondary CTA:** private mockup URL.
@@ -54,9 +56,15 @@ I put together a private StartLine Sites preview for Madeline Island Marathon & 
 The preview shows how the race website could make the destination experience, ferry planning, race-day logistics, and official Race Roster path easier for runners to understand before they register.
 
 What I would recommend next:
-The Standard first-year package looks like the best fit because this race needs more than a basic landing page: destination logistics, course/registration confidence, mobile clarity, and room for race-cycle updates.
+StartLine can support this preview through either of these first-year package options. For Madeline Island Marathon & Half Marathon, I would recommend Standard because this race needs more than a basic landing page: destination logistics, course/registration confidence, mobile clarity, and room for race-cycle updates.
 
-Standard first-year package:
+Starter first-year package:
+- $1,500 first year
+- $750 deposit to start
+- Final $750 invoice at launch
+- Includes the website foundation, registration deep-link, tracking setup, one revision pass, launch announcement graphics, domain hosting for one year, and first-year support for launch-critical fixes.
+
+Recommended: Standard first-year package:
 - $2,500 first year
 - $1,250 deposit to start
 - Final $1,250 invoice at launch
@@ -65,7 +73,7 @@ Standard first-year package:
 If you like the direction and want StartLine to move this toward a polished production version, you can start here:
 [Standard deposit URL]
 
-If you want to talk through changes first, reply with any notes and I’ll help confirm what should stay, what should change, and whether Standard is still the right fit.
+If you want to talk through changes before choosing a package, just reply to this email with any notes or questions. A StartLine team member will follow up to schedule a short time to discuss what should stay, what should change, and which package is the right fit.
 
 Thanks,
 Steve
@@ -86,7 +94,7 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
   </head>
   <body style="margin:0;padding:0;background:#F0EDE5;color:#0E1729;font-family:'Plus Jakarta Sans','Inter','Segoe UI',Arial,sans-serif;">
     <div style="display:none;max-height:0;overflow:hidden;color:transparent;opacity:0;">
-      Review your private StartLine preview, then choose whether to start the recommended first-year package.
+      Review your private StartLine preview, compare package options, and see the recommended next step.
     </div>
 
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#F0EDE5;padding:28px 12px;">
@@ -118,21 +126,31 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
                   </tr>
                   <tr>
                     <td style="background:#ffffff;border:1px solid rgba(14,23,41,.10);border-radius:18px;padding:16px 18px;">
-                      <div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#D43B2D;margin-bottom:5px;">Recommended fit</div>
-                      <div style="font-size:15px;line-height:1.6;color:#1A2438;">[Recommended package] looks like the best next step because [package-fit reason].</div>
+                      <div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#D43B2D;margin-bottom:5px;">Package fit</div>
+                      <div style="font-size:15px;line-height:1.6;color:#1A2438;">StartLine can support this preview with either package below. [Recommended package] is the recommended fit because [package-fit reason].</div>
                     </td>
                   </tr>
                 </table>
 
-                <div style="background:linear-gradient(135deg,rgba(255,77,61,.10),rgba(245,192,74,.18));border:1px solid rgba(255,77,61,.20);border-radius:24px;padding:22px;margin:24px 0;">
-                  <div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:900;color:#D43B2D;margin-bottom:8px;">Recommended next step</div>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:24px 0 0;border-collapse:separate;border-spacing:0 12px;">
+                  <tr>
+                    <td style="background:#ffffff;border:1px solid rgba(14,23,41,.12);border-radius:22px;padding:20px;">
+                      <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:#1A2438;margin-bottom:8px;">Option: [Alternative package]</div>
+                      <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:26px;line-height:1.1;color:#0E1729;">[Alternative package] first-year package</h2>
+                      <p style="margin:0;font-size:15px;line-height:1.65;color:#1A2438;">[Alternative package summary and deposit terms]</p>
+                    </td>
+                  </tr>
+                </table>
+
+                <div style="background:linear-gradient(135deg,rgba(255,77,61,.10),rgba(245,192,74,.18));border:1px solid rgba(255,77,61,.20);border-radius:24px;padding:22px;margin:12px 0 24px;">
+                  <div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:900;color:#D43B2D;margin-bottom:8px;">Recommended option</div>
                   <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:30px;line-height:1.08;color:#0E1729;">Start the [Recommended package] first-year package.</h2>
                   <p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#1A2438;">[Package summary and deposit terms]</p>
                   <a href="[Primary package/deposit URL]" style="display:inline-block;background:#FF4D3D;color:#ffffff;text-decoration:none;font-weight:900;border-radius:999px;padding:14px 20px;font-size:15px;">Start with the deposit →</a>
-                  <p style="margin:14px 0 0;font-size:13px;line-height:1.55;color:rgba(26,36,56,.72);">Prefer to talk through changes first? Reply to this email with notes, and I’ll help confirm the final scope before you pay anything.</p>
+                  <p style="margin:14px 0 0;font-size:13px;line-height:1.55;color:rgba(26,36,56,.72);">Prefer to talk through changes before choosing a package? Reply to this email with notes or questions, and a StartLine team member will follow up to schedule a short time to discuss.</p>
                 </div>
 
-                <p style="margin:0 0 18px;font-size:16px;line-height:1.65;color:#1A2438;">No pressure if you want edits first. The goal of the preview is to make the decision concrete: keep what works, adjust what does not, and only move forward if the package feels like the right fit.</p>
+                <p style="margin:0 0 18px;font-size:16px;line-height:1.65;color:#1A2438;">No pressure if you want edits first. Reply with what you would like to discuss, and StartLine will schedule time to review what should stay, what should change, and which package feels like the right fit.</p>
                 <p style="margin:0 0 8px;font-size:16px;line-height:1.65;color:#1A2438;">Thanks,<br />Steve</p>
               </td>
             </tr>
@@ -141,7 +159,6 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
               <td style="padding:22px 26px 28px;background:#0E1729;color:#FAFAF7;">
                 <div style="font-family:Georgia,'Times New Roman',serif;font-size:24px;letter-spacing:-.02em;margin-bottom:6px;">StartLine Sites</div>
                 <div style="font-size:13px;line-height:1.55;color:rgba(250,250,247,.72);">Fast, SEO-optimized race websites for race directors — built for search, speed, and signups.</div>
-                <div style="margin-top:14px;font-size:12px;color:#F5C04A;">Built with the same colors and conversion language used across startlinesites.com.</div>
               </td>
             </tr>
           </table>
@@ -159,6 +176,8 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
 - `[Private mockup URL]`: `https://mockups.startlinesites.com/private/mockups/1df440859d5fc4a775302c32796ae129/?v=600cc75`
 - `[Recommended package]`: `Standard`
 - `[package-fit reason]`: `the race benefits from richer destination logistics, mobile planning clarity, course/registration confidence, sponsor/photo areas when provided, and a conversion review before launch.`
+- `[Alternative package]`: `Starter`
+- `[Alternative package summary and deposit terms]`: `Starter is a $1,500 first-year package. The $750 deposit starts the project; the final $750 invoice is due at launch. It covers the core website foundation, registration deep-link, tracking setup, one revision pass, launch announcement graphics, domain hosting for one year, and first-year support for launch-critical fixes.`
 - `[Package summary and deposit terms]`: `Standard is a $2,500 first-year package. The $1,250 deposit starts the project; the final $1,250 invoice is due at launch.`
 - `[Primary package/deposit URL]`: `https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01`
 
