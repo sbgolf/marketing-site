@@ -9,7 +9,7 @@ The email should not simply say “here is a preview.” It should guide the tea
 1. Review the private mockup.
 2. Confirm whether the direction feels right.
 3. See which package StartLine recommends for the race and why.
-4. Use the secondary pricing link if they want to explore or compare other packages.
+4. Either start the recommended Standard package directly or use the secondary pricing link if they want to explore or compare other packages.
 5. Reply if they want changes, scope questions, or a short review before choosing a package.
 
 ## Brand tokens
@@ -36,8 +36,9 @@ Email-safe fonts:
 - **Preheader:** concrete next step, not generic preview language.
 - **Hero card:** race name, private preview CTA, short benefit statement.
 - **Why this matters:** 3–4 concise bullets tied to runner clarity and registration confidence.
-- **Recommended package:** include only the recommended Standard package card in the email body and explain why it fits.
-- **Explore packages link:** add a clear secondary button/link directly under the recommended card to `https://startlinesites.com/#pricing` so teams can compare Starter, Standard, and Premium on the website if desired.
+- **Recommended package:** include only the recommended Standard package card in the email body, explain why it fits, and include two CTAs: a filled orange primary button to start the recommended Standard package, followed by the unfilled/outline explore packages button.
+- **Start recommended package link:** add a filled orange primary button inside the recommended card to `https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01` so teams can buy/start the recommended Standard package directly if ready.
+- **Explore packages link:** keep a clear secondary outline button/link directly under the primary package button to `https://startlinesites.com/#pricing` so teams can compare Starter, Standard, and Premium on the website if desired.
 - **Primary CTA:** private mockup URL.
 - **Secondary CTA:** package/pricing URL.
 - **Reply fallback:** clear language that they can reply with questions or requested changes.
@@ -67,7 +68,10 @@ Recommended: Standard first-year package:
 - Best for richer race detail, logistics, planned updates, and conversion review.
 - Includes the website foundation, registration deep-link, tracking setup, one revision pass, launch announcement graphics, domain hosting for one year, launch-critical fixes, richer race details/logistics sections, sponsor/photo areas when provided, race-cycle content updates, conversion review and recommendations, and quarterly SEO check + fixes.
 
-If you want to explore or compare the other StartLine packages, start here:
+If you are ready to start with the recommended Standard package, use this secure payment link:
+https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01
+
+If you want to explore or compare the other StartLine packages first, start here:
 https://startlinesites.com/#pricing
 
 You can also revisit the private preview here:
@@ -100,6 +104,7 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
         .sl-card, .sl-content { background:#111B2E !important; border-color:rgba(250,250,247,.14) !important; }
         .sl-panel, .sl-package { background:#162237 !important; border-color:rgba(250,250,247,.14) !important; }
         .sl-recommended { background:#1A263D !important; border-color:rgba(255,77,61,.38) !important; }
+        .sl-primary { background:#FF4D3D !important; color:#ffffff !important; }
         .sl-secondary { background:#162237 !important; color:#FF8A7D !important; border-color:rgba(255,138,125,.42) !important; }
         .sl-content p, .sl-content h2, .sl-panel div, .sl-package div { color:#DDE5F4 !important; }
         .sl-content h2 { color:#FAFAF7 !important; }
@@ -110,6 +115,7 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
       [data-ogsc] .sl-card, [data-ogsc] .sl-content { background:#111B2E !important; border-color:rgba(250,250,247,.14) !important; }
       [data-ogsc] .sl-panel, [data-ogsc] .sl-package { background:#162237 !important; border-color:rgba(250,250,247,.14) !important; }
       [data-ogsc] .sl-recommended { background:#1A263D !important; border-color:rgba(255,77,61,.38) !important; }
+      [data-ogsc] .sl-primary { background:#FF4D3D !important; color:#ffffff !important; }
       [data-ogsc] .sl-secondary { background:#162237 !important; color:#FF8A7D !important; border-color:rgba(255,138,125,.42) !important; }
       [data-ogsc] .sl-content p, [data-ogsc] .sl-content h2, [data-ogsc] .sl-panel div, [data-ogsc] .sl-package div { color:#DDE5F4 !important; }
       [data-ogsc] .sl-content h2 { color:#FAFAF7 !important; }
@@ -163,7 +169,11 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
                       <div class="sl-label" style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:#D43B2D;margin-bottom:8px;">Recommended: Standard</div>
                       <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:26px;line-height:1.1;color:#0E1729;">Standard first-year package</h2>
                       <p style="margin:0;font-size:15px;line-height:1.65;color:#1A2438;">$2,500 first year. The $1,250 deposit starts the project; the final $1,250 invoice is due at launch. Best for richer race details, logistics sections, sponsor/photo areas when provided, race-cycle content updates, conversion review and recommendations, and quarterly SEO check + fixes.</p>
+                      <p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:#1A2438;">If Standard feels like the right fit, you can start that package directly. If you want to compare options first, use the packages link below.</p>
                       <div style="margin-top:16px;">
+                        <a class="sl-primary" href="https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01" style="display:inline-block;background:#FF4D3D;color:#ffffff;text-decoration:none;font-weight:900;border-radius:999px;padding:13px 18px;font-size:14px;box-shadow:0 10px 24px rgba(255,77,61,.28);">Start the Standard package →</a>
+                      </div>
+                      <div style="margin-top:10px;">
                         <a class="sl-secondary" href="https://startlinesites.com/#pricing" style="display:inline-block;background:#ffffff;color:#D43B2D;text-decoration:none;font-weight:900;border:1px solid rgba(212,59,45,.32);border-radius:999px;padding:12px 18px;font-size:14px;">Explore other packages →</a>
                       </div>
                     </td>
@@ -204,6 +214,7 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
 - `[Private mockup URL]`: `https://mockups.startlinesites.com/private/mockups/1df440859d5fc4a775302c32796ae129/?v=600cc75`
 - `[Recommended package]`: `Standard`
 - `[package-fit reason]`: `the race benefits from richer destination logistics, mobile planning clarity, course/registration confidence, sponsor/photo areas when provided, and a conversion review before launch.`
+- `[Recommended Standard payment URL]`: `https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01`
 - `[Primary package/pricing URL]`: `https://startlinesites.com/#pricing`
 
 ## Do not include
@@ -211,5 +222,5 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
 - Repository, PR, Supabase, Resend, analytics-debug, or internal approval details.
 - Guaranteed registration growth.
 - Language that shames the current race website.
-- Stripe deposit URLs until Steve confirms the payment path.
+- Stripe payment URLs for non-recommended packages unless Steve confirms those payment paths.
 - A vague ending like “No pressure either way” without a concrete CTA.
