@@ -42,7 +42,7 @@ Email-safe fonts:
 - **Premium gate:** present Premium as proposal-gated with a reviewed proposal required before any deposit.
 - **Recommended package:** identify Standard as the recommended fit and explain why.
 - **Additional packages:** include a short customer-facing section for optional scoped services after the first-year package, such as rollover, SEO/analytics, sponsor/content refresh, and pre-race tune-up support.
-- **Primary CTA:** link to `/#pricing` for now, not a Stripe deposit URL.
+- **Primary CTA:** link to `https://startlinesites.com/#pricing` for now, not a Stripe deposit URL.
 - **Secondary CTA:** private mockup URL.
 - **Reply fallback:** clear language that they can reply with questions or requested changes.
 - **Footer:** StartLine Sites brand line, respectful no-pressure note, no internal workflow terms.
@@ -92,7 +92,7 @@ Additional package options can be requested later if needed:
 - Pre-race conversion or race-week clarity reviews
 
 To compare packages on the StartLine pricing section, start here:
-[/#pricing]
+https://startlinesites.com/#pricing
 
 You can also revisit the private preview here:
 [Private mockup URL]
@@ -218,7 +218,7 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
                   <div class="sl-label" style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:900;color:#D43B2D;margin-bottom:8px;">Next step</div>
                   <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:30px;line-height:1.08;color:#0E1729;">Compare the StartLine packages.</h2>
                   <p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#1A2438;">If the direction feels right, use the pricing section to compare Starter, Standard, and proposal-gated Premium before choosing the next step.</p>
-                  <a href="/#pricing" style="display:inline-block;background:#FF4D3D;color:#ffffff;text-decoration:none;font-weight:900;border-radius:999px;padding:14px 20px;font-size:15px;">Compare packages →</a>
+                  <a href="https://startlinesites.com/#pricing" style="display:inline-block;background:#FF4D3D;color:#ffffff;text-decoration:none;font-weight:900;border-radius:999px;padding:14px 20px;font-size:15px;">Compare packages →</a>
                   <p class="sl-muted" style="margin:14px 0 0;font-size:13px;line-height:1.55;color:rgba(26,36,56,.72);">Prefer to talk through changes before choosing a package? Reply to this email with notes or questions, and StartLine will follow up to schedule a short time to discuss.</p>
                 </div>
 
@@ -248,7 +248,7 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
 - `[Private mockup URL]`: `https://mockups.startlinesites.com/private/mockups/1df440859d5fc4a775302c32796ae129/?v=600cc75`
 - `[Recommended package]`: `Standard`
 - `[package-fit reason]`: `the race benefits from richer destination logistics, mobile planning clarity, course/registration confidence, sponsor/photo areas when provided, and a conversion review before launch.`
-- `[Primary package/pricing URL]`: `/#pricing`
+- `[Primary package/pricing URL]`: `https://startlinesites.com/#pricing`
 
 ## Do not include
 
