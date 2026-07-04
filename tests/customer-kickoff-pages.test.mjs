@@ -63,13 +63,16 @@ test('intake form wiring and required-field attributes remain intact', () => {
 test('intake page uses inline required markers and confirm-edit framing', () => {
   assert.match(intakeSource, /Confirm your race details/);
   assert.match(intakeSource, /Review and edit anything that looks off/);
-  assert.match(intakeSource, /Secure prefill is not active yet/);
+  assert.match(intakeSource, /For now, please enter the details below/);
+  assert.match(intakeSource, /source of truth for your kickoff/);
+  assert.doesNotMatch(intakeSource, /Secure prefill is not active yet/);
   assert.doesNotMatch(intakeSource, /we (pre[- ]filled|prefilled)/i);
 
   const requiredMarkerCount = (intakeSource.match(/class="required-marker" aria-hidden="true">\*<\/span>/g) || []).length;
   assert.equal(requiredMarkerCount, 6);
-  assert.match(intakeSource, /<span class="field-label">Race name <span class="required-marker" aria-hidden="true">\*<\/span><\/span><input name="race_name"/);
+  assert.match(intakeSource, /<span class="field-label"><span class="required-label">Race name <span class="required-marker" aria-hidden="true">\*<\/span><\/span><\/span><input name="race_name"/);
   assert.match(intakeSource, /\.field-label\{display:inline/);
+  assert.match(intakeSource, /\.required-label\{display:inline-flex;align-items:baseline;gap:\.18em;white-space:nowrap\}/);
   assert.match(intakeSource, /\.required-marker\{display:inline/);
 });
 
