@@ -24,3 +24,9 @@ test('checkout status actions have responsive button styling', () => {
   assert.match(indexSource, /checkout-status-actions/);
   assert.match(indexSource, /@media\(max-width:640px\).*checkout-status-actions/s);
 });
+
+test('mobile checkout status banner does not use negative bottom margin that overlaps the hero', () => {
+  const mobileCheckoutRule = indexSource.match(/@media\(max-width:640px\)\{(?<rule>:global\(\.checkout-status\)\{[^}]+\})/)?.groups?.rule ?? '';
+  assert.match(mobileCheckoutRule, /:global\(\.checkout-status\)\{/);
+  assert.doesNotMatch(mobileCheckoutRule, /margin:[^;}]*-\d/);
+});
