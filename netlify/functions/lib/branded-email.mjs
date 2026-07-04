@@ -1,12 +1,14 @@
 export const BRAND = {
+  bg: '#050A14',
   ink: '#0E1729',
-  ink2: '#1A2438',
-  paper: '#FAFAF7',
-  paper2: '#F0EDE5',
+  ink2: '#111D31',
+  ink3: '#18263D',
+  text: '#F6F8FB',
+  muted: '#DDE7F3',
+  soft: '#93A4BB',
   cta: '#FF4D3D',
   accentDeep: '#D43B2D',
-  teal: '#1FB8C4',
-  gold: '#F5C04A',
+  coral: '#FF8A7A',
 };
 
 export const CLIENT_SIGNATURE_TEXT = [
@@ -22,31 +24,28 @@ export const escapeHtml = (value) => String(value ?? '')
   .replaceAll('"', '&quot;')
   .replaceAll("'", '&#39;');
 
-export const renderSignatureHtml = () => '<p style="margin:22px 0 0;color:#0E1729;font-weight:800;">Thanks,<br>Steve, CEO &amp; Founder<br><a href="https://startlinesites.com/" style="color:#0E1729;text-decoration:underline;">StartLineSites.com</a></p>';
+export const renderSignatureHtml = () => '<p style="margin:24px 0 0;color:#F6F8FB;font-weight:800;">Thanks,<br>Steve, CEO &amp; Founder<br><a href="https://startlinesites.com/" style="color:#FF8A7A;text-decoration:underline;">StartLineSites.com</a></p>';
 
 export const renderEmailButton = ({ href, label, variant = 'primary' }) => {
   const isPrimary = variant === 'primary';
-  const background = isPrimary ? BRAND.cta : BRAND.ink;
-  const border = isPrimary ? BRAND.accentDeep : BRAND.ink2;
+  const background = isPrimary ? BRAND.cta : BRAND.ink3;
+  const border = isPrimary ? BRAND.cta : 'rgba(255,138,122,.32)';
+  const shadow = isPrimary ? 'box-shadow:0 0 28px rgba(255,77,61,.34);' : 'box-shadow:none;';
   return `
-    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:12px 10px 12px 0;display:inline-table;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:14px 10px 14px 0;display:inline-table;">
       <tr>
-        <td class="email-button" bgcolor="${background}" style="border-radius:999px;background:${background};border:1px solid ${border};mso-padding-alt:13px 18px;">
-          <a href="${escapeHtml(href)}" style="display:inline-block;padding:13px 18px;color:#ffffff;font-size:15px;line-height:1.1;font-weight:800;text-decoration:none;border-radius:999px;">${escapeHtml(label)}</a>
+        <td class="email-button" bgcolor="${background}" style="border-radius:999px;background:${background};border:1px solid ${border};${shadow}mso-padding-alt:14px 20px;">
+          <a href="${escapeHtml(href)}" style="display:inline-block;padding:14px 20px;color:#ffffff;font-size:15px;line-height:1.1;font-weight:900;text-decoration:none;border-radius:999px;">${escapeHtml(label)}</a>
         </td>
       </tr>
     </table>`;
 };
 
-export const renderInfoCard = ({ title, children, tone = 'teal' }) => {
-  const border = tone === 'gold' ? 'rgba(245,192,74,.45)' : 'rgba(31,184,196,.36)';
-  const background = tone === 'gold' ? '#FFF7DF' : '#EEFBFC';
-  return `
-    <div class="email-info-card" style="border:1px solid ${border};border-radius:18px;background:${background};padding:16px 18px;margin:18px 0;">
-      <strong style="display:block;color:${BRAND.ink};margin-bottom:8px;">${escapeHtml(title)}</strong>
+export const renderInfoCard = ({ title, children }) => `
+    <div class="email-info-card" style="border:1px solid rgba(255,138,122,.24);border-radius:18px;background:#111D31;padding:18px 20px;margin:20px 0;">
+      <strong style="display:block;color:#FF8A7A;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;">${escapeHtml(title)}</strong>
       ${children}
     </div>`;
-};
 
 export const renderBrandedEmail = ({ preheader = '', heading, eyebrow = 'StartLine Sites', body }) => `<!doctype html>
 <html lang="en">
@@ -58,46 +57,45 @@ export const renderBrandedEmail = ({ preheader = '', heading, eyebrow = 'StartLi
   <title>${escapeHtml(heading || 'StartLine Sites')}</title>
   <style>
     :root { color-scheme: light dark; supported-color-schemes: light dark; }
-    a { color: ${BRAND.cta}; }
+    a { color: ${BRAND.coral}; }
     @media (prefers-color-scheme: dark) {
-      body, .email-bg { background: ${BRAND.ink} !important; color: ${BRAND.paper} !important; }
-      .email-card { background: ${BRAND.ink2} !important; border-color: rgba(250,250,247,.18) !important; }
-      .email-body { color: ${BRAND.paper} !important; }
-      .email-body p, .email-body li, .email-body div { color: ${BRAND.paper} !important; }
-      .email-header { background: ${BRAND.ink} !important; }
-      .email-footer { background: ${BRAND.ink} !important; color: ${BRAND.paper2} !important; border-color: rgba(250,250,247,.16) !important; }
-      .email-info-card { background: rgba(31,184,196,.12) !important; border-color: rgba(31,184,196,.44) !important; }
+      body, .email-bg { background: ${BRAND.bg} !important; color: ${BRAND.text} !important; }
+      .email-card { background: ${BRAND.ink} !important; border-color: rgba(255,255,255,.12) !important; }
+      .email-header, .email-body, .email-footer { background: transparent !important; color: ${BRAND.text} !important; }
+      .email-body p, .email-body li, .email-body div { color: ${BRAND.muted} !important; }
+      .email-info-card { background: ${BRAND.ink2} !important; border-color: rgba(255,138,122,.24) !important; }
+      .email-info-card strong { color: ${BRAND.coral} !important; }
       .email-button { background: ${BRAND.cta} !important; border-color: ${BRAND.cta} !important; }
-      a { color: ${BRAND.gold} !important; }
+      a { color: ${BRAND.coral} !important; }
     }
-    [data-ogsc] body, [data-ogsc] .email-bg { background: ${BRAND.ink} !important; color: ${BRAND.paper} !important; }
-    [data-ogsc] .email-card { background: ${BRAND.ink2} !important; border-color: rgba(250,250,247,.18) !important; }
-    [data-ogsc] .email-body, [data-ogsc] .email-body p, [data-ogsc] .email-body li, [data-ogsc] .email-body div { color: ${BRAND.paper} !important; }
-    [data-ogsc] .email-footer { background: ${BRAND.ink} !important; color: ${BRAND.paper2} !important; }
-    [data-ogsc] a { color: ${BRAND.gold} !important; }
+    [data-ogsc] body, [data-ogsc] .email-bg { background: ${BRAND.bg} !important; color: ${BRAND.text} !important; }
+    [data-ogsc] .email-card { background: ${BRAND.ink} !important; border-color: rgba(255,255,255,.12) !important; }
+    [data-ogsc] .email-body, [data-ogsc] .email-body p, [data-ogsc] .email-body li, [data-ogsc] .email-body div { color: ${BRAND.muted} !important; }
+    [data-ogsc] .email-info-card { background: ${BRAND.ink2} !important; border-color: rgba(255,138,122,.24) !important; }
+    [data-ogsc] a { color: ${BRAND.coral} !important; }
   </style>
 </head>
-<body style="margin:0;padding:0;background:${BRAND.paper2};color:${BRAND.ink};">
+<body style="margin:0;padding:0;background:${BRAND.bg};color:${BRAND.text};">
   <div style="display:none;max-height:0;overflow:hidden;color:transparent;opacity:0;">${escapeHtml(preheader)}</div>
-  <div class="email-bg" style="margin:0;padding:0;background:${BRAND.paper2};color:${BRAND.ink};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
-    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:collapse;background:${BRAND.paper2};">
+  <div class="email-bg" style="margin:0;padding:0;background:${BRAND.bg};color:${BRAND.text};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:collapse;background:${BRAND.bg};background-image:linear-gradient(180deg,#050A14 0%,#0B1322 52%,#050A14 100%);">
       <tr>
-        <td align="center" style="padding:30px 16px;">
-          <table role="presentation" class="email-card" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width:640px;border-collapse:separate;border-spacing:0;border:1px solid #DED8CA;border-radius:24px;overflow:hidden;background:${BRAND.paper};box-shadow:0 18px 48px rgba(14,23,41,.10);">
+        <td align="center" style="padding:34px 14px;">
+          <table role="presentation" class="email-card" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width:640px;border-collapse:separate;border-spacing:0;border:1px solid rgba(255,255,255,.12);border-radius:28px;overflow:hidden;background:#0E1729;box-shadow:0 26px 70px rgba(0,0,0,.42);">
             <tr>
-              <td class="email-header" style="padding:28px;background:${BRAND.ink};color:${BRAND.paper};">
-                <div style="font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:${BRAND.gold};font-weight:800;">${escapeHtml(eyebrow)}</div>
-                <h1 style="margin:10px 0 0;font-size:28px;line-height:1.15;font-weight:900;color:${BRAND.paper};">${escapeHtml(heading)}</h1>
+              <td class="email-header" style="padding:32px 28px 14px;background:#0E1729;color:#F6F8FB;">
+                <div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#FF8A7A;font-weight:900;">${escapeHtml(eyebrow)}</div>
+                <h1 style="margin:12px 0 0;font-size:32px;line-height:1.12;font-weight:900;color:#F6F8FB;">${escapeHtml(heading)}</h1>
               </td>
             </tr>
             <tr>
-              <td class="email-body" style="padding:28px;font-size:16px;line-height:1.62;color:${BRAND.ink2};">
+              <td class="email-body" style="padding:14px 28px 30px;font-size:17px;line-height:1.68;color:#DDE7F3;background:#0E1729;">
                 ${body}
               </td>
             </tr>
             <tr>
-              <td class="email-footer" style="padding:18px 28px;border-top:1px solid #DED8CA;background:${BRAND.paper2};color:${BRAND.ink2};font-size:13px;line-height:1.5;">
-                StartLine Sites · Race websites built to turn interest into registrations.
+              <td class="email-footer" style="padding:0 28px 28px;background:#0E1729;color:#93A4BB;font-size:13px;line-height:1.5;">
+                <div style="border-top:1px solid rgba(255,255,255,.10);padding-top:18px;">StartLine Sites · Race websites built to turn interest into registrations.</div>
               </td>
             </tr>
           </table>

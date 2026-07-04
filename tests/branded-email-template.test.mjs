@@ -12,9 +12,25 @@ const assertBrandedCustomerEmail = (html) => {
   assert.match(html, /\[data-ogsc\]/);
   assert.match(html, /StartLine Sites/);
   assert.match(html, /Race websites built to turn interest into registrations\./);
-  assert.match(html, /#0E1729/);
-  assert.match(html, /#FAFAF7/);
+
+  // Steve's reference screenshot is a cohesive all-dark branded email,
+  // not a light paper shell with a dark header.
+  assert.match(html, /background:#050A14/);
+  assert.match(html, /background:#0E1729/);
+  assert.match(html, /background:#111D31/);
+  assert.match(html, /#DDE7F3/);
+  assert.doesNotMatch(html, /#FAFAF7/i);
+  assert.doesNotMatch(html, /#F0EDE5/i);
+  assert.doesNotMatch(html, /#F5C04A/i);
+  assert.doesNotMatch(html, /#FFF7DF/i);
+  assert.doesNotMatch(html, /#EEFBFC/i);
+
+  // CTA and section labels should be coral/salmon, with dark rounded cards.
   assert.match(html, /#FF4D3D/);
+  assert.match(html, /#FF8A7A/);
+  assert.match(html, /box-shadow:0 0 28px rgba\(255,77,61,\.34\)/);
+  assert.match(html, /email-info-card/);
+  assert.match(html, /border:1px solid rgba\(255,138,122,\.24\)/);
   assert.match(html, /email-card/);
   assert.match(html, /email-header/);
   assert.match(html, /email-button/);
