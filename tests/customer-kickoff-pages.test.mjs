@@ -116,22 +116,26 @@ test('intake form card headings avoid native legend border collision', () => {
 
 test('intake textareas are tall enough for long placeholder guidance', () => {
   for (const [name, rows] of [
-    ['distances_pricing', 7],
-    ['course_logistics', 8],
-    ['race_schedule', 6],
-    ['sponsors', 6],
-    ['faqs', 8],
+    ['distances_pricing', 5],
+    ['course_logistics', 5],
+    ['race_schedule', 5],
+    ['sponsors', 5],
+    ['faqs', 5],
     ['optional_notes', 6],
   ]) {
     assert.match(intakeSource, new RegExp(`name="${name}" rows="${rows}" class="textarea-large"`));
   }
   assert.match(intakeSource, /textarea\{line-height:1\.5;min-height:140px\}/);
-  assert.match(intakeSource, /\.textarea-large\{min-height:190px\}/);
-  assert.match(intakeSource, /@media\(max-width:760px\).*\.textarea-large\{min-height:280px\}/s);
+  assert.match(intakeSource, /\.textarea-large\{min-height:170px\}/);
+  assert.match(intakeSource, /@media\(max-width:760px\).*\.textarea-large\{min-height:170px\}/s);
+  assert.match(intakeSource, /Marathon \$120; Half \$95; 5K \$35/);
+  assert.doesNotMatch(intakeSource, /Community builds can use a simple logistics section/);
 });
 
 test('intake page includes mobile spacing and lighter optional admin notes', () => {
   assert.match(intakeSource, /padding:56px clamp\(18px,5vw,56px\) calc\(96px \+ env\(safe-area-inset-bottom\)\)/);
+  assert.match(intakeSource, /\.intake-hero\{display:grid;.*background:radial-gradient/s);
+  assert.match(intakeSource, /@media\(max-width:760px\).*\.intake-hero\{padding:30px 22px 26px;border-radius:28px/s);
   assert.match(intakeSource, /scroll-margin-block:24px calc\(112px \+ env\(safe-area-inset-bottom\)\)/);
   assert.match(intakeSource, /overflow-x:clip/);
   assert.match(intakeSource, /font-size:16px/);
@@ -140,6 +144,8 @@ test('intake page includes mobile spacing and lighter optional admin notes', () 
   assert.match(intakeSource, /\.intake-workspace\{display:grid;grid-template-columns:minmax\(0,1fr\) 330px/);
   assert.match(intakeSource, /\.trust-row\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
   assert.match(intakeSource, /\.trust-row\{grid-template-columns:1fr\}/);
+  assert.match(intakeSource, /class="field-hint">Filename, folder note, or “choose best available.”/);
+  assert.match(intakeSource, /placeholder="Shared folder URL"/);
   assert.match(intakeSource, /<details class="optional-group">/);
   assert.match(intakeSource, /<summary>Optional admin and launch notes<\/summary>/);
 });
