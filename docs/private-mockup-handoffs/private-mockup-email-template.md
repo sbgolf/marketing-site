@@ -37,7 +37,7 @@ Email-safe fonts:
 - **Hero card:** race name, private preview CTA, short benefit statement.
 - **Why this matters:** 3–4 concise bullets tied to runner clarity and registration confidence.
 - **Recommended package:** include only the recommended Standard package card in the email body, explain why it fits, and include two CTAs: a filled orange primary button to start the recommended Standard package, followed by the unfilled/outline explore packages button.
-- **Start recommended package link:** add a filled orange primary button inside the recommended card to `https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01` so teams can buy/start the recommended Standard package directly if ready.
+- **Start recommended package link:** add a filled orange primary button inside the recommended card to `[Recommended Standard checkout redirect URL]` so teams can buy/start the recommended Standard package directly through a server-created Stripe Checkout Session that follows the configured Stripe mode.
 - **Explore packages link:** keep a clear secondary outline button/link directly under the primary package button to `https://startlinesites.com/#pricing` so teams can compare Starter, Standard, and Premium on the website if desired.
 - **Primary CTA:** private mockup URL.
 - **Secondary CTA:** package/pricing URL.
@@ -69,7 +69,7 @@ Recommended: Standard first-year package:
 - Includes the website foundation, registration deep-link, tracking setup, one revision pass, launch announcement graphics, domain hosting for one year, launch-critical fixes, richer race details/logistics sections, sponsor/photo areas when provided, race-cycle content updates, conversion review and recommendations, and quarterly SEO check + fixes.
 
 If you are ready to start with the recommended Standard package, use this secure payment link:
-https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01
+https://startlinesites.com/.netlify/functions/create-checkout-session?audit_request_id=[Audit request ID]&setup_tier=standard
 
 If you want to explore or compare the other StartLine packages first, start here:
 https://startlinesites.com/#pricing
@@ -107,6 +107,7 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
         .sl-primary { background:#FF4D3D !important; color:#ffffff !important; }
         .sl-secondary { background:#162237 !important; color:#FF8A7D !important; border-color:rgba(255,138,125,.42) !important; }
         .sl-content p, .sl-content h2, .sl-panel div, .sl-package div { color:#DDE5F4 !important; }
+        .sl-signature-link { color:#DDE5F4 !important; }
         .sl-content h2 { color:#FAFAF7 !important; }
         .sl-content .sl-label, .sl-panel .sl-label, .sl-recommended .sl-label { color:#FF8A7D !important; }
         .sl-muted { color:rgba(221,229,244,.76) !important; }
@@ -118,6 +119,7 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
       [data-ogsc] .sl-primary { background:#FF4D3D !important; color:#ffffff !important; }
       [data-ogsc] .sl-secondary { background:#162237 !important; color:#FF8A7D !important; border-color:rgba(255,138,125,.42) !important; }
       [data-ogsc] .sl-content p, [data-ogsc] .sl-content h2, [data-ogsc] .sl-panel div, [data-ogsc] .sl-package div { color:#DDE5F4 !important; }
+      [data-ogsc] .sl-signature-link { color:#DDE5F4 !important; }
       [data-ogsc] .sl-content h2 { color:#FAFAF7 !important; }
       [data-ogsc] .sl-content .sl-label, [data-ogsc] .sl-panel .sl-label, [data-ogsc] .sl-recommended .sl-label { color:#FF8A7D !important; }
       [data-ogsc] .sl-muted { color:rgba(221,229,244,.76) !important; }
@@ -171,7 +173,7 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
                       <p style="margin:0;font-size:15px;line-height:1.65;color:#1A2438;">$2,500 first year. The $1,250 deposit starts the project; the final $1,250 invoice is due at launch. Best for richer race details, logistics sections, sponsor/photo areas when provided, race-cycle content updates, conversion review and recommendations, and quarterly SEO check + fixes.</p>
                       <p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:#1A2438;">If Standard feels like the right fit, you can start that package directly. If you want to compare options first, use the packages link below.</p>
                       <div style="margin-top:16px;">
-                        <a class="sl-primary" href="https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01" style="display:inline-block;background:#FF4D3D;color:#ffffff;text-decoration:none;font-weight:900;border-radius:999px;padding:13px 18px;font-size:14px;box-shadow:0 10px 24px rgba(255,77,61,.28);">Start the Standard package →</a>
+                        <a class="sl-primary" href="https://startlinesites.com/.netlify/functions/create-checkout-session?audit_request_id=[Audit request ID]&setup_tier=standard" style="display:inline-block;background:#FF4D3D;color:#ffffff;text-decoration:none;font-weight:900;border-radius:999px;padding:13px 18px;font-size:14px;box-shadow:0 10px 24px rgba(255,77,61,.28);">Start the Standard package →</a>
                       </div>
                       <div style="margin-top:10px;">
                         <a class="sl-secondary" href="https://startlinesites.com/#pricing" style="display:inline-block;background:#ffffff;color:#D43B2D;text-decoration:none;font-weight:900;border:1px solid rgba(212,59,45,.32);border-radius:999px;padding:12px 18px;font-size:14px;">Explore other packages →</a>
@@ -189,7 +191,7 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
                 </div>
 
                 <p style="margin:0 0 18px;font-size:16px;line-height:1.65;color:#1A2438;">No pressure if you want edits first. Reply with what you would like to discuss, and StartLine will schedule time to review what should stay, what should change, and which package feels like the right fit.</p>
-                <p style="margin:0 0 8px;font-size:16px;line-height:1.65;color:#1A2438;">Thanks,<br />Steve, CEO &amp; Founder<br /><a href="https://startlinesites.com/" style="color:#1A2438;text-decoration:underline;">StartLineSites.com</a></p>
+                <p class="sl-signature" style="margin:0 0 8px;font-size:16px;line-height:1.65;color:#1A2438;">Thanks,<br />Steve, CEO &amp; Founder<br /><a class="sl-signature-link" href="https://startlinesites.com/" style="color:#1A2438;text-decoration:underline;">StartLineSites.com</a></p>
               </td>
             </tr>
 
@@ -214,7 +216,7 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
 - `[Private mockup URL]`: `https://mockups.startlinesites.com/private/mockups/1df440859d5fc4a775302c32796ae129/?v=600cc75`
 - `[Recommended package]`: `Standard`
 - `[package-fit reason]`: `the race benefits from richer destination logistics, mobile planning clarity, course/registration confidence, sponsor/photo areas when provided, and a conversion review before launch.`
-- `[Recommended Standard payment URL]`: `https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01`
+- `[Recommended Standard payment URL]`: `https://startlinesites.com/.netlify/functions/create-checkout-session?audit_request_id=[Audit request ID]&setup_tier=standard`
 - `[Primary package/pricing URL]`: `https://startlinesites.com/#pricing`
 
 ## Do not include

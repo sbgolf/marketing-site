@@ -65,7 +65,6 @@ type PackageKey = 'starter' | 'standard' | 'premium';
 type PackageInfo = {
   name: string;
   deposit: string;
-  url?: string;
   proposalRequired?: boolean;
 };
 
@@ -73,12 +72,10 @@ const packages: Record<PackageKey, PackageInfo> = {
   starter: {
     name: 'Starter',
     deposit: '$750',
-    url: 'https://buy.stripe.com/8x2bIU1Bs0ww3H50UJ9fW00',
   },
   standard: {
     name: 'Standard',
     deposit: '$1,250',
-    url: 'https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01',
   },
   premium: {
     name: 'Premium',
@@ -182,6 +179,7 @@ form?.addEventListener('submit', async (event) => {
     current_url: String(formData.get('currentUrl') || ''),
     contact_name: String(formData.get('auditName') || ''),
     contact_email: String(formData.get('auditEmail') || ''),
+    preferred_launch_date: String(formData.get('preferredLaunchDate') || ''),
     notes: String(formData.get('notes') || ''),
     company_website: String(formData.get('companyWebsite') || ''),
     package_tier: isPackageKey(selectedTier) ? selectedTier : '',
@@ -205,7 +203,7 @@ form?.addEventListener('submit', async (event) => {
     }
 
     const selectedPackageInfo = isPackageKey(payload.package_tier) ? packages[payload.package_tier] : null;
-    const checkoutUrl = result.checkout_url || selectedPackageInfo?.url;
+    const checkoutUrl = result.checkout_url;
     if (selectedPackageInfo && checkoutUrl) {
       setMessage('Success — your private audit request was received. We’ll email the written response within 2 business days.', 'success');
       showSuccessPanel({ checkoutUrl, packageName: selectedPackageInfo.name });

@@ -32,6 +32,7 @@ const escapeHtml = (value) => String(value ?? '')
   .replaceAll("'", '&#39;');
 
 const fieldLine = (label, value) => `${label}: ${value || 'Not provided'}`;
+const isIsoDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(clean(value, 20));
 const CLIENT_SIGNATURE_TEXT = [
   'Thanks,',
   'Steve, CEO & Founder',
@@ -203,7 +204,7 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
     || process.env.STARTLINE_LEAD_NOTIFY_EMAIL
     || undefined;
   const selectedPackage = row.metadata?.selected_package;
-  const checkoutUrl = selectedPackage?.proposal_required ? null : (selectedPackage?.url || selectedPackage?.static_url);
+  const checkoutUrl = selectedPackage?.proposal_required ? null : selectedPackage?.url;
   const packageLine = selectedPackage?.name
     ? `Selected first-year package: ${publicPackageWithDeposit(selectedPackage)}`
     : 'Selected first-year package: We will recommend the best fit after reviewing your race.';
@@ -338,6 +339,7 @@ export async function handler(event) {
   const contactName = clean(payload.contact_name, 160);
   const contactEmail = clean(payload.contact_email, 254).toLowerCase();
   const notes = optionalClean(payload.notes, 1200);
+  const preferredLaunchDate = optionalClean(payload.preferred_launch_date, 20);
   const packageTier = clean(payload.package_tier, 40).toLowerCase();
   const selectedPackage = getDepositPackage(packageTier);
 
@@ -346,6 +348,7 @@ export async function handler(event) {
   if (!currentUrl || !isHttpUrl(currentUrl)) errors.current_url = 'A valid race website or registration URL is required.';
   if (!contactName) errors.contact_name = 'Your name is required.';
   if (!contactEmail || !isEmail(contactEmail)) errors.contact_email = 'A valid email is required.';
+  if (preferredLaunchDate && !isIsoDate(preferredLaunchDate)) errors.preferred_launch_date = 'Preferred launch date must use the date picker format.';
   if (packageTier && !selectedPackage) errors.package_tier = 'Selected package is not valid.';
 
   if (Object.keys(errors).length) {
@@ -372,7 +375,8 @@ export async function handler(event) {
     deposit_status: 'not_sent',
     metadata: {
       submitted_from: 'startlinesites.com',
-      form_version: 'audit_request_v2',
+      form_version: 'audit_request_v3',
+      preferred_launch_date: preferredLaunchDate,
       audit_workflow: {
         current_url_scrape_status: 'queued',
         findings_draft_status: 'pending_url_review',
@@ -385,7 +389,7 @@ export async function handler(event) {
         name: selectedPackage.name,
         setup_price: selectedPackage.setup_price,
         deposit_amount: selectedPackage.deposit_amount,
-        static_url: selectedPackage.static_url || null,
+        static_url: null,
         proposal_required: Boolean(selectedPackage.proposal_required),
       } : null,
     },
@@ -420,6 +424,7 @@ export async function handler(event) {
         contactEmail,
         raceName,
         currentUrl,
+        preferredLaunchDate,
       });
 
       row.metadata.selected_package = {
@@ -461,7 +466,7 @@ export async function handler(event) {
     ok: true,
     id: record?.id,
     message: 'Thanks — your private audit request was received.',
-    checkout_url: checkoutSession?.url || selectedPackage?.static_url || null,
-    checkout_url_source: checkoutSession?.url ? 'dynamic_checkout_session' : (selectedPackage?.static_url ? 'static_payment_link' : null),
+    checkout_url: checkoutSession?.url || null,
+    checkout_url_source: checkoutSession?.url ? 'dynamic_checkout_session' : null,
   });
 }
