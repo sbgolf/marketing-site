@@ -127,7 +127,7 @@ test('intake textareas are tall enough for long placeholder guidance', () => {
   }
   assert.match(intakeSource, /textarea\{line-height:1\.5;min-height:140px\}/);
   assert.match(intakeSource, /\.textarea-large\{min-height:190px\}/);
-  assert.match(intakeSource, /@media\(max-width:760px\).*\.textarea-large\{min-height:210px\}/s);
+  assert.match(intakeSource, /@media\(max-width:760px\).*\.textarea-large\{min-height:280px\}/s);
 });
 
 test('intake page includes mobile spacing and lighter optional admin notes', () => {
