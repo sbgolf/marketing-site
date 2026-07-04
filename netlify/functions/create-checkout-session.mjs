@@ -13,6 +13,7 @@ const clean = (value, max = 500) => {
 };
 
 const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+const isIsoDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(clean(value, 20));
 
 export const DEPOSIT_PACKAGES = {
   starter: {
@@ -23,7 +24,6 @@ export const DEPOSIT_PACKAGES = {
     deposit_amount_cents: 75_000,
     public_package_framing: 'one-time first-year race-cycle package',
     monthly_tier: 'foundation',
-    static_url: 'https://buy.stripe.com/8x2bIU1Bs0ww3H50UJ9fW00',
   },
   standard: {
     setup_tier: 'standard',
@@ -33,7 +33,6 @@ export const DEPOSIT_PACKAGES = {
     deposit_amount_cents: 125_000,
     public_package_framing: 'one-time first-year race-cycle package',
     monthly_tier: 'growth',
-    static_url: 'https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01',
   },
   premium: {
     setup_tier: 'premium',
@@ -51,7 +50,7 @@ export const getDepositPackage = (tier) => DEPOSIT_PACKAGES[clean(tier, 40).toLo
 
 const siteUrl = () => (process.env.STARTLINE_SITE_URL || 'https://startlinesites.com').replace(/\/$/, '');
 
-export const buildCheckoutSessionParams = ({ auditRequestId, setupTier, contactEmail, raceName, currentUrl }) => {
+export const buildCheckoutSessionParams = ({ auditRequestId, setupTier, contactEmail, raceName, currentUrl, preferredLaunchDate }) => {
   const pkg = getDepositPackage(setupTier);
   const auditId = clean(auditRequestId, 100);
   const email = clean(contactEmail, 254).toLowerCase();
@@ -79,6 +78,10 @@ export const buildCheckoutSessionParams = ({ auditRequestId, setupTier, contactE
   params.set('metadata[audit_request_id]', auditId);
   params.set('metadata[race_name]', clean(raceName, 160));
   params.set('metadata[current_url]', clean(currentUrl, 500));
+  if (isIsoDate(preferredLaunchDate)) {
+    params.set('metadata[preferred_launch_date]', clean(preferredLaunchDate, 20));
+    params.set('payment_intent_data[metadata][preferred_launch_date]', clean(preferredLaunchDate, 20));
+  }
   params.set('payment_intent_data[metadata][startline_payment_type]', 'deposit');
   params.set('payment_intent_data[metadata][public_package_framing]', pkg.public_package_framing);
   params.set('payment_intent_data[metadata][setup_tier]', pkg.setup_tier);
@@ -114,7 +117,62 @@ export const createDepositCheckoutSession = async ({ stripeSecretKey, ...input }
   };
 };
 
+const redirect = (statusCode, location) => ({
+  statusCode,
+  headers: {
+    location,
+    'cache-control': 'no-store',
+  },
+  body: '',
+});
+
+const getAuditRequest = async ({ supabaseUrl, serviceKey, auditRequestId }) => {
+  const auditId = clean(auditRequestId, 100);
+  if (!auditId) throw new Error('missing_audit_request_id');
+
+  const response = await fetch(`${supabaseUrl.replace(/\/$/, '')}/rest/v1/audit_requests?id=eq.${encodeURIComponent(auditId)}&select=id,race_name,current_url,contact_email,metadata`, {
+    headers: {
+      apikey: serviceKey,
+      authorization: `Bearer ${serviceKey}`,
+      'cache-control': 'no-store',
+    },
+  });
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : [];
+  if (!response.ok) throw new Error(`audit_request_lookup_failed: ${response.status}`);
+  if (!Array.isArray(data) || data.length !== 1) throw new Error('audit_request_not_found');
+  return data[0];
+};
+
 export async function handler(event) {
+  if (event.httpMethod === 'GET') {
+    if (!process.env.STRIPE_SECRET_KEY || !process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return json(500, { ok: false, error: 'Checkout service is not configured.' });
+    }
+
+    try {
+      const query = event.queryStringParameters || {};
+      const record = await getAuditRequest({
+        supabaseUrl: process.env.SUPABASE_URL,
+        serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+        auditRequestId: query.audit_request_id,
+      });
+      const setupTier = clean(query.setup_tier || record.metadata?.selected_package?.tier || '', 40).toLowerCase();
+      const session = await createDepositCheckoutSession({
+        stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+        auditRequestId: record.id,
+        setupTier,
+        contactEmail: record.contact_email,
+        raceName: record.race_name,
+        currentUrl: record.current_url,
+        preferredLaunchDate: record.metadata?.preferred_launch_date,
+      });
+      return redirect(303, session.url);
+    } catch (error) {
+      return json(422, { ok: false, error: clean(error.message, 300) });
+    }
+  }
+
   if (event.httpMethod !== 'POST') return json(405, { ok: false, error: 'Method not allowed.' });
 
   if (!process.env.STRIPE_SECRET_KEY) {
@@ -136,6 +194,7 @@ export async function handler(event) {
       contactEmail: payload.contact_email,
       raceName: payload.race_name,
       currentUrl: payload.current_url,
+      preferredLaunchDate: payload.preferred_launch_date,
     });
 
     return json(200, { ok: true, checkout_session_id: session.id, checkout_url: session.url });

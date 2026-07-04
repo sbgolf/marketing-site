@@ -21,7 +21,7 @@ Keep the close-to-launch payment flow simple and repeatable:
 - Deposit: **$750**
 - Final invoice: **$750**
 - Optional recurring service: **none by default**
-- Deposit link: https://buy.stripe.com/8x2bIU1Bs0ww3H50UJ9fW00
+- Deposit link: `https://startlinesites.com/.netlify/functions/create-checkout-session?audit_request_id=[Audit request ID]&setup_tier=starter`
 
 ### Standard first-year package
 
@@ -29,7 +29,7 @@ Keep the close-to-launch payment flow simple and repeatable:
 - Deposit: **$1,250**
 - Final invoice: **$1,250**
 - Optional recurring service: **none by default**
-- Deposit link: https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01
+- Deposit link: `https://startlinesites.com/.netlify/functions/create-checkout-session?audit_request_id=[Audit request ID]&setup_tier=standard`
 
 ### Premium first-year package
 

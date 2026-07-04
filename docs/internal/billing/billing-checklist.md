@@ -14,7 +14,7 @@ Quick checklist for StartLine Sites first-year package proposals, deposits, fina
 - [ ] Deposit amount matches selected tier
 - [ ] Final invoice amount matches selected tier
 - [ ] Proposal says no required monthly retainer
-- [ ] Correct Stripe first-year package deposit link included, or Premium is marked proposal-only
+- [ ] Correct StartLine checkout redirect URL included, or Premium is marked proposal-only. Do not paste legacy `buy.stripe.com` Payment Links into previews; use a server-created Checkout Session so the active Stripe key controls test/live mode.
 - [ ] No full pricing menu included unless Steve approved it
 - [ ] Any exception approved by Steve before customer communication
 
@@ -25,14 +25,14 @@ Quick checklist for StartLine Sites first-year package proposals, deposits, fina
 - [ ] One-time first-year package: $1,500
 - [ ] First-year package deposit: $750
 - [ ] Final package balance: $750
-- [ ] Deposit link: https://buy.stripe.com/8x2bIU1Bs0ww3H50UJ9fW00
+- [ ] Deposit link: `https://startlinesites.com/.netlify/functions/create-checkout-session?audit_request_id=[Audit request ID]&setup_tier=starter`
 
 ### Standard
 
 - [ ] One-time first-year package: $2,500
 - [ ] First-year package deposit: $1,250
 - [ ] Final package balance: $1,250
-- [ ] Deposit link: https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01
+- [ ] Deposit link: `https://startlinesites.com/.netlify/functions/create-checkout-session?audit_request_id=[Audit request ID]&setup_tier=standard`
 
 ### Premium
 

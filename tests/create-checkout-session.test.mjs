@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { buildCheckoutSessionParams, createDepositCheckoutSession } from '../netlify/functions/create-checkout-session.mjs';
+import { buildCheckoutSessionParams, createDepositCheckoutSession, handler } from '../netlify/functions/create-checkout-session.mjs';
 
 test('buildCheckoutSessionParams creates exact Standard deposit metadata', () => {
   process.env.STARTLINE_SITE_URL = 'https://startlinesites.com';
@@ -11,6 +11,7 @@ test('buildCheckoutSessionParams creates exact Standard deposit metadata', () =>
     contactEmail: 'director@example.com',
     raceName: 'Example Marathon',
     currentUrl: 'https://example.com',
+    preferredLaunchDate: '2026-07-24',
   });
 
   assert.equal(params.get('mode'), 'payment');
@@ -25,8 +26,54 @@ test('buildCheckoutSessionParams creates exact Standard deposit metadata', () =>
   assert.equal(params.get('metadata[public_package_framing]'), 'one-time first-year race-cycle package');
   assert.equal(params.get('metadata[setup_tier]'), 'standard');
   assert.equal(params.get('metadata[audit_request_id]'), 'audit-123');
+  assert.equal(params.get('metadata[preferred_launch_date]'), '2026-07-24');
   assert.equal(params.get('payment_intent_data[metadata][public_package_framing]'), 'one-time first-year race-cycle package');
   assert.equal(params.get('payment_intent_data[metadata][audit_request_id]'), 'audit-123');
+  assert.equal(params.get('payment_intent_data[metadata][preferred_launch_date]'), '2026-07-24');
+});
+
+test('GET handler creates a fresh Checkout Session from an audit request and redirects', async () => {
+  const originalEnv = { ...process.env };
+  const originalFetch = global.fetch;
+  const calls = [];
+
+  process.env.SUPABASE_URL = 'https://supabase.example';
+  process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
+  process.env.STRIPE_SECRET_KEY = 'sk_test_123';
+
+  global.fetch = async (url, options = {}) => {
+    const call = { url: String(url), method: options.method || 'GET', body: options.body instanceof URLSearchParams ? Object.fromEntries(options.body.entries()) : null };
+    calls.push(call);
+    if (call.url.includes('/audit_requests') && call.method === 'GET') {
+      return new Response(JSON.stringify([{
+        id: 'audit-redirect-123',
+        race_name: 'Example Marathon',
+        current_url: 'https://example.com',
+        contact_email: 'director@example.com',
+        metadata: { selected_package: { tier: 'standard' }, preferred_launch_date: '2026-07-24' },
+      }]), { status: 200 });
+    }
+    if (call.url === 'https://api.stripe.com/v1/checkout/sessions' && call.method === 'POST') {
+      return new Response(JSON.stringify({ id: 'cs_test_redirect', url: 'https://checkout.stripe.com/c/pay/cs_test_redirect' }), { status: 200 });
+    }
+    return new Response(JSON.stringify({ error: 'unexpected call' }), { status: 500 });
+  };
+
+  try {
+    const response = await handler({
+      httpMethod: 'GET',
+      queryStringParameters: { audit_request_id: 'audit-redirect-123' },
+    });
+
+    assert.equal(response.statusCode, 303);
+    assert.equal(response.headers.location, 'https://checkout.stripe.com/c/pay/cs_test_redirect');
+    const stripeCall = calls.find((call) => call.url === 'https://api.stripe.com/v1/checkout/sessions');
+    assert.equal(stripeCall.body.client_reference_id, 'audit-redirect-123');
+    assert.equal(stripeCall.body['metadata[preferred_launch_date]'], '2026-07-24');
+  } finally {
+    process.env = originalEnv;
+    global.fetch = originalFetch;
+  }
 });
 
 test('buildCheckoutSessionParams blocks public Premium checkout sessions', () => {

@@ -16,6 +16,7 @@ const validEvent = (body = {}) => ({
     contact_email: 'director@example.com',
     package_tier: 'starter',
     notes: 'Race is in October and uses RunSignup.',
+    preferred_launch_date: '2026-07-24',
     landing_page: 'https://startlinesites.com/#audit',
     referrer: 'https://google.com',
     ...body,
@@ -66,7 +67,7 @@ test('submit-audit-request stores notes and sends admin plus customer confirmati
     assert.equal(response.statusCode, 201);
     assert.equal(body.ok, true);
     assert.equal(body.id, 'audit-123');
-    assert.equal(body.checkout_url_source, 'static_payment_link');
+    assert.equal(body.checkout_url_source, null);
 
     const insert = calls.find((call) => call.url.includes('/audit_requests') && call.method === 'POST');
     assert.equal(insert.body.notes, 'Race is in October and uses RunSignup.');
@@ -76,7 +77,10 @@ test('submit-audit-request stores notes and sends admin plus customer confirmati
     assert.equal(insert.body.metadata.audit_workflow.steve_approval_status, 'required_before_customer_delivery');
     assert.equal(insert.body.metadata.audit_workflow.customer_delivery_status, 'blocked_until_steve_approval');
     assert.equal(insert.body.metadata.audit_workflow.automation_scope, 'internal_draft_only_no_customer_send');
+    assert.equal(insert.body.metadata.form_version, 'audit_request_v3');
+    assert.equal(insert.body.metadata.preferred_launch_date, '2026-07-24');
     assert.equal(insert.body.metadata.selected_package.tier, 'starter');
+    assert.equal(insert.body.metadata.selected_package.static_url, null);
 
     const emailCalls = calls.filter((call) => call.url === 'https://api.resend.com/emails');
     assert.equal(emailCalls.length, 2);
@@ -88,7 +92,7 @@ test('submit-audit-request stores notes and sends admin plus customer confirmati
     assert.match(emailCalls[0].body.html, /Agent-audit workflow foundation/);
     assert.match(emailCalls[1].body.text, /we received the private StartLine Sites audit request/);
     assert.match(emailCalls[1].body.text, /Steve reviews the findings before your response is sent/);
-    assert.match(emailCalls[1].body.text, /pay the first-year package deposit here: https:\/\/buy\.stripe\.com/);
+    assert.doesNotMatch(emailCalls[1].body.text, /buy\.stripe\.com/);
     assert.match(emailCalls[1].body.text, /Thanks,\nSteve, CEO & Founder\nStartLineSites\.com/);
     assert.doesNotMatch(emailCalls[1].body.text, /agent|\bAI\b|scrape/i);
     assert.match(emailCalls[1].body.html, /Your private audit request is in/);

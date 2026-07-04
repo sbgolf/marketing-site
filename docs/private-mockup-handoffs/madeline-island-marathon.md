@@ -49,7 +49,7 @@ Recommended: Standard first-year package:
 - Includes the website build, richer race details/logistics sections, sponsor/photo areas when provided, conversion review, tracking setup, and scoped first-year race-cycle support.
 
 If you like the direction and want StartLine to move this toward a polished production version, you can start here:
-https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01
+https://startlinesites.com/.netlify/functions/create-checkout-session?audit_request_id=cdda425d-8707-4d9f-93fb-e1c2897bd587&setup_tier=standard
 
 If you want to talk through changes before choosing a package, just reply to this email with any notes or questions. A StartLine team member will follow up to schedule a short time to discuss what should stay, what should change, and which package is the right fit.
 
