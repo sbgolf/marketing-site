@@ -31,7 +31,8 @@ I just sent the final 50% setup invoice through Stripe:
 No monthly retainer starts by default. If we agree on a separate recurring service later, we’ll document that scope and billing before it starts.
 
 Thanks,
-Steve
+Steve, CEO & Founder
+StartLineSites.com
 ```
 
 ## Optional recurring-service start policy

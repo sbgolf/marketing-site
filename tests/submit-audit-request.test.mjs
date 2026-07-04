@@ -89,8 +89,11 @@ test('submit-audit-request stores notes and sends admin plus customer confirmati
     assert.match(emailCalls[1].body.text, /we received the private StartLine Sites audit request/);
     assert.match(emailCalls[1].body.text, /Steve reviews the findings before your response is sent/);
     assert.match(emailCalls[1].body.text, /pay the first-year package deposit here: https:\/\/buy\.stripe\.com/);
+    assert.match(emailCalls[1].body.text, /Thanks,\nSteve, CEO & Founder\nStartLineSites\.com/);
     assert.doesNotMatch(emailCalls[1].body.text, /agent|\bAI\b|scrape/i);
     assert.match(emailCalls[1].body.html, /Your private audit request is in/);
+    assert.match(emailCalls[1].body.html, /Steve, CEO &amp; Founder/);
+    assert.match(emailCalls[1].body.html, /https:\/\/startlinesites\.com\//);
   } finally {
     process.env = originalEnv;
     global.fetch = originalFetch;

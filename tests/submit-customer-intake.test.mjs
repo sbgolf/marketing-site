@@ -154,6 +154,9 @@ test('submit-customer-intake stores intake and sends support plus customer email
     assert.equal(emailCalls[1].body.reply_to, 'kickoff@startlinesites.com');
     assert.match(emailCalls[1].body.text, /20–30 minute intake/);
     assert.match(emailCalls[1].body.text, /asset checklist/i);
+    assert.match(emailCalls[1].body.text, /Thanks,\nSteve, CEO & Founder\nStartLineSites\.com/);
+    assert.match(emailCalls[1].body.html, /Steve, CEO &amp; Founder/);
+    assert.match(emailCalls[1].body.html, /https:\/\/startlinesites\.com\//);
   });
 });
 

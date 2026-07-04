@@ -1,0 +1,226 @@
+# Private mockup handoff email template
+
+Use this as the customer-facing email shape when a race team receives an approved private StartLine mockup.
+
+## Conversion goal
+
+The email should not simply say “here is a preview.” It should guide the team through one clear decision path:
+
+1. Review the private mockup.
+2. Confirm whether the direction feels right.
+3. See which package StartLine recommends for the race and why.
+4. Either start the recommended Standard package directly or use the secondary pricing link if they want to explore or compare other packages.
+5. Reply if they want changes, scope questions, or a short review before choosing a package.
+
+## Brand tokens
+
+Use the StartLine site palette:
+
+- Ink: `#0E1729`
+- Ink 2: `#1A2438`
+- Paper: `#FAFAF7`
+- Paper 2: `#F0EDE5`
+- Accent / primary CTA: `#FF4D3D`
+- Accent deep: `#D43B2D`
+- Teal support: `#1FB8C4`
+- Gold highlight: `#F5C04A`
+- Muted text: `#8A93A6`
+
+Email-safe fonts:
+
+- Body: `Plus Jakarta Sans`, `Inter`, `Segoe UI`, Arial, sans-serif fallback.
+- Display headings: Georgia / serif fallback when `Instrument Serif` is unavailable.
+
+## Required customer-facing structure
+
+- **Preheader:** concrete next step, not generic preview language.
+- **Hero card:** race name, private preview CTA, short benefit statement.
+- **Why this matters:** 3–4 concise bullets tied to runner clarity and registration confidence.
+- **Recommended package:** include only the recommended Standard package card in the email body, explain why it fits, and include two CTAs: a filled orange primary button to start the recommended Standard package, followed by the unfilled/outline explore packages button.
+- **Start recommended package link:** add a filled orange primary button inside the recommended card to `https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01` so teams can buy/start the recommended Standard package directly if ready.
+- **Explore packages link:** keep a clear secondary outline button/link directly under the primary package button to `https://startlinesites.com/#pricing` so teams can compare Starter, Standard, and Premium on the website if desired.
+- **Primary CTA:** private mockup URL.
+- **Secondary CTA:** package/pricing URL.
+- **Reply fallback:** clear language that they can reply with questions or requested changes.
+- **Footer:** StartLine Sites brand line, respectful no-pressure note, no internal workflow terms.
+
+## Plain-text fallback
+
+```text
+Subject: Madeline Island Marathon preview + recommended package
+
+Hi [Contact name],
+
+I put together a private StartLine Sites preview for Madeline Island Marathon & Half Marathon:
+[Private mockup URL]
+
+The preview shows how the race website could make the destination experience, ferry planning, race-day logistics, and official Race Roster path easier for runners to understand before they register.
+
+If the direction feels right, the next step is to review the recommended first-year package and decide whether you want to discuss changes before moving forward.
+
+Recommended for Madeline Island: Standard
+I would recommend Standard because this race needs more than a basic landing page: destination logistics, course and registration confidence, mobile clarity, sponsor/photo areas when available, and room for race-cycle updates.
+
+Recommended: Standard first-year package:
+- $2,500 first year
+- $1,250 deposit to start
+- Final $1,250 invoice at launch
+- Best for richer race detail, logistics, planned updates, and conversion review.
+- Includes the website foundation, registration deep-link, tracking setup, one revision pass, launch announcement graphics, domain hosting for one year, launch-critical fixes, richer race details/logistics sections, sponsor/photo areas when provided, race-cycle content updates, conversion review and recommendations, and quarterly SEO check + fixes.
+
+If you are ready to start with the recommended Standard package, use this secure payment link:
+https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01
+
+If you want to explore or compare the other StartLine packages first, start here:
+https://startlinesites.com/#pricing
+
+You can also revisit the private preview here:
+[Private mockup URL]
+
+If you want to talk through changes before choosing a package, just reply to this email with any notes or questions. StartLine will follow up to schedule a short time to discuss what should stay, what should change, and which package is the right fit.
+
+Thanks,
+Steve, CEO & Founder
+StartLineSites.com
+```
+
+## Branded HTML template
+
+Replace bracketed variables before sending. Keep the inline CSS; many email clients strip embedded styles.
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>[Race name] private StartLine preview</title>
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+    <style>
+      :root { color-scheme: light dark; supported-color-schemes: light dark; }
+      @media (prefers-color-scheme: dark) {
+        .sl-body, .sl-page { background:#0B1220 !important; color:#FAFAF7 !important; }
+        .sl-card, .sl-content { background:#111B2E !important; border-color:rgba(250,250,247,.14) !important; }
+        .sl-panel, .sl-package { background:#162237 !important; border-color:rgba(250,250,247,.14) !important; }
+        .sl-recommended { background:#1A263D !important; border-color:rgba(255,77,61,.38) !important; }
+        .sl-primary { background:#FF4D3D !important; color:#ffffff !important; }
+        .sl-secondary { background:#162237 !important; color:#FF8A7D !important; border-color:rgba(255,138,125,.42) !important; }
+        .sl-content p, .sl-content h2, .sl-panel div, .sl-package div { color:#DDE5F4 !important; }
+        .sl-content h2 { color:#FAFAF7 !important; }
+        .sl-content .sl-label, .sl-panel .sl-label, .sl-recommended .sl-label { color:#FF8A7D !important; }
+        .sl-muted { color:rgba(221,229,244,.76) !important; }
+      }
+      [data-ogsc] .sl-body, [data-ogsc] .sl-page { background:#0B1220 !important; color:#FAFAF7 !important; }
+      [data-ogsc] .sl-card, [data-ogsc] .sl-content { background:#111B2E !important; border-color:rgba(250,250,247,.14) !important; }
+      [data-ogsc] .sl-panel, [data-ogsc] .sl-package { background:#162237 !important; border-color:rgba(250,250,247,.14) !important; }
+      [data-ogsc] .sl-recommended { background:#1A263D !important; border-color:rgba(255,77,61,.38) !important; }
+      [data-ogsc] .sl-primary { background:#FF4D3D !important; color:#ffffff !important; }
+      [data-ogsc] .sl-secondary { background:#162237 !important; color:#FF8A7D !important; border-color:rgba(255,138,125,.42) !important; }
+      [data-ogsc] .sl-content p, [data-ogsc] .sl-content h2, [data-ogsc] .sl-panel div, [data-ogsc] .sl-package div { color:#DDE5F4 !important; }
+      [data-ogsc] .sl-content h2 { color:#FAFAF7 !important; }
+      [data-ogsc] .sl-content .sl-label, [data-ogsc] .sl-panel .sl-label, [data-ogsc] .sl-recommended .sl-label { color:#FF8A7D !important; }
+      [data-ogsc] .sl-muted { color:rgba(221,229,244,.76) !important; }
+    </style>
+  </head>
+  <body class="sl-body" style="margin:0;padding:0;background:#F0EDE5;color:#0E1729;font-family:'Plus Jakarta Sans','Inter','Segoe UI',Arial,sans-serif;">
+    <div style="display:none;max-height:0;overflow:hidden;color:transparent;opacity:0;">
+      Review your private StartLine preview, see the recommended Standard package, and choose the next step when ready.
+    </div>
+
+    <table class="sl-page" role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#F0EDE5;padding:28px 12px;">
+      <tr>
+        <td align="center">
+          <table class="sl-card" role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:680px;background:#FAFAF7;border:1px solid rgba(14,23,41,.12);border-radius:28px;overflow:hidden;box-shadow:0 24px 70px rgba(14,23,41,.12);">
+            <tr>
+              <td style="background:#0E1729;padding:26px 26px 30px;color:#FAFAF7;">
+                <div style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:#F5C04A;margin-bottom:16px;">StartLine Sites private preview</div>
+                <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:38px;line-height:1.02;letter-spacing:-.02em;color:#FAFAF7;">A clearer website path for [Race name]</h1>
+                <p style="margin:18px 0 0;color:rgba(250,250,247,.78);font-size:16px;line-height:1.6;">I built a private preview to show how your race website could make the destination story, runner logistics, and official registration path easier to understand before runners decide.</p>
+                <div style="margin-top:24px;">
+                  <a href="[Private mockup URL]" style="display:inline-block;background:#FF4D3D;color:#ffffff;text-decoration:none;font-weight:800;border-radius:999px;padding:14px 20px;font-size:15px;box-shadow:0 10px 26px rgba(255,77,61,.32);">Review the private preview →</a>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="sl-content" style="padding:28px 26px 8px;">
+                <p style="margin:0 0 16px;font-size:16px;line-height:1.65;color:#1A2438;">Hi [Contact name],</p>
+                <p style="margin:0 0 18px;font-size:16px;line-height:1.65;color:#1A2438;">The preview focuses on the runner questions that often matter most before registration: what makes the race worth the trip, how logistics fit together, and where the official registration handoff happens.</p>
+
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:22px 0;border-collapse:separate;border-spacing:0 10px;">
+                  <tr>
+                    <td class="sl-panel" style="background:#ffffff;border:1px solid rgba(14,23,41,.10);border-radius:18px;padding:16px 18px;">
+                      <div class="sl-label" style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#D43B2D;margin-bottom:5px;">What improves</div>
+                      <div style="font-size:15px;line-height:1.6;color:#1A2438;">The page makes the race-weekend experience, ferry/travel planning, course context, and Race Roster path easier to scan on mobile.</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="sl-panel" style="background:#ffffff;border:1px solid rgba(14,23,41,.10);border-radius:18px;padding:16px 18px;">
+                      <div class="sl-label" style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#D43B2D;margin-bottom:5px;">Recommended fit</div>
+                      <div style="font-size:15px;line-height:1.6;color:#1A2438;">[Recommended package] is the recommended fit because [package-fit reason]. If the direction feels right, review the recommendation below and reply with questions or requested changes.</div>
+                    </td>
+                  </tr>
+                </table>
+
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:24px 0 12px;border-collapse:separate;border-spacing:0 12px;">
+                  <tr>
+                    <td class="sl-package sl-recommended" style="background:linear-gradient(135deg,rgba(255,77,61,.10),rgba(245,192,74,.18));border:1px solid rgba(255,77,61,.20);border-radius:22px;padding:20px;">
+                      <div class="sl-label" style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:#D43B2D;margin-bottom:8px;">Recommended: Standard</div>
+                      <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:26px;line-height:1.1;color:#0E1729;">Standard first-year package</h2>
+                      <p style="margin:0;font-size:15px;line-height:1.65;color:#1A2438;">$2,500 first year. The $1,250 deposit starts the project; the final $1,250 invoice is due at launch. Best for richer race details, logistics sections, sponsor/photo areas when provided, race-cycle content updates, conversion review and recommendations, and quarterly SEO check + fixes.</p>
+                      <p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:#1A2438;">If Standard feels like the right fit, you can start that package directly. If you want to compare options first, use the packages link below.</p>
+                      <div style="margin-top:16px;">
+                        <a class="sl-primary" href="https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01" style="display:inline-block;background:#FF4D3D;color:#ffffff;text-decoration:none;font-weight:900;border-radius:999px;padding:13px 18px;font-size:14px;box-shadow:0 10px 24px rgba(255,77,61,.28);">Start the Standard package →</a>
+                      </div>
+                      <div style="margin-top:10px;">
+                        <a class="sl-secondary" href="https://startlinesites.com/#pricing" style="display:inline-block;background:#ffffff;color:#D43B2D;text-decoration:none;font-weight:900;border:1px solid rgba(212,59,45,.32);border-radius:999px;padding:12px 18px;font-size:14px;">Explore other packages →</a>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+
+                <div class="sl-recommended" style="background:linear-gradient(135deg,rgba(255,77,61,.10),rgba(245,192,74,.18));border:1px solid rgba(255,77,61,.20);border-radius:24px;padding:22px;margin:12px 0 24px;">
+                  <div class="sl-label" style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:900;color:#D43B2D;margin-bottom:8px;">Next step</div>
+                  <h2 style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:30px;line-height:1.08;color:#0E1729;">Review the private preview.</h2>
+                  <p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#1A2438;">If the website direction feels right, start with the private preview and reply with any notes, questions, or changes before choosing the next step.</p>
+                  <a href="[Private mockup URL]" style="display:inline-block;background:#FF4D3D;color:#ffffff;text-decoration:none;font-weight:900;border-radius:999px;padding:14px 20px;font-size:15px;">Review the private preview →</a>
+                  <p class="sl-muted" style="margin:14px 0 0;font-size:13px;line-height:1.55;color:rgba(26,36,56,.72);">Prefer to talk through changes before choosing a package? Reply to this email with notes or questions, and StartLine will follow up to schedule a short time to discuss.</p>
+                </div>
+
+                <p style="margin:0 0 18px;font-size:16px;line-height:1.65;color:#1A2438;">No pressure if you want edits first. Reply with what you would like to discuss, and StartLine will schedule time to review what should stay, what should change, and which package feels like the right fit.</p>
+                <p style="margin:0 0 8px;font-size:16px;line-height:1.65;color:#1A2438;">Thanks,<br />Steve, CEO &amp; Founder<br /><a href="https://startlinesites.com/" style="color:#1A2438;text-decoration:underline;">StartLineSites.com</a></p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:22px 26px 28px;background:#0E1729;color:#FAFAF7;">
+                <div style="font-family:Georgia,'Times New Roman',serif;font-size:24px;letter-spacing:-.02em;margin-bottom:6px;">StartLine Sites</div>
+                <div style="font-size:13px;line-height:1.55;color:rgba(250,250,247,.72);">Fast, SEO-optimized race websites for race directors — built for search, speed, and signups.</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+```
+
+## Madeline Island recommended values
+
+- `[Race name]`: `Madeline Island Marathon & Half Marathon`
+- `[Contact name]`: contact name from the audit request record.
+- `[Private mockup URL]`: `https://mockups.startlinesites.com/private/mockups/1df440859d5fc4a775302c32796ae129/?v=600cc75`
+- `[Recommended package]`: `Standard`
+- `[package-fit reason]`: `the race benefits from richer destination logistics, mobile planning clarity, course/registration confidence, sponsor/photo areas when provided, and a conversion review before launch.`
+- `[Recommended Standard payment URL]`: `https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01`
+- `[Primary package/pricing URL]`: `https://startlinesites.com/#pricing`
+
+## Do not include
+
+- Repository, PR, Supabase, Resend, analytics-debug, or internal approval details.
+- Guaranteed registration growth.
+- Language that shames the current race website.
+- Stripe payment URLs for non-recommended packages unless Steve confirms those payment paths.
+- A vague ending like “No pressure either way” without a concrete CTA.

@@ -52,6 +52,12 @@ const normalizeDomain = (value) => {
 const fieldLine = (label, value) => `${label}: ${value || 'Not provided'}`;
 const htmlField = (label, value) => `<p><strong>${escapeHtml(label)}:</strong><br>${escapeHtml(value || 'Not provided')}</p>`;
 const normalizeMatchValue = (value) => clean(value, 240).toLowerCase();
+const CLIENT_SIGNATURE_TEXT = [
+  'Thanks,',
+  'Steve, CEO & Founder',
+  'StartLineSites.com',
+].join('\n');
+const CLIENT_SIGNATURE_HTML = '<p>Thanks,<br>Steve, CEO &amp; Founder<br><a href="https://startlinesites.com/">StartLineSites.com</a></p>';
 
 const hashIp = (event) => {
   const ip = event.headers?.['x-nf-client-connection-ip']
@@ -390,7 +396,7 @@ const sendCustomerConfirmation = async ({ row }) => {
     '',
     'Reply to this email if anything in the intake should change.',
     '',
-    '— StartLine Sites',
+    CLIENT_SIGNATURE_TEXT,
   ];
 
   const response = await fetch('https://api.resend.com/emails', {
@@ -417,7 +423,7 @@ const sendCustomerConfirmation = async ({ row }) => {
         </ol>
         <p>Asset checklist: <a href="${escapeHtml(checklistUrl)}">${escapeHtml(checklistUrl)}</a></p>
         <p>Reply to this email if anything in the intake should change.</p>
-        <p>— StartLine Sites</p>
+        ${CLIENT_SIGNATURE_HTML}
       `,
     }),
   });

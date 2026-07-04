@@ -30,7 +30,9 @@ The build timeline starts once we have complete intake details and usable assets
 
 Reply here if you have questions.
 
-— StartLine Sites
+Thanks,
+Steve, CEO & Founder
+StartLineSites.com
 ```
 
 ## Record updates after successful send

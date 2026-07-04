@@ -2,6 +2,11 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 
 const MAX_BODY_BYTES = Number(process.env.STARTLINE_STRIPE_WEBHOOK_MAX_BODY_BYTES || 100_000);
 const DEFAULT_TOLERANCE_SECONDS = 300;
+const CLIENT_SIGNATURE_TEXT = [
+  'Thanks,',
+  'Steve, CEO & Founder',
+  'StartLineSites.com',
+].join('\n');
 
 const DEPOSIT_PACKAGES = {
   starter: {
@@ -638,7 +643,7 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
     '',
     'Reply here if you have questions.',
     '',
-    '— StartLine Sites',
+    CLIENT_SIGNATURE_TEXT,
   ].join('\n');
 
   const response = await fetch('https://api.resend.com/emails', {
