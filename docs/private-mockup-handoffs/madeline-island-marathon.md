@@ -2,11 +2,11 @@
 
 ## Approval gate
 
-Steve approval is required before this handoff, the private URL, or any related note is sent to a race director, owner, or prospect. Do not merge this into any customer-delivery workflow or send outreach without Steve's explicit approval.
+Steve approval is required before this handoff, the private URL, any merge, customer delivery, race-director send, or related outreach. Do not merge this into any customer-delivery workflow or send outreach without Steve's explicit approval.
 
 ## Private review URL
 
-- Review URL: https://mockups.startlinesites.com/private/mockups/1df440859d5fc4a775302c32796ae129/?v=600cc75
+- Review URL: https://mockups.startlinesites.com/private/mockups/1df440859d5fc4a775302c32796ae129/
 - Audience: internal review by Steve first; owner-facing delivery only after approval.
 - Privacy gate checked: external HTTPS URL returned HTTP 200 and includes `noindex,nofollow` robots directives.
 
@@ -27,7 +27,7 @@ Subject: Madeline Island Marathon preview + recommended next step
 Hi [Name],
 
 I put together a private StartLine Sites preview for Madeline Island Marathon & Half Marathon:
-https://mockups.startlinesites.com/private/mockups/1df440859d5fc4a775302c32796ae129/?v=600cc75
+https://mockups.startlinesites.com/private/mockups/1df440859d5fc4a775302c32796ae129/
 
 The preview shows how the race website could make the destination experience, ferry planning, race-day logistics, and official Race Roster path easier for runners to understand before they register.
 
