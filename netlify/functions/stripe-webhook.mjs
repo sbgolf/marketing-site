@@ -1,12 +1,17 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
+import {
+  CLIENT_SIGNATURE_TEXT,
+  escapeHtml,
+  renderBrandedEmail,
+  renderEmailButton,
+  renderInfoCard,
+  renderSignatureHtml,
+} from './lib/branded-email.mjs';
+
 const MAX_BODY_BYTES = Number(process.env.STARTLINE_STRIPE_WEBHOOK_MAX_BODY_BYTES || 100_000);
 const DEFAULT_TOLERANCE_SECONDS = 300;
-const CLIENT_SIGNATURE_TEXT = [
-  'Thanks,',
-  'Steve, CEO & Founder',
-  'StartLineSites.com',
-].join('\n');
+
 
 const DEPOSIT_PACKAGES = {
   starter: {
@@ -614,17 +619,7 @@ const sendDepositNotification = async ({ result, session, tier }) => {
   }
 };
 
-const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, session, tier }) => {
-  const apiKey = process.env.RESEND_API_KEY || process.env.STARTLINE_RESEND_API_KEY;
-  const intakeUrl = clean(process.env.STARTLINE_INTAKE_FORM_URL || '', 1000);
-  const assetChecklistUrl = clean(process.env.STARTLINE_ASSET_CHECKLIST_URL || '', 1000);
-  const customer = result.customer_record;
-  const toEmail = customer?.primary_contact_email || session.customer_details?.email || session.customer_email;
-
-  if (!apiKey || result.status !== 'processed' || !customer?.id || !toEmail || !intakeUrl || !assetChecklistUrl) return { sent: false };
-
-  const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
-  const replyTo = clean(process.env.STARTLINE_KICKOFF_REPLY_TO || process.env.STARTLINE_ADMIN_EMAIL || '', 254) || undefined;
+export const renderCustomerKickoffEmail = ({ customer, session, tier, intakeUrl, assetChecklistUrl }) => {
   const raceName = customer.race_name || session.metadata?.race_name || 'your race';
   const customerName = customer.primary_contact_name || session.customer_details?.name || 'there';
   const amount = `$${(session.amount_total / 100).toLocaleString('en-US')}`;
@@ -646,6 +641,41 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
     CLIENT_SIGNATURE_TEXT,
   ].join('\n');
 
+  const html = renderBrandedEmail({
+    preheader: `Deposit received for ${raceName}. Complete the intake and gather launch assets.`,
+    heading: `Next steps for ${raceName}`,
+    body: `
+      <p style="margin:0 0 16px;">Hi ${escapeHtml(customerName)},</p>
+      <p style="margin:0 0 18px;">Thanks — we received the <strong>${escapeHtml(amount)} ${escapeHtml(tier)}</strong> setup deposit for <strong>${escapeHtml(raceName)}</strong>.</p>
+      ${renderInfoCard({
+        title: 'Your next step',
+        children: '<p style="margin:0;color:#1A2438;">Complete the intake form and gather the assets we need to build the site.</p>',
+        tone: 'gold',
+      })}
+      ${renderEmailButton({ href: intakeUrl, label: 'Complete the intake form' })}
+      ${renderEmailButton({ href: assetChecklistUrl, label: 'Review the asset checklist', variant: 'secondary' })}
+      <p style="margin:18px 0 0;">The build timeline starts once we have complete intake details and usable assets. If anything is unclear or missing, we’ll follow up with a short list instead of making you redo the whole form.</p>
+      <p style="margin:16px 0 0;">Reply here if you have questions.</p>
+      ${renderSignatureHtml()}
+    `,
+  });
+
+  return { subject, text, html };
+};
+
+const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, session, tier }) => {
+  const apiKey = process.env.RESEND_API_KEY || process.env.STARTLINE_RESEND_API_KEY;
+  const intakeUrl = clean(process.env.STARTLINE_INTAKE_FORM_URL || '', 1000);
+  const assetChecklistUrl = clean(process.env.STARTLINE_ASSET_CHECKLIST_URL || '', 1000);
+  const customer = result.customer_record;
+  const toEmail = customer?.primary_contact_email || session.customer_details?.email || session.customer_email;
+
+  if (!apiKey || result.status !== 'processed' || !customer?.id || !toEmail || !intakeUrl || !assetChecklistUrl) return { sent: false };
+
+  const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
+  const replyTo = clean(process.env.STARTLINE_KICKOFF_REPLY_TO || process.env.STARTLINE_ADMIN_EMAIL || '', 254) || undefined;
+  const { subject, text, html } = renderCustomerKickoffEmail({ customer, session, tier, intakeUrl, assetChecklistUrl });
+
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -659,6 +689,7 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
       ...(replyTo ? { reply_to: replyTo } : {}),
       subject,
       text,
+      html,
     }),
   });
 

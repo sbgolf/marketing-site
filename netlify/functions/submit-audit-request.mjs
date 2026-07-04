@@ -1,5 +1,13 @@
 import { createHash } from 'node:crypto';
 
+import {
+  CLIENT_SIGNATURE_TEXT,
+  escapeHtml,
+  renderBrandedEmail,
+  renderEmailButton,
+  renderInfoCard,
+  renderSignatureHtml,
+} from './lib/branded-email.mjs';
 import { createDepositCheckoutSession, getDepositPackage } from './create-checkout-session.mjs';
 
 const ALLOWED_METHODS = ['POST', 'OPTIONS'];
@@ -24,40 +32,9 @@ const optionalClean = (value, max = 500) => {
   return cleaned || null;
 };
 
-const escapeHtml = (value) => String(value ?? '')
-  .replaceAll('&', '&amp;')
-  .replaceAll('<', '&lt;')
-  .replaceAll('>', '&gt;')
-  .replaceAll('"', '&quot;')
-  .replaceAll("'", '&#39;');
-
 const fieldLine = (label, value) => `${label}: ${value || 'Not provided'}`;
 const isIsoDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(clean(value, 20));
-const CLIENT_SIGNATURE_TEXT = [
-  'Thanks,',
-  'Steve, CEO & Founder',
-  'StartLineSites.com',
-].join('\n');
-const CLIENT_SIGNATURE_HTML = '<p style="margin:18px 0 0;color:#0b0e13;font-weight:800;">Thanks,<br>Steve, CEO &amp; Founder<br><a href="https://startlinesites.com/" style="color:#0b0e13;text-decoration:underline;">StartLineSites.com</a></p>';
-
-const emailShell = ({ preheader, heading, eyebrow = 'StartLine Sites', body }) => `
-  <div style="display:none;max-height:0;overflow:hidden;color:transparent;opacity:0;">${escapeHtml(preheader)}</div>
-  <div style="margin:0;padding:0;background:#f7f2e8;color:#0b0e13;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
-    <div style="max-width:640px;margin:0 auto;padding:28px 18px;">
-      <div style="border:1px solid #eadfce;border-radius:24px;overflow:hidden;background:#fffaf4;box-shadow:0 18px 48px rgba(14,23,41,.08);">
-        <div style="padding:26px 28px;background:linear-gradient(135deg,#0b0e13,#182236);color:#fffaf4;">
-          <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#f5b041;font-weight:800;">${escapeHtml(eyebrow)}</div>
-          <h1 style="margin:10px 0 0;font-size:26px;line-height:1.15;font-weight:800;">${escapeHtml(heading)}</h1>
-        </div>
-        <div style="padding:26px 28px;font-size:16px;line-height:1.62;color:#233043;">
-          ${body}
-        </div>
-        <div style="padding:18px 28px;border-top:1px solid #eadfce;background:#f7f2e8;color:#6b7280;font-size:13px;line-height:1.5;">
-          StartLine Sites · Race websites built to turn interest into registrations.
-        </div>
-      </div>
-    </div>
-  </div>`;
+const emailShell = renderBrandedEmail;
 
 const actionCard = (label, value) => `
   <div style="border:1px solid #eadfce;border-radius:16px;background:#ffffff;padding:14px 16px;margin:0 0 12px;">
@@ -189,20 +166,7 @@ const sendLeadNotification = async ({ record, row }) => {
   }
 };
 
-const sendCustomerAuditConfirmation = async ({ row }) => {
-  const apiKey = process.env.RESEND_API_KEY || process.env.STARTLINE_RESEND_API_KEY;
-  const to = row.contact_email;
-
-  if (!apiKey || !to || !isEmail(to)) {
-    console.warn('Customer audit confirmation skipped: Resend is not configured or contact email is invalid.');
-    return;
-  }
-
-  const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
-  const replyTo = process.env.STARTLINE_KICKOFF_REPLY_TO
-    || process.env.STARTLINE_ADMIN_EMAIL
-    || process.env.STARTLINE_LEAD_NOTIFY_EMAIL
-    || undefined;
+export const renderCustomerAuditConfirmationEmail = ({ row }) => {
   const selectedPackage = row.metadata?.selected_package;
   const checkoutUrl = selectedPackage?.proposal_required ? null : selectedPackage?.url;
   const packageLine = selectedPackage?.name
@@ -213,7 +177,7 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
     : selectedPackage?.proposal_required
       ? 'Premium projects start with a reviewed proposal before any first-year package deposit link is sent.'
       : 'We will review your race site and follow up with the clearest package recommendation.';
-  const lines = [
+  const text = [
     `Hi ${row.contact_name},`,
     '',
     `Thanks — we received the private StartLine Sites audit request for ${row.race_name}.`,
@@ -231,29 +195,45 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
     'Reply to this email if anything about the request should change.',
     '',
     CLIENT_SIGNATURE_TEXT,
-  ];
+  ].join('\n');
 
-  const customerHtml = emailShell({
+  const html = emailShell({
     preheader: `We received your private StartLine audit request for ${row.race_name}.`,
-    heading: `Your private audit request is in`,
+    heading: 'Your private audit request is in',
     body: `
       <p style="margin:0 0 16px;">Hi ${escapeHtml(row.contact_name)},</p>
       <p style="margin:0 0 18px;">Thanks — we received the private StartLine Sites audit request for <strong>${escapeHtml(row.race_name)}</strong>.</p>
       ${actionCard('Current site / registration URL', row.current_url)}
       ${actionCard('Selected first-year package', selectedPackage?.name ? publicPackageWithDeposit(selectedPackage) : 'We will recommend the best fit after reviewing your race.')}
-      <div style="border:1px solid rgba(31,184,196,.32);border-radius:18px;background:#eefbfc;padding:16px 18px;margin:18px 0;">
-        <strong style="display:block;color:#0b0e13;margin-bottom:8px;">What happens next</strong>
-        <ol style="margin:0;padding-left:20px;color:#233043;">
-          <li>We review the current race page like a runner deciding whether to register.</li>
-          <li>Steve reviews the findings before your response is sent.</li>
-          <li>We email your written audit within 2 business days with the recommended next step.</li>
-        </ol>
-      </div>
+      ${renderInfoCard({
+        title: 'What happens next',
+        children: `<ol style="margin:0;padding-left:20px;color:#1A2438;"><li>We review the current race page like a runner deciding whether to register.</li><li>Steve reviews the findings before your response is sent.</li><li>We email your written audit within 2 business days with the recommended next step.</li></ol>`,
+      })}
       <p style="margin:0 0 16px;">${escapeHtml(nextStep)}</p>
+      ${checkoutUrl ? renderEmailButton({ href: checkoutUrl, label: 'Pay the first-year package deposit' }) : ''}
       <p style="margin:0;">Reply to this email if anything about the request should change.</p>
-      ${CLIENT_SIGNATURE_HTML}
+      ${renderSignatureHtml()}
     `,
   });
+
+  return { text, html };
+};
+
+const sendCustomerAuditConfirmation = async ({ row }) => {
+  const apiKey = process.env.RESEND_API_KEY || process.env.STARTLINE_RESEND_API_KEY;
+  const to = row.contact_email;
+
+  if (!apiKey || !to || !isEmail(to)) {
+    console.warn('Customer audit confirmation skipped: Resend is not configured or contact email is invalid.');
+    return;
+  }
+
+  const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
+  const replyTo = process.env.STARTLINE_KICKOFF_REPLY_TO
+    || process.env.STARTLINE_ADMIN_EMAIL
+    || process.env.STARTLINE_LEAD_NOTIFY_EMAIL
+    || undefined;
+  const { text, html } = renderCustomerAuditConfirmationEmail({ row });
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -267,8 +247,8 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
       to: [to],
       ...(replyTo ? { reply_to: replyTo } : {}),
       subject: `We received your StartLine audit request for ${row.race_name}`,
-      text: lines.join('\n'),
-      html: customerHtml,
+      text,
+      html,
     }),
   });
 

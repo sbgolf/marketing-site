@@ -1,5 +1,14 @@
 import { createHash } from 'node:crypto';
 
+import {
+  CLIENT_SIGNATURE_TEXT,
+  escapeHtml,
+  renderBrandedEmail,
+  renderEmailButton,
+  renderInfoCard,
+  renderSignatureHtml,
+} from './lib/branded-email.mjs';
+
 const ALLOWED_METHODS = ['POST', 'OPTIONS'];
 const MAX_BODY_BYTES = 25_000;
 
@@ -18,13 +27,6 @@ const clean = (value, max = 1000) => {
 };
 
 const optionalClean = (value, max = 1000) => clean(value, max) || null;
-
-const escapeHtml = (value) => String(value ?? '')
-  .replaceAll('&', '&amp;')
-  .replaceAll('<', '&lt;')
-  .replaceAll('>', '&gt;')
-  .replaceAll('"', '&quot;')
-  .replaceAll("'", '&#39;');
 
 const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
@@ -52,12 +54,7 @@ const normalizeDomain = (value) => {
 const fieldLine = (label, value) => `${label}: ${value || 'Not provided'}`;
 const htmlField = (label, value) => `<p><strong>${escapeHtml(label)}:</strong><br>${escapeHtml(value || 'Not provided')}</p>`;
 const normalizeMatchValue = (value) => clean(value, 240).toLowerCase();
-const CLIENT_SIGNATURE_TEXT = [
-  'Thanks,',
-  'Steve, CEO & Founder',
-  'StartLineSites.com',
-].join('\n');
-const CLIENT_SIGNATURE_HTML = '<p>Thanks,<br>Steve, CEO &amp; Founder<br><a href="https://startlinesites.com/">StartLineSites.com</a></p>';
+
 
 const hashIp = (event) => {
   const ip = event.headers?.['x-nf-client-connection-ip']
@@ -369,20 +366,8 @@ const sendSupportNotification = async ({ record, row, customerRecord, checklist 
   }
 };
 
-const sendCustomerConfirmation = async ({ row }) => {
-  const apiKey = process.env.RESEND_API_KEY || process.env.STARTLINE_RESEND_API_KEY;
-  if (!apiKey || !row.contact_email || !isEmail(row.contact_email)) {
-    console.warn('Customer intake confirmation skipped: Resend is not configured or contact email is invalid.');
-    return;
-  }
-
-  const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
-  const replyTo = process.env.STARTLINE_KICKOFF_REPLY_TO
-    || process.env.STARTLINE_ADMIN_EMAIL
-    || process.env.STARTLINE_LEAD_NOTIFY_EMAIL
-    || undefined;
-  const checklistUrl = process.env.STARTLINE_ASSET_CHECKLIST_URL || 'https://startlinesites.com/asset-checklist';
-  const lines = [
+export const renderCustomerIntakeConfirmationEmail = ({ row, checklistUrl }) => {
+  const text = [
     `Hi ${row.contact_name},`,
     '',
     `Thanks — we received the StartLine Sites 20–30 minute intake for ${row.race_name}.`,
@@ -397,7 +382,41 @@ const sendCustomerConfirmation = async ({ row }) => {
     'Reply to this email if anything in the intake should change.',
     '',
     CLIENT_SIGNATURE_TEXT,
-  ];
+  ].join('\n');
+
+  const html = renderBrandedEmail({
+    preheader: `We received the StartLine intake for ${row.race_name}.`,
+    heading: `We received your intake for ${row.race_name}`,
+    body: `
+      <p style="margin:0 0 16px;">Hi ${escapeHtml(row.contact_name)},</p>
+      <p style="margin:0 0 18px;">Thanks — we received the StartLine Sites 20–30 minute intake for <strong>${escapeHtml(row.race_name)}</strong>.</p>
+      ${renderInfoCard({
+        title: 'What happens next',
+        children: `<ol style="margin:0;padding-left:20px;color:#1A2438;"><li>We review your intake and shared asset folder.</li><li>We follow up with any short list of missing details before production starts.</li><li>Once intake and usable assets are complete, we begin the build timeline.</li></ol>`,
+      })}
+      ${renderEmailButton({ href: checklistUrl, label: 'Review the asset checklist' })}
+      <p style="margin:10px 0 0;">Reply to this email if anything in the intake should change.</p>
+      ${renderSignatureHtml()}
+    `,
+  });
+
+  return { text, html };
+};
+
+const sendCustomerConfirmation = async ({ row }) => {
+  const apiKey = process.env.RESEND_API_KEY || process.env.STARTLINE_RESEND_API_KEY;
+  if (!apiKey || !row.contact_email || !isEmail(row.contact_email)) {
+    console.warn('Customer intake confirmation skipped: Resend is not configured or contact email is invalid.');
+    return;
+  }
+
+  const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
+  const replyTo = process.env.STARTLINE_KICKOFF_REPLY_TO
+    || process.env.STARTLINE_ADMIN_EMAIL
+    || process.env.STARTLINE_LEAD_NOTIFY_EMAIL
+    || undefined;
+  const checklistUrl = process.env.STARTLINE_ASSET_CHECKLIST_URL || 'https://startlinesites.com/asset-checklist';
+  const { text, html } = renderCustomerIntakeConfirmationEmail({ row, checklistUrl });
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -411,20 +430,8 @@ const sendCustomerConfirmation = async ({ row }) => {
       to: [row.contact_email],
       ...(replyTo ? { reply_to: replyTo } : {}),
       subject: `We received your StartLine intake for ${row.race_name}`,
-      text: lines.join('\n'),
-      html: `
-        <p>Hi ${escapeHtml(row.contact_name)},</p>
-        <p>Thanks — we received the StartLine Sites 20–30 minute intake for <strong>${escapeHtml(row.race_name)}</strong>.</p>
-        <p><strong>What happens next:</strong></p>
-        <ol>
-          <li>We review your intake and shared asset folder.</li>
-          <li>We follow up with any short list of missing details before production starts.</li>
-          <li>Once intake and usable assets are complete, we begin the build timeline.</li>
-        </ol>
-        <p>Asset checklist: <a href="${escapeHtml(checklistUrl)}">${escapeHtml(checklistUrl)}</a></p>
-        <p>Reply to this email if anything in the intake should change.</p>
-        ${CLIENT_SIGNATURE_HTML}
-      `,
+      text,
+      html,
     }),
   });
 
