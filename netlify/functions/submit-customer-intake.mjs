@@ -392,7 +392,7 @@ export const renderCustomerIntakeConfirmationEmail = ({ row, checklistUrl }) => 
       <p style="margin:0 0 18px;">Thanks — we received the StartLine Sites 20–30 minute intake for <strong>${escapeHtml(row.race_name)}</strong>.</p>
       ${renderInfoCard({
         title: 'What happens next',
-        children: `<ol style="margin:0;padding-left:20px;color:#1A2438;"><li>We review your intake and shared asset folder.</li><li>We follow up with any short list of missing details before production starts.</li><li>Once intake and usable assets are complete, we begin the build timeline.</li></ol>`,
+        children: `<ol style="margin:0;padding-left:20px;color:#DDE7F3;"><li>We review your intake and shared asset folder.</li><li>We follow up with any short list of missing details before production starts.</li><li>Once intake and usable assets are complete, we begin the build timeline.</li></ol>`,
       })}
       ${renderEmailButton({ href: checklistUrl, label: 'Review the asset checklist' })}
       <p style="margin:10px 0 0;">Reply to this email if anything in the intake should change.</p>

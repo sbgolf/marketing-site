@@ -37,9 +37,9 @@ const isIsoDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(clean(value, 20));
 const emailShell = renderBrandedEmail;
 
 const actionCard = (label, value) => `
-  <div style="border:1px solid #eadfce;border-radius:16px;background:#ffffff;padding:14px 16px;margin:0 0 12px;">
-    <div style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#8a5d16;font-weight:800;margin-bottom:5px;">${escapeHtml(label)}</div>
-    <div style="color:#0b0e13;word-break:break-word;">${escapeHtml(value || 'Not provided')}</div>
+  <div style="border:1px solid rgba(255,138,122,.24);border-radius:16px;background:#111D31;padding:14px 16px;margin:0 0 12px;">
+    <div style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#FF8A7A;font-weight:900;margin-bottom:5px;">${escapeHtml(label)}</div>
+    <div style="color:#DDE7F3;word-break:break-word;">${escapeHtml(value || 'Not provided')}</div>
   </div>`;
 
 const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -128,9 +128,9 @@ const sendLeadNotification = async ({ record, row }) => {
       ${actionCard('Selected first-year package', packageName ? `${packageName} (${packageDeposit} first-year package deposit)` : 'Recommend after review')}
       ${actionCard('Stripe first-year package deposit link', packageUrl)}
       ${actionCard('Notes', row.notes)}
-      <div style="border:1px solid rgba(245,176,65,.45);border-radius:18px;background:#fff7e6;padding:16px 18px;margin:18px 0;">
-        <strong style="display:block;color:#0b0e13;margin-bottom:8px;">Agent-audit workflow foundation</strong>
-        <ol style="margin:0;padding-left:20px;color:#233043;">
+      <div style="border:1px solid rgba(255,138,122,.24);border-radius:18px;background:#111D31;padding:16px 18px;margin:18px 0;">
+        <strong style="display:block;color:#FF8A7A;margin-bottom:8px;">Agent-audit workflow foundation</strong>
+        <ol style="margin:0;padding-left:20px;color:#DDE7F3;">
           <li>Scrape/review the submitted public URL for internal findings only.</li>
           <li>Draft the audit response and recommended next step.</li>
           <li>Email Steve for approval before anything goes to the race director.</li>
@@ -207,7 +207,7 @@ export const renderCustomerAuditConfirmationEmail = ({ row }) => {
       ${actionCard('Selected first-year package', selectedPackage?.name ? publicPackageWithDeposit(selectedPackage) : 'We will recommend the best fit after reviewing your race.')}
       ${renderInfoCard({
         title: 'What happens next',
-        children: `<ol style="margin:0;padding-left:20px;color:#1A2438;"><li>We review the current race page like a runner deciding whether to register.</li><li>Steve reviews the findings before your response is sent.</li><li>We email your written audit within 2 business days with the recommended next step.</li></ol>`,
+        children: `<ol style="margin:0;padding-left:20px;color:#DDE7F3;"><li>We review the current race page like a runner deciding whether to register.</li><li>Steve reviews the findings before your response is sent.</li><li>We email your written audit within 2 business days with the recommended next step.</li></ol>`,
       })}
       <p style="margin:0 0 16px;">${escapeHtml(nextStep)}</p>
       ${checkoutUrl ? renderEmailButton({ href: checkoutUrl, label: 'Pay the first-year package deposit' }) : ''}

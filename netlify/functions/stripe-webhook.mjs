@@ -649,7 +649,7 @@ export const renderCustomerKickoffEmail = ({ customer, session, tier, intakeUrl,
       <p style="margin:0 0 18px;">Thanks — we received the <strong>${escapeHtml(amount)} ${escapeHtml(tier)}</strong> setup deposit for <strong>${escapeHtml(raceName)}</strong>.</p>
       ${renderInfoCard({
         title: 'Your next step',
-        children: '<p style="margin:0;color:#1A2438;">Complete the intake form and gather the assets we need to build the site.</p>',
+        children: '<p style="margin:0;color:#DDE7F3;">Complete the intake form and gather the assets we need to build the site.</p>',
         tone: 'gold',
       })}
       ${renderEmailButton({ href: intakeUrl, label: 'Complete the intake form' })}
