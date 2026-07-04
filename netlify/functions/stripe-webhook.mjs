@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 import {
   CLIENT_SIGNATURE_TEXT,
@@ -56,6 +56,52 @@ const clean = (value, max = 500) => {
 };
 
 const normalizeTier = (value) => clean(value, 40).toLowerCase();
+
+export const generateIntakeToken = () => randomBytes(32).toString('base64url');
+
+export const hashIntakeToken = (token) => createHash('sha256').update(token, 'utf8').digest('hex');
+
+export const appendIntakeToken = (baseUrl, token) => {
+  const cleanedBaseUrl = clean(baseUrl, 1000);
+  const cleanedToken = clean(token, 200);
+  if (!cleanedBaseUrl || !cleanedToken) return cleanedBaseUrl;
+  try {
+    const isRelative = !/^[a-z][a-z\d+.-]*:/i.test(cleanedBaseUrl);
+    const url = new URL(cleanedBaseUrl, 'http://localhost');
+    if (!isAllowedIntakeUrl(url)) return cleanedBaseUrl;
+    url.searchParams.set('token', cleanedToken);
+    return isRelative ? `${url.pathname}${url.search}${url.hash}` : url.toString();
+  } catch {
+    return cleanedBaseUrl;
+  }
+};
+
+const getAllowedIntakeOrigins = () => new Set(
+  clean(process.env.STARTLINE_ALLOWED_INTAKE_ORIGINS || '', 2000)
+    .split(',')
+    .map((origin) => clean(origin, 300))
+    .filter(Boolean)
+    .map((origin) => {
+      try {
+        return new URL(origin).origin;
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean),
+);
+
+const isAllowedIntakeUrl = (url) => {
+  const hostname = url.hostname.toLowerCase();
+  const defaultHostAllowed = hostname === 'startlinesites.com'
+    || hostname === 'www.startlinesites.com'
+    || hostname === 'startline-sites.netlify.app'
+    || hostname.endsWith('--startline-sites.netlify.app')
+    || hostname === 'localhost'
+    || hostname === '127.0.0.1';
+  const originAllowed = defaultHostAllowed || getAllowedIntakeOrigins().has(url.origin);
+  return originAllowed && (url.pathname === '/intake' || url.pathname === '/intake/');
+};
 
 export const getRawBody = (event) => {
   if (!event.body) return '';
@@ -494,6 +540,16 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
   const billingEmail = clean(session.customer_details?.email || session.customer_email || '', 254).toLowerCase() || null;
   const billingName = clean(session.customer_details?.name || '', 200) || null;
   const paidAt = stripeDeposit.paid_at;
+  const existingCustomerRows = await supabaseFetch({
+    supabaseUrl,
+    serviceKey,
+    path: `customer_records?select=${encodeURIComponent('id,intake_token_hash,intake_token_created_at,intake_status')}&stripe_checkout_session_id=eq.${encodeURIComponent(session.id)}&limit=1`,
+  });
+  const existingCustomer = Array.isArray(existingCustomerRows) ? existingCustomerRows[0] : null;
+  const shouldCreateIntakeToken = !existingCustomer?.intake_token_hash;
+  const rawIntakeToken = shouldCreateIntakeToken ? generateIntakeToken() : null;
+  const intakeTokenHash = rawIntakeToken ? hashIntakeToken(rawIntakeToken) : null;
+  const intakeTokenCreatedAt = rawIntakeToken ? new Date().toISOString() : null;
 
   if (auditRequest) {
     await supabaseFetch({
@@ -559,6 +615,10 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
       stripe_deposit_payment_intent_id: stripeDeposit.payment_intent_id,
       deposit_paid_at: paidAt,
       kickoff_started_at: new Date().toISOString(),
+      ...(shouldCreateIntakeToken ? {
+        intake_token_hash: intakeTokenHash,
+        intake_token_created_at: intakeTokenCreatedAt,
+      } : {}),
       metadata,
     },
     headers: { prefer: 'resolution=merge-duplicates,return=representation' },
@@ -568,7 +628,12 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
     status: 'processed',
     audit_request_id: auditRequest?.id || null,
     customer_record_id: customerRows?.[0]?.id || null,
-    customer_record: customerRows?.[0] || null,
+    customer_record: customerRows?.[0] ? {
+      ...customerRows[0],
+      intake_token_hash: customerRows[0].intake_token_hash || existingCustomer?.intake_token_hash || intakeTokenHash,
+      intake_token_created_at: customerRows[0].intake_token_created_at || existingCustomer?.intake_token_created_at || intakeTokenCreatedAt,
+    } : null,
+    intake_token: rawIntakeToken,
     mapping_method: mappingMethod,
   };
 };
@@ -674,7 +739,8 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
 
   const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
   const replyTo = clean(process.env.STARTLINE_KICKOFF_REPLY_TO || process.env.STARTLINE_ADMIN_EMAIL || '', 254) || undefined;
-  const { subject, text, html } = renderCustomerKickoffEmail({ customer, session, tier, intakeUrl, assetChecklistUrl });
+  const tokenizedIntakeUrl = appendIntakeToken(intakeUrl, result.intake_token);
+  const { subject, text, html } = renderCustomerKickoffEmail({ customer, session, tier, intakeUrl: tokenizedIntakeUrl, assetChecklistUrl });
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -714,6 +780,7 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
           to: toEmail,
           intake_url_configured: true,
           asset_checklist_url_configured: true,
+          intake_prefill_token_used: Boolean(result.intake_token),
         },
       },
     },
@@ -842,7 +909,7 @@ export async function handler(event) {
     });
     await sendDepositNotification({ result, session, tier: classification.tier });
     await sendCustomerKickoffEmail({ supabaseUrl, serviceKey, result, session, tier: classification.tier });
-    const { customer_record: _customerRecord, ...publicResult } = result;
+    const { customer_record: _customerRecord, intake_token: _intakeToken, ...publicResult } = result;
     return json(200, { ok: true, ...publicResult });
   } catch (error) {
     console.error('Stripe deposit processing failed', error);

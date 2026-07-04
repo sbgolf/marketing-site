@@ -50,6 +50,11 @@ test('intake form wiring and required-field attributes remain intact', () => {
   assert.match(intakeSource, /<form id="customerIntakeForm" class="intake-form" novalidate>/);
   assert.match(intakeSource, /name="company_website" class="hp"/);
   assert.match(intakeSource, /fetch\('\/.netlify\/functions\/submit-customer-intake'/);
+  assert.match(intakeSource, /get-customer-intake-prefill\?token=/);
+  assert.match(intakeSource, /searchParams\.delete\('token'\)/);
+  assert.match(intakeSource, /history\.replaceState/);
+  assert.match(intakeSource, /StartLine customer record suggestions/);
+  assert.match(intakeSource, /Please review and edit anything that changed/);
 
   for (const name of ['race_name', 'contact_name', 'contact_email', 'event_date', 'event_location', 'registration_url']) {
     assert.match(intakeSource, new RegExp(`name="${name}"[^>]*required`));
@@ -66,7 +71,6 @@ test('intake page uses inline required markers and confirm-edit framing', () => 
   assert.match(intakeSource, /For now, please enter the details below/);
   assert.match(intakeSource, /source of truth for your kickoff/);
   assert.doesNotMatch(intakeSource, /Secure prefill is not active yet/);
-  assert.doesNotMatch(intakeSource, /we (pre[- ]filled|prefilled)/i);
 
   const requiredMarkerCount = (intakeSource.match(/class="required-marker" aria-hidden="true">\*<\/span>/g) || []).length;
   assert.equal(requiredMarkerCount, 6);

@@ -52,7 +52,7 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
       <input type="text" name="company_website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
       <input type="hidden" name="landing_page" value="https://startlinesites.com/intake" />
 
-      <div class="confirm-note" role="note">
+      <div id="intakePrefillNotice" class="confirm-note" role="note">
         <strong>Confirm what we know, then fill the gaps.</strong>
         <p>This intake is intentionally structured like a review pass. For now, please enter the details below. We’ll use this as the source of truth for your kickoff, and you can edit anything that does not match your current race plan.</p>
       </div>
@@ -118,10 +118,51 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
     const form = document.getElementById('customerIntakeForm');
     const status = document.getElementById('intakeStatus');
     const button = form?.querySelector('button[type="submit"]');
+    const prefillNotice = document.getElementById('intakePrefillNotice');
     const setStatus = (message, tone = '') => {
       status.textContent = message;
       status.dataset.tone = tone;
     };
+    const setPrefillNotice = (message, tone = '') => {
+      const paragraph = prefillNotice?.querySelector('p');
+      if (paragraph) paragraph.textContent = message;
+      if (prefillNotice) prefillNotice.dataset.tone = tone;
+    };
+    const applyPrefill = (prefill) => {
+      Object.entries(prefill || {}).forEach(([name, value]) => {
+        const field = form?.elements?.[name];
+        if (!field || typeof value !== 'string' || field.value) return;
+        field.value = value;
+      });
+    };
+    const removeTokenFromAddressBar = () => {
+      const url = new URL(window.location.href);
+      if (!url.searchParams.has('token')) return;
+      url.searchParams.delete('token');
+      window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+    };
+    const loadPrefill = async () => {
+      const token = new URLSearchParams(window.location.search).get('token');
+      if (!token) return;
+      removeTokenFromAddressBar();
+      setStatus('Checking for StartLine customer record suggestions…', 'loading');
+      try {
+        const response = await fetch(`/.netlify/functions/get-customer-intake-prefill?token=${encodeURIComponent(token)}`, {
+          method: 'GET',
+          headers: { accept: 'application/json' },
+        });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok || !body.ok) throw new Error(body.error || 'We could not load StartLine customer record suggestions.');
+        applyPrefill(body.prefill);
+        const count = body.source?.fields?.length || Object.keys(body.prefill || {}).length;
+        setPrefillNotice('We prefilled a few kickoff details from your StartLine customer record. Please review and edit anything that changed.', 'success');
+        setStatus(count ? 'Prefill suggestions loaded. Required fields are still editable.' : 'No saved suggestions were available; please complete the intake manually.', count ? 'success' : '');
+      } catch (error) {
+        setPrefillNotice('We could not load saved StartLine customer record suggestions for this link. You can still complete the intake manually.', 'error');
+        setStatus(error.message || 'Prefill was unavailable. Please complete the intake manually.', 'error');
+      }
+    };
+    loadPrefill();
     form?.addEventListener('submit', async (event) => {
       event.preventDefault();
       if (!form.checkValidity()) {
