@@ -9,11 +9,33 @@ const astroConfigSource = await readFile(new URL('../astro.config.mjs', import.m
 test('intake page is framed as a customer kickoff resource with prospect escape routes', () => {
   assert.match(intakeSource, /Customer Kickoff Intake — StartLine Sites/);
   assert.match(intakeSource, /Customer kickoff resource/);
-  assert.match(intakeSource, /Complete this form after your private audit, package recommendation, and StartLine kickoff/);
+  assert.match(intakeSource, /<h1>Confirm your race details<\/h1>/);
+  assert.match(intakeSource, /Use this as the source of truth for your StartLine build/);
+  assert.match(intakeSource, /not starting from scratch/);
   assert.match(intakeSource, /Not a customer yet\?/);
   assert.match(intakeSource, /href="\/#audit">Request a private audit/);
   assert.match(intakeSource, /href="\/#pricing">View pricing/);
   assert.match(intakeSource, /href="\/sample-audit\/">See sample audit/);
+});
+
+test('intake page adds branded process reassurance and next-step guidance', () => {
+  assert.match(intakeSource, /class="trust-row" aria-label="StartLine intake progress"/);
+  assert.match(intakeSource, /class="trust-item is-complete"/);
+  assert.match(intakeSource, /class="trust-icon" aria-hidden="true">✓<\/span><span>Current site reviewed/);
+  assert.match(intakeSource, /class="trust-icon" aria-hidden="true">✓<\/span><span>Private mockup prepared/);
+  assert.match(intakeSource, /class="trust-item is-next"/);
+  assert.match(intakeSource, /class="trust-icon" aria-hidden="true">→<\/span><span>Build starts after confirmation/);
+  assert.match(intakeSource, /What happens next/);
+  assert.match(intakeSource, /we check this against your current site, private mockup, and kickoff notes/);
+  assert.match(intakeSource, /one short follow-up list/);
+  assert.match(intakeSource, /the staging build begins/);
+});
+
+test('intake page keeps asset guidance low-friction and branded', () => {
+  assert.match(intakeSource, /Assets can be rough/);
+  assert.match(intakeSource, /Send the best files you have now\./);
+  assert.match(intakeSource, /available photos, logos, course maps, sponsor marks, policy docs, or folder links/);
+  assert.match(intakeSource, /StartLine will follow up if a better version is needed/);
 });
 
 test('customer kickoff pages opt out of search indexing while remaining static routes', () => {
@@ -80,11 +102,50 @@ test('intake page uses inline required markers and confirm-edit framing', () => 
   assert.match(intakeSource, /\.required-marker\{display:inline/);
 });
 
+
+test('intake form card headings avoid native legend border collision', () => {
+  assert.match(intakeSource, /<fieldset aria-labelledby="race-details-title">/);
+  assert.match(intakeSource, /<legend class="visually-hidden">Confirm your race details<\/legend>/);
+  assert.match(intakeSource, /<h2 id="race-details-title" class="fieldset-title">Confirm your race details<\/h2>/);
+  assert.match(intakeSource, /<h2 id="registration-details-title" class="fieldset-title">Registration and race details<\/h2>/);
+  assert.match(intakeSource, /<h2 id="content-assets-title" class="fieldset-title">Content, assets, and access<\/h2>/);
+  assert.match(intakeSource, /\.visually-hidden\{position:absolute!important/);
+  assert.match(intakeSource, /\.fieldset-title\{/);
+  assert.doesNotMatch(intakeSource, /legend\{font-family:"Instrument Serif"/);
+});
+
+test('intake textareas are tall enough for long placeholder guidance', () => {
+  for (const [name, rows] of [
+    ['distances_pricing', 5],
+    ['course_logistics', 5],
+    ['race_schedule', 5],
+    ['sponsors', 5],
+    ['faqs', 5],
+    ['optional_notes', 5],
+  ]) {
+    assert.match(intakeSource, new RegExp(`name="${name}" rows="${rows}" class="textarea-large"`));
+  }
+  assert.match(intakeSource, /textarea\{line-height:1\.5;min-height:140px\}/);
+  assert.match(intakeSource, /\.textarea-large\{min-height:170px\}/);
+  assert.match(intakeSource, /@media\(max-width:760px\).*\.textarea-large\{min-height:170px\}/s);
+  assert.match(intakeSource, /Marathon \$120; Half \$95; 5K \$35/);
+  assert.doesNotMatch(intakeSource, /Community builds can use a simple logistics section/);
+});
+
 test('intake page includes mobile spacing and lighter optional admin notes', () => {
   assert.match(intakeSource, /padding:56px clamp\(18px,5vw,56px\) calc\(96px \+ env\(safe-area-inset-bottom\)\)/);
+  assert.match(intakeSource, /\.intake-hero\{display:grid;.*background:radial-gradient/s);
+  assert.match(intakeSource, /@media\(max-width:760px\).*\.intake-hero\{padding:30px 22px 26px;border-radius:28px/s);
   assert.match(intakeSource, /scroll-margin-block:24px calc\(112px \+ env\(safe-area-inset-bottom\)\)/);
   assert.match(intakeSource, /overflow-x:clip/);
   assert.match(intakeSource, /font-size:16px/);
+  assert.match(intakeSource, /@media\(max-width:1080px\)/);
+  assert.match(intakeSource, /@media\(max-width:760px\)/);
+  assert.match(intakeSource, /\.intake-workspace\{display:grid;grid-template-columns:minmax\(0,1fr\) 330px/);
+  assert.match(intakeSource, /\.trust-row\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(intakeSource, /\.trust-row\{grid-template-columns:1fr\}/);
+  assert.match(intakeSource, /class="field-hint">Filename, folder note, or “choose best available.”/);
+  assert.match(intakeSource, /placeholder="Shared folder URL"/);
   assert.match(intakeSource, /<details class="optional-group">/);
   assert.match(intakeSource, /<summary>Optional admin and launch notes<\/summary>/);
 });
