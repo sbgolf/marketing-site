@@ -26,10 +26,21 @@ const requiredAssets = [
   </nav>
   <main id="main" class="checklist-page">
     <section class="checklist-hero">
-      <p class="kicker">Customer kickoff resource</p>
-      <h1>Customer asset checklist</h1>
-      <p class="lead">Use this list after your audit, package approval, and StartLine kickoff to prepare the shared Drive, Dropbox, Box, or similar folder you will paste into the intake form. This is the customer kickoff step after the private review and recommendation.</p>
-      <div class="hero-actions"><a class="btn btn-accent" href="/intake">Open intake form →</a><a class="btn btn-ghost" href="#checklist">Jump to checklist</a></div>
+      <div class="hero-copy">
+        <p class="kicker">Customer kickoff resource</p>
+        <h1>Prepare your launch assets</h1>
+        <p class="lead">Use this list after your audit, package approval, or StartLine kickoff to prepare the shared Drive, Dropbox, Box, or folder link you will paste into the intake form. Send the best files you have now — StartLine will follow up if a better version is needed.</p>
+        <div class="trust-row" aria-label="StartLine asset checklist progress">
+          <span class="trust-item is-complete"><span class="trust-icon" aria-hidden="true">✓</span><span>Audit or package approved</span></span>
+          <span class="trust-item is-next"><span class="trust-icon" aria-hidden="true">→</span><span>Assets gathered in one folder</span></span>
+          <span class="trust-item"><span class="trust-icon" aria-hidden="true">→</span><span>Folder link added to intake</span></span>
+        </div>
+      </div>
+      <aside class="time-card" aria-label="Asset preparation guidance">
+        <span class="eyebrow">Asset prep pass</span>
+        <strong>One clean folder beats scattered uploads</strong>
+        <span>Drive, Dropbox, Box, or a similar shared folder is fine. Rough notes are better than waiting for perfect files.</span>
+      </aside>
     </section>
 
     <section class="prospect-card" aria-labelledby="prospect-card-title">
@@ -45,50 +56,73 @@ const requiredAssets = [
       </div>
     </section>
 
-    <section class="folder-card">
-      <h2>Recommended folder setup</h2>
-      <p>Once StartLine has asked you to prepare kickoff assets, create one shared folder and make sure StartLine Sites can view it. If there are private working files you do not want published, place them in a clearly labeled “Reference only” folder. Use clear folder names so logos, photos, course files, sponsor assets, policies, and access notes are easy to review during the build.</p>
-      <ol>
-        <li><strong>01 Logos & brand</strong> — race logo, marks, colors, fonts, brand guide.</li>
-        <li><strong>02 Photos</strong> — hero candidates, race day, course, community, medals/shirts.</li>
-        <li><strong>03 Course</strong> — maps, elevation, GPX/route links, aid station chart, certification notes.</li>
-        <li><strong>04 Sponsors</strong> — sponsor logos grouped by tier plus links.</li>
-        <li><strong>05 Content & policies</strong> — schedule, FAQs, refund/transfer/cancellation/weather rules.</li>
-        <li><strong>06 Access notes</strong> — domain, analytics, Search Console, pixels, and platform owners.</li>
-      </ol>
-    </section>
-
-    <section id="checklist" class="asset-grid" aria-label="Required assets">
-      {requiredAssets.map(([title, spec, example]) => (
-        <article class="asset-card">
-          <h2>{title}</h2>
-          <p>{spec}</p>
-          <div><span>Example</span>{example}</div>
-        </article>
-      ))}
-    </section>
-
-    <section class="quality-card">
+    <section class="prep-card">
       <div>
-        <h2>Quality guidelines</h2>
-        <ul>
-          <li>Use original files when possible. Screenshots of logos or photos are usually too small.</li>
-          <li>Photos should be licensed for your race to use on the public website.</li>
-          <li>Sponsor logos should include the correct tier/order, display name, link destination, and usage rights.</li>
-          <li>Course and policy details should match your registration platform to avoid runner confusion.</li>
-          <li>If something is missing, write “not available yet” in the intake instead of delaying the whole form.</li>
-        </ul>
+        <p class="kicker">Assets can be rough</p>
+        <h2>Share the best source files you have now.</h2>
+        <p>No special upload workflow is needed here. Put available logos, photos, maps, sponsor files, policy docs, and access notes in one shared folder, then paste that Drive, Dropbox, Box, or folder link into customer intake.</p>
       </div>
-      <aside>
-        <strong>Best launch speed</strong>
-        <p>The build timeline starts when the intake is complete and required assets/access are usable. A clean folder on day one prevents rework.</p>
-      </aside>
+      <a class="btn btn-ghost" href="/intake">Open intake form →</a>
     </section>
 
-    <section class="examples-card">
-      <h2>Helpful extras if you have them</h2>
-      <div class="chips">
-        <span>Medal/shirt mockups</span><span>Charity partner copy</span><span>Hotel/travel links</span><span>Volunteer info</span><span>Past results</span><span>Press mentions</span><span>Testimonials or runner quotes</span><span>Accessibility notes</span><span>Parking maps</span><span>Finish festival details</span>
+    <section class="checklist-workspace" aria-label="Customer asset checklist workspace">
+      <aside class="next-card" aria-labelledby="next-card-title">
+        <p class="kicker">What happens next</p>
+        <h2 id="next-card-title">StartLine reviews and follows up.</h2>
+        <ol>
+          <li><strong>Check usability:</strong> we review the folder against your kickoff notes and intake details.</li>
+          <li><strong>Confirm gaps:</strong> if a logo, photo, map, policy, or access note needs a better version, we send one focused follow-up list.</li>
+          <li><strong>Start staging:</strong> once the essentials are usable, the build can move into staging.</li>
+        </ol>
+      </aside>
+
+      <div class="checklist-content">
+        <section class="folder-card">
+          <h2>Recommended folder setup</h2>
+          <p>Once StartLine has asked you to prepare kickoff assets, create one shared folder and make sure StartLine Sites can view it. If there are private working files you do not want published, place them in a clearly labeled “Reference only” folder. Use clear folder names so logos, photos, course files, sponsor assets, policies, and access notes are easy to review during the build.</p>
+          <ol>
+            <li><strong>01 Logos & brand</strong> — race logo, marks, colors, fonts, brand guide.</li>
+            <li><strong>02 Photos</strong> — hero candidates, race day, course, community, medals/shirts.</li>
+            <li><strong>03 Course</strong> — maps, elevation, GPX/route links, aid station chart, certification notes.</li>
+            <li><strong>04 Sponsors</strong> — sponsor logos grouped by tier plus links.</li>
+            <li><strong>05 Content & policies</strong> — schedule, FAQs, refund/transfer/cancellation/weather rules.</li>
+            <li><strong>06 Access notes</strong> — domain, analytics, Search Console, pixels, and platform owners.</li>
+          </ol>
+        </section>
+
+        <section id="checklist" class="asset-grid" aria-label="Required assets">
+          {requiredAssets.map(([title, spec, example]) => (
+            <article class="asset-card">
+              <h2>{title}</h2>
+              <p>{spec}</p>
+              <div><span>Example</span>{example}</div>
+            </article>
+          ))}
+        </section>
+
+        <section class="quality-card">
+          <div>
+            <h2>Quality guidelines</h2>
+            <ul>
+              <li>Use original files when possible. Screenshots of logos or photos are usually too small.</li>
+              <li>Photos should be licensed for your race to use on the public website.</li>
+              <li>Sponsor logos should include the correct tier/order, display name, link destination, and usage rights.</li>
+              <li>Course and policy details should match your registration platform to avoid runner confusion.</li>
+              <li>If something is missing, write “not available yet” in the intake instead of delaying the whole form.</li>
+            </ul>
+          </div>
+          <aside>
+            <strong>Best launch speed</strong>
+            <p>The build timeline starts when the intake is complete and required assets/access are usable. A clean folder on day one prevents rework.</p>
+          </aside>
+        </section>
+
+        <section class="examples-card">
+          <h2>Helpful extras if you have them</h2>
+          <div class="chips">
+            <span>Medal/shirt mockups</span><span>Charity partner copy</span><span>Hotel/travel links</span><span>Volunteer info</span><span>Past results</span><span>Press mentions</span><span>Runner FAQ notes</span><span>Accessibility notes</span><span>Parking maps</span><span>Finish festival details</span>
+          </div>
+        </section>
       </div>
     </section>
   </main>
@@ -96,11 +130,13 @@ const requiredAssets = [
 </Base>
 
 <style>
-  .simple-nav{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px clamp(20px,5vw,56px);background:var(--paper);border-bottom:1px solid var(--line)}.brand img{display:block;width:168px;height:auto}.simple-nav div{display:flex;gap:18px;flex-wrap:wrap}.simple-nav a{font-weight:700;font-size:.92rem}.simple-nav a:hover{color:var(--accent)}
-  .checklist-page{background:linear-gradient(180deg,var(--paper),#fff 46%,var(--paper-2));padding:56px clamp(18px,5vw,56px) 80px;overflow:hidden}.checklist-hero,.prospect-card,.folder-card,.asset-grid,.quality-card,.examples-card{max-width:var(--maxw);margin-left:auto;margin-right:auto}.checklist-hero{padding-bottom:24px}.checklist-hero h1{font-size:clamp(3rem,8vw,6rem);margin-bottom:18px}.lead{font-size:clamp(1.05rem,2vw,1.3rem);color:rgba(14,23,41,.72);max-width:68ch}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
-  .prospect-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center;background:linear-gradient(135deg,#fff,rgba(31,184,196,.09));border:1px solid rgba(31,184,196,.26);border-radius:28px;padding:24px;margin-bottom:24px;box-shadow:0 16px 50px rgba(14,23,41,.06)}.prospect-card h2{font-size:2rem;margin-bottom:8px}.prospect-card p{color:rgba(14,23,41,.7);max-width:72ch}.prospect-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
-  .folder-card,.quality-card,.examples-card{background:#fff;border:1px solid var(--line);border-radius:30px;padding:clamp(22px,4vw,38px);box-shadow:0 20px 70px rgba(14,23,41,.07)}.folder-card{margin-bottom:24px}.folder-card h2,.quality-card h2,.examples-card h2{font-size:2.2rem;margin-bottom:14px}.folder-card p{color:rgba(14,23,41,.7);max-width:72ch;margin-bottom:18px}.folder-card ol{display:grid;gap:10px;list-style:none}.folder-card li{padding:12px 14px;background:var(--paper);border-radius:16px;color:rgba(14,23,41,.78)}
-  .asset-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-bottom:24px}.asset-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 14px 45px rgba(14,23,41,.05)}.asset-card h2{font-size:1.8rem;margin-bottom:10px}.asset-card p{color:rgba(14,23,41,.72);margin-bottom:16px}.asset-card div{border-left:4px solid var(--accent);padding:10px 0 10px 14px;background:linear-gradient(90deg,rgba(255,77,61,.07),transparent);color:rgba(14,23,41,.74)}.asset-card span{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.18em;font-weight:800;color:var(--accent);margin-bottom:4px}
-  .quality-card{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;align-items:start;margin-bottom:24px}.quality-card ul{display:grid;gap:10px;color:rgba(14,23,41,.76);padding-left:20px}.quality-card aside{background:var(--ink);color:#fff;border-radius:22px;padding:22px}.quality-card aside strong{font-size:1.2rem}.quality-card aside p{color:rgba(250,250,247,.78);margin-top:8px}.chips{display:flex;flex-wrap:wrap;gap:10px}.chips span{display:inline-flex;padding:10px 14px;border-radius:999px;background:var(--paper);border:1px solid var(--line);font-weight:700;color:rgba(14,23,41,.76)}.simple-footer{padding:28px clamp(20px,5vw,56px);background:var(--ink);color:rgba(250,250,247,.78);text-align:center}
-  @media(max-width:760px){.simple-nav{align-items:flex-start;flex-direction:column}.checklist-page{padding-top:36px}.prospect-card,.asset-grid,.quality-card{grid-template-columns:1fr}.prospect-actions{justify-content:flex-start}.prospect-actions .btn,.hero-actions .btn{width:100%;justify-content:center}.folder-card,.prospect-card,.quality-card,.examples-card{border-radius:24px}}
+  .simple-nav{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px clamp(20px,5vw,56px);background:#071426;border-bottom:1px solid rgba(255,255,255,.1);box-shadow:0 14px 34px rgba(7,20,38,.16)}
+  .brand{display:inline-flex;align-items:center;background:#fff;border-radius:18px;padding:8px 12px;box-shadow:0 10px 30px rgba(0,0,0,.18)}.brand img{display:block;width:168px;height:auto}.simple-nav div{display:flex;gap:18px;flex-wrap:wrap}.simple-nav a{font-weight:800;font-size:.92rem;color:rgba(255,255,255,.84)}.simple-nav .brand:hover{transform:translateY(-1px)}.simple-nav a:hover{color:#ff7557}
+  .checklist-page{background:linear-gradient(180deg,#f5eadf 0,var(--paper) 34%,#fff 78%,var(--paper-2));padding:56px clamp(18px,5vw,56px) calc(96px + env(safe-area-inset-bottom));overflow-x:clip}.checklist-hero,.prospect-card,.prep-card,.checklist-workspace{max-width:var(--maxw);margin:0 auto}.checklist-hero{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;align-items:end;margin-bottom:28px;color:#fff;background:radial-gradient(circle at 82% 8%,rgba(255,117,87,.2),transparent 32%),linear-gradient(180deg,#071426 0,#10213a 100%);border-radius:32px;padding:clamp(28px,5vw,48px);box-shadow:0 28px 90px rgba(14,23,41,.18)}.hero-copy{min-width:0}.checklist-hero h1{font-size:clamp(3.1rem,8vw,6.2rem);line-height:.9;margin-bottom:20px;letter-spacing:-.045em;color:#fff}.lead{font-size:clamp(1.05rem,2vw,1.3rem);color:rgba(250,250,247,.82);max-width:68ch}.checklist-hero .kicker{color:#ffb199}.eyebrow{display:block;color:#d9553d;font-size:.78rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}.trust-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:26px;max-width:840px}.trust-item{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;min-height:52px;border-left:3px solid rgba(255,117,87,.72);background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);font-weight:800;font-size:.92rem;line-height:1.25;padding:10px 12px;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}.trust-icon{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:999px;background:#fff4ed;color:#b94129;font-weight:900;line-height:1}.trust-item.is-next{border-left-color:#ffb199;background:rgba(255,244,237,.13)}.trust-item.is-next .trust-icon{background:#ff7557;color:#fff}.time-card{background:linear-gradient(145deg,#fff,#f8f1ea);color:var(--ink);border:1px solid rgba(255,255,255,.72);border-radius:var(--r-lg);padding:24px;box-shadow:0 28px 80px rgba(0,0,0,.24)}.time-card strong{display:block;font-size:1.45rem;line-height:1.1;margin-bottom:10px}.time-card span:last-child{display:block;color:rgba(14,23,41,.68);line-height:1.55}
+  .prospect-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center;background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.8);border-radius:28px;padding:22px;margin-bottom:22px;box-shadow:0 16px 50px rgba(14,23,41,.08);backdrop-filter:blur(14px)}.prospect-card h2,.prep-card h2,.next-card h2{font-size:clamp(1.7rem,3vw,2.25rem);margin-bottom:8px}.prospect-card p,.prep-card p,.next-card li{color:rgba(14,23,41,.7);line-height:1.6}.prospect-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}.prospect-actions .btn{padding:10px 14px;font-size:.9rem}.prospect-actions .btn-accent{background:transparent;color:var(--accent);border:1px solid rgba(217,85,61,.34);box-shadow:none}.prospect-actions .btn-ghost{background:rgba(255,255,255,.72)}.prep-card{display:flex;align-items:center;justify-content:space-between;gap:24px;background:linear-gradient(135deg,#fff,#fff4ed);border:1px solid rgba(217,85,61,.16);border-radius:28px;padding:24px;margin-bottom:24px;box-shadow:0 16px 50px rgba(14,23,41,.06)}
+  .checklist-workspace{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:24px;align-items:start}.next-card{position:sticky;top:24px;grid-column:2;background:#0e1729;color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:30px;padding:24px;box-shadow:0 24px 70px rgba(14,23,41,.2)}.next-card .kicker{color:#ffb199}.next-card h2{color:#fff}.next-card ol{display:grid;gap:16px;margin:18px 0 0;padding-left:22px}.next-card li{color:rgba(255,255,255,.78)}.next-card strong{color:#fff}.checklist-content{grid-column:1;grid-row:1;min-width:0}.folder-card,.quality-card,.examples-card{background:rgba(255,255,255,.96);border:1px solid rgba(14,23,41,.1);border-radius:30px;padding:clamp(22px,4vw,38px);box-shadow:0 24px 90px rgba(14,23,41,.08)}.folder-card,.asset-grid,.quality-card{margin-bottom:24px}.folder-card h2,.quality-card h2,.examples-card h2{font-size:clamp(1.9rem,3vw,2.35rem);margin-bottom:14px}.folder-card p{color:rgba(14,23,41,.7);max-width:72ch;margin-bottom:18px;line-height:1.6}.folder-card ol{display:grid;gap:10px;list-style:none;padding:0;margin:0}.folder-card li{padding:12px 14px;background:var(--paper);border-radius:16px;color:rgba(14,23,41,.78)}
+  .asset-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.asset-card{background:rgba(255,255,255,.96);border:1px solid rgba(14,23,41,.1);border-radius:24px;padding:24px;box-shadow:0 14px 45px rgba(14,23,41,.05)}.asset-card h2{font-size:clamp(1.55rem,2.6vw,1.85rem);margin-bottom:10px}.asset-card p{color:rgba(14,23,41,.72);margin-bottom:16px;line-height:1.58}.asset-card div{border-left:4px solid var(--accent);padding:10px 0 10px 14px;background:linear-gradient(90deg,rgba(255,77,61,.07),transparent);color:rgba(14,23,41,.74);line-height:1.5}.asset-card span{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.18em;font-weight:800;color:var(--accent);margin-bottom:4px}
+  .quality-card{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:28px;align-items:start}.quality-card ul{display:grid;gap:10px;color:rgba(14,23,41,.76);padding-left:20px;line-height:1.55}.quality-card aside{background:var(--ink);color:#fff;border-radius:22px;padding:22px}.quality-card aside strong{font-size:1.2rem}.quality-card aside p{color:rgba(250,250,247,.78);margin-top:8px;line-height:1.55}.chips{display:flex;flex-wrap:wrap;gap:10px}.chips span{display:inline-flex;padding:10px 14px;border-radius:999px;background:var(--paper);border:1px solid var(--line);font-weight:700;color:rgba(14,23,41,.76)}.simple-footer{padding:28px clamp(20px,5vw,56px);background:var(--ink);color:rgba(250,250,247,.78);text-align:center}
+  @media(max-width:1080px){.trust-row{grid-template-columns:1fr}.trust-item{min-height:48px}.checklist-workspace{grid-template-columns:1fr}.next-card{position:relative;top:auto;grid-column:1;grid-row:auto}.checklist-content{grid-column:1;grid-row:auto}.quality-card{grid-template-columns:1fr}}
+  @media(max-width:760px){.simple-nav{align-items:flex-start;flex-direction:column}.simple-nav div{gap:12px}.brand img{width:150px}.checklist-page{padding:20px clamp(16px,4vw,24px) calc(120px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#f5eadf 0,var(--paper) 66%,var(--paper-2))}.checklist-hero,.prospect-card{grid-template-columns:1fr}.checklist-hero{padding:30px 22px 26px;border-radius:28px;margin-bottom:24px}.checklist-hero h1{font-size:clamp(3rem,18vw,4.6rem)}.trust-row{gap:10px}.trust-item{font-size:.95rem;min-height:50px}.prospect-actions{justify-content:flex-start}.prospect-actions .btn{width:100%;justify-content:center}.prep-card{align-items:flex-start;flex-direction:column}.prep-card .btn{width:100%;justify-content:center}.asset-grid{grid-template-columns:1fr}.folder-card,.next-card,.quality-card,.examples-card{border-radius:24px}.folder-card,.quality-card,.examples-card,.asset-card{padding:20px}.quality-card aside{border-radius:18px}}
 </style>
