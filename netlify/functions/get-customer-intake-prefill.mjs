@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
 
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{32,200}$/;
+const DEFAULT_TOKEN_TTL_DAYS = 30;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const json = (statusCode, body) => ({
   statusCode,
@@ -19,6 +21,18 @@ const clean = (value, max = 500) => {
 const optional = (value, max = 500) => clean(value, max) || null;
 
 export const hashIntakeToken = (token) => createHash('sha256').update(token, 'utf8').digest('hex');
+
+export const getPrefillTokenTtlDays = () => {
+  const configured = Number(process.env.STARTLINE_INTAKE_PREFILL_TOKEN_TTL_DAYS);
+  return Number.isFinite(configured) && configured > 0 ? configured : DEFAULT_TOKEN_TTL_DAYS;
+};
+
+export const isIntakeTokenExpired = (createdAt, now = new Date()) => {
+  if (!createdAt) return true;
+  const created = new Date(createdAt);
+  if (Number.isNaN(created.getTime())) return true;
+  return now.getTime() - created.getTime() > getPrefillTokenTtlDays() * MS_PER_DAY;
+};
 
 const supabaseFetch = async ({ supabaseUrl, serviceKey, path }) => {
   const response = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
@@ -87,6 +101,7 @@ export async function handler(event) {
     'primary_contact_name',
     'primary_contact_email',
     'setup_tier',
+    'intake_token_created_at',
   ].join(',');
 
   let customerRows;
@@ -103,6 +118,9 @@ export async function handler(event) {
 
   const customerRecord = Array.isArray(customerRows) ? customerRows[0] : null;
   if (!customerRecord) return json(404, { ok: false, error: 'Intake prefill was not found.' });
+  if (isIntakeTokenExpired(customerRecord.intake_token_created_at)) {
+    return json(410, { ok: false, error: 'This intake prefill link has expired. Please complete the intake manually or contact StartLine Sites for a new link.' });
+  }
 
   let auditRequest = null;
   if (customerRecord.audit_request_id) {

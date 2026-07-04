@@ -66,13 +66,41 @@ export const appendIntakeToken = (baseUrl, token) => {
   const cleanedToken = clean(token, 200);
   if (!cleanedBaseUrl || !cleanedToken) return cleanedBaseUrl;
   try {
-    const url = new URL(cleanedBaseUrl);
+    const isRelative = !/^[a-z][a-z\d+.-]*:/i.test(cleanedBaseUrl);
+    const url = new URL(cleanedBaseUrl, 'http://localhost');
+    if (!isAllowedIntakeUrl(url)) return cleanedBaseUrl;
     url.searchParams.set('token', cleanedToken);
-    return url.toString();
+    return isRelative ? `${url.pathname}${url.search}${url.hash}` : url.toString();
   } catch {
-    const separator = cleanedBaseUrl.includes('?') ? '&' : '?';
-    return `${cleanedBaseUrl}${separator}token=${encodeURIComponent(cleanedToken)}`;
+    return cleanedBaseUrl;
   }
+};
+
+const getAllowedIntakeOrigins = () => new Set(
+  clean(process.env.STARTLINE_ALLOWED_INTAKE_ORIGINS || '', 2000)
+    .split(',')
+    .map((origin) => clean(origin, 300))
+    .filter(Boolean)
+    .map((origin) => {
+      try {
+        return new URL(origin).origin;
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean),
+);
+
+const isAllowedIntakeUrl = (url) => {
+  const hostname = url.hostname.toLowerCase();
+  const defaultHostAllowed = hostname === 'startlinesites.com'
+    || hostname === 'www.startlinesites.com'
+    || hostname === 'startline-sites.netlify.app'
+    || hostname.endsWith('--startline-sites.netlify.app')
+    || hostname === 'localhost'
+    || hostname === '127.0.0.1';
+  const originAllowed = defaultHostAllowed || getAllowedIntakeOrigins().has(url.origin);
+  return originAllowed && (url.pathname === '/intake' || url.pathname === '/intake/');
 };
 
 export const getRawBody = (event) => {
@@ -512,9 +540,16 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
   const billingEmail = clean(session.customer_details?.email || session.customer_email || '', 254).toLowerCase() || null;
   const billingName = clean(session.customer_details?.name || '', 200) || null;
   const paidAt = stripeDeposit.paid_at;
-  const rawIntakeToken = generateIntakeToken();
-  const intakeTokenHash = hashIntakeToken(rawIntakeToken);
-  const intakeTokenCreatedAt = new Date().toISOString();
+  const existingCustomerRows = await supabaseFetch({
+    supabaseUrl,
+    serviceKey,
+    path: `customer_records?select=${encodeURIComponent('id,intake_token_hash,intake_token_created_at,intake_status')}&stripe_checkout_session_id=eq.${encodeURIComponent(session.id)}&limit=1`,
+  });
+  const existingCustomer = Array.isArray(existingCustomerRows) ? existingCustomerRows[0] : null;
+  const shouldCreateIntakeToken = !existingCustomer?.intake_token_hash;
+  const rawIntakeToken = shouldCreateIntakeToken ? generateIntakeToken() : null;
+  const intakeTokenHash = rawIntakeToken ? hashIntakeToken(rawIntakeToken) : null;
+  const intakeTokenCreatedAt = rawIntakeToken ? new Date().toISOString() : null;
 
   if (auditRequest) {
     await supabaseFetch({
@@ -580,8 +615,10 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
       stripe_deposit_payment_intent_id: stripeDeposit.payment_intent_id,
       deposit_paid_at: paidAt,
       kickoff_started_at: new Date().toISOString(),
-      intake_token_hash: intakeTokenHash,
-      intake_token_created_at: intakeTokenCreatedAt,
+      ...(shouldCreateIntakeToken ? {
+        intake_token_hash: intakeTokenHash,
+        intake_token_created_at: intakeTokenCreatedAt,
+      } : {}),
       metadata,
     },
     headers: { prefer: 'resolution=merge-duplicates,return=representation' },
@@ -593,8 +630,8 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
     customer_record_id: customerRows?.[0]?.id || null,
     customer_record: customerRows?.[0] ? {
       ...customerRows[0],
-      intake_token_hash: customerRows[0].intake_token_hash || intakeTokenHash,
-      intake_token_created_at: customerRows[0].intake_token_created_at || intakeTokenCreatedAt,
+      intake_token_hash: customerRows[0].intake_token_hash || existingCustomer?.intake_token_hash || intakeTokenHash,
+      intake_token_created_at: customerRows[0].intake_token_created_at || existingCustomer?.intake_token_created_at || intakeTokenCreatedAt,
     } : null,
     intake_token: rawIntakeToken,
     mapping_method: mappingMethod,

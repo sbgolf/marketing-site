@@ -73,6 +73,7 @@ test('get-customer-intake-prefill maps only safe customer and audit fields', asy
         stripe_customer_id: 'cus_should_not_leak',
         metadata: { secret: 'do not return' },
         intake_token_hash: tokenHash,
+        intake_token_created_at: new Date().toISOString(),
       }]), { status: 200 });
     }
 
@@ -116,6 +117,49 @@ test('get-customer-intake-prefill maps only safe customer and audit fields', asy
     assert.doesNotMatch(serialized, /cus_should_not_leak|secret|private_mockup|intake_token_hash|secure_token/);
     assert.equal(calls.length, 2);
   });
+});
+
+test('get-customer-intake-prefill returns 410 for expired or unusable token timestamps', async () => {
+  const token = 'expired_token_abcdefghijklmnopqrstuvwxyz1234567890';
+
+  for (const createdAt of [null, 'not-a-date', new Date(Date.now() - 31 * 24 * 60 * 60 * 1000).toISOString()]) {
+    const calls = [];
+    await withEnvAndFetch(async (url, options = {}) => {
+      calls.push({ url: String(url), method: options.method || 'GET' });
+      return new Response(JSON.stringify([{
+        id: 'customer-expired',
+        audit_request_id: 'audit-should-not-load',
+        race_name: 'Expired Example Marathon',
+        intake_token_created_at: createdAt,
+      }]), { status: 200 });
+    }, async () => {
+      const response = await handler({ httpMethod: 'GET', queryStringParameters: { token } });
+      const body = JSON.parse(response.body);
+
+      assert.equal(response.statusCode, 410);
+      assert.equal(body.ok, false);
+      assert.match(body.error, /expired/i);
+      assert.equal(calls.length, 1);
+    });
+  }
+});
+
+test('get-customer-intake-prefill honors configurable token TTL days', async () => {
+  const originalTtl = process.env.STARTLINE_INTAKE_PREFILL_TOKEN_TTL_DAYS;
+  process.env.STARTLINE_INTAKE_PREFILL_TOKEN_TTL_DAYS = '1';
+  try {
+    await withEnvAndFetch(async () => new Response(JSON.stringify([{
+      id: 'customer-short-ttl',
+      race_name: 'Short TTL Marathon',
+      intake_token_created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    }]), { status: 200 }), async () => {
+      const response = await handler({ httpMethod: 'GET', queryStringParameters: { token: 'short_ttl_token_abcdefghijklmnopqrstuvwxyz1234567890' } });
+      assert.equal(response.statusCode, 410);
+    });
+  } finally {
+    if (originalTtl === undefined) delete process.env.STARTLINE_INTAKE_PREFILL_TOKEN_TTL_DAYS;
+    else process.env.STARTLINE_INTAKE_PREFILL_TOKEN_TTL_DAYS = originalTtl;
+  }
 });
 
 test('buildSafePrefill falls back gracefully to ordinary empty prefill', () => {

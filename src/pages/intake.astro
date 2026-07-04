@@ -135,9 +135,16 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
         field.value = value;
       });
     };
+    const removeTokenFromAddressBar = () => {
+      const url = new URL(window.location.href);
+      if (!url.searchParams.has('token')) return;
+      url.searchParams.delete('token');
+      window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+    };
     const loadPrefill = async () => {
       const token = new URLSearchParams(window.location.search).get('token');
       if (!token) return;
+      removeTokenFromAddressBar();
       setStatus('Checking for StartLine customer record suggestions…', 'loading');
       try {
         const response = await fetch(`/.netlify/functions/get-customer-intake-prefill?token=${encodeURIComponent(token)}`, {

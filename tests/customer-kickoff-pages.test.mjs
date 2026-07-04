@@ -51,6 +51,8 @@ test('intake form wiring and required-field attributes remain intact', () => {
   assert.match(intakeSource, /name="company_website" class="hp"/);
   assert.match(intakeSource, /fetch\('\/.netlify\/functions\/submit-customer-intake'/);
   assert.match(intakeSource, /get-customer-intake-prefill\?token=/);
+  assert.match(intakeSource, /searchParams\.delete\('token'\)/);
+  assert.match(intakeSource, /history\.replaceState/);
   assert.match(intakeSource, /StartLine customer record suggestions/);
   assert.match(intakeSource, /Please review and edit anything that changed/);
 
