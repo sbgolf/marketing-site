@@ -80,8 +80,8 @@ You can also revisit the private preview here:
 If you want to talk through changes before choosing a package, just reply to this email with any notes or questions. StartLine will follow up to schedule a short time to discuss what should stay, what should change, and which package is the right fit.
 
 Thanks,
-Steve
-StartLine Sites
+Steve, CEO & Founder
+StartLineSites.com
 ```
 
 ## Branded HTML template
@@ -189,7 +189,7 @@ Replace bracketed variables before sending. Keep the inline CSS; many email clie
                 </div>
 
                 <p style="margin:0 0 18px;font-size:16px;line-height:1.65;color:#1A2438;">No pressure if you want edits first. Reply with what you would like to discuss, and StartLine will schedule time to review what should stay, what should change, and which package feels like the right fit.</p>
-                <p style="margin:0 0 8px;font-size:16px;line-height:1.65;color:#1A2438;">Thanks,<br />Steve</p>
+                <p style="margin:0 0 8px;font-size:16px;line-height:1.65;color:#1A2438;">Thanks,<br />Steve, CEO &amp; Founder<br /><a href="https://startlinesites.com/" style="color:#1A2438;text-decoration:underline;">StartLineSites.com</a></p>
               </td>
             </tr>
 

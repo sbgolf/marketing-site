@@ -32,6 +32,12 @@ const escapeHtml = (value) => String(value ?? '')
   .replaceAll("'", '&#39;');
 
 const fieldLine = (label, value) => `${label}: ${value || 'Not provided'}`;
+const CLIENT_SIGNATURE_TEXT = [
+  'Thanks,',
+  'Steve, CEO & Founder',
+  'StartLineSites.com',
+].join('\n');
+const CLIENT_SIGNATURE_HTML = '<p style="margin:18px 0 0;color:#0b0e13;font-weight:800;">Thanks,<br>Steve, CEO &amp; Founder<br><a href="https://startlinesites.com/" style="color:#0b0e13;text-decoration:underline;">StartLineSites.com</a></p>';
 
 const emailShell = ({ preheader, heading, eyebrow = 'StartLine Sites', body }) => `
   <div style="display:none;max-height:0;overflow:hidden;color:transparent;opacity:0;">${escapeHtml(preheader)}</div>
@@ -223,7 +229,7 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
     '',
     'Reply to this email if anything about the request should change.',
     '',
-    '— StartLine Sites',
+    CLIENT_SIGNATURE_TEXT,
   ];
 
   const customerHtml = emailShell({
@@ -244,7 +250,7 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
       </div>
       <p style="margin:0 0 16px;">${escapeHtml(nextStep)}</p>
       <p style="margin:0;">Reply to this email if anything about the request should change.</p>
-      <p style="margin:18px 0 0;color:#0b0e13;font-weight:800;">— StartLine Sites</p>
+      ${CLIENT_SIGNATURE_HTML}
     `,
   });
 

@@ -54,8 +54,8 @@ https://buy.stripe.com/28EeV65RI3II3H5bzn9fW01
 If you want to talk through changes before choosing a package, just reply to this email with any notes or questions. A StartLine team member will follow up to schedule a short time to discuss what should stay, what should change, and which package is the right fit.
 
 Thanks,
-Steve
-StartLine Sites
+Steve, CEO & Founder
+StartLineSites.com
 
 ## Recommended next step and approval options
 

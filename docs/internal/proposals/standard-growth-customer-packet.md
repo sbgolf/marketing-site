@@ -42,7 +42,9 @@ I put the proposal here:
 
 If everything looks right, the next step is the deposit link in the proposal. Once that’s paid, we’ll send the intake form and asset checklist and start the build.
 
-Steve
+Thanks,
+Steve, CEO & Founder
+StartLineSites.com
 
 ## One-page proposal
 
