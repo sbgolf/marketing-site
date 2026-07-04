@@ -9,11 +9,31 @@ const astroConfigSource = await readFile(new URL('../astro.config.mjs', import.m
 test('intake page is framed as a customer kickoff resource with prospect escape routes', () => {
   assert.match(intakeSource, /Customer Kickoff Intake — StartLine Sites/);
   assert.match(intakeSource, /Customer kickoff resource/);
-  assert.match(intakeSource, /Complete this form after your private audit, package recommendation, and StartLine kickoff/);
+  assert.match(intakeSource, /<h1>Confirm your race details<\/h1>/);
+  assert.match(intakeSource, /Use this as the source of truth for your StartLine build/);
+  assert.match(intakeSource, /not starting from scratch/);
   assert.match(intakeSource, /Not a customer yet\?/);
   assert.match(intakeSource, /href="\/#audit">Request a private audit/);
   assert.match(intakeSource, /href="\/#pricing">View pricing/);
   assert.match(intakeSource, /href="\/sample-audit\/">See sample audit/);
+});
+
+test('intake page adds branded process reassurance and next-step guidance', () => {
+  assert.match(intakeSource, /class="trust-row" aria-label="StartLine intake process"/);
+  assert.match(intakeSource, /Current site reviewed/);
+  assert.match(intakeSource, /Private mockup prepared/);
+  assert.match(intakeSource, /Build starts after confirmation/);
+  assert.match(intakeSource, /What happens next/);
+  assert.match(intakeSource, /we check this against your current site, private mockup, and kickoff notes/);
+  assert.match(intakeSource, /one short follow-up list/);
+  assert.match(intakeSource, /the staging build begins/);
+});
+
+test('intake page keeps asset guidance low-friction and branded', () => {
+  assert.match(intakeSource, /Assets can be rough/);
+  assert.match(intakeSource, /Send the best files you have now\./);
+  assert.match(intakeSource, /available photos, logos, course maps, sponsor marks, policy docs, or folder links/);
+  assert.match(intakeSource, /StartLine will follow up if a better version is needed/);
 });
 
 test('customer kickoff pages opt out of search indexing while remaining static routes', () => {
@@ -85,6 +105,9 @@ test('intake page includes mobile spacing and lighter optional admin notes', () 
   assert.match(intakeSource, /scroll-margin-block:24px calc\(112px \+ env\(safe-area-inset-bottom\)\)/);
   assert.match(intakeSource, /overflow-x:clip/);
   assert.match(intakeSource, /font-size:16px/);
+  assert.match(intakeSource, /@media\(max-width:980px\)/);
+  assert.match(intakeSource, /@media\(max-width:760px\)/);
+  assert.match(intakeSource, /\.intake-workspace\{display:grid;grid-template-columns:minmax\(0,1fr\) 330px/);
   assert.match(intakeSource, /<details class="optional-group">/);
   assert.match(intakeSource, /<summary>Optional admin and launch notes<\/summary>/);
 });
