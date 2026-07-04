@@ -19,10 +19,12 @@ test('intake page is framed as a customer kickoff resource with prospect escape 
 });
 
 test('intake page adds branded process reassurance and next-step guidance', () => {
-  assert.match(intakeSource, /class="trust-row" aria-label="StartLine intake process"/);
-  assert.match(intakeSource, /Current site reviewed/);
-  assert.match(intakeSource, /Private mockup prepared/);
-  assert.match(intakeSource, /Build starts after confirmation/);
+  assert.match(intakeSource, /class="trust-row" aria-label="StartLine intake progress"/);
+  assert.match(intakeSource, /class="trust-item is-complete"/);
+  assert.match(intakeSource, /class="trust-icon" aria-hidden="true">✓<\/span><span>Current site reviewed/);
+  assert.match(intakeSource, /class="trust-icon" aria-hidden="true">✓<\/span><span>Private mockup prepared/);
+  assert.match(intakeSource, /class="trust-item is-next"/);
+  assert.match(intakeSource, /class="trust-icon" aria-hidden="true">→<\/span><span>Build starts after confirmation/);
   assert.match(intakeSource, /What happens next/);
   assert.match(intakeSource, /we check this against your current site, private mockup, and kickoff notes/);
   assert.match(intakeSource, /one short follow-up list/);
@@ -100,14 +102,44 @@ test('intake page uses inline required markers and confirm-edit framing', () => 
   assert.match(intakeSource, /\.required-marker\{display:inline/);
 });
 
+
+test('intake form card headings avoid native legend border collision', () => {
+  assert.match(intakeSource, /<fieldset aria-labelledby="race-details-title">/);
+  assert.match(intakeSource, /<legend class="visually-hidden">Confirm your race details<\/legend>/);
+  assert.match(intakeSource, /<h2 id="race-details-title" class="fieldset-title">Confirm your race details<\/h2>/);
+  assert.match(intakeSource, /<h2 id="registration-details-title" class="fieldset-title">Registration and race details<\/h2>/);
+  assert.match(intakeSource, /<h2 id="content-assets-title" class="fieldset-title">Content, assets, and access<\/h2>/);
+  assert.match(intakeSource, /\.visually-hidden\{position:absolute!important/);
+  assert.match(intakeSource, /\.fieldset-title\{/);
+  assert.doesNotMatch(intakeSource, /legend\{font-family:"Instrument Serif"/);
+});
+
+test('intake textareas are tall enough for long placeholder guidance', () => {
+  for (const [name, rows] of [
+    ['distances_pricing', 7],
+    ['course_logistics', 8],
+    ['race_schedule', 6],
+    ['sponsors', 6],
+    ['faqs', 8],
+    ['optional_notes', 6],
+  ]) {
+    assert.match(intakeSource, new RegExp(`name="${name}" rows="${rows}" class="textarea-large"`));
+  }
+  assert.match(intakeSource, /textarea\{line-height:1\.5;min-height:140px\}/);
+  assert.match(intakeSource, /\.textarea-large\{min-height:190px\}/);
+  assert.match(intakeSource, /@media\(max-width:760px\).*\.textarea-large\{min-height:210px\}/s);
+});
+
 test('intake page includes mobile spacing and lighter optional admin notes', () => {
   assert.match(intakeSource, /padding:56px clamp\(18px,5vw,56px\) calc\(96px \+ env\(safe-area-inset-bottom\)\)/);
   assert.match(intakeSource, /scroll-margin-block:24px calc\(112px \+ env\(safe-area-inset-bottom\)\)/);
   assert.match(intakeSource, /overflow-x:clip/);
   assert.match(intakeSource, /font-size:16px/);
-  assert.match(intakeSource, /@media\(max-width:980px\)/);
+  assert.match(intakeSource, /@media\(max-width:1080px\)/);
   assert.match(intakeSource, /@media\(max-width:760px\)/);
   assert.match(intakeSource, /\.intake-workspace\{display:grid;grid-template-columns:minmax\(0,1fr\) 330px/);
+  assert.match(intakeSource, /\.trust-row\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(intakeSource, /\.trust-row\{grid-template-columns:1fr\}/);
   assert.match(intakeSource, /<details class="optional-group">/);
   assert.match(intakeSource, /<summary>Optional admin and launch notes<\/summary>/);
 });
