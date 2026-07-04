@@ -4,6 +4,7 @@ import test from 'node:test';
 import { renderCustomerAuditConfirmationEmail } from '../netlify/functions/submit-audit-request.mjs';
 import { renderCustomerIntakeConfirmationEmail } from '../netlify/functions/submit-customer-intake.mjs';
 import { renderCustomerKickoffEmail } from '../netlify/functions/stripe-webhook.mjs';
+import { renderBrandedEmail, renderEmailButton } from '../netlify/functions/lib/branded-email.mjs';
 
 const assertBrandedCustomerEmail = (html) => {
   assert.match(html, /<meta name="color-scheme" content="light dark">/);
@@ -34,6 +35,10 @@ const assertBrandedCustomerEmail = (html) => {
   assert.match(html, /email-card/);
   assert.match(html, /email-header/);
   assert.match(html, /email-button/);
+  assert.match(html, /email-button-link/);
+  assert.match(html, /\.email-button a,\s*\.email-button-link \{ color:#ffffff !important;text-decoration:none !important; \}/);
+  assert.match(html, /\[data-ogsc\] \.email-button a,\s*\[data-ogsc\] \.email-button-link \{ color:#ffffff !important;text-decoration:none !important; \}/);
+  assert.match(html, /<a href="[^"]+" class="email-button-link" style="[^"]*color:#ffffff !important;[^"]*text-decoration:none !important;[^"]*">/);
   assert.match(html, /Thanks,<br>Steve, CEO &amp; Founder<br><a href="https:\/\/startlinesites\.com\//);
 };
 
@@ -83,3 +88,25 @@ test('customer intake confirmation uses branded email shell and asset-checklist 
   assertBrandedCustomerEmail(html);
   assert.match(html, /Review the asset checklist/);
 });
+
+test('branded email button styles keep CTA text white and preserve secondary treatment in dark-mode overrides', () => {
+  const html = renderBrandedEmail({
+    heading: 'Button regression check',
+    body: `
+      ${renderEmailButton({ href: 'https://startlinesites.com/intake', label: 'Complete the intake form' })}
+      ${renderEmailButton({ href: 'https://startlinesites.com/asset-checklist', label: 'Review the asset checklist', variant: 'secondary' })}
+      ${renderSignatureHtmlForTest()}
+    `,
+  });
+
+  assert.match(html, /\.email-button a,\s*\.email-button-link \{ color:#ffffff !important;text-decoration:none !important; \}/);
+  assert.match(html, /@media \(prefers-color-scheme: dark\)[\s\S]*\.email-button-primary \{ background:#FF4D3D !important;border-color:#FF4D3D !important; \}/);
+  assert.match(html, /@media \(prefers-color-scheme: dark\)[\s\S]*\.email-button-secondary \{ background:#18263D !important;border-color:rgba\(255,138,122,\.32\) !important; \}/);
+  assert.match(html, /\[data-ogsc\] \.email-button-link \{ color:#ffffff !important;text-decoration:none !important; \}/);
+  assert.match(html, /<td class="email-button email-button-primary" bgcolor="#FF4D3D" style="[^"]*background:#FF4D3D;[^"]*border:1px solid #FF4D3D;/);
+  assert.match(html, /<td class="email-button email-button-secondary" bgcolor="#18263D" style="[^"]*background:#18263D;[^"]*border:1px solid rgba\(255,138,122,\.32\);/);
+  assert.match(html, /<a href="https:\/\/startlinesites\.com\/intake" class="email-button-link" style="[^"]*color:#ffffff !important;[^"]*text-decoration:none !important;[^"]*">Complete the intake form<\/a>/);
+  assert.match(html, /<a href="https:\/\/startlinesites\.com\/asset-checklist" class="email-button-link" style="[^"]*color:#ffffff !important;[^"]*text-decoration:none !important;[^"]*">Review the asset checklist<\/a>/);
+});
+
+const renderSignatureHtmlForTest = () => '<p style="margin:24px 0 0;">Thanks,<br>Steve, CEO &amp; Founder</p>';

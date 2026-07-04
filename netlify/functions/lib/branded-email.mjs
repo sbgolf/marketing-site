@@ -31,11 +31,12 @@ export const renderEmailButton = ({ href, label, variant = 'primary' }) => {
   const background = isPrimary ? BRAND.cta : BRAND.ink3;
   const border = isPrimary ? BRAND.cta : 'rgba(255,138,122,.32)';
   const shadow = isPrimary ? 'box-shadow:0 0 28px rgba(255,77,61,.34);' : 'box-shadow:none;';
+  const variantClass = isPrimary ? 'email-button-primary' : 'email-button-secondary';
   return `
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:14px 10px 14px 0;display:inline-table;">
       <tr>
-        <td class="email-button" bgcolor="${background}" style="border-radius:999px;background:${background};border:1px solid ${border};${shadow}mso-padding-alt:14px 20px;">
-          <a href="${escapeHtml(href)}" style="display:inline-block;padding:14px 20px;color:#ffffff;font-size:15px;line-height:1.1;font-weight:900;text-decoration:none;border-radius:999px;">${escapeHtml(label)}</a>
+        <td class="email-button ${variantClass}" bgcolor="${background}" style="border-radius:999px;background:${background};border:1px solid ${border};${shadow}mso-padding-alt:14px 20px;">
+          <a href="${escapeHtml(href)}" class="email-button-link" style="display:inline-block;padding:14px 20px;color:#ffffff !important;font-size:15px;line-height:1.1;font-weight:900;text-decoration:none !important;border-radius:999px;">${escapeHtml(label)}</a>
         </td>
       </tr>
     </table>`;
@@ -58,6 +59,8 @@ export const renderBrandedEmail = ({ preheader = '', heading, eyebrow = 'StartLi
   <style>
     :root { color-scheme: light dark; supported-color-schemes: light dark; }
     a { color: ${BRAND.coral}; }
+    .email-button a,
+    .email-button-link { color:#ffffff !important;text-decoration:none !important; }
     @media (prefers-color-scheme: dark) {
       body, .email-bg { background: ${BRAND.bg} !important; color: ${BRAND.text} !important; }
       .email-card { background: ${BRAND.ink} !important; border-color: rgba(255,255,255,.12) !important; }
@@ -65,14 +68,21 @@ export const renderBrandedEmail = ({ preheader = '', heading, eyebrow = 'StartLi
       .email-body p, .email-body li, .email-body div { color: ${BRAND.muted} !important; }
       .email-info-card { background: ${BRAND.ink2} !important; border-color: rgba(255,138,122,.24) !important; }
       .email-info-card strong { color: ${BRAND.coral} !important; }
-      .email-button { background: ${BRAND.cta} !important; border-color: ${BRAND.cta} !important; }
+      .email-button-primary { background:${BRAND.cta} !important;border-color:${BRAND.cta} !important; }
+      .email-button-secondary { background:${BRAND.ink3} !important;border-color:rgba(255,138,122,.32) !important; }
       a { color: ${BRAND.coral} !important; }
+      .email-button a,
+      .email-button-link { color:#ffffff !important;text-decoration:none !important; }
     }
     [data-ogsc] body, [data-ogsc] .email-bg { background: ${BRAND.bg} !important; color: ${BRAND.text} !important; }
     [data-ogsc] .email-card { background: ${BRAND.ink} !important; border-color: rgba(255,255,255,.12) !important; }
     [data-ogsc] .email-body, [data-ogsc] .email-body p, [data-ogsc] .email-body li, [data-ogsc] .email-body div { color: ${BRAND.muted} !important; }
     [data-ogsc] .email-info-card { background: ${BRAND.ink2} !important; border-color: rgba(255,138,122,.24) !important; }
+    [data-ogsc] .email-button-primary { background:${BRAND.cta} !important;border-color:${BRAND.cta} !important; }
+    [data-ogsc] .email-button-secondary { background:${BRAND.ink3} !important;border-color:rgba(255,138,122,.32) !important; }
     [data-ogsc] a { color: ${BRAND.coral} !important; }
+    [data-ogsc] .email-button a,
+    [data-ogsc] .email-button-link { color:#ffffff !important;text-decoration:none !important; }
   </style>
 </head>
 <body style="margin:0;padding:0;background:${BRAND.bg};color:${BRAND.text};">
