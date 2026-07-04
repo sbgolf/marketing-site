@@ -121,7 +121,7 @@ test('intake textareas are tall enough for long placeholder guidance', () => {
     ['race_schedule', 5],
     ['sponsors', 5],
     ['faqs', 5],
-    ['optional_notes', 6],
+    ['optional_notes', 5],
   ]) {
     assert.match(intakeSource, new RegExp(`name="${name}" rows="${rows}" class="textarea-large"`));
   }
