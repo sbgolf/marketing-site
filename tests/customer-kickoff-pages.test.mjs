@@ -54,11 +54,30 @@ test('customer kickoff pages are excluded from generated sitemap output', () => 
 test('asset checklist page is framed as customer kickoff preparation with prospect escape routes', () => {
   assert.match(assetChecklistSource, /Customer Kickoff Asset Checklist — StartLine Sites/);
   assert.match(assetChecklistSource, /Customer kickoff resource/);
-  assert.match(assetChecklistSource, /Use this list after your audit, package approval, and StartLine kickoff/);
+  assert.match(assetChecklistSource, /Use this list after your audit, package approval, or StartLine kickoff/);
+  assert.match(assetChecklistSource, /Drive, Dropbox, Box, or folder link/);
+  assert.match(assetChecklistSource, /StartLine will follow up if a better version is needed/);
   assert.match(assetChecklistSource, /This checklist is for customer kickoff/);
   assert.match(assetChecklistSource, /href="\/#audit">Request a private audit/);
   assert.match(assetChecklistSource, /href="\/#pricing">View pricing/);
   assert.match(assetChecklistSource, /href="\/sample-audit\/">See sample audit/);
+});
+
+test('asset checklist page visually pairs with branded intake kickoff structure', () => {
+  assert.match(assetChecklistSource, /class="trust-row" aria-label="StartLine asset checklist progress"/);
+  assert.match(assetChecklistSource, /Audit or package approved/);
+  assert.match(assetChecklistSource, /Assets gathered in one folder/);
+  assert.match(assetChecklistSource, /Folder link added to intake/);
+  assert.match(assetChecklistSource, /Asset prep pass/);
+  assert.match(assetChecklistSource, /One clean folder beats scattered uploads/);
+  assert.match(assetChecklistSource, /class="prep-card"/);
+  assert.match(assetChecklistSource, /class="checklist-workspace" aria-label="Customer asset checklist workspace"/);
+  assert.match(assetChecklistSource, /What happens next/);
+  assert.match(assetChecklistSource, /one focused follow-up list/);
+  assert.match(assetChecklistSource, /the build can move into staging/);
+  assert.match(assetChecklistSource, /\.simple-nav\{position:relative;z-index:2;.*background:#071426/s);
+  assert.match(assetChecklistSource, /\.checklist-hero\{display:grid;.*background:radial-gradient/s);
+  assert.match(assetChecklistSource, /overflow-x:clip/);
 });
 
 test('intake form support fallback appears near form and error copy stays aligned', () => {
