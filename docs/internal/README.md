@@ -15,8 +15,10 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - Cold race-director UX audit backlog: `startline-cold-race-director-ux-audit-backlog.md`
 - Live-site audit backlog: `startline-live-site-audit-backlog-2026-06-24.md`
 - Customer-test readiness backlog: `startline-live-site-customer-test-readiness-backlog-2026-06-28.md`
-- CDO live-site audit backlog: `startline-cdo-live-site-backlog-2026-06-29.md`
-- Latest CDO live-site audit: `audits/2026-06-29-cdo-audit.md`
+- CDO live-site audit backlog: `startline-cdo-live-site-backlog-2026-07-06.md`
+- Previous CDO live-site audit backlog: `startline-cdo-live-site-backlog-2026-06-29.md`
+- Latest CDO live-site audit: `audits/2026-07-06-cdo-audit.md`
+- Previous CDO live-site audit: `audits/2026-06-29-cdo-audit.md`
 - CDO self-improvement system: `startline-site-improvement-system.md`
 - CDO audit prompt: `prompts/chief-design-officer-site-audit.md`
 - CDO audit report template: `templates/cdo-audit-report-template.md`
