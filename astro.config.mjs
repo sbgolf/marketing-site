@@ -3,6 +3,7 @@ import sitemap from '@astrojs/sitemap';
 
 const isGitHubPages = process.env.GITHUB_PAGES === 'true';
 const sitemapExcludedPaths = [
+  '/access-guides/',
   '/asset-checklist/',
   '/intake/',
   '/outreach-assets/',
