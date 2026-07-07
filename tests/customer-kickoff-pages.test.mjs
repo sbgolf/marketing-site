@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 const intakeSource = await readFile(new URL('../src/pages/intake.astro', import.meta.url), 'utf8');
 const assetChecklistSource = await readFile(new URL('../src/pages/asset-checklist.astro', import.meta.url), 'utf8');
 const accessGuidesSource = await readFile(new URL('../src/pages/access-guides.astro', import.meta.url), 'utf8');
+const stagingReviewSource = await readFile(new URL('../src/pages/staging-review.astro', import.meta.url), 'utf8');
 const astroConfigSource = await readFile(new URL('../astro.config.mjs', import.meta.url), 'utf8');
 
 test('intake page is framed as a post-deposit Launch Readiness Checklist with prospect escape routes', () => {
@@ -47,11 +48,14 @@ test('customer kickoff pages opt out of search indexing while remaining static r
   assert.match(assetChecklistSource, /noindex=\{true\}/);
   assert.match(accessGuidesSource, /canonicalPath="\/access-guides"/);
   assert.match(accessGuidesSource, /noindex=\{true\}/);
+  assert.match(stagingReviewSource, /canonicalPath="\/staging-review"/);
+  assert.match(stagingReviewSource, /noindex=\{true\}/);
 });
 
 test('customer kickoff pages are excluded from generated sitemap output', () => {
   assert.match(astroConfigSource, /['"]\/access-guides\/['"]/);
   assert.match(astroConfigSource, /['"]\/intake\/['"]/);
+  assert.match(astroConfigSource, /['"]\/staging-review\/['"]/);
   assert.match(astroConfigSource, /['"]\/asset-checklist\/['"]/);
   assert.match(astroConfigSource, /filter: \(page\) => !sitemapExcludedPaths\.some/);
 });
@@ -90,6 +94,58 @@ test('access guide links and mobile layout guards stay in place', () => {
   assert.match(accessGuidesSource, /overflow-x:clip/);
   assert.match(accessGuidesSource, /@media\(max-width:1080px\).*\.guide-layout\{grid-template-columns:1fr\}/s);
   assert.match(accessGuidesSource, /@media\(max-width:760px\).*\.index-links\{grid-template-columns:1fr\}/s);
+});
+
+test('staging review page separates review feedback from explicit launch approval', () => {
+  assert.match(stagingReviewSource, /Staging Review Checklist — StartLine Sites/);
+  assert.match(stagingReviewSource, /Staging review handoff/);
+  assert.match(stagingReviewSource, /Review the staging site once\. Approve launch only when it is safe\./);
+  assert.match(stagingReviewSource, /Staging ready is not launch approved/);
+  assert.match(stagingReviewSource, /Staging ready for review/);
+  assert.match(stagingReviewSource, /Approved for public launch/);
+  assert.match(stagingReviewSource, /one consolidated race-team review/);
+  assert.match(stagingReviewSource, /one consolidated list/);
+  assert.match(stagingReviewSource, /one final approver/);
+  assert.match(stagingReviewSource, /href="\/#audit">Request a private audit/);
+});
+
+test('staging review page explains when staging exists and where customer inputs go first', () => {
+  assert.match(stagingReviewSource, /Before staging exists/);
+  assert.match(stagingReviewSource, /StartLine creates the private staging preview after Launch Readiness/);
+  assert.match(stagingReviewSource, /There is not one permanent staging preview for every customer/);
+  assert.match(stagingReviewSource, /Once those inputs are clear enough to build, StartLine sends your private staging preview link/);
+  assert.match(stagingReviewSource, /Tell us what only your team knows/);
+  assert.match(stagingReviewSource, /confirm date, distances, pricing, registration status, policies, sponsors, approvals, and the final decision maker/);
+  assert.match(stagingReviewSource, /Point us to assets and account owners/);
+  assert.match(stagingReviewSource, /DNS owner, domain email, analytics\/search ownership, current site access, and registration platform status/);
+  assert.match(stagingReviewSource, /href="\/intake">Open Launch Readiness Checklist/);
+  assert.match(stagingReviewSource, /href="\/asset-checklist">Asset Hub/);
+  assert.match(stagingReviewSource, /href="\/access-guides">Access Guides/);
+});
+
+test('staging review page locks conversion and launch safety approval checks', () => {
+  for (const label of ['Registration conversion truth', 'Race facts runners trust', 'Launch safety gates']) {
+    assert.match(stagingReviewSource, new RegExp(label));
+  }
+  assert.match(stagingReviewSource, /Registration button goes to the correct public destination/);
+  assert.match(stagingReviewSource, /Prices, provider fees, deadlines, refunds, transfer rules, and policy dates/);
+  assert.match(stagingReviewSource, /Date, start time, location, distances, and course\/map claims/);
+  assert.match(stagingReviewSource, /Sponsor order, logos, photo rights, and required credits/);
+  assert.match(stagingReviewSource, /Domain\/DNS owner and launch timing are known/);
+  assert.match(stagingReviewSource, /Domain email, MX\/SPF\/DKIM, GA4, and Search Console ownership are protected/);
+  assert.match(stagingReviewSource, /Approved for public launch\. Registration status and pricing are current/);
+});
+
+test('staging review links and mobile layout guards stay in place', () => {
+  assert.match(intakeSource, /href="\/staging-review">Staging review/);
+  assert.match(assetChecklistSource, /href="\/staging-review">Staging review/);
+  assert.match(accessGuidesSource, /href="\/staging-review">Staging review/);
+  assert.match(stagingReviewSource, /class="handoff-layout" aria-label="Customer staging review workspace"/);
+  assert.match(stagingReviewSource, /class="check-grid" aria-label="Staging review checklist sections"/);
+  assert.match(stagingReviewSource, /overflow-x:clip/);
+  assert.match(stagingReviewSource, /@media\(max-width:1080px\).*\.before-staging,\.before-grid,\.handoff-layout\{grid-template-columns:1fr\}/s);
+  assert.match(stagingReviewSource, /@media\(max-width:760px\).*\.before-staging\{padding:20px;border-radius:24px\}/s);
+  assert.match(stagingReviewSource, /@media\(max-width:760px\).*\.approval-card\{align-items:flex-start;flex-direction:column\}/s);
 });
 
 test('asset checklist page is framed as a post-deposit Launch Readiness asset hub with prospect escape routes', () => {

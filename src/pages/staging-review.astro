@@ -1,0 +1,153 @@
+---
+import Base from '../layouts/Base.astro';
+const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
+
+const reviewChecks = [
+  {
+    title: 'Registration conversion truth',
+    items: ['Registration button goes to the correct public destination.', 'Open/closed/sold-out/waitlist/access-code state is current.', 'Prices, provider fees, deadlines, refunds, transfer rules, and policy dates match the registration platform.'],
+  },
+  {
+    title: 'Race facts runners trust',
+    items: ['Date, start time, location, distances, and course/map claims are correct.', 'Packet pickup, parking, aid stations, awards, and schedule details are not stale.', 'Sponsor order, logos, photo rights, and required credits are approved.'],
+  },
+  {
+    title: 'Launch safety gates',
+    items: ['Domain/DNS owner and launch timing are known.', 'Domain email, MX/SPF/DKIM, GA4, and Search Console ownership are protected.', 'One final approver has authority to say “approved for public launch.”'],
+  },
+];
+
+const feedbackSteps = [
+  'Share the staging preview with only the people who must approve race facts, registration, sponsors, and launch timing.',
+  'Collect all notes into one consolidated list before sending it back to StartLine.',
+  'Separate “must fix before launch” from nice-to-have edits that can wait until after the site is live.',
+  'Reply with explicit launch approval only after registration truth, DNS/email safety, analytics/search ownership, and final approver are confirmed.',
+];
+---
+<Base
+  title="Staging Review Checklist — StartLine Sites"
+  description="Customer-facing StartLine Sites staging review and final launch approval checklist for race directors."
+  canonicalPath="/staging-review"
+  includeMarketingSchema={false}
+  noindex={true}
+>
+  <nav class="simple-nav" aria-label="Primary">
+    <a href="/" class="brand" aria-label="StartLine Sites home"><img src={brandLogoHref} alt="StartLine Sites" width="1200" height="360" /></a>
+    <div><a href="/intake">Launch Readiness Checklist</a><a href="/asset-checklist">Asset hub</a><a href="/access-guides">Access guides</a><a href="/#audit">Request audit</a></div>
+  </nav>
+  <main id="main" class="review-page">
+    <section class="review-hero">
+      <div>
+        <p class="kicker">Staging review handoff</p>
+        <h1>Review the staging site once. Approve launch only when it is safe.</h1>
+        <p class="lead">Use this checklist when StartLine sends a private staging preview. The goal is one consolidated race-team review that confirms runner-facing truth, registration conversion, and launch safety before anything goes public.</p>
+        <div class="trust-row" aria-label="Staging review progress">
+          <span class="trust-item is-complete"><span class="trust-icon" aria-hidden="true">✓</span><span>Staging ready for review</span></span>
+          <span class="trust-item is-next"><span class="trust-icon" aria-hidden="true">→</span><span>One consolidated feedback pass</span></span>
+          <span class="trust-item"><span class="trust-icon" aria-hidden="true">→</span><span>Explicit launch approval</span></span>
+        </div>
+      </div>
+      <aside class="time-card" aria-label="Important launch distinction">
+        <span class="eyebrow">Do not skip this gate</span>
+        <strong>Staging ready is not launch approved.</strong>
+        <span>A preview can be ready for review while DNS, email safety, analytics/search ownership, registration truth, or final approval still blocks public launch.</span>
+      </aside>
+    </section>
+
+    <section class="prospect-card" aria-labelledby="review-prospect-title">
+      <div>
+        <p class="kicker">Still evaluating StartLine?</p>
+        <h2 id="review-prospect-title">This page is for customers reviewing a private staging preview.</h2>
+        <p>If you are still deciding whether StartLine is a fit, request a private audit first. This review checklist is used after deposit and build work, when your team is confirming a staging site before launch.</p>
+      </div>
+      <div class="prospect-actions" aria-label="Prospect resources">
+        <a class="btn btn-accent" href="/#audit">Request a private audit →</a>
+        <a class="btn btn-ghost" href="/#pricing">View pricing</a>
+        <a class="btn btn-ghost" href="/sample-audit/">See sample audit</a>
+      </div>
+    </section>
+
+    <section class="before-staging" aria-labelledby="before-staging-title">
+      <div>
+        <p class="kicker">Before staging exists</p>
+        <h2 id="before-staging-title">StartLine creates the private staging preview after Launch Readiness.</h2>
+        <p>There is not one permanent staging preview for every customer. After deposit, we send the Launch Readiness Checklist so you can confirm facts, assets, account owners, and launch blockers. Once those inputs are clear enough to build, StartLine sends your private staging preview link for this final review step.</p>
+      </div>
+      <div class="before-grid" aria-label="Where customers provide information before staging">
+        <article>
+          <span class="status-label">Step 1</span>
+          <h3>Tell us what only your team knows.</h3>
+          <p>Use Launch Readiness to confirm date, distances, pricing, registration status, policies, sponsors, approvals, and the final decision maker.</p>
+          <a href="/intake">Open Launch Readiness Checklist →</a>
+        </article>
+        <article>
+          <span class="status-label">Step 2</span>
+          <h3>Point us to assets and account owners.</h3>
+          <p>Use the Asset Hub and Access Guides for logos, photos, course files, DNS owner, domain email, analytics/search ownership, current site access, and registration platform status.</p>
+          <div class="mini-links"><a href="/asset-checklist">Asset Hub</a><a href="/access-guides">Access Guides</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="handoff-layout" aria-label="Customer staging review workspace">
+      <aside class="next-card" aria-labelledby="review-rules-title">
+        <p class="kicker">Review rules</p>
+        <h2 id="review-rules-title">Send one list. Name one final approver.</h2>
+        <ol>
+          {feedbackSteps.map((step) => <li>{step}</li>)}
+        </ol>
+      </aside>
+
+      <div class="handoff-content">
+        <section class="decision-card" aria-labelledby="decision-title">
+          <p class="kicker">Decision boundary</p>
+          <h2 id="decision-title">Separate review feedback from launch approval.</h2>
+          <div class="decision-grid">
+            <article>
+              <span class="status-label">Staging ready for review</span>
+              <h3>Use this when the preview needs race-team corrections.</h3>
+              <p>Send questions, corrections, missing details, sponsor notes, and registration mismatches as one consolidated list.</p>
+            </article>
+            <article>
+              <span class="status-label">Approved for public launch</span>
+              <h3>Use this only when launch blockers are cleared.</h3>
+              <p>Confirm registration truth, domain/email safety, analytics/search ownership, and the final approver before DNS cutover or public launch.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="check-grid" aria-label="Staging review checklist sections">
+          {reviewChecks.map((check) => (
+            <article class="check-card">
+              <p class="kicker">Customer check</p>
+              <h2>{check.title}</h2>
+              <ul>{check.items.map((item) => <li>{item}</li>)}</ul>
+            </article>
+          ))}
+        </section>
+
+        <section class="approval-card" aria-labelledby="approval-title">
+          <div>
+            <p class="kicker">Reply language</p>
+            <h2 id="approval-title">Final approval should be explicit.</h2>
+            <p>When everything is ready, reply with a direct note such as: “Approved for public launch. Registration status and pricing are current. Domain/email safety and analytics/search ownership are confirmed. [Name] is the final approver.”</p>
+          </div>
+          <a class="btn btn-accent" href="mailto:support@startlinesites.com?subject=Staging%20review%20feedback">Email staging feedback</a>
+        </section>
+      </div>
+    </section>
+  </main>
+  <footer class="simple-footer">© 2026 StartLine Sites. Built for search, speed, and signups.</footer>
+</Base>
+
+<style>
+  .simple-nav{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px clamp(20px,5vw,56px);background:#071426;border-bottom:1px solid rgba(255,255,255,.1);box-shadow:0 14px 34px rgba(7,20,38,.16)}
+  .brand{display:inline-flex;align-items:center;background:#fff;border-radius:18px;padding:8px 12px;box-shadow:0 10px 30px rgba(0,0,0,.18)}.brand img{display:block;width:168px;height:auto}.simple-nav div{display:flex;gap:18px;flex-wrap:wrap}.simple-nav a{font-weight:800;font-size:.92rem;color:rgba(255,255,255,.84)}.simple-nav .brand:hover{transform:translateY(-1px)}.simple-nav a:hover{color:#ff7557}
+  .review-page{background:linear-gradient(180deg,#f5eadf 0,var(--paper) 34%,#fff 78%,var(--paper-2));padding:56px clamp(18px,5vw,56px) calc(96px + env(safe-area-inset-bottom));overflow-x:clip}.review-hero,.prospect-card,.before-staging,.handoff-layout{max-width:var(--maxw);margin:0 auto}.review-hero{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;align-items:end;margin-bottom:28px;color:#fff;background:radial-gradient(circle at 82% 8%,rgba(255,117,87,.2),transparent 32%),linear-gradient(180deg,#071426 0,#10213a 100%);border-radius:32px;padding:clamp(28px,5vw,48px);box-shadow:0 28px 90px rgba(14,23,41,.18)}.review-hero h1{font-size:clamp(3rem,7vw,5.8rem);line-height:.9;margin-bottom:20px;letter-spacing:-.045em;color:#fff}.lead{font-size:clamp(1.05rem,2vw,1.3rem);color:rgba(250,250,247,.82);max-width:70ch}.kicker{font-weight:900;font-size:.78rem;text-transform:uppercase;letter-spacing:.14em;color:#d9553d}.review-hero .kicker{color:#ffb199}.eyebrow{display:block;color:#d9553d;font-size:.78rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}.trust-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:26px;max-width:840px}.trust-item{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;min-height:52px;border-left:3px solid rgba(255,117,87,.72);background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);font-weight:800;font-size:.92rem;line-height:1.25;padding:10px 12px;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}.trust-icon{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:999px;background:#fff4ed;color:#b94129;font-weight:900}.trust-item.is-next{border-left-color:#ffb199;background:rgba(255,244,237,.13)}.trust-item.is-next .trust-icon{background:#ff7557;color:#fff}.time-card{background:linear-gradient(145deg,#fff,#f8f1ea);color:var(--ink);border:1px solid rgba(255,255,255,.72);border-radius:var(--r-lg);padding:24px;box-shadow:0 24px 70px rgba(0,0,0,.18);display:grid;gap:10px}.time-card strong{font-size:1.5rem;line-height:1.05}.time-card span:last-child{color:rgba(14,23,41,.68);line-height:1.55}
+  .prospect-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center;background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.8);border-radius:28px;padding:22px;margin-bottom:24px;box-shadow:0 16px 50px rgba(14,23,41,.08);backdrop-filter:blur(14px)}.prospect-card h2,.before-staging h2,.next-card h2{font-size:clamp(1.7rem,3vw,2.25rem);margin-bottom:8px}.prospect-card p,.before-staging p,.next-card li{color:rgba(14,23,41,.7);line-height:1.6}.prospect-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}.prospect-actions .btn{padding:10px 14px;font-size:.9rem}.prospect-actions .btn-accent{background:transparent;color:var(--accent);border:1px solid rgba(217,85,61,.34);box-shadow:none}.prospect-actions .btn-ghost{background:rgba(255,255,255,.72)}
+  .before-staging{display:grid;grid-template-columns:minmax(0,.84fr) minmax(0,1.16fr);gap:20px;background:#fff;border:1px solid rgba(14,23,41,.1);border-radius:30px;padding:clamp(22px,4vw,34px);margin-bottom:24px;box-shadow:0 20px 70px rgba(14,23,41,.08)}.before-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.before-grid article{background:#fff7f2;border:1px solid rgba(217,85,61,.16);border-radius:22px;padding:18px}.before-grid h3{font-size:1.15rem;margin-bottom:8px}.before-grid a{font-weight:900;color:#b94129}.mini-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}.mini-links a{display:inline-flex;border-radius:999px;background:#fff;border:1px solid rgba(217,85,61,.22);padding:8px 10px;font-size:.88rem}
+  .handoff-layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:24px;align-items:start}.next-card{position:sticky;top:24px;grid-column:2;background:#0e1729;color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:30px;padding:24px;box-shadow:0 24px 70px rgba(14,23,41,.2)}.next-card .kicker{color:#ffb199}.next-card h2{color:#fff}.next-card ol{display:grid;gap:16px;margin:18px 0 0;padding-left:22px}.next-card li{color:rgba(255,255,255,.78)}.handoff-content{grid-column:1;grid-row:1;min-width:0}.decision-card,.check-card,.approval-card{background:rgba(255,255,255,.96);border:1px solid rgba(14,23,41,.1);border-radius:30px;padding:clamp(22px,4vw,38px);box-shadow:0 24px 90px rgba(14,23,41,.08)}.decision-card,.check-card{margin-bottom:24px}.decision-card h2,.check-card h2,.approval-card h2{font-size:clamp(1.9rem,3vw,2.35rem);margin-bottom:14px}.decision-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.decision-grid article{background:#fff7f2;border:1px solid rgba(217,85,61,.16);border-radius:22px;padding:20px}.status-label{display:inline-flex;border-radius:999px;background:#0e1729;color:#fff;font-weight:900;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;padding:8px 10px;margin-bottom:14px}.decision-grid h3{font-size:1.2rem;margin-bottom:8px}.decision-grid p,.approval-card p{color:rgba(14,23,41,.72);line-height:1.6}.check-grid{display:grid;gap:24px}.check-card ul{display:grid;gap:10px;color:rgba(14,23,41,.76);padding-left:20px;line-height:1.55}.approval-card{display:flex;align-items:center;justify-content:space-between;gap:24px;background:#0e1729;color:#fff}.approval-card .kicker{color:#ffb199}.approval-card h2{color:#fff}.approval-card p{color:rgba(255,255,255,.78)}.approval-card .btn{white-space:nowrap}.simple-footer{text-align:center;background:#071426;color:rgba(255,255,255,.72);padding:28px}
+  @media(max-width:1080px){.trust-row{grid-template-columns:1fr}.before-staging,.before-grid,.handoff-layout{grid-template-columns:1fr}.next-card{position:relative;top:auto;grid-column:1;grid-row:auto}.handoff-content{grid-column:1;grid-row:auto}.decision-grid{grid-template-columns:1fr}}
+  @media(max-width:760px){.simple-nav{align-items:flex-start;flex-direction:column}.simple-nav div{gap:12px}.brand img{width:150px}.review-page{padding:20px clamp(16px,4vw,24px) calc(120px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#f5eadf 0,var(--paper) 66%,var(--paper-2))}.review-hero,.prospect-card,.before-staging{grid-template-columns:1fr}.review-hero{padding:30px 22px 26px;border-radius:28px;margin-bottom:24px}.before-staging{padding:20px;border-radius:24px}.review-hero h1{font-size:clamp(3rem,17vw,4.45rem)}.trust-row{gap:10px}.trust-item{font-size:.95rem;min-height:50px}.prospect-actions{justify-content:flex-start}.prospect-actions .btn{width:100%;justify-content:center}.decision-card,.check-card,.next-card,.approval-card{border-radius:24px}.decision-card,.check-card,.approval-card{padding:20px}.approval-card{align-items:flex-start;flex-direction:column}.approval-card .btn{width:100%;justify-content:center}}
+</style>
