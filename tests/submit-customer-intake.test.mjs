@@ -17,6 +17,8 @@ const validPayload = (overrides = {}) => ({
   distances_pricing: 'Marathon $120, Half Marathon $95, 5K $35.',
   registration_url: 'https://runsignup.com/example-marathon',
   registration_platform: 'RunSignup',
+  registration_status: 'Open',
+  pricing_confidence: 'Confirmed base prices before provider fees',
   course_logistics: 'Loop course from downtown with aid every 2 miles.',
   bq_certification: 'USATF certified and Boston qualifier.',
   race_schedule: 'Expo Saturday, marathon Sunday at 7:00 AM.',
@@ -26,6 +28,10 @@ const validPayload = (overrides = {}) => ({
   email_capture: 'No email capture needed for launch.',
   identity_hero_image: 'finish-line-crowd.jpg',
   assets_link: 'https://drive.google.com/drive/folders/example',
+  domain_dns_status: 'I control it',
+  domain_email_status: 'We use email at this domain',
+  analytics_search_status: 'Another Google account owner can grant access',
+  final_approver: 'Race Director <director@example.com>',
   analytics_access_notes: 'GA4 access can be shared after kickoff.',
   optional_notes: 'Please use generic placeholder copy where details are missing.',
   landing_page: 'https://startlinesites.com/intake',
@@ -138,13 +144,19 @@ test('submit-customer-intake stores intake and sends support plus customer email
     assert.match(update.body.launch_readiness_updated_at, /^\d{4}-\d{2}-\d{2}T/);
     assert.equal(update.body.registration_confirmation_status, 'confirmed');
     assert.equal(update.body.asset_permission_status, 'confirmed');
-    assert.equal(update.body.domain_dns_status, 'requested');
-    assert.equal(update.body.domain_email_status, 'unknown');
-    assert.equal(update.body.analytics_status, 'unknown');
-    assert.equal(update.body.search_console_status, 'unknown');
-    assert.equal(update.body.final_approver_status, 'requested');
+    assert.equal(update.body.domain_dns_status, 'confirmed');
+    assert.equal(update.body.domain_email_status, 'requested');
+    assert.equal(update.body.analytics_status, 'confirmed');
+    assert.equal(update.body.search_console_status, 'confirmed');
+    assert.equal(update.body.final_approver_status, 'confirmed');
     assert.equal(update.body.launch_blocker_summary, null);
     assert.equal(update.body.launch_readiness_dependencies.registration.status, 'confirmed');
+    assert.equal(update.body.launch_readiness_dependencies.registration.current_status, 'Open');
+    assert.equal(update.body.launch_readiness_dependencies.registration.pricing_confidence, 'Confirmed base prices before provider fees');
+    assert.equal(update.body.launch_readiness_dependencies.domain_dns.status, 'confirmed');
+    assert.equal(update.body.launch_readiness_dependencies.domain_email.owner_answer, 'We use email at this domain');
+    assert.equal(update.body.launch_readiness_dependencies.analytics_search.owner_answer, 'Another Google account owner can grant access');
+    assert.equal(update.body.launch_readiness_dependencies.final_approval.approver_candidate, 'Race Director <director@example.com>');
     assert.equal(update.body.launch_readiness_dependencies.assets_permissions.status, 'confirmed');
     assert.deepEqual(update.body.launch_readiness_dependencies.missing_critical_inputs, []);
     assert.equal(update.body.customer_intake_submission_id, 'intake-123');
