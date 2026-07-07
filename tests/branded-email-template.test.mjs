@@ -4,7 +4,12 @@ import test from 'node:test';
 import { renderCustomerAuditConfirmationEmail } from '../netlify/functions/submit-audit-request.mjs';
 import { renderCustomerIntakeConfirmationEmail } from '../netlify/functions/submit-customer-intake.mjs';
 import { renderCustomerKickoffEmail } from '../netlify/functions/stripe-webhook.mjs';
-import { renderBrandedEmail, renderEmailButton } from '../netlify/functions/lib/branded-email.mjs';
+import {
+  launchReadinessEmailTemplateNames,
+  renderBrandedEmail,
+  renderEmailButton,
+  renderLaunchReadinessCustomerEmail,
+} from '../netlify/functions/lib/branded-email.mjs';
 
 const assertBrandedCustomerEmail = (html) => {
   assert.match(html, /<meta name="color-scheme" content="light dark">/);
@@ -57,8 +62,8 @@ test('customer audit confirmation uses branded email shell with light/dark mode 
   assert.match(html, /Pay the first-year package deposit/);
 });
 
-test('customer kickoff email uses branded email shell and CTA buttons for post-deposit next steps', () => {
-  const { html } = renderCustomerKickoffEmail({
+test('customer kickoff email uses Launch Readiness Kit language and customer email shell', () => {
+  const { html, text } = renderCustomerKickoffEmail({
     customer: {
       race_name: 'Ocean Marathon',
       primary_contact_name: 'Taylor',
@@ -71,8 +76,13 @@ test('customer kickoff email uses branded email shell and CTA buttons for post-d
   });
 
   assertBrandedCustomerEmail(html);
-  assert.match(html, /Complete the intake form/);
-  assert.match(html, /Review the asset checklist/);
+  assert.match(html, /Launch Readiness Kit/);
+  assert.match(html, /Open Launch Readiness Checklist/);
+  assert.match(html, /Review the Asset Hub/);
+  assert.match(html, /confirm what StartLine found, add what only your team knows/);
+  assert.match(text, /Launch Readiness Kit/);
+  assert.match(text, /Open Launch Readiness Checklist: https:\/\/startlinesites\.com\/intake/);
+  assert.match(text, /Review the Asset Hub: https:\/\/startlinesites\.com\/asset-checklist/);
 });
 
 test('customer intake confirmation uses branded email shell and asset-checklist CTA', () => {
@@ -87,6 +97,50 @@ test('customer intake confirmation uses branded email shell and asset-checklist 
 
   assertBrandedCustomerEmail(html);
   assert.match(html, /Review the asset checklist/);
+});
+
+test('Launch Readiness customer template set covers deposit through launch approval messages', () => {
+  assert.deepEqual(launchReadinessEmailTemplateNames, [
+    'depositKickoff',
+    'launchReadiness',
+    'missingDependency',
+    'accessRequest',
+    'assetRequest',
+    'stagingReview',
+    'launchApproval',
+  ]);
+
+  const expectations = {
+    depositKickoff: [/Launch Readiness Kit/, /Open Launch Readiness Checklist/, /Review the Asset Hub/],
+    launchReadiness: [/Confirm Launch Readiness for Ocean Marathon/, /I don’t know yet/, /Review access guides/],
+    missingDependency: [/launch dependencies need owners/, /No passwords by email/, /Update Launch Readiness/],
+    accessRequest: [/Access owner help/, /delegated access/i, /avoid emailing passwords/],
+    assetRequest: [/Assets and permissions/, /Best \/ okay \/ send what you have/, /Open Asset Hub/],
+    stagingReview: [/Review the staging site/, /one consolidated list of committee feedback/, /Open staging preview/],
+    launchApproval: [/Final launch approval/, /registration CTA, prices, deadlines/, /Review final preview/],
+  };
+
+  for (const template of launchReadinessEmailTemplateNames) {
+    const { subject, text, html } = renderLaunchReadinessCustomerEmail({
+      template,
+      raceName: 'Ocean Marathon',
+      customerName: 'Taylor',
+      primaryUrl: template === 'stagingReview' ? 'https://preview.example/ocean' : 'https://startlinesites.com/intake',
+      secondaryUrl: 'https://startlinesites.com/access-guides',
+      detail: 'StartLine is grouping the next Launch Readiness step so the build can keep moving safely.',
+    });
+
+    assert.ok(subject.includes('Ocean Marathon'));
+    assertBrandedCustomerEmail(html);
+    assert.match(text, /Thanks,\nSteve, CEO & Founder\nStartLineSites\.com/);
+    assert.match(html, /StartLine is grouping the next Launch Readiness step/);
+    assert.doesNotMatch(html, /passwords? by email as the default/i);
+    for (const expected of expectations[template]) assert.match(`${subject}\n${text}\n${html}`, expected);
+  }
+});
+
+test('Launch Readiness customer templates reject unknown template names', () => {
+  assert.throws(() => renderLaunchReadinessCustomerEmail({ template: 'surprise' }), /Unknown Launch Readiness email template/);
 });
 
 test('branded email button styles keep CTA text white and preserve secondary treatment in dark-mode overrides', () => {

@@ -242,7 +242,10 @@ test('webhook handler records a paid Standard deposit and creates kickoff-ready 
 
     const kickoffEmail = calls.find((call) => call.url === 'https://api.resend.com/emails' && call.body?.subject === 'Next steps for Example Marathon');
     assert.ok(kickoffEmail);
-    assert.match(kickoffEmail.body.text, /Intake form: https:\/\/startlinesites\.com\/intake\?source=kickoff&token=[A-Za-z0-9_-]{32,200}/);
+    assert.match(kickoffEmail.body.text, /Open Launch Readiness Checklist: https:\/\/startlinesites\.com\/intake\?source=kickoff&token=[A-Za-z0-9_-]{32,200}/);
+    assert.match(kickoffEmail.body.text, /Review the Asset Hub: https:\/\/startlinesites\.com\/asset-checklist/);
+    assert.match(kickoffEmail.body.html, /Launch Readiness Kit/);
+    assert.match(kickoffEmail.body.html, /Open Launch Readiness Checklist/);
     const rawToken = kickoffEmail.body.text.match(/token=([A-Za-z0-9_-]{32,200})/)?.[1];
     assert.ok(rawToken);
     assert.equal(hashIntakeToken(rawToken), customerInsert.body.intake_token_hash);

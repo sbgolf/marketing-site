@@ -1,12 +1,7 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 import {
-  CLIENT_SIGNATURE_TEXT,
-  escapeHtml,
-  renderBrandedEmail,
-  renderEmailButton,
-  renderInfoCard,
-  renderSignatureHtml,
+  renderLaunchReadinessCustomerEmail,
 } from './lib/branded-email.mjs';
 
 const MAX_BODY_BYTES = Number(process.env.STARTLINE_STRIPE_WEBHOOK_MAX_BODY_BYTES || 100_000);
@@ -728,44 +723,15 @@ export const renderCustomerKickoffEmail = ({ customer, session, tier, intakeUrl,
   const raceName = customer.race_name || session.metadata?.race_name || 'your race';
   const customerName = customer.primary_contact_name || session.customer_details?.name || 'there';
   const amount = `$${(session.amount_total / 100).toLocaleString('en-US')}`;
-  const subject = `Next steps for ${raceName}`;
-  const text = [
-    `Hi ${customerName},`,
-    '',
-    `Thanks — we received the ${amount} ${tier} setup deposit for ${raceName}.`,
-    '',
-    'Next step: complete the intake form and gather the assets we need to build the site.',
-    '',
-    `Intake form: ${intakeUrl}`,
-    `Asset checklist: ${assetChecklistUrl}`,
-    '',
-    'The build timeline starts once we have complete intake details and usable assets. If anything is unclear or missing, we’ll follow up with a short list instead of making you redo the whole form.',
-    '',
-    'Reply here if you have questions.',
-    '',
-    CLIENT_SIGNATURE_TEXT,
-  ].join('\n');
 
-  const html = renderBrandedEmail({
-    preheader: `Deposit received for ${raceName}. Complete the intake and gather launch assets.`,
-    heading: `Next steps for ${raceName}`,
-    body: `
-      <p style="margin:0 0 16px;">Hi ${escapeHtml(customerName)},</p>
-      <p style="margin:0 0 18px;">Thanks — we received the <strong>${escapeHtml(amount)} ${escapeHtml(tier)}</strong> setup deposit for <strong>${escapeHtml(raceName)}</strong>.</p>
-      ${renderInfoCard({
-        title: 'Your next step',
-        children: '<p style="margin:0;color:#DDE7F3;">Complete the intake form and gather the assets we need to build the site.</p>',
-        tone: 'gold',
-      })}
-      ${renderEmailButton({ href: intakeUrl, label: 'Complete the intake form' })}
-      ${renderEmailButton({ href: assetChecklistUrl, label: 'Review the asset checklist', variant: 'secondary' })}
-      <p style="margin:18px 0 0;">The build timeline starts once we have complete intake details and usable assets. If anything is unclear or missing, we’ll follow up with a short list instead of making you redo the whole form.</p>
-      <p style="margin:16px 0 0;">Reply here if you have questions.</p>
-      ${renderSignatureHtml()}
-    `,
+  return renderLaunchReadinessCustomerEmail({
+    template: 'depositKickoff',
+    raceName,
+    customerName,
+    primaryUrl: intakeUrl,
+    secondaryUrl: assetChecklistUrl,
+    detail: `Thanks — we received the ${amount} ${tier} setup deposit for ${raceName}. Use the Launch Readiness Kit to confirm what StartLine found, add what only your team knows, and gather the access-owner notes needed before launch.`,
   });
-
-  return { subject, text, html };
 };
 
 const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, session, tier }) => {
