@@ -226,6 +226,15 @@ test('webhook handler records a paid Standard deposit and creates kickoff-ready 
     assert.equal(customerInsert.body.deposit_status, 'paid');
     assert.equal(customerInsert.body.kickoff_status, 'ready');
     assert.equal(customerInsert.body.intake_status, 'ready_to_send');
+    assert.equal(customerInsert.body.launch_readiness_status, 'ready_to_send');
+    assert.match(customerInsert.body.launch_readiness_updated_at, /^\d{4}-\d{2}-\d{2}T/);
+    assert.equal(customerInsert.body.registration_confirmation_status, 'unknown');
+    assert.equal(customerInsert.body.asset_permission_status, 'requested');
+    assert.equal(customerInsert.body.domain_dns_status, 'unknown');
+    assert.equal(customerInsert.body.analytics_status, 'unknown');
+    assert.equal(customerInsert.body.search_console_status, 'unknown');
+    assert.equal(customerInsert.body.final_approver_status, 'unknown');
+    assert.equal(customerInsert.body.launch_readiness_dependencies.assets_permissions.status, 'requested');
     assert.equal(customerInsert.body.setup_tier, 'standard');
     assert.match(customerInsert.body.intake_token_hash, /^[a-f0-9]{64}$/);
     assert.match(customerInsert.body.intake_token_created_at, /^\d{4}-\d{2}-\d{2}T/);
@@ -239,6 +248,13 @@ test('webhook handler records a paid Standard deposit and creates kickoff-ready 
     assert.equal(hashIntakeToken(rawToken), customerInsert.body.intake_token_hash);
     assert.doesNotMatch(JSON.stringify(customerInsert.body), new RegExp(rawToken));
     assert.doesNotMatch(JSON.stringify(kickoffEmail.body), /intake_token_hash|stripe_customer_id|cus_123|pi_123/);
+
+    const kickoffUpdate = calls.find((call) => call.url.includes('/customer_records?id=eq.customer-123') && call.method === 'PATCH');
+    assert.equal(kickoffUpdate.body.kickoff_status, 'started');
+    assert.equal(kickoffUpdate.body.intake_status, 'sent');
+    assert.equal(kickoffUpdate.body.launch_readiness_status, 'sent');
+    assert.match(kickoffUpdate.body.launch_readiness_sent_at, /^\d{4}-\d{2}-\d{2}T/);
+    assert.match(kickoffUpdate.body.launch_readiness_updated_at, /^\d{4}-\d{2}-\d{2}T/);
   } finally {
     process.env = originalEnv;
     global.fetch = originalFetch;
