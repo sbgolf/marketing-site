@@ -10,9 +10,10 @@ The post-deposit customer email sends after a processed setup deposit when these
 
 - `STARTLINE_INTAKE_FORM_URL=https://startlinesites.com/intake`
 - `STARTLINE_ASSET_CHECKLIST_URL=https://startlinesites.com/asset-checklist`
+- `STARTLINE_ACCESS_GUIDES_URL=https://startlinesites.com/access-guides` (optional; defaults to the production access guide)
 - `RESEND_API_KEY` or `STARTLINE_RESEND_API_KEY`
 
-If either required URL is missing, the webhook skips the customer email and leaves the customer record in manual-ready state.
+If either required URL is missing, the webhook skips the customer email and leaves the customer record in manual-ready state. If a Launch Readiness Kit was already sent for the customer record, the webhook must not send another customer email on a later checkout event for the same session.
 
 ## Shared customer email rules
 
@@ -44,6 +45,7 @@ launchApproval
 
 **Primary CTA:** Open Launch Readiness Checklist
 **Secondary CTA:** Review the Asset Hub
+**Third CTA:** Open access guides
 
 ```text
 Hi [customer name],
@@ -57,6 +59,7 @@ What to do now:
 
 Open Launch Readiness Checklist: [STARTLINE_INTAKE_FORM_URL]
 Review the Asset Hub: [STARTLINE_ASSET_CHECKLIST_URL]
+Open access guides: [STARTLINE_ACCESS_GUIDES_URL]
 
 Reply here if anything changed or if a different account owner should be included.
 
@@ -152,6 +155,10 @@ Customer asks:
 - `launch_readiness_updated_at = now()`
 - `intake_sent_at = now()`
 - `metadata.kickoff_email.sent_at = now()`
+- `metadata.kickoff_email.template = depositKickoff`
+- `metadata.kickoff_email.provider = resend`
+- `metadata.kickoff_email.provider_message_id = [Resend email id when available]`
+- `metadata.kickoff_email.access_guides_url = [configured or default access guide URL]`
 
 ## Guardrails
 

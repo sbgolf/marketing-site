@@ -565,9 +565,10 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
   const existingCustomerRows = await supabaseFetch({
     supabaseUrl,
     serviceKey,
-    path: `customer_records?select=${encodeURIComponent('id,intake_token_hash,intake_token_created_at,intake_status')}&stripe_checkout_session_id=eq.${encodeURIComponent(session.id)}&limit=1`,
+    path: `customer_records?select=${encodeURIComponent('id,intake_token_hash,intake_token_created_at,kickoff_status,intake_status,intake_sent_at,launch_readiness_status,launch_readiness_sent_at,metadata')}&stripe_checkout_session_id=eq.${encodeURIComponent(session.id)}&limit=1`,
   });
   const existingCustomer = Array.isArray(existingCustomerRows) ? existingCustomerRows[0] : null;
+  const existingLaunchReadinessSent = existingCustomer?.launch_readiness_status === 'sent' || Boolean(existingCustomer?.metadata?.kickoff_email?.sent_at);
   const shouldCreateIntakeToken = !existingCustomer?.intake_token_hash;
   const rawIntakeToken = shouldCreateIntakeToken ? generateIntakeToken() : null;
   const intakeTokenHash = rawIntakeToken ? hashIntakeToken(rawIntakeToken) : null;
@@ -599,6 +600,7 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
   }
 
   const metadata = {
+    ...(existingCustomer?.metadata || {}),
     stripe_deposit: stripeDeposit,
     audit_request_match: auditRequest
       ? { status: 'matched', method: mappingMethod, audit_request_id: auditRequest.id }
@@ -633,9 +635,13 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
       deposit_status: 'paid',
       final_invoice_status: 'not_sent',
       subscription_status: 'not_started',
-      kickoff_status: 'ready',
-      intake_status: 'ready_to_send',
-      launch_readiness_status: 'ready_to_send',
+      kickoff_status: existingLaunchReadinessSent ? (existingCustomer.kickoff_status || 'started') : 'ready',
+      intake_status: existingLaunchReadinessSent ? (existingCustomer.intake_status || 'sent') : 'ready_to_send',
+      launch_readiness_status: existingLaunchReadinessSent ? 'sent' : 'ready_to_send',
+      ...(existingLaunchReadinessSent ? {
+        launch_readiness_sent_at: existingCustomer.launch_readiness_sent_at || existingCustomer.metadata?.kickoff_email?.sent_at,
+        intake_sent_at: existingCustomer.intake_sent_at || existingCustomer.metadata?.kickoff_email?.sent_at,
+      } : {}),
       launch_readiness_updated_at: new Date().toISOString(),
       launch_readiness_dependencies: launchReadinessDependencies,
       domain_dns_status: 'unknown',
@@ -667,8 +673,12 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
       ...customerRows[0],
       intake_token_hash: customerRows[0].intake_token_hash || existingCustomer?.intake_token_hash || intakeTokenHash,
       intake_token_created_at: customerRows[0].intake_token_created_at || existingCustomer?.intake_token_created_at || intakeTokenCreatedAt,
+      launch_readiness_status: existingLaunchReadinessSent ? 'sent' : (customerRows[0].launch_readiness_status || existingCustomer?.launch_readiness_status),
+      launch_readiness_sent_at: customerRows[0].launch_readiness_sent_at || existingCustomer?.launch_readiness_sent_at,
+      metadata: customerRows[0].metadata || existingCustomer?.metadata || {},
     } : null,
     intake_token: rawIntakeToken,
+    launch_readiness_already_sent: existingLaunchReadinessSent,
     mapping_method: mappingMethod,
   };
 };
@@ -719,7 +729,7 @@ const sendDepositNotification = async ({ result, session, tier }) => {
   }
 };
 
-export const renderCustomerKickoffEmail = ({ customer, session, tier, intakeUrl, assetChecklistUrl }) => {
+export const renderCustomerKickoffEmail = ({ customer, session, tier, intakeUrl, assetChecklistUrl, accessGuidesUrl }) => {
   const raceName = customer.race_name || session.metadata?.race_name || 'your race';
   const customerName = customer.primary_contact_name || session.customer_details?.name || 'there';
   const amount = `$${(session.amount_total / 100).toLocaleString('en-US')}`;
@@ -730,6 +740,7 @@ export const renderCustomerKickoffEmail = ({ customer, session, tier, intakeUrl,
     customerName,
     primaryUrl: intakeUrl,
     secondaryUrl: assetChecklistUrl,
+    tertiaryUrl: accessGuidesUrl,
     detail: `Thanks — we received the ${amount} ${tier} setup deposit for ${raceName}. Use the Launch Readiness Kit to confirm what StartLine found, add what only your team knows, and gather the access-owner notes needed before launch.`,
   });
 };
@@ -738,15 +749,19 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
   const apiKey = process.env.RESEND_API_KEY || process.env.STARTLINE_RESEND_API_KEY;
   const intakeUrl = clean(process.env.STARTLINE_INTAKE_FORM_URL || '', 1000);
   const assetChecklistUrl = clean(process.env.STARTLINE_ASSET_CHECKLIST_URL || '', 1000);
+  const accessGuidesUrl = clean(process.env.STARTLINE_ACCESS_GUIDES_URL || 'https://startlinesites.com/access-guides', 1000);
   const customer = result.customer_record;
   const toEmail = customer?.primary_contact_email || session.customer_details?.email || session.customer_email;
 
   if (!apiKey || result.status !== 'processed' || !customer?.id || !toEmail || !intakeUrl || !assetChecklistUrl) return { sent: false };
+  if (result.launch_readiness_already_sent || customer.launch_readiness_status === 'sent' || customer.metadata?.kickoff_email?.sent_at) {
+    return { sent: false, skipped: 'already_sent' };
+  }
 
   const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
   const replyTo = clean(process.env.STARTLINE_KICKOFF_REPLY_TO || process.env.STARTLINE_ADMIN_EMAIL || '', 254) || undefined;
   const tokenizedIntakeUrl = appendIntakeToken(intakeUrl, result.intake_token);
-  const { subject, text, html } = renderCustomerKickoffEmail({ customer, session, tier, intakeUrl: tokenizedIntakeUrl, assetChecklistUrl });
+  const { subject, text, html } = renderCustomerKickoffEmail({ customer, session, tier, intakeUrl: tokenizedIntakeUrl, assetChecklistUrl, accessGuidesUrl });
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -770,6 +785,9 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
     return { sent: false };
   }
 
+  const emailResult = await response.json().catch(() => ({}));
+  const sentAt = new Date().toISOString();
+
   await supabaseFetch({
     supabaseUrl,
     serviceKey,
@@ -779,16 +797,20 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
       kickoff_status: 'started',
       intake_status: 'sent',
       launch_readiness_status: 'sent',
-      launch_readiness_sent_at: new Date().toISOString(),
-      launch_readiness_updated_at: new Date().toISOString(),
-      intake_sent_at: new Date().toISOString(),
+      launch_readiness_sent_at: sentAt,
+      launch_readiness_updated_at: sentAt,
+      intake_sent_at: sentAt,
       metadata: {
         ...(customer.metadata || {}),
         kickoff_email: {
-          sent_at: new Date().toISOString(),
+          sent_at: sentAt,
+          template: 'depositKickoff',
+          provider: 'resend',
+          provider_message_id: clean(emailResult?.id || '', 200) || null,
           to: toEmail,
           intake_url_configured: true,
           asset_checklist_url_configured: true,
+          access_guides_url: accessGuidesUrl,
           intake_prefill_token_used: Boolean(result.intake_token),
         },
       },
@@ -796,7 +818,7 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
     headers: { prefer: 'return=minimal' },
   });
 
-  return { sent: true };
+  return { sent: true, provider_message_id: clean(emailResult?.id || '', 200) || null };
 };
 
 export async function handler(event) {
@@ -918,7 +940,7 @@ export async function handler(event) {
     });
     await sendDepositNotification({ result, session, tier: classification.tier });
     await sendCustomerKickoffEmail({ supabaseUrl, serviceKey, result, session, tier: classification.tier });
-    const { customer_record: _customerRecord, intake_token: _intakeToken, ...publicResult } = result;
+    const { customer_record: _customerRecord, intake_token: _intakeToken, launch_readiness_already_sent: _launchReadinessAlreadySent, ...publicResult } = result;
     return json(200, { ok: true, ...publicResult });
   } catch (error) {
     console.error('Stripe deposit processing failed', error);

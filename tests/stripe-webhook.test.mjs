@@ -244,6 +244,7 @@ test('webhook handler records a paid Standard deposit and creates kickoff-ready 
     assert.ok(kickoffEmail);
     assert.match(kickoffEmail.body.text, /Open Launch Readiness Checklist: https:\/\/startlinesites\.com\/intake\?source=kickoff&token=[A-Za-z0-9_-]{32,200}/);
     assert.match(kickoffEmail.body.text, /Review the Asset Hub: https:\/\/startlinesites\.com\/asset-checklist/);
+    assert.match(kickoffEmail.body.text, /Open access guides: https:\/\/startlinesites\.com\/access-guides/);
     assert.match(kickoffEmail.body.html, /Launch Readiness Kit/);
     assert.match(kickoffEmail.body.html, /Open Launch Readiness Checklist/);
     const rawToken = kickoffEmail.body.text.match(/token=([A-Za-z0-9_-]{32,200})/)?.[1];
@@ -258,6 +259,107 @@ test('webhook handler records a paid Standard deposit and creates kickoff-ready 
     assert.equal(kickoffUpdate.body.launch_readiness_status, 'sent');
     assert.match(kickoffUpdate.body.launch_readiness_sent_at, /^\d{4}-\d{2}-\d{2}T/);
     assert.match(kickoffUpdate.body.launch_readiness_updated_at, /^\d{4}-\d{2}-\d{2}T/);
+    assert.equal(kickoffUpdate.body.metadata.kickoff_email.template, 'depositKickoff');
+    assert.equal(kickoffUpdate.body.metadata.kickoff_email.provider, 'resend');
+    assert.equal(kickoffUpdate.body.metadata.kickoff_email.provider_message_id, 'email-123');
+    assert.equal(kickoffUpdate.body.metadata.kickoff_email.access_guides_url, 'https://startlinesites.com/access-guides');
+    assert.doesNotMatch(JSON.stringify(kickoffUpdate.body.metadata), /service-role|re_test|whsec|intake_token_hash|cus_123|pi_123/);
+  } finally {
+    process.env = originalEnv;
+    global.fetch = originalFetch;
+  }
+});
+
+test('webhook handler skips Launch Readiness Kit resend when customer record was already sent', async () => {
+  const originalEnv = { ...process.env };
+  const originalFetch = global.fetch;
+  const calls = [];
+  const secret = 'whsec_test';
+  const stripeEvent = {
+    id: 'evt_standard_paid_second_event',
+    type: 'checkout.session.completed',
+    created: 1_700_000_000,
+    livemode: false,
+    data: {
+      object: {
+        id: 'cs_standard_existing_sent',
+        mode: 'payment',
+        payment_status: 'paid',
+        amount_total: 125_000,
+        currency: 'usd',
+        customer: 'cus_789',
+        payment_intent: 'pi_789',
+        customer_details: { email: 'director@example.com', name: 'Race Director' },
+        metadata: { startline_payment_type: 'deposit', setup_tier: 'standard', audit_request_id: 'audit-789' },
+      },
+    },
+  };
+  const rawBody = JSON.stringify(stripeEvent);
+
+  process.env.SUPABASE_URL = 'https://supabase.example';
+  process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
+  process.env.STRIPE_WEBHOOK_SECRET = secret;
+  process.env.STRIPE_WEBHOOK_TOLERANCE_SECONDS = '999999999';
+  process.env.RESEND_API_KEY = 're_test';
+  process.env.STARTLINE_INTAKE_FORM_URL = 'https://startlinesites.com/intake?source=kickoff';
+  process.env.STARTLINE_ASSET_CHECKLIST_URL = 'https://startlinesites.com/asset-checklist';
+
+  global.fetch = async (url, options = {}) => {
+    calls.push({ url: String(url), method: options.method || 'GET', body: options.body ? JSON.parse(options.body) : null });
+
+    if (String(url).includes('/stripe_webhook_events') && options.method === 'POST') {
+      return new Response(JSON.stringify([{ id: 'webhook-row-second-event' }]), { status: 201 });
+    }
+    if (String(url).includes('/audit_requests?id=eq.audit-789') && (options.method || 'GET') === 'GET') {
+      return new Response(JSON.stringify([{
+        id: 'audit-789',
+        race_name: 'Already Sent Marathon',
+        current_url: 'https://example.com',
+        contact_name: 'Race Director',
+        contact_email: 'director@example.com',
+        metadata: { selected_package: { tier: 'standard' } },
+      }]), { status: 200 });
+    }
+    if (String(url).includes('/customer_records?select=') && String(url).includes('stripe_checkout_session_id=eq.cs_standard_existing_sent')) {
+      return new Response(JSON.stringify([{
+        id: 'customer-existing-sent',
+        intake_token_hash: 'b'.repeat(64),
+        intake_token_created_at: '2026-07-01T00:00:00.000Z',
+        intake_status: 'sent',
+        launch_readiness_status: 'sent',
+        launch_readiness_sent_at: '2026-07-01T00:00:00.000Z',
+        metadata: { kickoff_email: { sent_at: '2026-07-01T00:00:00.000Z', provider_message_id: 'email-original' } },
+      }]), { status: 200 });
+    }
+    if (String(url).includes('/audit_requests?id=eq.audit-789') && options.method === 'PATCH') {
+      return new Response('', { status: 200 });
+    }
+    if (String(url).includes('/customer_records') && options.method === 'POST') {
+      return new Response(JSON.stringify([{
+        id: 'customer-existing-sent',
+        primary_contact_email: 'director@example.com',
+        race_name: 'Already Sent Marathon',
+        primary_contact_name: 'Race Director',
+        launch_readiness_status: 'ready_to_send',
+        metadata: { stripe_deposit: { checkout_session_id: 'cs_standard_existing_sent' } },
+      }]), { status: 201 });
+    }
+    if (String(url).includes('/stripe_webhook_events') && options.method === 'PATCH') {
+      return new Response('', { status: 200 });
+    }
+    return new Response(JSON.stringify([]), { status: 200 });
+  };
+
+  try {
+    const response = await handler({
+      httpMethod: 'POST',
+      body: rawBody,
+      headers: { 'stripe-signature': sign({ rawBody, secret, timestamp: 1_700_000_000 }) },
+    });
+
+    assert.equal(response.statusCode, 200);
+    assert.equal(calls.some((call) => call.url === 'https://api.resend.com/emails' && call.body?.subject === 'Next steps for Already Sent Marathon'), false);
+    assert.equal(calls.some((call) => call.url.includes('/customer_records?id=eq.customer-existing-sent') && call.method === 'PATCH'), false);
   } finally {
     process.env = originalEnv;
     global.fetch = originalFetch;
