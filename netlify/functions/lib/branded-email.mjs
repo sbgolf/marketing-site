@@ -48,6 +48,155 @@ export const renderInfoCard = ({ title, children }) => `
       ${children}
     </div>`;
 
+export const renderEmailList = (items = []) => `<ul style="margin:0;padding-left:20px;color:#DDE7F3;">${items.map((item) => `<li style="margin:0 0 8px;">${escapeHtml(item)}</li>`).join('')}</ul>`;
+
+const launchReadinessTemplateDefinitions = {
+  depositKickoff: {
+    eyebrow: 'Launch Readiness Kit',
+    heading: ({ raceName }) => `Next steps for ${raceName}`,
+    preheader: ({ raceName }) => `Deposit received for ${raceName}. Confirm what we found and gather launch assets.`,
+    primaryLabel: 'Open Launch Readiness Checklist',
+    secondaryLabel: 'Review the Asset Hub',
+    cardTitle: 'What to do now',
+    cardItems: [
+      'Confirm the public race facts StartLine found.',
+      'Add private details only your team knows.',
+      'Share one asset folder and identify any access owners.',
+    ],
+  },
+  launchReadiness: {
+    eyebrow: 'Launch Readiness Checklist',
+    heading: ({ raceName }) => `Confirm Launch Readiness for ${raceName}`,
+    preheader: ({ raceName }) => `Confirm public facts, registration truth, assets, and access owners for ${raceName}.`,
+    primaryLabel: 'Open Launch Readiness Checklist',
+    secondaryLabel: 'Review access guides',
+    cardTitle: 'Checklist focus',
+    cardItems: [
+      'Confirm race identity, date, location, distances, and official registration link.',
+      'Choose “I don’t know yet” for technical access items another owner controls.',
+      'Name one final approver before launch review starts.',
+    ],
+  },
+  missingDependency: {
+    eyebrow: 'Launch Readiness follow-up',
+    heading: ({ raceName }) => `A few launch dependencies need owners for ${raceName}`,
+    preheader: ({ raceName }) => `StartLine needs a short owner list before ${raceName} can move cleanly toward launch.`,
+    primaryLabel: 'Open access guides',
+    secondaryLabel: 'Update Launch Readiness',
+    cardTitle: 'What we still need',
+    cardItems: [
+      'Owner or status for any missing domain, email, analytics, registration, asset, or approval dependency.',
+      'Delegated access or a screenshare path where account changes are needed.',
+      'No passwords by email — owner names and next steps are enough.',
+    ],
+  },
+  accessRequest: {
+    eyebrow: 'Safe access request',
+    heading: ({ raceName }) => `Access owner help for ${raceName}`,
+    preheader: ({ raceName }) => `StartLine needs safe delegated access or an owner screenshare for ${raceName}.`,
+    primaryLabel: 'Open access guides',
+    secondaryLabel: 'Open Launch Readiness Checklist',
+    cardTitle: 'Safe access options',
+    cardItems: [
+      'Add StartLine as a temporary user where the platform supports it.',
+      'Schedule a screenshare if delegated access is not available.',
+      'Keep the race team as the account owner and avoid emailing passwords.',
+    ],
+  },
+  assetRequest: {
+    eyebrow: 'Asset readiness request',
+    heading: ({ raceName }) => `Assets and permissions for ${raceName}`,
+    preheader: ({ raceName }) => `Send the best available assets for ${raceName}; StartLine will sort rough files and gaps.`,
+    primaryLabel: 'Open Asset Hub',
+    secondaryLabel: 'Update Launch Readiness',
+    cardTitle: 'Best / okay / send what you have',
+    cardItems: [
+      'Share one folder for logos, race-day photos, maps, sponsors, policies, and registration screenshots.',
+      'Label anything permission-pending instead of stalling the whole folder.',
+      'Name the person who can approve photo, sponsor, or old-site reuse.',
+    ],
+  },
+  stagingReview: {
+    eyebrow: 'Staging review',
+    heading: ({ raceName }) => `Review the staging site for ${raceName}`,
+    preheader: ({ raceName }) => `Check the staging site for race facts, registration clarity, and launch blockers for ${raceName}.`,
+    primaryLabel: 'Open staging preview',
+    secondaryLabel: 'Review access guides',
+    cardTitle: 'Review pass',
+    cardItems: [
+      'Check date, location, distances, pricing, policies, sponsor order, and registration CTA truth.',
+      'Send one consolidated list of committee feedback.',
+      'Flag anything that must be fixed before public launch.',
+    ],
+  },
+  launchApproval: {
+    eyebrow: 'Launch approval',
+    heading: ({ raceName }) => `Final launch approval for ${raceName}`,
+    preheader: ({ raceName }) => `Confirm final approval, registration truth, and launch-owner readiness for ${raceName}.`,
+    primaryLabel: 'Review final preview',
+    secondaryLabel: 'Open Launch Readiness Checklist',
+    cardTitle: 'Before launch',
+    cardItems: [
+      'Confirm the registration CTA, prices, deadlines, and policy copy match the provider.',
+      'Confirm DNS/email safety, analytics/search ownership, and final approver are ready.',
+      'Reply with approval only when the race team is ready for StartLine to launch.',
+    ],
+  },
+};
+
+export const launchReadinessEmailTemplateNames = Object.freeze(Object.keys(launchReadinessTemplateDefinitions));
+
+export const renderLaunchReadinessCustomerEmail = ({
+  template,
+  raceName = 'your race',
+  customerName = 'there',
+  primaryUrl,
+  secondaryUrl,
+  detail = '',
+}) => {
+  const definition = launchReadinessTemplateDefinitions[template];
+  if (!definition) throw new Error(`Unknown Launch Readiness email template: ${template}`);
+
+  const safeRaceName = raceName || 'your race';
+  const subject = definition.heading({ raceName: safeRaceName });
+  const detailLine = detail ? `${detail}\n\n` : '';
+  const text = [
+    `Hi ${customerName || 'there'},`,
+    '',
+    detailLine ? detailLine.trim() : `This is the next Launch Readiness step for ${safeRaceName}.`,
+    '',
+    definition.cardTitle + ':',
+    ...definition.cardItems.map((item, index) => `${index + 1}. ${item}`),
+    '',
+    primaryUrl ? `${definition.primaryLabel}: ${primaryUrl}` : null,
+    secondaryUrl ? `${definition.secondaryLabel}: ${secondaryUrl}` : null,
+    '',
+    'Reply here if anything changed or if a different account owner should be included.',
+    '',
+    CLIENT_SIGNATURE_TEXT,
+  ].filter(Boolean).join('\n');
+
+  const html = renderBrandedEmail({
+    eyebrow: definition.eyebrow,
+    preheader: definition.preheader({ raceName: safeRaceName }),
+    heading: subject,
+    body: `
+      <p style="margin:0 0 16px;">Hi ${escapeHtml(customerName || 'there')},</p>
+      <p style="margin:0 0 18px;">${detail ? escapeHtml(detail) : `This is the next Launch Readiness step for ${escapeHtml(safeRaceName)}.`}</p>
+      ${renderInfoCard({
+        title: definition.cardTitle,
+        children: renderEmailList(definition.cardItems),
+      })}
+      ${primaryUrl ? renderEmailButton({ href: primaryUrl, label: definition.primaryLabel }) : ''}
+      ${secondaryUrl ? renderEmailButton({ href: secondaryUrl, label: definition.secondaryLabel, variant: 'secondary' }) : ''}
+      <p style="margin:18px 0 0;">Reply here if anything changed or if a different account owner should be included.</p>
+      ${renderSignatureHtml()}
+    `,
+  });
+
+  return { subject, text, html };
+};
+
 export const renderBrandedEmail = ({ preheader = '', heading, eyebrow = 'StartLine Sites', body }) => `<!doctype html>
 <html lang="en">
 <head>
