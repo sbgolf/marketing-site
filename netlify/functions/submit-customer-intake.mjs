@@ -155,6 +155,34 @@ const buildHandoffChecklist = ({ row, intakeId }) => {
   };
 };
 
+const buildLaunchReadinessDependencySnapshot = ({ row, checklist }) => ({
+  registration: {
+    status: row.registration_url ? 'confirmed' : 'requested',
+    registration_url_present: Boolean(row.registration_url),
+    platform: row.metadata.registration_platform || null,
+  },
+  domain_dns: {
+    status: row.metadata.current_domain ? 'requested' : 'unknown',
+    current_domain_present: Boolean(row.metadata.current_domain),
+    current_domain: row.metadata.current_domain || null,
+  },
+  domain_email: {
+    status: 'unknown',
+  },
+  analytics_search: {
+    status: 'unknown',
+  },
+  assets_permissions: {
+    status: row.metadata.assets_link ? 'confirmed' : 'requested',
+    assets_link_present: Boolean(row.metadata.assets_link),
+  },
+  final_approval: {
+    status: row.contact_name && row.contact_email ? 'requested' : 'unknown',
+    approver_candidate: row.contact_name || null,
+  },
+  missing_critical_inputs: checklist.missing_critical_inputs,
+});
+
 const scoreCustomerMatch = (candidate, row) => {
   const email = normalizeMatchValue(row.contact_email);
   const raceName = normalizeMatchValue(row.race_name);
@@ -214,6 +242,8 @@ const findMatchingCustomerRecord = async ({ supabaseUrl, serviceKey, row }) => {
 const updateBuildHandoff = async ({ supabaseUrl, serviceKey, row, record }) => {
   const customerRecord = await findMatchingCustomerRecord({ supabaseUrl, serviceKey, row });
   const checklist = buildHandoffChecklist({ row, intakeId: record?.id });
+  const launchReadinessDependencies = buildLaunchReadinessDependencySnapshot({ row, checklist });
+  const launchReadinessStatus = checklist.missing_critical_inputs.length ? 'needs_follow_up' : 'build_ready';
   if (!customerRecord) {
     console.warn('Customer intake build handoff skipped: no matching customer record found', { intakeId: record?.id, raceName: row.race_name, contactEmail: row.contact_email });
     return { customerRecord: null, checklist };
@@ -232,7 +262,21 @@ const updateBuildHandoff = async ({ supabaseUrl, serviceKey, row, record }) => {
       customer_intake_submission_id: record?.id || null,
       customer_status: 'build_queued',
       intake_status: 'received',
-      build_status: 'ready_for_build',
+      launch_readiness_status: launchReadinessStatus,
+      launch_readiness_submitted_at: new Date().toISOString(),
+      launch_readiness_updated_at: new Date().toISOString(),
+      launch_readiness_dependencies: launchReadinessDependencies,
+      launch_blocker_summary: checklist.missing_critical_inputs.length
+        ? `Missing critical inputs: ${checklist.missing_critical_inputs.join(', ')}`
+        : null,
+      domain_dns_status: row.metadata.current_domain ? 'requested' : 'unknown',
+      domain_email_status: 'unknown',
+      analytics_status: 'unknown',
+      search_console_status: 'unknown',
+      registration_confirmation_status: row.registration_url ? 'confirmed' : 'requested',
+      asset_permission_status: row.metadata.assets_link ? 'confirmed' : 'requested',
+      final_approver_status: row.contact_name && row.contact_email ? 'requested' : 'unknown',
+      build_status: checklist.missing_critical_inputs.length ? 'blocked' : 'ready_for_build',
       build_handoff_at: new Date().toISOString(),
       build_handoff_checklist: checklist,
     }),

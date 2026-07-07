@@ -533,6 +533,33 @@ const buildStripeDepositMetadata = ({ stripeEvent, session, tier, mappingMethod 
   mapping_method: mappingMethod,
 });
 
+const buildLaunchReadinessDependencies = ({ registrationUrl }) => ({
+  registration: {
+    status: registrationUrl ? 'requested' : 'unknown',
+    needs: ['official registration URL', 'registration state', 'current pricing/open-close dates'],
+  },
+  domain_dns: {
+    status: 'unknown',
+    needs: ['registrar/DNS provider', 'safe delegated access or screen-share path'],
+  },
+  domain_email: {
+    status: 'unknown',
+    needs: ['domain email provider', 'MX/email safety confirmation'],
+  },
+  analytics_search: {
+    status: 'unknown',
+    needs: ['GA4 ownership/access', 'Google Search Console verification path'],
+  },
+  assets_permissions: {
+    status: 'requested',
+    needs: ['logo/photos/sponsor files', 'permission to reuse public assets'],
+  },
+  final_approval: {
+    status: 'unknown',
+    needs: ['single final approver', 'launch review path'],
+  },
+});
+
 const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, session, classification }) => {
   const { tier, pkg } = classification;
   const { auditRequest, mappingMethod } = await findAuditRequest({ supabaseUrl, serviceKey, session, tier });
@@ -583,6 +610,9 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
       : { status: 'not_found', method: mappingMethod, email: billingEmail },
     raw_stripe_metadata: normalizeMetadata(session.metadata),
   };
+  const launchReadinessDependencies = buildLaunchReadinessDependencies({
+    registrationUrl: auditRequest?.registration_url || session.metadata?.registration_url || null,
+  });
 
   const customerRows = await supabaseFetch({
     supabaseUrl,
@@ -610,6 +640,16 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
       subscription_status: 'not_started',
       kickoff_status: 'ready',
       intake_status: 'ready_to_send',
+      launch_readiness_status: 'ready_to_send',
+      launch_readiness_updated_at: new Date().toISOString(),
+      launch_readiness_dependencies: launchReadinessDependencies,
+      domain_dns_status: 'unknown',
+      domain_email_status: 'unknown',
+      analytics_status: 'unknown',
+      search_console_status: 'unknown',
+      registration_confirmation_status: auditRequest?.registration_url || session.metadata?.registration_url ? 'requested' : 'unknown',
+      asset_permission_status: 'requested',
+      final_approver_status: 'unknown',
       stripe_customer_id: stripeDeposit.customer_id,
       stripe_checkout_session_id: stripeDeposit.checkout_session_id,
       stripe_deposit_payment_intent_id: stripeDeposit.payment_intent_id,
@@ -772,6 +812,9 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
     body: {
       kickoff_status: 'started',
       intake_status: 'sent',
+      launch_readiness_status: 'sent',
+      launch_readiness_sent_at: new Date().toISOString(),
+      launch_readiness_updated_at: new Date().toISOString(),
       intake_sent_at: new Date().toISOString(),
       metadata: {
         ...(customer.metadata || {}),

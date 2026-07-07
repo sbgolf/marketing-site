@@ -49,6 +49,8 @@ Quick checklist for StartLine Sites first-year package proposals, deposits, fina
 - [ ] `customer_records.deposit_status = paid`
 - [ ] `customer_records.kickoff_status = ready` or `started` if kickoff email was sent automatically
 - [ ] `customer_records.intake_status = ready_to_send` or `sent` if kickoff email was sent automatically
+- [ ] `customer_records.launch_readiness_status = ready_to_send` or `sent` if the Launch Readiness Kit was sent automatically
+- [ ] `customer_records.launch_readiness_dependencies` has a non-secret dependency snapshot for registration, domain/DNS, email safety, analytics/search, assets, and final approval
 - [ ] Kickoff/welcome email sent manually, or automatically via `STARTLINE_INTAKE_FORM_URL` + `STARTLINE_ASSET_CHECKLIST_URL`
 - [ ] Intake form sent
 - [ ] Asset checklist sent
@@ -58,7 +60,10 @@ Quick checklist for StartLine Sites first-year package proposals, deposits, fina
 - [ ] `customer_intake_submissions` row exists for the race
 - [ ] Matching `customer_records.customer_intake_submission_id` is set, when an existing paid/started customer record exists
 - [ ] `customer_records.intake_status = received`
-- [ ] `customer_records.build_status = ready_for_build`
+- [ ] `customer_records.launch_readiness_status = build_ready`, or `needs_follow_up` when critical inputs are missing
+- [ ] Dependency status fields reflect the submitted checklist (`registration_confirmation_status`, `asset_permission_status`, domain/email/analytics/search/final-approver statuses)
+- [ ] `customer_records.launch_blocker_summary` is empty for build-ready records or names the missing critical inputs
+- [ ] `customer_records.build_status = ready_for_build` when build inputs are complete, or `blocked` when the submitted checklist still lacks critical inputs
 - [ ] `customer_records.build_handoff_at` is populated
 - [ ] Support email includes the build handoff checklist, missing critical inputs, suggested next steps, Supabase intake ID, and customer record ID (or clearly says not matched)
 - [ ] Missing critical inputs are requested before production starts
