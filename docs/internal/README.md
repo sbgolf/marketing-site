@@ -11,6 +11,7 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - Invoice wording and optional recurring-service policy: `billing/invoice-wording-and-monthly-start-policy.md`
 - Stripe/monthly billing automation audit: `billing/stripe-monthly-billing-automation-audit.md`
 - Automation audit/status: `automation-audit-deposit-to-kickoff.md`
+- Launch Readiness workflow: `kickoff/launch-readiness-workflow.md`
 - StartLine UX conversion audit backlog: `startline-ux-conversion-audit-backlog.md`
 - Cold race-director UX audit backlog: `startline-cold-race-director-ux-audit-backlog.md`
 - Live-site audit backlog: `startline-live-site-audit-backlog-2026-06-24.md`
@@ -31,7 +32,8 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 
 - `main` is the production/source-of-truth branch.
 - Dynamic Checkout Session creation, Stripe deposit webhook automation, StartLine-owned intake pages, and kickoff email handoff are implemented and have production smoke coverage.
-- Remaining readiness work should focus on first-customer sales packet polish, fulfillment-template readiness, and public trust proof before scaling outreach.
+- Launch Readiness is the approved direction for post-deposit onboarding: confirm public facts StartLine found, add private race details, collect safe access/ownership items, and use branded customer emails.
+- Remaining readiness work should focus on implementing the Launch Readiness data model/forms/guides/email automation, first-customer sales packet polish, fulfillment-template readiness, and public trust proof before scaling outreach.
 
 ## Standard flow
 

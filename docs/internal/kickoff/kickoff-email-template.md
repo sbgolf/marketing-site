@@ -1,5 +1,7 @@
 # StartLine Sites kickoff email template
 
+Status: current implemented baseline. The Launch Readiness workflow in `launch-readiness-workflow.md` is the approved next direction: this template should evolve from generic "complete the intake" language into a branded Launch Readiness Kit email that asks the customer to confirm public facts, add private details, and prepare access items after deposit.
+
 This is the customer-facing email sent after a processed setup deposit when these Netlify environment variables are configured:
 
 - `STARTLINE_INTAKE_FORM_URL=https://startlinesites.com/intake`
