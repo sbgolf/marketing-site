@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 
 const intakeSource = await readFile(new URL('../src/pages/intake.astro', import.meta.url), 'utf8');
 const assetChecklistSource = await readFile(new URL('../src/pages/asset-checklist.astro', import.meta.url), 'utf8');
+const accessGuidesSource = await readFile(new URL('../src/pages/access-guides.astro', import.meta.url), 'utf8');
 const astroConfigSource = await readFile(new URL('../astro.config.mjs', import.meta.url), 'utf8');
 
 test('intake page is framed as a post-deposit Launch Readiness Checklist with prospect escape routes', () => {
@@ -44,12 +45,51 @@ test('customer kickoff pages opt out of search indexing while remaining static r
   assert.match(intakeSource, /noindex=\{true\}/);
   assert.match(assetChecklistSource, /canonicalPath="\/asset-checklist"/);
   assert.match(assetChecklistSource, /noindex=\{true\}/);
+  assert.match(accessGuidesSource, /canonicalPath="\/access-guides"/);
+  assert.match(accessGuidesSource, /noindex=\{true\}/);
 });
 
 test('customer kickoff pages are excluded from generated sitemap output', () => {
+  assert.match(astroConfigSource, /['"]\/access-guides\/['"]/);
   assert.match(astroConfigSource, /['"]\/intake\/['"]/);
   assert.match(astroConfigSource, /['"]\/asset-checklist\/['"]/);
   assert.match(astroConfigSource, /filter: \(page\) => !sitemapExcludedPaths\.some/);
+});
+
+test('access guides page gives nontechnical Launch Readiness access help without password sharing', () => {
+  assert.match(accessGuidesSource, /Customer Access Guides — StartLine Sites/);
+  assert.match(accessGuidesSource, /Launch Readiness access guides/);
+  assert.match(accessGuidesSource, /Tell us who owns access\. Do not send passwords\./);
+  assert.match(accessGuidesSource, /Owner \+ status \+ next step/);
+  assert.match(accessGuidesSource, /Race keeps ownership/);
+  assert.match(accessGuidesSource, /Delegated access or screenshare/);
+  assert.match(accessGuidesSource, /No passwords by email/);
+  assert.match(accessGuidesSource, /These guides are for post-deposit Launch Readiness/);
+  assert.match(accessGuidesSource, /href="\/intake">Open Launch Readiness Checklist/);
+});
+
+test('access guides cover launch dependency groups and safe answer examples', () => {
+  for (const label of ['Domain / DNS owner', 'Domain email safety', 'GA4 / Search Console ownership', 'Registration link and status', 'Current-site access']) {
+    assert.match(accessGuidesSource, new RegExp(label.replace(/[\/]/g, '\\/')));
+  }
+  assert.match(accessGuidesSource, /Do not email domain passwords/);
+  assert.match(accessGuidesSource, /Do not change mail records casually/);
+  assert.match(accessGuidesSource, /We track public site visits and registration-click intent only/);
+  assert.match(accessGuidesSource, /Open, closed, sold out, waitlist, transfer-only, access-code, or coming-soon status/);
+  assert.match(accessGuidesSource, /do not send credentials unless StartLine explicitly asks through a safe path/);
+  assert.match(accessGuidesSource, /“I don’t know yet” is a valid Launch Readiness answer/);
+});
+
+test('access guide links and mobile layout guards stay in place', () => {
+  assert.match(intakeSource, /href="\/access-guides">Access guides/);
+  assert.match(assetChecklistSource, /href="\/access-guides">Access guides/);
+  assert.match(accessGuidesSource, /href="\/asset-checklist">Asset hub/);
+  assert.match(accessGuidesSource, /class="guide-layout" aria-label="Customer access guide workspace"/);
+  assert.match(accessGuidesSource, /class="index-links"/);
+  assert.match(accessGuidesSource, /class="guide-grid" aria-label="Nontechnical access guides"/);
+  assert.match(accessGuidesSource, /overflow-x:clip/);
+  assert.match(accessGuidesSource, /@media\(max-width:1080px\).*\.guide-layout\{grid-template-columns:1fr\}/s);
+  assert.match(accessGuidesSource, /@media\(max-width:760px\).*\.index-links\{grid-template-columns:1fr\}/s);
 });
 
 test('asset checklist page is framed as a post-deposit Launch Readiness asset hub with prospect escape routes', () => {

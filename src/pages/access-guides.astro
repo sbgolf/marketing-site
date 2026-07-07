@@ -1,0 +1,165 @@
+---
+import Base from '../layouts/Base.astro';
+const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
+
+const guideCards = [
+  {
+    id: 'domain-dns',
+    title: 'Domain / DNS owner',
+    plain: 'Tell us who controls the public race domain and who can approve launch-time domain changes.',
+    useful: ['Registrar name if known: GoDaddy, Squarespace, Cloudflare, Namecheap, Google Domains, or similar.', 'The person or vendor who can add DNS records or join a screenshare.', 'Whether the domain also handles race email.'],
+    avoid: 'Do not email domain passwords. Delegated access or a screenshare is safer.',
+    answer: '“Domain is at GoDaddy. Treasurer Jane owns the login and can join a launch screenshare.”',
+  },
+  {
+    id: 'email-safety',
+    title: 'Domain email safety',
+    plain: 'Confirm whether your race sends email from the same domain so launch does not interrupt inboxes.',
+    useful: ['Any addresses like info@, race@, director@, or support@ using the race domain.', 'Email provider if known: Google Workspace, Microsoft 365, GoDaddy email, Mailchimp, Constant Contact, or similar.', 'Who can verify MX/SPF/DKIM records before DNS changes.'],
+    avoid: 'Do not change mail records casually. StartLine only needs to know who owns them and whether they must be protected.',
+    answer: '“We use info@examplemarathon.org through Google Workspace; board member Luis manages it.”',
+  },
+  {
+    id: 'analytics-search',
+    title: 'GA4 / Search Console ownership',
+    plain: 'Identify who owns Google Analytics and Search Console so the race keeps its data after launch.',
+    useful: ['Google account or organization that owns GA4 and Search Console.', 'Whether StartLine should be added as a temporary user.', 'Any existing Tag Manager, Meta pixel, or ad account owner.'],
+    avoid: 'Do not share private runner/payment data. We track public site visits and registration-click intent only.',
+    answer: '“Our marketing chair owns GA4. Add StartLine as a viewer/editor until launch.”',
+  },
+  {
+    id: 'registration-status',
+    title: 'Registration link and status',
+    plain: 'Confirm the exact public registration destination and what runners should believe right now.',
+    useful: ['Official platform: RunSignup, Race Roster, GiveSignup, Haku, Active, UltraSignup, or another provider.', 'Open, closed, sold out, waitlist, transfer-only, access-code, or coming-soon status.', 'Price/fee confidence, deadline dates, and policy copy that must match registration.'],
+    avoid: 'Do not send admin-only registration dashboards as the public CTA unless that is the only way to prove status.',
+    answer: '“Public RunSignup URL is final. Half marathon is open; 5K is sold out; prices include provider fees.”',
+  },
+  {
+    id: 'current-site-access',
+    title: 'Current-site access',
+    plain: 'Name who can access the existing website, but do not send credentials unless StartLine explicitly asks through a safe path.',
+    useful: ['Platform: WordPress, Wix, Squarespace, Webflow, RunSignup race page, custom vendor, or unknown.', 'Who can export copy/photos or approve what should be reused.', 'Any old vendor contract or hosting deadline that affects launch timing.'],
+    avoid: 'Do not make StartLine the only owner of your site. The race should remain the account owner.',
+    answer: '“Old site is WordPress. Former volunteer Amy still has admin access and can export pages if needed.”',
+  },
+];
+---
+<Base
+  title="Customer Access Guides — StartLine Sites"
+  description="Nontechnical StartLine Sites Launch Readiness guides for domain/DNS, email safety, GA4/Search Console, registration status, and current-site access."
+  canonicalPath="/access-guides"
+  includeMarketingSchema={false}
+  noindex={true}
+>
+  <nav class="simple-nav" aria-label="Primary">
+    <a href="/" class="brand" aria-label="StartLine Sites home"><img src={brandLogoHref} alt="StartLine Sites" width="1200" height="360" /></a>
+    <div><a href="/intake">Launch Readiness Checklist</a><a href="/asset-checklist">Asset hub</a><a href="/#audit">Request audit</a><a href="/sample-audit/">Sample audit</a></div>
+  </nav>
+  <main id="main" class="access-page">
+    <section class="access-hero">
+      <div>
+        <p class="kicker">Launch Readiness access guides</p>
+        <h1>Tell us who owns access. Do not send passwords.</h1>
+        <p class="lead">These guides help race directors answer technical-looking Launch Readiness questions in plain language. For each item, name the owner, describe the current setup if you know it, and choose “I don’t know yet” when StartLine should follow up with another person before launch.</p>
+        <div class="trust-row" aria-label="Safe access principles">
+          <span class="trust-item is-complete"><span class="trust-icon" aria-hidden="true">✓</span><span>Race keeps ownership</span></span>
+          <span class="trust-item is-next"><span class="trust-icon" aria-hidden="true">→</span><span>Delegated access or screenshare</span></span>
+          <span class="trust-item"><span class="trust-icon" aria-hidden="true">→</span><span>No passwords by email</span></span>
+        </div>
+      </div>
+      <aside class="time-card" aria-label="How to use these guides">
+        <span class="eyebrow">Nontechnical answer format</span>
+        <strong>Owner + status + next step</strong>
+        <span>Example: “The domain is with GoDaddy. Jane controls it. She can join a launch screenshare.” That is enough to keep the checklist moving.</span>
+      </aside>
+    </section>
+
+    <section class="prospect-card" aria-labelledby="access-prospect-title">
+      <div>
+        <p class="kicker">Still evaluating StartLine?</p>
+        <h2 id="access-prospect-title">These guides are for post-deposit Launch Readiness.</h2>
+        <p>If you have not requested an audit or received a package recommendation yet, start with the private audit path. Access-owner details are only needed once a project is moving toward build and launch.</p>
+      </div>
+      <div class="prospect-actions" aria-label="Prospect resources">
+        <a class="btn btn-accent" href="/#audit">Request a private audit →</a>
+        <a class="btn btn-ghost" href="/#pricing">View pricing</a>
+        <a class="btn btn-ghost" href="/sample-audit/">See sample audit</a>
+      </div>
+    </section>
+
+    <section class="quick-card" aria-labelledby="quick-card-title">
+      <div>
+        <p class="kicker">If you only have two minutes</p>
+        <h2 id="quick-card-title">Put owner names in Launch Readiness first.</h2>
+        <p>StartLine can work with partial answers. The most helpful answer is often not a login — it is the name and email of the person who controls the domain, email, analytics, registration platform, or old website.</p>
+      </div>
+      <a class="btn btn-ghost" href="/intake">Open Launch Readiness Checklist →</a>
+    </section>
+
+    <section class="guide-layout" aria-label="Customer access guide workspace">
+      <aside class="next-card" aria-labelledby="next-card-title">
+        <p class="kicker">Safe handoff rules</p>
+        <h2 id="next-card-title">Launch can move faster without unsafe credential sharing.</h2>
+        <ol>
+          <li><strong>Name the owner:</strong> write who controls each account, even if you do not know the platform.</li>
+          <li><strong>Use delegated access:</strong> add StartLine as a temporary user where possible, or schedule a screenshare.</li>
+          <li><strong>Protect launch-critical services:</strong> DNS and email changes are reviewed carefully so registration, inboxes, and analytics keep working.</li>
+        </ol>
+      </aside>
+
+      <div class="guide-content">
+        <section class="index-card" aria-labelledby="guide-index-title">
+          <p class="kicker">Guide index</p>
+          <h2 id="guide-index-title">Jump to the access question you are answering.</h2>
+          <div class="index-links">
+            {guideCards.map((guide) => <a href={`#${guide.id}`}>{guide.title}</a>)}
+          </div>
+        </section>
+
+        <section class="guide-grid" aria-label="Nontechnical access guides">
+          {guideCards.map((guide) => (
+            <article class="guide-card" id={guide.id}>
+              <p class="kicker">Customer guide</p>
+              <h2>{guide.title}</h2>
+              <p class="plain-answer">{guide.plain}</p>
+              <div class="guide-columns">
+                <div>
+                  <h3>What to send</h3>
+                  <ul>{guide.useful.map((item) => <li>{item}</li>)}</ul>
+                </div>
+                <div class="safe-box">
+                  <h3>What not to do</h3>
+                  <p>{guide.avoid}</p>
+                  <h3>Helpful answer</h3>
+                  <p>{guide.answer}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </section>
+
+        <section class="fallback-card" aria-labelledby="fallback-title">
+          <div>
+            <p class="kicker">Unsure who owns something?</p>
+            <h2 id="fallback-title">“I don’t know yet” is a valid Launch Readiness answer.</h2>
+            <p>If a board member, former volunteer, old vendor, registration platform, or sponsor contact owns the answer, write their name or role. StartLine will group follow-ups instead of asking for scattered technical details.</p>
+          </div>
+          <a class="btn btn-accent" href="mailto:support@startlinesites.com?subject=Launch%20Readiness%20access%20question">Email support</a>
+        </section>
+      </div>
+    </section>
+  </main>
+  <footer class="simple-footer">© 2026 StartLine Sites. Built for search, speed, and signups.</footer>
+</Base>
+
+<style>
+  .simple-nav{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px clamp(20px,5vw,56px);background:#071426;border-bottom:1px solid rgba(255,255,255,.1);box-shadow:0 14px 34px rgba(7,20,38,.16)}
+  .brand{display:inline-flex;align-items:center;background:#fff;border-radius:18px;padding:8px 12px;box-shadow:0 10px 30px rgba(0,0,0,.18)}.brand img{display:block;width:168px;height:auto}.simple-nav div{display:flex;gap:18px;flex-wrap:wrap}.simple-nav a{font-weight:800;font-size:.92rem;color:rgba(255,255,255,.84)}.simple-nav .brand:hover{transform:translateY(-1px)}.simple-nav a:hover{color:#ff7557}
+  .access-page{background:linear-gradient(180deg,#f5eadf 0,var(--paper) 34%,#fff 78%,var(--paper-2));padding:56px clamp(18px,5vw,56px) calc(96px + env(safe-area-inset-bottom));overflow-x:clip}.access-hero,.prospect-card,.quick-card,.guide-layout{max-width:var(--maxw);margin:0 auto}.access-hero{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;align-items:end;margin-bottom:28px;color:#fff;background:radial-gradient(circle at 82% 8%,rgba(255,117,87,.2),transparent 32%),linear-gradient(180deg,#071426 0,#10213a 100%);border-radius:32px;padding:clamp(28px,5vw,48px);box-shadow:0 28px 90px rgba(14,23,41,.18)}.access-hero h1{font-size:clamp(3.1rem,8vw,6.2rem);line-height:.9;margin-bottom:20px;letter-spacing:-.045em;color:#fff}.lead{font-size:clamp(1.05rem,2vw,1.3rem);color:rgba(250,250,247,.82);max-width:70ch}.kicker{font-weight:900;font-size:.78rem;text-transform:uppercase;letter-spacing:.14em;color:#d9553d}.access-hero .kicker{color:#ffb199}.eyebrow{display:block;color:#d9553d;font-size:.78rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}.trust-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:26px;max-width:840px}.trust-item{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;min-height:52px;border-left:3px solid rgba(255,117,87,.72);background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);font-weight:800;font-size:.92rem;line-height:1.25;padding:10px 12px;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}.trust-icon{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:999px;background:#fff4ed;color:#b94129;font-weight:900;line-height:1}.trust-item.is-next{border-left-color:#ffb199;background:rgba(255,244,237,.13)}.trust-item.is-next .trust-icon{background:#ff7557;color:#fff}.time-card{background:linear-gradient(145deg,#fff,#f8f1ea);color:var(--ink);border:1px solid rgba(255,255,255,.72);border-radius:var(--r-lg);padding:24px;box-shadow:0 28px 80px rgba(0,0,0,.24)}.time-card strong{display:block;font-size:1.45rem;line-height:1.1;margin-bottom:10px}.time-card span:last-child{display:block;color:rgba(14,23,41,.68);line-height:1.55}
+  .prospect-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center;background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.8);border-radius:28px;padding:22px;margin-bottom:22px;box-shadow:0 16px 50px rgba(14,23,41,.08);backdrop-filter:blur(14px)}.prospect-card h2,.quick-card h2,.next-card h2{font-size:clamp(1.7rem,3vw,2.25rem);margin-bottom:8px}.prospect-card p,.quick-card p,.next-card li{color:rgba(14,23,41,.7);line-height:1.6}.prospect-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}.prospect-actions .btn{padding:10px 14px;font-size:.9rem}.prospect-actions .btn-accent{background:transparent;color:var(--accent);border:1px solid rgba(217,85,61,.34);box-shadow:none}.prospect-actions .btn-ghost{background:rgba(255,255,255,.72)}.quick-card{display:flex;align-items:center;justify-content:space-between;gap:24px;background:linear-gradient(135deg,#fff,#fff4ed);border:1px solid rgba(217,85,61,.16);border-radius:28px;padding:24px;margin-bottom:24px;box-shadow:0 16px 50px rgba(14,23,41,.06)}
+  .guide-layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:24px;align-items:start}.next-card{position:sticky;top:24px;grid-column:2;background:#0e1729;color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:30px;padding:24px;box-shadow:0 24px 70px rgba(14,23,41,.2)}.next-card .kicker{color:#ffb199}.next-card h2{color:#fff}.next-card ol{display:grid;gap:16px;margin:18px 0 0;padding-left:22px}.next-card li{color:rgba(255,255,255,.78)}.next-card strong{color:#fff}.guide-content{grid-column:1;grid-row:1;min-width:0}.index-card,.guide-card,.fallback-card{background:rgba(255,255,255,.96);border:1px solid rgba(14,23,41,.1);border-radius:30px;padding:clamp(22px,4vw,38px);box-shadow:0 24px 90px rgba(14,23,41,.08)}.index-card,.guide-card{margin-bottom:24px}.index-card h2,.guide-card h2,.fallback-card h2{font-size:clamp(1.9rem,3vw,2.35rem);margin-bottom:14px}.index-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.index-links a{display:flex;align-items:center;justify-content:space-between;min-height:54px;border:1px solid rgba(217,85,61,.18);border-radius:18px;background:#fff7f2;color:#b94129;font-weight:900;padding:14px}.index-links a::after{content:'→';color:#d9553d}.guide-grid{display:grid;gap:24px}.plain-answer{font-size:1.08rem;color:rgba(14,23,41,.72);line-height:1.6;margin-bottom:20px}.guide-columns{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}.guide-card h3{font-size:.9rem;text-transform:uppercase;letter-spacing:.12em;color:#b94129;margin-bottom:10px}.guide-card ul{display:grid;gap:10px;color:rgba(14,23,41,.76);padding-left:20px;line-height:1.55}.safe-box{background:linear-gradient(145deg,#fff,#fff7f2);border:1px solid rgba(217,85,61,.16);border-radius:22px;padding:20px}.safe-box p{color:rgba(14,23,41,.72);line-height:1.55;margin-bottom:16px}.safe-box p:last-child{margin-bottom:0}.fallback-card{display:flex;align-items:center;justify-content:space-between;gap:24px;background:#0e1729;color:#fff}.fallback-card h2{color:#fff}.fallback-card .kicker{color:#ffb199}.fallback-card p{color:rgba(255,255,255,.76);line-height:1.6;max-width:70ch}.simple-footer{padding:28px clamp(20px,5vw,56px);background:var(--ink);color:rgba(250,250,247,.78);text-align:center}
+  @media(max-width:1080px){.trust-row{grid-template-columns:1fr}.trust-item{min-height:48px}.guide-layout{grid-template-columns:1fr}.next-card{position:relative;top:auto;grid-column:1;grid-row:auto}.guide-content{grid-column:1;grid-row:auto}.guide-columns{grid-template-columns:1fr}}
+  @media(max-width:760px){.simple-nav{align-items:flex-start;flex-direction:column}.simple-nav div{gap:12px}.brand img{width:150px}.access-page{padding:20px clamp(16px,4vw,24px) calc(120px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#f5eadf 0,var(--paper) 66%,var(--paper-2))}.access-hero,.prospect-card{grid-template-columns:1fr}.access-hero{padding:30px 22px 26px;border-radius:28px;margin-bottom:24px}.access-hero h1{font-size:clamp(3rem,18vw,4.6rem)}.trust-row{gap:10px}.trust-item{font-size:.95rem;min-height:50px}.prospect-actions{justify-content:flex-start}.prospect-actions .btn{width:100%;justify-content:center}.quick-card,.fallback-card{align-items:flex-start;flex-direction:column}.quick-card .btn,.fallback-card .btn{width:100%;justify-content:center}.index-links{grid-template-columns:1fr}.index-card,.guide-card,.next-card,.fallback-card{border-radius:24px}.index-card,.guide-card,.fallback-card{padding:20px}.safe-box{border-radius:18px}}
+</style>
