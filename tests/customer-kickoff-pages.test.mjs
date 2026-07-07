@@ -52,33 +52,47 @@ test('customer kickoff pages are excluded from generated sitemap output', () => 
   assert.match(astroConfigSource, /filter: \(page\) => !sitemapExcludedPaths\.some/);
 });
 
-test('asset checklist page is framed as customer kickoff preparation with prospect escape routes', () => {
-  assert.match(assetChecklistSource, /Customer Kickoff Asset Checklist — StartLine Sites/);
-  assert.match(assetChecklistSource, /Customer kickoff resource/);
-  assert.match(assetChecklistSource, /Use this list after your audit, package approval, or StartLine kickoff/);
-  assert.match(assetChecklistSource, /Drive, Dropbox, Box, or folder link/);
-  assert.match(assetChecklistSource, /StartLine will follow up if a better version is needed/);
-  assert.match(assetChecklistSource, /This checklist is for customer kickoff/);
+test('asset checklist page is framed as a post-deposit Launch Readiness asset hub with prospect escape routes', () => {
+  assert.match(assetChecklistSource, /Launch Readiness Asset Hub — StartLine Sites/);
+  assert.match(assetChecklistSource, /Launch Readiness resource/);
+  assert.match(assetChecklistSource, /Use this after your deposit to gather one shared folder/);
+  assert.match(assetChecklistSource, /label what is best, what is okay, and what still needs permission/);
+  assert.match(assetChecklistSource, /This hub is for post-deposit Launch Readiness/);
   assert.match(assetChecklistSource, /href="\/#audit">Request a private audit/);
   assert.match(assetChecklistSource, /href="\/#pricing">View pricing/);
   assert.match(assetChecklistSource, /href="\/sample-audit\/">See sample audit/);
 });
 
-test('asset checklist page visually pairs with branded intake kickoff structure', () => {
+test('asset checklist page visually pairs with branded Launch Readiness structure', () => {
   assert.match(assetChecklistSource, /class="trust-row" aria-label="StartLine asset checklist progress"/);
-  assert.match(assetChecklistSource, /Audit or package approved/);
-  assert.match(assetChecklistSource, /Assets gathered in one folder/);
-  assert.match(assetChecklistSource, /Folder link added to intake/);
-  assert.match(assetChecklistSource, /Asset prep pass/);
-  assert.match(assetChecklistSource, /One clean folder beats scattered uploads/);
+  assert.match(assetChecklistSource, /Deposit received/);
+  assert.match(assetChecklistSource, /One folder shared with StartLine/);
+  assert.match(assetChecklistSource, /Permissions and gaps tracked before launch/);
+  assert.match(assetChecklistSource, /Asset readiness pass/);
+  assert.match(assetChecklistSource, /Best \/ okay \/ send what you have/);
   assert.match(assetChecklistSource, /class="prep-card"/);
   assert.match(assetChecklistSource, /class="checklist-workspace" aria-label="Customer asset checklist workspace"/);
   assert.match(assetChecklistSource, /What happens next/);
   assert.match(assetChecklistSource, /one focused follow-up list/);
-  assert.match(assetChecklistSource, /the build can move into staging/);
+  assert.match(assetChecklistSource, /public launch waits on rights/);
   assert.match(assetChecklistSource, /\.simple-nav\{position:relative;z-index:2;.*background:#071426/s);
   assert.match(assetChecklistSource, /\.checklist-hero\{display:grid;.*background:radial-gradient/s);
   assert.match(assetChecklistSource, /overflow-x:clip/);
+});
+
+test('asset checklist locks best okay send-what-you-have guidance and permission safety', () => {
+  assert.match(assetChecklistSource, /class="readiness-tier-card"/);
+  assert.match(assetChecklistSource, /Best is ideal\. Okay is useful\. “Send what you have” prevents stalls\./);
+  assert.match(assetChecklistSource, /Original files, high resolution, rights confirmed/);
+  assert.match(assetChecklistSource, /Usable fallback files, older versions/);
+  assert.match(assetChecklistSource, /Contacts, screenshots, old folders/);
+  assert.match(assetChecklistSource, /Registration URL and status/);
+  assert.match(assetChecklistSource, /open\/closed\/waitlist\/access-code status/);
+  assert.match(assetChecklistSource, /Access owners and permissions/);
+  assert.match(assetChecklistSource, /do not email passwords/);
+  assert.match(assetChecklistSource, /Do not email passwords\. Name the owner who can grant delegated access or schedule a screenshare\./);
+  assert.match(assetChecklistSource, /\.tier-grid\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(assetChecklistSource, /@media\(max-width:1080px\).*\.tier-grid\{grid-template-columns:1fr\}/s);
 });
 
 test('intake form support fallback appears near form and error copy stays aligned', () => {
