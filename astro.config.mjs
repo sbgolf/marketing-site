@@ -6,6 +6,7 @@ const sitemapExcludedPaths = [
   '/access-guides/',
   '/asset-checklist/',
   '/intake/',
+  '/staging-review/',
   '/outreach-assets/',
 ];
 
