@@ -4,8 +4,8 @@ const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_U
 const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
 ---
 <Base
-  title="Customer Kickoff Intake — StartLine Sites"
-  description="Customer kickoff intake for approved StartLine Sites projects after audit, package recommendation, and launch kickoff."
+  title="Launch Readiness Checklist — StartLine Sites"
+  description="Post-deposit Launch Readiness Checklist for approved StartLine Sites projects: confirm scraped race facts, add private details, and flag launch dependencies."
   canonicalPath="/intake"
   includeMarketingSchema={false}
   noindex={true}
@@ -17,19 +17,19 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
   <main id="main" class="intake-page">
     <section class="intake-hero">
       <div class="hero-copy">
-        <p class="kicker">Customer kickoff resource</p>
-        <h1>Confirm your race details</h1>
-        <p class="lead">Use this as the source of truth for your StartLine build. Review the details we likely discussed, update anything that changed, and leave rough notes where you are unsure — this should feel like confirmation, not starting from scratch.</p>
+        <p class="kicker">Post-deposit Launch Readiness Kit</p>
+        <h1>Confirm what we found. Add what only you know.</h1>
+        <p class="lead">Use this checklist after your deposit to turn StartLine’s public research into a build-ready source of truth. Confirm the basics, flag anything that changed, and choose “I don’t know yet” for technical items another account owner controls.</p>
         <div class="trust-row" aria-label="StartLine intake progress">
           <span class="trust-item is-complete"><span class="trust-icon" aria-hidden="true">✓</span><span>Current site reviewed</span></span>
-          <span class="trust-item is-complete"><span class="trust-icon" aria-hidden="true">✓</span><span>Private mockup prepared</span></span>
-          <span class="trust-item is-next"><span class="trust-icon" aria-hidden="true">→</span><span>Build starts after confirmation</span></span>
+          <span class="trust-item is-complete"><span class="trust-icon" aria-hidden="true">✓</span><span>Deposit received</span></span>
+          <span class="trust-item is-next"><span class="trust-icon" aria-hidden="true">→</span><span>Build starts after essentials are confirmed</span></span>
         </div>
       </div>
       <aside class="time-card" aria-label="Estimated completion time">
-        <span class="eyebrow">Source-of-truth pass</span>
-        <strong>Plan for 20–30 minutes</strong>
-        <span>You can paste rough notes after kickoff. We’ll follow up if anything needs clarification.</span>
+        <span class="eyebrow">Readiness pass</span>
+        <strong>Plan for 12–18 minutes</strong>
+        <span>You are not expected to know every technical answer. “I don’t know yet” is useful because it tells us who to follow up with before launch.</span>
       </aside>
     </section>
 
@@ -37,7 +37,7 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
       <div>
         <p class="kicker">Not a customer yet?</p>
         <h2 id="prospect-card-title">Start with the private audit path.</h2>
-        <p>If you are still evaluating StartLine Sites, please request a private audit first instead of completing customer intake. The audit helps confirm fit, package scope, and next steps before any kickoff details are needed.</p>
+        <p>After deposit, this page turns your public race information, registration details, access owners, and launch approvals into one clean checklist. If you are still evaluating StartLine Sites, please request a private audit first instead of completing Launch Readiness.</p>
       </div>
       <div class="prospect-actions" aria-label="Prospect resources">
         <a class="btn btn-accent" href="/#audit">Request a private audit →</a>
@@ -49,8 +49,8 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
     <section class="prep-card">
       <div>
         <p class="kicker">Assets can be rough</p>
-        <h2>Send the best files you have now.</h2>
-        <p>No file upload is needed here. Put available photos, logos, course maps, sponsor marks, policy docs, or folder links in one shared Drive, Dropbox, Box, or similar folder, then paste the link below. StartLine will follow up if a better version is needed.</p>
+        <h2>Paste one folder link if you have it.</h2>
+        <p>No file upload is needed here. Put available photos, logos, course maps, sponsor marks, policy docs, or folder links in one shared Drive, Dropbox, Box, or similar folder, then paste the link below. If assets are still with a photographer, sponsor chair, or old vendor, write that in the notes and we’ll keep it on the launch checklist.</p>
       </div>
       <a class="btn btn-ghost" href="/asset-checklist">Review asset checklist →</a>
     </section>
@@ -58,11 +58,11 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
     <section class="intake-workspace" aria-label="Customer intake workspace">
       <aside class="next-card" aria-labelledby="next-card-title">
         <p class="kicker">What happens next</p>
-        <h2 id="next-card-title">A focused review, then build.</h2>
+        <h2 id="next-card-title">Build inputs first. Launch blockers later.</h2>
         <ol>
-          <li><strong>Review details:</strong> we check this against your current site, private mockup, and kickoff notes.</li>
-          <li><strong>Confirm gaps:</strong> if something is unclear, we send one short follow-up list instead of scattered asks.</li>
-          <li><strong>Start staging:</strong> once the source-of-truth pass is confirmed, the staging build begins.</li>
+          <li><strong>Confirm public facts:</strong> we compare your answers against the site, registration platform, and any private mockup or audit notes.</li>
+          <li><strong>Group follow-ups:</strong> if DNS, analytics, assets, or approver details are unknown, we send one short owner list instead of scattered asks.</li>
+          <li><strong>Start staging:</strong> once race identity, date/location, registration truth, package scope, and usable assets are clear, the staging build begins.</li>
         </ol>
       </aside>
 
@@ -71,14 +71,14 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
       <input type="hidden" name="landing_page" value="https://startlinesites.com/intake" />
 
       <div id="intakePrefillNotice" class="confirm-note" role="note">
-        <strong>Confirm what we know, then fill the gaps.</strong>
-        <p>This intake is intentionally structured like a review pass. For now, please enter the details below. We’ll use this as the source of truth for your kickoff, and you can edit anything that does not match your current race plan.</p>
+        <strong>Confirm what we found, then fill the gaps.</strong>
+        <p>This checklist is intentionally structured like a review pass. Confirm the public facts StartLine found, correct anything outdated, and use the “I don’t know yet” options so technical/access owners can be handled before launch.</p>
       </div>
 
       <fieldset aria-labelledby="race-details-title">
-        <legend class="visually-hidden">Confirm your race details</legend>
-        <h2 id="race-details-title" class="fieldset-title">Confirm your race details</h2>
-        <p class="fieldset-help">Review and edit anything that looks off. The first required pass stays short so we can begin with the essentials.</p>
+        <legend class="visually-hidden">Confirm public race facts</legend>
+        <h2 id="race-details-title" class="fieldset-title">Confirm public race facts</h2>
+        <p class="fieldset-help">These are the essentials runners will scan first. If StartLine has prefilled details from your current site or registration page, correct anything stale here.</p>
         <div class="grid two">
           <label><span class="field-label">Organization name</span><input name="organization_name" autocomplete="organization" placeholder="Example Race Events" /></label>
           <label><span class="field-label"><span class="required-label">Race name <span class="required-marker" aria-hidden="true">*</span></span></span><input name="race_name" autocomplete="off" placeholder="Example Marathon" required /></label>
@@ -86,20 +86,37 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
           <label><span class="field-label"><span class="required-label">Email <span class="required-marker" aria-hidden="true">*</span></span></span><input name="contact_email" type="email" autocomplete="email" placeholder="director@example.com" required /></label>
           <label><span class="field-label">Phone (optional)</span><input name="contact_phone" type="tel" autocomplete="tel" placeholder="Best number if a quick call helps" /></label>
           <label><span class="field-label"><span class="required-label">Event date or target date <span class="required-marker" aria-hidden="true">*</span></span></span><input name="event_date" placeholder="October 18, 2026 or date TBD" required /></label>
-          <label><span class="field-label">Event timezone</span><input name="event_timezone" placeholder="America/Chicago, Central Time, or local timezone" /></label>
+          <label><span class="field-label">Event timezone</span><span class="field-hint">Write “I don’t know yet” if timing will follow local venue time.</span><input name="event_timezone" placeholder="America/Chicago, Central Time, local timezone, or I don’t know yet" /></label>
           <label><span class="field-label"><span class="required-label">Event location <span class="required-marker" aria-hidden="true">*</span></span></span><input name="event_location" placeholder="City, state / venue" required /></label>
-          <label><span class="field-label">Current race website/domain</span><input name="current_domain" type="url" inputmode="url" placeholder="https://examplemarathon.com or current race page" /></label>
-          <label><span class="field-label">Template preference</span><input name="template_preference" placeholder="Destination Major, Performance, Community, Trail, Charity, or unsure" /></label>
+          <label><span class="field-label">Current race website/domain</span><span class="field-hint">Public URL is enough for build. Domain/DNS access is handled below.</span><input name="current_domain" type="url" inputmode="url" placeholder="https://examplemarathon.com or current race page" /></label>
+          <label><span class="field-label">Template preference</span><span class="field-hint">Leave as “unsure” if you want StartLine to recommend the best fit.</span><input name="template_preference" placeholder="Destination Major, Performance, Community, Trail, Charity, or unsure" /></label>
         </div>
       </fieldset>
 
       <fieldset aria-labelledby="registration-details-title">
-        <legend class="visually-hidden">Registration and race details</legend>
-        <h2 id="registration-details-title" class="fieldset-title">Registration and race details</h2>
-        <p class="fieldset-help">Add what is known now; concise notes are fine and can be refined after kickoff.</p>
+        <legend class="visually-hidden">Confirm registration truth and race details</legend>
+        <h2 id="registration-details-title" class="fieldset-title">Confirm registration truth and race details</h2>
+        <p class="fieldset-help">This is the handoff runners trust most. Confirm the official platform, current open/closed/waitlist state, prices, fees, and any access-code or transfer rules so StartLine never points runners at the wrong action.</p>
         <div class="grid two">
           <label><span class="field-label"><span class="required-label">Registration URL <span class="required-marker" aria-hidden="true">*</span></span></span><input name="registration_url" type="url" inputmode="url" placeholder="https://runsignup.com/..." required /></label>
           <label><span class="field-label">Registration platform</span><input name="registration_platform" placeholder="RunSignup, Race Roster, Haku, UltraSignup, custom, etc." /></label>
+          <label><span class="field-label">Current registration status</span><select name="registration_status">
+            <option value="">Choose one if you know it</option>
+            <option>Open</option>
+            <option>Closed</option>
+            <option>Sold out</option>
+            <option>Waitlist</option>
+            <option>Transfer-only</option>
+            <option>Access code required</option>
+            <option>I don’t know yet</option>
+          </select></label>
+          <label><span class="field-label">Price/fee confidence</span><select name="pricing_confidence">
+            <option value="">Choose one if helpful</option>
+            <option>Confirmed current prices include fees</option>
+            <option>Confirmed base prices before provider fees</option>
+            <option>Prices are changing soon</option>
+            <option>I don’t know yet</option>
+          </select></label>
         </div>
         <label><span class="field-label">Distances and pricing summary</span><textarea name="distances_pricing" rows="5" class="textarea-large" placeholder="Marathon $120; Half $95; 5K $35. Include price changes if known."></textarea></label>
         <label><span class="field-label">Course and logistics summary</span><textarea name="course_logistics" rows="5" class="textarea-large" placeholder="Start/finish, course type, aid stations, parking, packet pickup, cutoff times."></textarea></label>
@@ -108,17 +125,41 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
       </fieldset>
 
       <fieldset aria-labelledby="content-assets-title">
-        <legend class="visually-hidden">Content, assets, and access</legend>
-        <h2 id="content-assets-title" class="fieldset-title">Content, assets, and access</h2>
-        <p class="fieldset-help">These optional details help us avoid follow-up questions. Add what is easy now and skip anything that needs another owner.</p>
+        <legend class="visually-hidden">Assets, access owners, and launch approvals</legend>
+        <h2 id="content-assets-title" class="fieldset-title">Assets, access owners, and launch approvals</h2>
+        <p class="fieldset-help">Add what is easy now and choose “I don’t know yet” when another volunteer, vendor, registrar, or Google account owner needs to help. We use this to separate build inputs from launch blockers.</p>
         <label><span class="field-label">Sponsors and partners</span><textarea name="sponsors" rows="5" class="textarea-large" placeholder="Sponsor names, tiers, preferred order, URLs, usage rights, and required wording."></textarea></label>
         <label><span class="field-label">FAQs</span><textarea name="faqs" rows="5" class="textarea-large" placeholder="Refunds, transfers, headphones, parking, weather, deferrals, age limits."></textarea></label>
         <label><span class="field-label">Volunteer information</span><textarea name="volunteer_info" rows="3" placeholder="Volunteer registration link, roles, shift notes, or write not applicable."></textarea></label>
         <label><span class="field-label">Email capture preference</span><textarea name="email_capture" rows="3" placeholder="Newsletter/waitlist provider, audience, or write not needed."></textarea></label>
         <label><span class="field-label">Preferred hero image</span><span class="field-hint">Filename, folder note, or “choose best available.”</span><input name="identity_hero_image" placeholder="Hero filename or folder note" /></label>
-        <label><span class="field-label">Shared assets folder link</span><span class="field-hint">Google Drive, Dropbox, Box, or another shared folder is fine.</span><input name="assets_link" type="url" inputmode="url" placeholder="Shared folder URL" /></label>
+        <label><span class="field-label">Shared assets folder link</span><span class="field-hint">Google Drive, Dropbox, Box, or another shared folder is fine. Leave blank if the folder is not ready yet.</span><input name="assets_link" type="url" inputmode="url" placeholder="Shared folder URL" /></label>
+        <div class="readiness-grid" aria-label="Launch dependency status checks">
+          <label><span class="field-label">Domain/DNS owner</span><span class="field-hint">Who can safely approve launch-time domain changes?</span><select name="domain_dns_status">
+            <option value="">Choose one if helpful</option>
+            <option>I control it</option>
+            <option>Another team member controls it</option>
+            <option>Current website vendor controls it</option>
+            <option>I don’t know yet</option>
+          </select></label>
+          <label><span class="field-label">Domain email safety</span><span class="field-hint">This helps prevent launch work from breaking race email.</span><select name="domain_email_status">
+            <option value="">Choose one if helpful</option>
+            <option>We use email at this domain</option>
+            <option>We do not use email at this domain</option>
+            <option>Another owner needs to confirm</option>
+            <option>I don’t know yet</option>
+          </select></label>
+          <label><span class="field-label">Analytics/Search ownership</span><span class="field-hint">Google Analytics or Search Console can be connected before launch if available.</span><select name="analytics_search_status">
+            <option value="">Choose one if helpful</option>
+            <option>I can grant access</option>
+            <option>Another Google account owner can grant access</option>
+            <option>We need StartLine to set this up fresh</option>
+            <option>I don’t know yet</option>
+          </select></label>
+          <label><span class="field-label">Final approver</span><span class="field-hint">One named person keeps staging feedback from turning into committee drift.</span><input name="final_approver" placeholder="Name/email, same as me, or I don’t know yet" /></label>
+        </div>
         <details class="optional-group">
-          <summary>Optional admin and launch notes</summary>
+          <summary>Optional notes for access owners</summary>
           <div class="optional-group-body">
             <label><span class="field-label">Analytics, DNS, and access notes</span><textarea name="analytics_access_notes" rows="5" class="textarea-large" placeholder="Who owns GA4/Search Console/domain/DNS today? Who can grant access? Any pixels or tags needed?"></textarea></label>
             <label><span class="field-label">Anything else we should know?</span><textarea name="optional_notes" rows="5" class="textarea-large" placeholder="Timeline, approvals, brand preferences, access needs, or page-change concerns."></textarea></label>
@@ -127,8 +168,8 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
       </fieldset>
 
       <div class="submit-row">
-        <button class="btn btn-accent" type="submit">Submit intake</button>
-        <p id="intakeStatus" class="status" role="status" aria-live="polite">Required fields are marked with an asterisk.</p>
+        <button class="btn btn-accent" type="submit">Submit Launch Readiness Checklist</button>
+        <p id="intakeStatus" class="status" role="status" aria-live="polite">Required fields are marked with an asterisk. “I don’t know yet” is okay for optional launch dependencies.</p>
       </div>
       <p class="support-fallback">If the form fails or a field does not fit your race, email <a href="mailto:support@startlinesites.com?subject=Customer%20intake%20fallback">support@startlinesites.com</a> with your race name and project link.</p>
     </form>
@@ -223,7 +264,7 @@ const brandLogoHref = `${basePath}brand/startline-sites-primary-horizontal.svg`;
   .intake-page{background:linear-gradient(180deg,#f5eadf 0,var(--paper) 34%,#fff 78%,var(--paper-2));padding:56px clamp(18px,5vw,56px) calc(96px + env(safe-area-inset-bottom));overflow-x:clip}.intake-hero,.prospect-card,.prep-card,.intake-workspace{max-width:var(--maxw);margin:0 auto}.intake-hero{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;align-items:end;margin-bottom:28px;color:#fff;background:radial-gradient(circle at 82% 8%,rgba(255,117,87,.2),transparent 32%),linear-gradient(180deg,#071426 0,#10213a 100%);border-radius:32px;padding:clamp(28px,5vw,48px);box-shadow:0 28px 90px rgba(14,23,41,.18)}.hero-copy{min-width:0}.intake-hero h1{font-size:clamp(3.1rem,8vw,6.2rem);line-height:.9;margin-bottom:20px;letter-spacing:-.045em;color:#fff}.lead{font-size:clamp(1.05rem,2vw,1.3rem);color:rgba(250,250,247,.82);max-width:68ch}.intake-hero .kicker{color:#ffb199}.eyebrow{display:block;color:#d9553d;font-size:.78rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}.trust-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:26px;max-width:840px}.trust-item{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;min-height:52px;border-left:3px solid rgba(255,117,87,.72);background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);font-weight:800;font-size:.92rem;line-height:1.25;padding:10px 12px;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}.trust-icon{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:999px;background:#fff4ed;color:#b94129;font-weight:900;line-height:1}.trust-item.is-next{border-left-color:#ffb199;background:rgba(255,244,237,.13)}.trust-item.is-next .trust-icon{background:#ff7557;color:#fff}.time-card{background:linear-gradient(145deg,#fff,#f8f1ea);color:var(--ink);border:1px solid rgba(255,255,255,.72);border-radius:var(--r-lg);padding:24px;box-shadow:0 28px 80px rgba(0,0,0,.24)}.time-card strong{display:block;font-size:1.25rem;margin-bottom:8px}.time-card span:not(.eyebrow){color:rgba(14,23,41,.72)}
   .prospect-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center;background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.8);border-radius:28px;padding:22px;margin-bottom:22px;box-shadow:0 16px 50px rgba(14,23,41,.08);backdrop-filter:blur(14px)}.prospect-card h2,.prep-card h2,.next-card h2{font-size:clamp(1.7rem,3vw,2.25rem);margin-bottom:8px}.prospect-card p,.prep-card p,.next-card li{color:rgba(14,23,41,.7);line-height:1.6}.prospect-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}.prospect-actions .btn{padding:10px 14px;font-size:.9rem}.prospect-actions .btn-accent{background:transparent;color:var(--accent);border:1px solid rgba(217,85,61,.34);box-shadow:none}.prospect-actions .btn-ghost{background:rgba(255,255,255,.72)}.prep-card{display:flex;align-items:center;justify-content:space-between;gap:24px;background:linear-gradient(135deg,#fff,#fff4ed);border:1px solid rgba(217,85,61,.16);border-radius:28px;padding:24px;margin-bottom:24px;box-shadow:0 16px 50px rgba(14,23,41,.06)}
   .intake-workspace{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:24px;align-items:start}.next-card{position:sticky;top:24px;grid-column:2;background:#0e1729;color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:30px;padding:24px;box-shadow:0 24px 70px rgba(14,23,41,.2)}.next-card .kicker{color:#ffb199}.next-card h2{color:#fff}.next-card ol{display:grid;gap:16px;margin:18px 0 0;padding-left:22px}.next-card li{color:rgba(255,255,255,.78)}.next-card strong{color:#fff}.intake-form{grid-column:1;grid-row:1;background:rgba(255,255,255,.96);border:1px solid rgba(14,23,41,.1);border-radius:32px;padding:clamp(20px,4vw,42px);box-shadow:0 24px 90px rgba(14,23,41,.1)}
-  .confirm-note{background:linear-gradient(135deg,#fff4ed,rgba(255,255,255,.92));border:1px solid rgba(217,85,61,.2);border-radius:22px;margin-bottom:26px;padding:18px 20px}.confirm-note strong{display:block;margin-bottom:6px}.confirm-note p,.fieldset-help{color:rgba(14,23,41,.68);line-height:1.55}.fieldset-help{margin:0 0 22px;max-width:72ch}.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.fieldset-title{font-family:"Instrument Serif",Georgia,serif;font-size:clamp(1.9rem,3vw,2.35rem);line-height:1.05;margin:0 0 10px;color:var(--ink)}fieldset{border:1px solid rgba(14,23,41,.1);border-radius:26px;padding:clamp(22px,3vw,32px);margin:0 0 24px;background:linear-gradient(180deg,#fff,rgba(250,250,247,.82));box-shadow:0 12px 34px rgba(14,23,41,.045);scroll-margin-block:24px calc(112px + env(safe-area-inset-bottom));min-inline-size:0}legend{padding:0}.grid{display:grid;gap:20px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}label{display:grid;gap:10px;font-weight:700;color:var(--ink);min-width:0;margin-top:4px}.field-label{display:inline;line-height:1.35}.field-hint{color:rgba(14,23,41,.58);font-size:.92rem;font-weight:600;line-height:1.35;margin-top:-2px}.required-label{display:inline-flex;align-items:baseline;gap:.18em;white-space:nowrap}.required-marker{display:inline;color:#b42318;font-weight:900}input,textarea{width:100%;min-height:52px;border:1.5px solid rgba(14,23,41,.14);border-radius:16px;background:#fff;color:var(--ink);font-size:16px;padding:14px 15px;resize:vertical;box-shadow:0 1px 0 rgba(14,23,41,.03)}textarea{line-height:1.5;min-height:140px}.textarea-large{min-height:170px}input:focus,textarea:focus{outline:3px solid rgba(217,85,61,.18);border-color:#d9553d}input:-webkit-autofill,textarea:-webkit-autofill{box-shadow:0 0 0 1000px #fff inset;-webkit-text-fill-color:var(--ink)}.optional-group{border:1px solid rgba(14,23,41,.12);border-radius:18px;margin-top:18px;padding:4px 16px 16px;background:rgba(14,23,41,.025)}.optional-group summary{cursor:pointer;font-weight:800;min-height:48px;display:flex;align-items:center}.optional-group-body{display:grid;gap:20px;padding-top:8px}.hp{position:absolute;left:-10000px;width:1px;height:1px;opacity:0}.submit-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.status{color:rgba(14,23,41,.68);font-weight:700}.status[data-tone="error"],.confirm-note[data-tone="error"]{color:#b42318}.status[data-tone="success"],.confirm-note[data-tone="success"]{color:#136c4a}.status[data-tone="loading"]{color:#99552f}.support-fallback{margin-top:16px;color:rgba(14,23,41,.64);line-height:1.55}.simple-footer{text-align:center;padding:30px clamp(18px,5vw,56px);background:#071426;color:rgba(255,255,255,.72)}
+  .confirm-note{background:linear-gradient(135deg,#fff4ed,rgba(255,255,255,.92));border:1px solid rgba(217,85,61,.2);border-radius:22px;margin-bottom:26px;padding:18px 20px}.confirm-note strong{display:block;margin-bottom:6px}.confirm-note p,.fieldset-help{color:rgba(14,23,41,.68);line-height:1.55}.fieldset-help{margin:0 0 22px;max-width:72ch}.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.fieldset-title{font-family:"Instrument Serif",Georgia,serif;font-size:clamp(1.9rem,3vw,2.35rem);line-height:1.05;margin:0 0 10px;color:var(--ink)}fieldset{border:1px solid rgba(14,23,41,.1);border-radius:26px;padding:clamp(22px,3vw,32px);margin:0 0 24px;background:linear-gradient(180deg,#fff,rgba(250,250,247,.82));box-shadow:0 12px 34px rgba(14,23,41,.045);scroll-margin-block:24px calc(112px + env(safe-area-inset-bottom));min-inline-size:0}legend{padding:0}.grid{display:grid;gap:20px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}label{display:grid;gap:10px;font-weight:700;color:var(--ink);min-width:0;margin-top:4px}.field-label{display:inline;line-height:1.35}.field-hint{color:rgba(14,23,41,.58);font-size:.92rem;font-weight:600;line-height:1.35;margin-top:-2px}.required-label{display:inline-flex;align-items:baseline;gap:.18em;white-space:nowrap}.required-marker{display:inline;color:#b42318;font-weight:900}input,textarea,select{width:100%;min-height:52px;border:1.5px solid rgba(14,23,41,.14);border-radius:16px;background:#fff;color:var(--ink);font-size:16px;padding:14px 15px;box-shadow:0 1px 0 rgba(14,23,41,.03)}textarea{line-height:1.5;min-height:140px;resize:vertical}.textarea-large{min-height:170px}select{appearance:auto}.readiness-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:20px 0 4px;padding:18px;border:1px solid rgba(217,85,61,.16);border-radius:22px;background:#fff8f3}input:focus,textarea:focus,select:focus{outline:3px solid rgba(217,85,61,.18);border-color:#d9553d}input:-webkit-autofill,textarea:-webkit-autofill{box-shadow:0 0 0 1000px #fff inset;-webkit-text-fill-color:var(--ink)}.optional-group{border:1px solid rgba(14,23,41,.12);border-radius:18px;margin-top:18px;padding:4px 16px 16px;background:rgba(14,23,41,.025)}.optional-group summary{cursor:pointer;font-weight:800;min-height:48px;display:flex;align-items:center}.optional-group-body{display:grid;gap:20px;padding-top:8px}.hp{position:absolute;left:-10000px;width:1px;height:1px;opacity:0}.submit-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.status{color:rgba(14,23,41,.68);font-weight:700}.status[data-tone="error"],.confirm-note[data-tone="error"]{color:#b42318}.status[data-tone="success"],.confirm-note[data-tone="success"]{color:#136c4a}.status[data-tone="loading"]{color:#99552f}.support-fallback{margin-top:16px;color:rgba(14,23,41,.64);line-height:1.55}.simple-footer{text-align:center;padding:30px clamp(18px,5vw,56px);background:#071426;color:rgba(255,255,255,.72)}
   @media(max-width:1080px){.trust-row{grid-template-columns:1fr}.trust-item{min-height:48px}.intake-workspace{grid-template-columns:1fr}.next-card{position:relative;top:auto;grid-column:1;grid-row:auto}.intake-form{grid-column:1;grid-row:auto}}
-  @media(max-width:760px){.simple-nav{align-items:flex-start;flex-direction:column}.simple-nav div{gap:12px}.brand img{width:150px}.intake-page{padding:20px clamp(16px,4vw,24px) calc(120px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#f5eadf 0,var(--paper) 66%,var(--paper-2))}.intake-hero,.prospect-card{grid-template-columns:1fr}.intake-hero{padding:30px 22px 26px;border-radius:28px;margin-bottom:24px}.intake-hero h1{font-size:clamp(3rem,18vw,4.6rem)}.trust-row{gap:10px}.trust-item{font-size:.95rem;min-height:50px}.prospect-actions{justify-content:flex-start}.prospect-actions .btn{width:100%;justify-content:center}.prep-card{align-items:flex-start;flex-direction:column}.grid.two{grid-template-columns:1fr}.intake-form{border-radius:24px;padding:20px}.confirm-note{border-radius:18px}.fieldset-title{font-size:2rem}fieldset{padding:20px 16px}.submit-row{align-items:flex-start;flex-direction:column}.submit-row .btn{width:100%;justify-content:center}textarea{min-height:140px}.textarea-large{min-height:170px}}
+  @media(max-width:760px){.simple-nav{align-items:flex-start;flex-direction:column}.simple-nav div{gap:12px}.brand img{width:150px}.intake-page{padding:20px clamp(16px,4vw,24px) calc(120px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#f5eadf 0,var(--paper) 66%,var(--paper-2))}.intake-hero,.prospect-card{grid-template-columns:1fr}.intake-hero{padding:30px 22px 26px;border-radius:28px;margin-bottom:24px}.intake-hero h1{font-size:clamp(3rem,18vw,4.6rem)}.trust-row{gap:10px}.trust-item{font-size:.95rem;min-height:50px}.prospect-actions{justify-content:flex-start}.prospect-actions .btn{width:100%;justify-content:center}.prep-card{align-items:flex-start;flex-direction:column}.grid.two,.readiness-grid{grid-template-columns:1fr}.readiness-grid{padding:16px}.intake-form{border-radius:24px;padding:20px}.confirm-note{border-radius:18px}.fieldset-title{font-size:2rem}fieldset{padding:20px 16px}.submit-row{align-items:flex-start;flex-direction:column}.submit-row .btn{width:100%;justify-content:center}textarea{min-height:140px}.textarea-large{min-height:170px}}
 </style>

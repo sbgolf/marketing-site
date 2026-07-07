@@ -95,6 +95,8 @@ const buildRow = (payload, event) => {
       template_preference: optionalClean(payload.template_preference, 120),
       distances_pricing: optionalClean(payload.distances_pricing, 2500),
       registration_platform: optionalClean(payload.registration_platform, 160),
+      registration_status: optionalClean(payload.registration_status, 120),
+      pricing_confidence: optionalClean(payload.pricing_confidence, 160),
       course_logistics: optionalClean(payload.course_logistics, 2500),
       bq_certification: optionalClean(payload.bq_certification, 1000),
       race_schedule: optionalClean(payload.race_schedule, 2500),
@@ -104,6 +106,10 @@ const buildRow = (payload, event) => {
       email_capture: optionalClean(payload.email_capture, 1200),
       identity_hero_image: optionalClean(payload.identity_hero_image, 500),
       assets_link: optionalClean(payload.assets_link, 800),
+      domain_dns_status: optionalClean(payload.domain_dns_status, 160),
+      domain_email_status: optionalClean(payload.domain_email_status, 160),
+      analytics_search_status: optionalClean(payload.analytics_search_status, 160),
+      final_approver: optionalClean(payload.final_approver, 240),
       analytics_access_notes: optionalClean(payload.analytics_access_notes, 1200),
       optional_notes: optionalClean(payload.optional_notes, 2000),
     },
@@ -155,30 +161,44 @@ const buildHandoffChecklist = ({ row, intakeId }) => {
   };
 };
 
+const dependencyStatusFromAnswer = (value) => {
+  const normalized = normalizeMatchValue(value);
+  if (!normalized) return 'unknown';
+  if (normalized.includes('don’t know') || normalized.includes("don't know")) return 'customer_unsure';
+  if (normalized.includes('not use email') || normalized.includes('set this up fresh')) return 'not_needed';
+  if (normalized.includes('control it') || normalized.includes('grant access')) return 'confirmed';
+  return 'requested';
+};
+
 const buildLaunchReadinessDependencySnapshot = ({ row, checklist }) => ({
   registration: {
     status: row.registration_url ? 'confirmed' : 'requested',
     registration_url_present: Boolean(row.registration_url),
     platform: row.metadata.registration_platform || null,
+    current_status: row.metadata.registration_status || null,
+    pricing_confidence: row.metadata.pricing_confidence || null,
   },
   domain_dns: {
-    status: row.metadata.current_domain ? 'requested' : 'unknown',
+    status: row.metadata.domain_dns_status ? dependencyStatusFromAnswer(row.metadata.domain_dns_status) : (row.metadata.current_domain ? 'requested' : 'unknown'),
     current_domain_present: Boolean(row.metadata.current_domain),
     current_domain: row.metadata.current_domain || null,
+    owner_answer: row.metadata.domain_dns_status || null,
   },
   domain_email: {
-    status: 'unknown',
+    status: dependencyStatusFromAnswer(row.metadata.domain_email_status),
+    owner_answer: row.metadata.domain_email_status || null,
   },
   analytics_search: {
-    status: 'unknown',
+    status: dependencyStatusFromAnswer(row.metadata.analytics_search_status),
+    owner_answer: row.metadata.analytics_search_status || null,
   },
   assets_permissions: {
     status: row.metadata.assets_link ? 'confirmed' : 'requested',
     assets_link_present: Boolean(row.metadata.assets_link),
   },
   final_approval: {
-    status: row.contact_name && row.contact_email ? 'requested' : 'unknown',
-    approver_candidate: row.contact_name || null,
+    status: row.metadata.final_approver ? 'confirmed' : row.contact_name && row.contact_email ? 'requested' : 'unknown',
+    approver_candidate: row.metadata.final_approver || row.contact_name || null,
   },
   missing_critical_inputs: checklist.missing_critical_inputs,
 });
@@ -269,13 +289,13 @@ const updateBuildHandoff = async ({ supabaseUrl, serviceKey, row, record }) => {
       launch_blocker_summary: checklist.missing_critical_inputs.length
         ? `Missing critical inputs: ${checklist.missing_critical_inputs.join(', ')}`
         : null,
-      domain_dns_status: row.metadata.current_domain ? 'requested' : 'unknown',
-      domain_email_status: 'unknown',
-      analytics_status: 'unknown',
-      search_console_status: 'unknown',
+      domain_dns_status: launchReadinessDependencies.domain_dns.status,
+      domain_email_status: launchReadinessDependencies.domain_email.status,
+      analytics_status: launchReadinessDependencies.analytics_search.status,
+      search_console_status: launchReadinessDependencies.analytics_search.status,
       registration_confirmation_status: row.registration_url ? 'confirmed' : 'requested',
       asset_permission_status: row.metadata.assets_link ? 'confirmed' : 'requested',
-      final_approver_status: row.contact_name && row.contact_email ? 'requested' : 'unknown',
+      final_approver_status: launchReadinessDependencies.final_approval.status,
       build_status: checklist.missing_critical_inputs.length ? 'blocked' : 'ready_for_build',
       build_handoff_at: new Date().toISOString(),
       build_handoff_checklist: checklist,
