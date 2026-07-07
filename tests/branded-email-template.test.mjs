@@ -73,16 +73,20 @@ test('customer kickoff email uses Launch Readiness Kit language and customer ema
     tier: 'standard',
     intakeUrl: 'https://startlinesites.com/intake',
     assetChecklistUrl: 'https://startlinesites.com/asset-checklist',
+    accessGuidesUrl: 'https://startlinesites.com/access-guides',
   });
 
   assertBrandedCustomerEmail(html);
   assert.match(html, /Launch Readiness Kit/);
   assert.match(html, /Open Launch Readiness Checklist/);
   assert.match(html, /Review the Asset Hub/);
+  assert.match(html, /Open access guides/);
+  assert.match(html, /https:\/\/startlinesites\.com\/access-guides/);
   assert.match(html, /confirm what StartLine found, add what only your team knows/);
   assert.match(text, /Launch Readiness Kit/);
   assert.match(text, /Open Launch Readiness Checklist: https:\/\/startlinesites\.com\/intake/);
   assert.match(text, /Review the Asset Hub: https:\/\/startlinesites\.com\/asset-checklist/);
+  assert.match(text, /Open access guides: https:\/\/startlinesites\.com\/access-guides/);
 });
 
 test('customer intake confirmation uses branded email shell and asset-checklist CTA', () => {
@@ -111,7 +115,7 @@ test('Launch Readiness customer template set covers deposit through launch appro
   ]);
 
   const expectations = {
-    depositKickoff: [/Launch Readiness Kit/, /Open Launch Readiness Checklist/, /Review the Asset Hub/],
+    depositKickoff: [/Launch Readiness Kit/, /Open Launch Readiness Checklist/, /Review the Asset Hub/, /Open access guides/],
     launchReadiness: [/Confirm Launch Readiness for Ocean Marathon/, /I don’t know yet/, /Review access guides/],
     missingDependency: [/launch dependencies need owners/, /No passwords by email/, /Update Launch Readiness/],
     accessRequest: [/Access owner help/, /delegated access/i, /avoid emailing passwords/],
@@ -127,6 +131,7 @@ test('Launch Readiness customer template set covers deposit through launch appro
       customerName: 'Taylor',
       primaryUrl: template === 'stagingReview' ? 'https://preview.example/ocean' : 'https://startlinesites.com/intake',
       secondaryUrl: 'https://startlinesites.com/access-guides',
+      tertiaryUrl: 'https://startlinesites.com/access-guides',
       detail: 'StartLine is grouping the next Launch Readiness step so the build can keep moving safely.',
     });
 

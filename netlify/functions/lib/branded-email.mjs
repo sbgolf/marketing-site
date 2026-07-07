@@ -57,6 +57,7 @@ const launchReadinessTemplateDefinitions = {
     preheader: ({ raceName }) => `Deposit received for ${raceName}. Confirm what we found and gather launch assets.`,
     primaryLabel: 'Open Launch Readiness Checklist',
     secondaryLabel: 'Review the Asset Hub',
+    tertiaryLabel: 'Open access guides',
     cardTitle: 'What to do now',
     cardItems: [
       'Confirm the public race facts StartLine found.',
@@ -152,6 +153,7 @@ export const renderLaunchReadinessCustomerEmail = ({
   customerName = 'there',
   primaryUrl,
   secondaryUrl,
+  tertiaryUrl,
   detail = '',
 }) => {
   const definition = launchReadinessTemplateDefinitions[template];
@@ -170,6 +172,7 @@ export const renderLaunchReadinessCustomerEmail = ({
     '',
     primaryUrl ? `${definition.primaryLabel}: ${primaryUrl}` : null,
     secondaryUrl ? `${definition.secondaryLabel}: ${secondaryUrl}` : null,
+    tertiaryUrl && definition.tertiaryLabel ? `${definition.tertiaryLabel}: ${tertiaryUrl}` : null,
     '',
     'Reply here if anything changed or if a different account owner should be included.',
     '',
@@ -189,6 +192,7 @@ export const renderLaunchReadinessCustomerEmail = ({
       })}
       ${primaryUrl ? renderEmailButton({ href: primaryUrl, label: definition.primaryLabel }) : ''}
       ${secondaryUrl ? renderEmailButton({ href: secondaryUrl, label: definition.secondaryLabel, variant: 'secondary' }) : ''}
+      ${tertiaryUrl && definition.tertiaryLabel ? renderEmailButton({ href: tertiaryUrl, label: definition.tertiaryLabel, variant: 'secondary' }) : ''}
       <p style="margin:18px 0 0;">Reply here if anything changed or if a different account owner should be included.</p>
       ${renderSignatureHtml()}
     `,

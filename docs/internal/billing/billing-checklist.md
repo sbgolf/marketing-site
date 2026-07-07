@@ -51,7 +51,8 @@ Quick checklist for StartLine Sites first-year package proposals, deposits, fina
 - [ ] `customer_records.intake_status = ready_to_send` or `sent` if kickoff email was sent automatically
 - [ ] `customer_records.launch_readiness_status = ready_to_send` or `sent` if the Launch Readiness Kit was sent automatically
 - [ ] `customer_records.launch_readiness_dependencies` has a non-secret dependency snapshot for registration, domain/DNS, email safety, analytics/search, assets, and final approval
-- [ ] Kickoff/welcome email sent manually, or automatically via `STARTLINE_INTAKE_FORM_URL` + `STARTLINE_ASSET_CHECKLIST_URL`
+- [ ] Kickoff/welcome email sent manually, or automatically via `STARTLINE_INTAKE_FORM_URL` + `STARTLINE_ASSET_CHECKLIST_URL` + optional `STARTLINE_ACCESS_GUIDES_URL`
+- [ ] If sent automatically, `customer_records.metadata.kickoff_email.template = depositKickoff`, `provider = resend`, `provider_message_id` is recorded when Resend returns one, and no API keys, tokens, Stripe customer IDs, or payment intent IDs are stored in that email metadata
 - [ ] Intake form sent
 - [ ] Asset checklist sent
 
