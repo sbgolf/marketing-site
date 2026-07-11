@@ -98,6 +98,8 @@ test('M-09 keeps mobile CTAs and audit form controls touch-friendly', () => {
   assert.match(indexSource, /\.field input,\.field textarea\{min-height:52px\}/);
   assert.match(indexSource, /\.field label\{line-height:1\.35\}/);
   assert.match(indexSource, /\.section-purpose-links a\{min-height:64px;padding:14px 16px\}/);
+  assert.match(indexSource, /\.faq-q\{[^}]*display:grid;grid-template-columns:minmax\(0,1fr\) 26px/);
+  assert.match(indexSource, /\.pm\{width:26px;height:26px;min-width:26px;justify-self:end/);
 });
 
 test('homepage fit cards link to public persona pages without replacing audit CTA', () => {
