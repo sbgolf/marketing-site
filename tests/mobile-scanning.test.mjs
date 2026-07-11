@@ -93,6 +93,8 @@ test('M-09 keeps mobile CTAs and audit form controls touch-friendly', () => {
   assert.match(indexSource, /\.fit-actions \.btn\{width:100%;justify-content:center;min-height:48px\}/);
   assert.match(indexSource, /\.sample-audit-actions\{display:grid;grid-template-columns:1fr\}/);
   assert.match(indexSource, /\.sample-audit-actions \.btn\{width:100%;justify-content:center;min-height:48px\}/);
+  assert.match(indexSource, /\.field input,\.field textarea\{display:block;width:100%;max-width:100%;min-width:0/);
+  assert.match(indexSource, /\.field input\[type="date"\]\{-webkit-appearance:none;appearance:none\}/);
   assert.match(indexSource, /\.field input,\.field textarea\{min-height:52px\}/);
   assert.match(indexSource, /\.field label\{line-height:1\.35\}/);
   assert.match(indexSource, /\.section-purpose-links a\{min-height:64px;padding:14px 16px\}/);
