@@ -124,19 +124,20 @@ Before a mockup can be included in outreach:
 
 ## Current implementation status
 
-Implemented in this PR:
+Implemented:
 
 - Supabase migration for prospect and generation-job tables.
 - Deterministic Community fit scoring module.
+- Supabase prospect payload/upsert CLI: `npm run upsert:mockup-prospect -- --input prospects.json`.
 - Node tests for known pilot behaviors:
   - local RunSignup community races qualify;
   - non-RunSignup races are not send-ready in this pilot;
-  - Performance/trail races are disqualified from Community-first automation.
+  - Performance/trail races are disqualified from Community-first automation;
+  - prospect input normalizes into a scored Supabase payload with duplicate lookup filters.
 
 Not yet implemented:
 
 - RunSignup discovery scraper.
-- Supabase insert/upsert script for prospects.
 - Telegram approval digest.
 - Race-template mockup config generator.
 - Automated send from approved generation jobs.
