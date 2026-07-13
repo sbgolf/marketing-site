@@ -26,6 +26,8 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - CDO backlog template: `templates/cdo-backlog-template.md`
 - Conversion UX PR review prompts: `conversion-ux-pr-review-prompts.md`
 - Customer proof readiness checklist: `customer-proof-readiness-checklist.md`
+- RunSignup Community mockup prospect pipeline: `runsignup-community-prospect-pipeline.md`
+- Private mockup outreach log: `private-mockup-outreach-log.md`
 - Service agreement draft: `legal/service-agreement-draft.md`
 - Service agreement source notes: `legal/source-notes.md`
 - Current blockers: `blockers.md`
