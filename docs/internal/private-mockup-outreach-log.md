@@ -79,4 +79,19 @@ Do not commit real recipient lists to git. Keep real recipient addresses in Supa
 
 ## Operational rule
 
-The eventual branded send gate should write this table automatically after provider acceptance. Until then, every manual send must be followed by a `record-mockup-outreach` run.
+The branded send gate should be the default path for future race-director sends:
+
+```bash
+npm run send:mockup-outreach -- \
+  --race-name "Example 10K" \
+  --mockup-url "https://mockups.startlinesites.com/private/mockups/exampletoken/" \
+  --mockup-template "community" \
+  --to "director@example-race.test" \
+  --cc "events@example-race.test" \
+  --subject "A Nashville-local website mockup for Example 10K" \
+  --dry-run
+```
+
+The gate validates the branded HTML shell, checks for rejected customer-facing wording, checks this table for prior outreach, sends through Resend, and writes the accepted provider message ID back to `race_mockup_outreach`.
+
+Until the send gate is fully configured in production, every manual send must be followed by a `record-mockup-outreach` run.
