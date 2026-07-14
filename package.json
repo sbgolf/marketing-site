@@ -17,6 +17,7 @@
     "generate:mockup-config": "node scripts/generate-mockup-config.mjs",
     "record:mockup-generation-job": "node scripts/record-mockup-generation-job.mjs",
     "prepare:mockup-outreach-from-job": "node scripts/prepare-mockup-outreach-from-job.mjs",
+    "send:mockup-outreach-from-job": "node scripts/send-mockup-outreach-from-job.mjs",
     "upsert:mockup-prospect": "node scripts/upsert-mockup-prospect.mjs",
     "smoke:audit-request": "node scripts/smoke-audit-request.mjs",
     "test": "node --test"

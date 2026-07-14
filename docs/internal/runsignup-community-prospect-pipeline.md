@@ -134,6 +134,7 @@ Implemented:
 - Owner-gated Community private mockup config generator: `npm run generate:mockup-config -- --input discovery-output.json --candidate-index 2 --owner-approved --output /tmp/race-config.json`.
 - Supabase generation-job recorder for generated configs: `npm run record:mockup-generation-job -- --input race-config.json --prospect-id <uuid> --mockup-base-url https://mockups.startlinesites.com --dry-run`.
 - Dry-run outreach handoff from approved generation jobs: `npm run prepare:mockup-outreach-from-job -- --generation-job job.json --prospect prospect.json --to director@example.test --owner-approved-send --dry-run`.
+- Supabase-backed one-command send gate from approved generation jobs: `npm run send:mockup-outreach-from-job -- --generation-job-id <uuid> --owner-approved-send --dry-run` for validation, then the same command without `--dry-run` only after Steve approves that specific race-director/customer send.
 - Node tests for known pilot behaviors:
   - local RunSignup community races qualify;
   - non-RunSignup races are not send-ready in this pilot;
@@ -143,8 +144,9 @@ Implemented:
   - scored discovery output renders as a Steve approval digest with explicit generate/skip/edit/collect-more-info decisions;
   - approved qualified prospects generate race-template-compatible Community private mockup config JSON while omitting unavailable optional data;
   - generated configs produce idempotent `race_mockup_generation_jobs` payloads without running QA or customer outreach;
-  - approved generation jobs can prepare branded outreach payloads only after QA, Site Auditor, owner approval, and an explicit per-send owner flag.
+  - approved generation jobs can prepare branded outreach payloads only after QA, Site Auditor, owner approval, and an explicit per-send owner flag;
+  - approved generation jobs can be sent through a Supabase-backed one-command gate that checks duplicates, sends through Resend, records `race_mockup_outreach`, and patches `outreach_id` back to the generation job.
 
 Not yet implemented:
 
-- Supabase-backed one-command send from approved generation jobs.
+- Production scheduling/operator automation around the one-command send gate; every send still requires Steve's explicit per-race approval.

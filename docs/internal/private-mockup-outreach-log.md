@@ -79,19 +79,30 @@ Do not commit real recipient lists to git. Keep real recipient addresses in Supa
 
 ## Operational rule
 
-The branded send gate should be the default path for future race-director sends:
+The branded send gate should be the default path for future race-director sends. For manually assembled payloads, use:
 
 ```bash
 npm run send:mockup-outreach -- \
   --race-name "Example 10K" \
   --mockup-url "https://mockups.startlinesites.com/private/mockups/exampletoken/" \
   --mockup-template "community" \
-  --to "director@example-race.test" \
-  --cc "events@example-race.test" \
+  --to "director@example.test" \
+  --cc "events@example.test" \
   --subject "A Nashville-local website mockup for Example 10K" \
   --dry-run
 ```
 
-The gate validates the branded HTML shell, checks for rejected customer-facing wording, checks this table for prior outreach, sends through Resend, and writes the accepted provider message ID back to `race_mockup_outreach`.
+For generated mockup jobs, prefer the generation-job gate so the send is tied back to `race_mockup_generation_jobs`:
+
+```bash
+npm run send:mockup-outreach-from-job -- \
+  --generation-job-id "00000000-0000-4000-8000-000000000000" \
+  --owner-approved-send \
+  --dry-run
+```
+
+Remove `--dry-run` only after Steve approves that exact race-director/customer send in the current workflow.
+
+Both gates validate the branded HTML shell, check for rejected customer-facing wording, check this table for prior outreach, send through Resend, and write the accepted provider message ID back to `race_mockup_outreach`. The generation-job gate also patches `race_mockup_generation_jobs.outreach_id` after a successful record insert.
 
 Until the send gate is fully configured in production, every manual send must be followed by a `record-mockup-outreach` run.
