@@ -130,15 +130,16 @@ Implemented:
 - Deterministic Community fit scoring module.
 - Supabase prospect payload/upsert CLI: `npm run upsert:mockup-prospect -- --input prospects.json`.
 - Dry-run RunSignup discovery CLI: `npm run discover:runsignup-prospects -- --state TN --start-date 2026-10-01 --end-date 2027-05-01`.
+- Telegram-ready owner approval digest CLI: `npm run digest:mockup-prospects -- --input discovery-output.json`.
 - Node tests for known pilot behaviors:
   - local RunSignup community races qualify;
   - non-RunSignup races are not send-ready in this pilot;
   - Performance/trail races are disqualified from Community-first automation;
   - prospect input normalizes into a scored Supabase payload with duplicate lookup filters;
-  - RunSignup public race API results normalize into source-backed scored prospect candidates.
+  - RunSignup public race API results normalize into source-backed scored prospect candidates;
+  - scored discovery output renders as a Steve approval digest with explicit generate/skip/edit/collect-more-info decisions.
 
 Not yet implemented:
 
-- Telegram approval digest.
 - Race-template mockup config generator.
 - Automated send from approved generation jobs.
