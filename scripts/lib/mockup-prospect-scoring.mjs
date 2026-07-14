@@ -64,9 +64,20 @@ export const cleanText = (value, max = 5000) => {
 
 const lowerText = (value) => cleanText(value, 20000).toLowerCase();
 
-const includesAny = (haystack, needles) => needles.some((needle) => haystack.includes(needle));
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-const countKeywordHits = (haystack, needles) => needles.filter((needle) => haystack.includes(needle)).length;
+const keywordMatches = (haystack, needle) => {
+  const cleanedNeedle = lowerText(needle);
+  if (!cleanedNeedle) return false;
+  if (/^[a-z0-9][a-z0-9\s-]*[a-z0-9]$/.test(cleanedNeedle)) {
+    return new RegExp(`(^|[^a-z0-9])${escapeRegex(cleanedNeedle)}([^a-z0-9]|$)`, 'i').test(haystack);
+  }
+  return haystack.includes(cleanedNeedle);
+};
+
+const includesAny = (haystack, needles) => needles.some((needle) => keywordMatches(haystack, needle));
+
+const countKeywordHits = (haystack, needles) => needles.filter((needle) => keywordMatches(haystack, needle)).length;
 
 const hasRunSignupUrl = (value) => {
   try {

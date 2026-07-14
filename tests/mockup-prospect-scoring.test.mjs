@@ -109,3 +109,24 @@ test('skips likely performance or trail races for the Community-first pilot', ()
   assert.notEqual(performanceScore.qualificationStatus, 'qualified_for_mockup');
   assert.notEqual(trailScore.qualificationStatus, 'qualified_for_mockup');
 });
+
+test('performance keyword matching does not flag pr inside ordinary words', () => {
+  const score = scoreCommunityProspect(
+    {
+      raceName: '7th President 7K Run',
+      raceCity: 'Nashville',
+      raceState: 'TN',
+      eventDate: '2026-10-17',
+      sourcePlatform: 'runsignup',
+      sourceUrl: 'https://runsignup.com/Race/TN/Nashville/AndrewJackson7thPresident7KRun',
+      registrationUrl: 'https://runsignup.com/Race/TN/Nashville/AndrewJackson7thPresident7KRun',
+      distances: ['7K', '2 Miles'],
+      description: 'Annual community fundraiser with local history, a walk option, packet pickup, and contact form.',
+      contactSources: [{ type: 'form', url: 'https://runsignup.com/Race/TN/Nashville/AndrewJackson7thPresident7KRun/Contact' }],
+      sourceCoverage: { date: true, location: true, distances: true, registration: true, schedule: true, contact: true, cause: true },
+    },
+    { now: '2026-07-13T12:00:00Z' },
+  );
+
+  assert.equal(score.disqualifiers.some((item) => item.includes('Performance')), false);
+});

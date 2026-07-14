@@ -129,15 +129,16 @@ Implemented:
 - Supabase migration for prospect and generation-job tables.
 - Deterministic Community fit scoring module.
 - Supabase prospect payload/upsert CLI: `npm run upsert:mockup-prospect -- --input prospects.json`.
+- Dry-run RunSignup discovery CLI: `npm run discover:runsignup-prospects -- --state TN --start-date 2026-10-01 --end-date 2027-05-01`.
 - Node tests for known pilot behaviors:
   - local RunSignup community races qualify;
   - non-RunSignup races are not send-ready in this pilot;
   - Performance/trail races are disqualified from Community-first automation;
-  - prospect input normalizes into a scored Supabase payload with duplicate lookup filters.
+  - prospect input normalizes into a scored Supabase payload with duplicate lookup filters;
+  - RunSignup public race API results normalize into source-backed scored prospect candidates.
 
 Not yet implemented:
 
-- RunSignup discovery scraper.
 - Telegram approval digest.
 - Race-template mockup config generator.
 - Automated send from approved generation jobs.
