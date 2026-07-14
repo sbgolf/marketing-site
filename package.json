@@ -12,6 +12,7 @@
     "audit:private-mockup": "node scripts/audit-private-mockup-handoff.mjs",
     "record:mockup-outreach": "node scripts/record-mockup-outreach.mjs",
     "send:mockup-outreach": "node scripts/send-mockup-outreach.mjs",
+    "upsert:mockup-prospect": "node scripts/upsert-mockup-prospect.mjs",
     "smoke:audit-request": "node scripts/smoke-audit-request.mjs",
     "test": "node --test"
   },
