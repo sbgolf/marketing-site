@@ -133,6 +133,7 @@ Implemented:
 - Telegram-ready owner approval digest CLI: `npm run digest:mockup-prospects -- --input discovery-output.json`.
 - Owner-gated Community private mockup config generator: `npm run generate:mockup-config -- --input discovery-output.json --candidate-index 2 --owner-approved --output /tmp/race-config.json`.
 - Supabase generation-job recorder for generated configs: `npm run record:mockup-generation-job -- --input race-config.json --prospect-id <uuid> --mockup-base-url https://mockups.startlinesites.com --dry-run`.
+- Dry-run outreach handoff from approved generation jobs: `npm run prepare:mockup-outreach-from-job -- --generation-job job.json --prospect prospect.json --to director@example.test --owner-approved-send --dry-run`.
 - Node tests for known pilot behaviors:
   - local RunSignup community races qualify;
   - non-RunSignup races are not send-ready in this pilot;
@@ -141,8 +142,9 @@ Implemented:
   - RunSignup public race API results normalize into source-backed scored prospect candidates;
   - scored discovery output renders as a Steve approval digest with explicit generate/skip/edit/collect-more-info decisions;
   - approved qualified prospects generate race-template-compatible Community private mockup config JSON while omitting unavailable optional data;
-  - generated configs produce idempotent `race_mockup_generation_jobs` payloads without running QA or customer outreach.
+  - generated configs produce idempotent `race_mockup_generation_jobs` payloads without running QA or customer outreach;
+  - approved generation jobs can prepare branded outreach payloads only after QA, Site Auditor, owner approval, and an explicit per-send owner flag.
 
 Not yet implemented:
 
-- Automated send from approved generation jobs.
+- Supabase-backed one-command send from approved generation jobs.
