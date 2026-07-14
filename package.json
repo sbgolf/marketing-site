@@ -14,6 +14,7 @@
     "send:mockup-outreach": "node scripts/send-mockup-outreach.mjs",
     "discover:runsignup-prospects": "node scripts/discover-runsignup-prospects.mjs",
     "digest:mockup-prospects": "node scripts/build-mockup-prospect-digest.mjs",
+    "generate:mockup-config": "node scripts/generate-mockup-config.mjs",
     "upsert:mockup-prospect": "node scripts/upsert-mockup-prospect.mjs",
     "smoke:audit-request": "node scripts/smoke-audit-request.mjs",
     "test": "node --test"
