@@ -21,10 +21,14 @@ test('private mockup outreach send gate renders branded customer-facing email', 
 
   assert.equal(subject, 'A Nashville-local website mockup for Example 10K');
   assert.match(text, /Hi Taylor/);
+  assert.match(text, /The goal is not to replace RunSignup/);
+  assert.match(text, /50% off all current website packages/);
   assert.match(text, /Review the private mockup: https:\/\/mockups\.startlinesites\.com\/private\/mockups\/exampletoken\//);
   assert.match(html, /email-card/);
   assert.match(html, /email-button-link/);
   assert.match(html, /Private race website preview/);
+  assert.match(html, /The goal is not to replace RunSignup/);
+  assert.match(html, /50% off all current website packages/);
   assert.match(html, /Steve, CEO &amp; Founder/);
   assert.deepEqual(assertBrandedMockupOutreachHtml({ html, mockupUrl }), []);
 });
