@@ -1,6 +1,7 @@
 import { buildDuplicateFilters, buildMockupOutreachPayload, clean, parseEmailList } from './mockup-outreach-log.mjs';
 import {
   assertBrandedMockupOutreachHtml,
+  buildDefaultMockupOutreachDetail,
   renderPrivateMockupOutreachEmail,
   validateMockupOutreachSend,
 } from './mockup-outreach-send-gate.mjs';
@@ -75,7 +76,7 @@ export const buildOutreachInputFromGenerationJob = ({ generationJob = {}, prospe
   const sourceUrl = firstString(sourceBundle.source_url, prospect.source_url);
   const toEmails = parseEmailList(overrides.toEmails).length ? parseEmailList(overrides.toEmails) : extractProspectEmails(prospect);
   const subject = firstString(overrides.subject) || `A private website mockup for ${raceName || 'your race'}`;
-  const detail = firstString(overrides.detail) || `I put together a private StartLine Sites preview for ${raceName || 'your race'} using public race information. The goal is to show how the race details could be organized into a clearer runner-facing page while keeping registration on the race's current registration platform.`;
+  const detail = firstString(overrides.detail) || buildDefaultMockupOutreachDetail(raceName || 'your race');
 
   return {
     raceName,
