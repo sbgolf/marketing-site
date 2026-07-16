@@ -9,6 +9,7 @@ import {
 import { clean, parseEmailList, validateMockupOutreachInput } from './mockup-outreach-log.mjs';
 
 const REJECTED_CUSTOMER_COPY = [/no-index/i, /\bBailey\b/i];
+const PRELIMINARY_MOCKUP_NOTE = 'This is intentionally a preliminary mockup — a starting point to show the direction. If it looks useful, we can fine-tune the copy, sections, sponsor placement, and race-specific details before anything goes live.';
 
 export const DEFAULT_MOCKUP_OUTREACH_FROM = 'Steve <steve@startlinesites.com>';
 export const DEFAULT_MOCKUP_OUTREACH_REPLY_TO = 'support@startlinesites.com';
@@ -51,6 +52,8 @@ export const renderPrivateMockupOutreachEmail = ({
     '',
     safeDetail,
     '',
+    PRELIMINARY_MOCKUP_NOTE,
+    '',
     `Review the private mockup: ${safeMockupUrl}`,
     '',
     'If this is helpful, reply here and I can share what a practical next step would look like. If someone else owns the race website, feel free to forward this along.',
@@ -66,8 +69,8 @@ export const renderPrivateMockupOutreachEmail = ({
       <p style="margin:0 0 16px;">Hi ${escapeHtml(safeContactName)},</p>
       <p style="margin:0 0 18px;">${escapeHtml(safeDetail)}</p>
       ${renderInfoCard({
-        title: 'Private preview',
-        children: `<p style="margin:0;color:#DDE7F3;">The mockup is a private preview for review, not a public replacement for your current registration flow.</p>`,
+        title: 'Private preliminary mockup',
+        children: `<p style="margin:0;color:#DDE7F3;">${escapeHtml(PRELIMINARY_MOCKUP_NOTE)} The preview is for review only, not a public replacement for your current registration flow.</p>`,
       })}
       ${renderEmailButton({ href: safeMockupUrl, label: 'Review the private mockup' })}
       <p style="margin:18px 0 0;">If this is helpful, reply here and I can share what a practical next step would look like. If someone else owns the race website, feel free to forward this along.</p>
