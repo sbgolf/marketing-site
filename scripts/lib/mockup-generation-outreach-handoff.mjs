@@ -75,7 +75,7 @@ export const buildOutreachInputFromGenerationJob = ({ generationJob = {}, prospe
   const officialUrl = firstString(overrides.officialUrl, sourceBundle.official_url, prospect.official_url);
   const sourceUrl = firstString(sourceBundle.source_url, prospect.source_url);
   const toEmails = parseEmailList(overrides.toEmails).length ? parseEmailList(overrides.toEmails) : extractProspectEmails(prospect);
-  const subject = firstString(overrides.subject) || `A private website mockup for ${raceName || 'your race'}`;
+  const subject = firstString(overrides.subject) || `A free private website mockup for ${raceName || 'your race'}`;
   const detail = firstString(overrides.detail) || buildDefaultMockupOutreachDetail(raceName || 'your race');
 
   return {

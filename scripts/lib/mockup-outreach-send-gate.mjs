@@ -44,7 +44,7 @@ export const renderPrivateMockupOutreachEmail = ({
   const safeRaceName = clean(raceName, 160) || 'your race';
   const safeContactName = clean(contactName, 120) || 'there';
   const safeMockupUrl = clean(mockupUrl, 1000);
-  const safeSubject = clean(subject, 300) || `A private website mockup for ${safeRaceName}`;
+  const safeSubject = clean(subject, 300) || `A free private website mockup for ${safeRaceName}`;
   const safeDetail = clean(detail, 3000) || buildDefaultMockupOutreachDetail(safeRaceName);
 
   const text = [
