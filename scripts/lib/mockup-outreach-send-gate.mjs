@@ -14,6 +14,17 @@ const PRELIMINARY_MOCKUP_NOTE = 'This is intentionally a preliminary mockup and 
 export const DEFAULT_MOCKUP_OUTREACH_FROM = 'Steve <steve@startlinesites.com>';
 export const DEFAULT_MOCKUP_OUTREACH_REPLY_TO = 'support@startlinesites.com';
 
+const cleanMultilineDetail = (value, max = 3000) => {
+  if (typeof value !== 'string') return '';
+  return value
+    .trim()
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim().replace(/[^\S\n]+/g, ' '))
+    .filter(Boolean)
+    .join('\n\n')
+    .slice(0, max);
+};
+
 const splitDetailParagraphs = (detail) => detail
   .split(/\n{2,}/)
   .map((paragraph) => paragraph.trim())
@@ -35,7 +46,7 @@ export const buildDefaultMockupOutreachDetail = (raceName) => {
 export const validateMockupOutreachSend = (input = {}) => {
   const errors = validateMockupOutreachInput(input);
   const subject = clean(input.subject, 300);
-  const bodyDetail = clean(input.detail, 3000);
+  const bodyDetail = cleanMultilineDetail(input.detail);
 
   if (!subject) errors.push('subject is required.');
 
@@ -58,7 +69,7 @@ export const renderPrivateMockupOutreachEmail = ({
   const safeContactName = clean(contactName, 120) || 'there';
   const safeMockupUrl = clean(mockupUrl, 1000);
   const safeSubject = clean(subject, 300) || `A free private website mockup for ${safeRaceName}`;
-  const safeDetail = clean(detail, 3000) || buildDefaultMockupOutreachDetail(safeRaceName);
+  const safeDetail = cleanMultilineDetail(detail) || buildDefaultMockupOutreachDetail(safeRaceName);
 
   const text = [
     `Hi ${safeContactName},`,
