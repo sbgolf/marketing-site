@@ -21,8 +21,11 @@ test('private mockup outreach send gate renders branded customer-facing email', 
 
   assert.equal(subject, 'A Nashville-local website mockup for Example 10K');
   assert.match(text, /Hi Taylor/);
-  assert.match(text, /The goal is not to replace RunSignup/);
+  assert.match(text, /The goal is not to replace RunSignup\. It is to make/);
   assert.match(text, /50% off all current website packages/);
+  assert.equal(text.includes('—'), false);
+  assert.match(text, /website\.\n\nThe goal is not to replace RunSignup/);
+  assert.match(text, /one clean place\.\n\nFor a limited time/);
   assert.match(text, /preliminary mockup/);
   assert.match(text, /fine-tune the copy, sections, sponsor placement, and race-specific details/);
   assert.match(text, /before anything goes live/);
@@ -30,8 +33,12 @@ test('private mockup outreach send gate renders branded customer-facing email', 
   assert.match(html, /email-card/);
   assert.match(html, /email-button-link/);
   assert.match(html, /Private race website preview/);
-  assert.match(html, /The goal is not to replace RunSignup/);
+  assert.match(html, /The goal is not to replace RunSignup\. It is to make/);
   assert.match(html, /50% off all current website packages/);
+  assert.equal(html.includes('—'), false);
+  assert.match(html, /<p style="margin:0 0 18px;">I came across Example 10K/);
+  assert.match(html, /<p style="margin:0 0 18px;">The goal is not to replace RunSignup/);
+  assert.match(html, /<p style="margin:0 0 18px;">For a limited time/);
   assert.match(html, /Private preliminary mockup/);
   assert.match(html, /fine-tune the copy, sections, sponsor placement, and race-specific details/);
   assert.match(html, /before anything goes live/);

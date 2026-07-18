@@ -73,6 +73,7 @@ test('generation-job outreach handoff builds send-gate input from approved job a
   assert.equal(input.registrationPlatform, 'runsignup');
   assert.equal(input.registrationRaceId, '12345');
   assert.deepEqual(input.toEmails, ['director@example.test']);
+  assert.equal(input.subject, 'A free private website mockup for Example Hometown 5K');
   assert.equal(input.metadata.generation_job_id, 'job-123');
   assert.equal(input.metadata.race_template_pr_url, 'https://github.com/sbgolf/race-templates/pull/12');
 });

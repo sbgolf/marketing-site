@@ -9,14 +9,27 @@ import {
 import { clean, parseEmailList, validateMockupOutreachInput } from './mockup-outreach-log.mjs';
 
 const REJECTED_CUSTOMER_COPY = [/no-index/i, /\bBailey\b/i];
-const PRELIMINARY_MOCKUP_NOTE = 'This is intentionally a preliminary mockup — a starting point to show the direction. If it looks useful, we can fine-tune the copy, sections, sponsor placement, and race-specific details before anything goes live.';
+const PRELIMINARY_MOCKUP_NOTE = 'This is intentionally a preliminary mockup and a starting point to show the direction. If it looks useful, we can fine-tune the copy, sections, sponsor placement, and race-specific details before anything goes live.';
 
 export const DEFAULT_MOCKUP_OUTREACH_FROM = 'Steve <steve@startlinesites.com>';
 export const DEFAULT_MOCKUP_OUTREACH_REPLY_TO = 'support@startlinesites.com';
 
+const splitDetailParagraphs = (detail) => detail
+  .split(/\n{2,}/)
+  .map((paragraph) => paragraph.trim())
+  .filter(Boolean);
+
+const renderDetailParagraphs = (detail) => splitDetailParagraphs(detail)
+  .map((paragraph) => `<p style="margin:0 0 18px;">${escapeHtml(paragraph)}</p>`)
+  .join('\n      ');
+
 export const buildDefaultMockupOutreachDetail = (raceName) => {
   const safeRaceName = clean(raceName, 160) || 'your race';
-  return `I came across ${safeRaceName} and put together a private StartLine Sites preview showing how the race could look as a dedicated, mobile-friendly website. The goal is not to replace RunSignup — it is to make the race easier for runners to understand, trust, and click through to register, with key race-day details, official registration links, community context, and runner questions organized in one clean place. For a limited time, StartLine Sites is offering 50% off all current website packages for qualified races. This promotional rate is available for a limited number of race websites this season so each build gets the focused launch attention it deserves.`;
+  return [
+    `I came across ${safeRaceName} and put together a private StartLine Sites preview showing how the race could look as a dedicated, mobile-friendly website.`,
+    'The goal is not to replace RunSignup. It is to make the race easier for runners to understand, trust, and click through to register, with key race-day details, official registration links, community context, and runner questions organized in one clean place.',
+    'For a limited time, StartLine Sites is offering 50% off all current website packages for qualified races. This promotional rate is available for a limited number of race websites this season so each build gets the focused launch attention it deserves.',
+  ].join('\n\n');
 };
 
 export const validateMockupOutreachSend = (input = {}) => {
@@ -44,7 +57,7 @@ export const renderPrivateMockupOutreachEmail = ({
   const safeRaceName = clean(raceName, 160) || 'your race';
   const safeContactName = clean(contactName, 120) || 'there';
   const safeMockupUrl = clean(mockupUrl, 1000);
-  const safeSubject = clean(subject, 300) || `A private website mockup for ${safeRaceName}`;
+  const safeSubject = clean(subject, 300) || `A free private website mockup for ${safeRaceName}`;
   const safeDetail = clean(detail, 3000) || buildDefaultMockupOutreachDetail(safeRaceName);
 
   const text = [
@@ -67,7 +80,7 @@ export const renderPrivateMockupOutreachEmail = ({
     heading: safeSubject,
     body: `
       <p style="margin:0 0 16px;">Hi ${escapeHtml(safeContactName)},</p>
-      <p style="margin:0 0 18px;">${escapeHtml(safeDetail)}</p>
+      ${renderDetailParagraphs(safeDetail)}
       ${renderInfoCard({
         title: 'Private preliminary mockup',
         children: `<p style="margin:0;color:#DDE7F3;">${escapeHtml(PRELIMINARY_MOCKUP_NOTE)} The preview is for review only, not a public replacement for your current registration flow.</p>`,
