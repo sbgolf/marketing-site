@@ -22,10 +22,11 @@ test('private mockup outreach send gate renders branded customer-facing email', 
   assert.equal(subject, 'A Nashville-local website mockup for Example 10K');
   assert.match(text, /Hi Taylor/);
   assert.match(text, /The goal is not to replace RunSignup\. It is to make/);
-  assert.match(text, /50% off all current website packages/);
+  assert.match(text, /As part of this private mockup campaign, StartLine is offering 50% off the first website build for a limited number of selected race organizations\./);
+  assert.doesNotMatch(text, /early partner|early race partner|newly formed|new company|beta/i);
   assert.equal(text.includes('—'), false);
   assert.match(text, /website\.\n\nThe goal is not to replace RunSignup/);
-  assert.match(text, /one clean place\.\n\nFor a limited time/);
+  assert.match(text, /one clean place\.\n\nAs part of this private mockup campaign/);
   assert.match(text, /preliminary mockup/);
   assert.match(text, /fine-tune the copy, sections, sponsor placement, and race-specific details/);
   assert.match(text, /before anything goes live/);
@@ -34,11 +35,12 @@ test('private mockup outreach send gate renders branded customer-facing email', 
   assert.match(html, /email-button-link/);
   assert.match(html, /Private race website preview/);
   assert.match(html, /The goal is not to replace RunSignup\. It is to make/);
-  assert.match(html, /50% off all current website packages/);
+  assert.match(html, /As part of this private mockup campaign, StartLine is offering 50% off the first website build for a limited number of selected race organizations\./);
+  assert.doesNotMatch(html, /early partner|early race partner|newly formed|new company|beta/i);
   assert.equal(html.includes('—'), false);
   assert.match(html, /<p style="margin:0 0 18px;">I came across Example 10K/);
   assert.match(html, /<p style="margin:0 0 18px;">The goal is not to replace RunSignup/);
-  assert.match(html, /<p style="margin:0 0 18px;">For a limited time/);
+  assert.match(html, /<p style="margin:0 0 18px;">As part of this private mockup campaign/);
   assert.match(html, /Private preliminary mockup/);
   assert.match(html, /fine-tune the copy, sections, sponsor placement, and race-specific details/);
   assert.match(html, /before anything goes live/);
@@ -51,12 +53,14 @@ test('private mockup outreach send gate rejects missing template and rejected wo
     raceName: 'Example 10K',
     mockupUrl: 'https://mockups.startlinesites.com/private/mockups/exampletoken/',
     toEmails: 'director@example.test',
-    subject: 'A no-index mockup from Bailey',
+    subject: 'A no-index mockup from Bailey for an early partner beta race',
   });
 
   assert.ok(errors.includes('mockupTemplate is required.'));
   assert.ok(errors.some((error) => error.includes('no-index')));
   assert.ok(errors.some((error) => error.includes('Bailey')));
+  assert.ok(errors.some((error) => error.includes('early partner')));
+  assert.ok(errors.some((error) => error.includes('beta')));
 });
 
 test('resend payload uses StartLine founder sender and support reply-to defaults', () => {

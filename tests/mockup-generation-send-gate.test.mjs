@@ -80,6 +80,8 @@ test('generation-job send gate dry-run fetches Supabase rows and prepares outrea
   assert.equal(result.payload.metadata.generation_job_id, 'job-123');
   assert.equal(result.email.html_checks, 'passed');
   assert.match(result.email.text, /Hi Taylor/);
+  assert.match(result.email.text, /As part of this private mockup campaign, StartLine is offering 50% off the first website build for a limited number of selected race organizations\./);
+  assert.doesNotMatch(result.email.text, /early partner|early race partner|newly formed|new company|beta/i);
   assert.deepEqual(calls.map((call) => `${call.method || 'GET'} ${call.path}`), [
     'GET race_mockup_generation_jobs?select=*&id=eq.job-123&limit=1',
     'GET race_mockup_prospects?select=*&id=eq.11111111-2222-4333-8444-555555555555&limit=1',
@@ -107,6 +109,9 @@ test('generation-job send gate sends, records outreach, and patches the generati
   assert.equal(result.resend_email_id, 'resend-789');
   assert.equal(sent.length, 1);
   assert.equal(sent[0].to, 'director@example.test');
+  assert.match(sent[0].text, /50% off the first website build/);
+  assert.match(sent[0].html, /50% off the first website build/);
+  assert.doesNotMatch(`${sent[0].text}\n${sent[0].html}`, /early partner|early race partner|newly formed|new company|beta/i);
   assert.ok(calls.some((call) => call.path.startsWith('race_mockup_outreach?select=')));
   assert.ok(calls.some((call) => call.path === 'race_mockup_outreach' && call.method === 'POST'));
   assert.ok(calls.some((call) => call.path === 'race_mockup_generation_jobs?id=eq.job-123' && call.method === 'PATCH' && call.body.outreach_id === 'outreach-456'));
