@@ -34,7 +34,7 @@ No new high-priority agent-actionable item was found in the 2026-07-06 CDO audit
 
 #### [M1] Replace persona-page footer `Outreach pages` label
 
-- **Status:** Agent-actionable
+- **Status:** In review — PR #160
 - **Page/path:** `/for-race-directors/`, `/for-community-races/`, `/for-marathons/`, `/for-runsignup-races/`
 - **Problem:** Public persona-page footers still use the group heading `Outreach pages` above the segment page links. The phrase is internal go-to-market framing, not buyer-facing site IA.
 - **Evidence from audit:** Live snapshots/fetches of all four persona pages showed `Outreach pages` in the footer, followed by `For community races`, `For marathons`, `For RunSignup races`, and `For race directors`. The homepage footer uses buyer-facing grouping (`FOR RACE TYPES`) for similar links.
