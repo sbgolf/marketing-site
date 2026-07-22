@@ -14,40 +14,64 @@ test('homepage keeps mobile scanning helpers and post-section audit CTAs', () =>
   assert.match(indexSource, /Need proof specific to your current site\?/);
 });
 
-test('H-09 adds a compact section-purpose jump path before dense proof and pricing sections', () => {
-  assert.match(indexSource, /class="section-purpose-strip" aria-label="Fast homepage scan paths"/);
-  assert.match(indexSource, /const sectionPurposeLinks = \[/);
-  for (const [label, href] of [
-    ['Proof', '#proof-points'],
-    ['Process', '#how'],
-    ['Pricing', '#pricing'],
-    ['Audit form', '#audit']
-  ]) {
-    assert.match(indexSource, new RegExp(`\\['${label}', '${href}'`));
-  }
-  assert.match(indexSource, /Already know what you need\?/);
-  assert.match(indexSource, /go straight to the private audit form/);
-});
+test('homepage uses grouped parent navigation so the header stays uncluttered', () => {
+  assert.doesNotMatch(indexSource, /<summary>Explore<\/summary>/);
+  assert.match(indexSource, /<summary>Services<\/summary>/);
+  assert.match(indexSource, /<summary>Resources<\/summary>/);
 
-test('H-09 trims repeated pre-audit disclaimers into shorter scan copy', () => {
-  assert.match(indexSource, /Illustrative cards use synthetic assets and respectful before states/);
-  assert.match(indexSource, /Illustrative cards use sample details and synthetic assets; the before state shows an opportunity, not a failing\./);
-  assert.doesNotMatch(indexSource, /The before\/after cards are illustrative placeholder proof only:[\s\S]*The before state represents normal race-site growth over time/);
-  assert.doesNotMatch(indexSource, /These cards are illustrative placeholder proof only,[\s\S]*The before state shows an opportunity to reorganize useful information, not a failing/);
-});
-
-test('homepage explore menu section links have explicit accessible names', () => {
   for (const [href, label] of [
-    ['#problem', 'Jump to why StartLine matters'],
-    ['#fit', 'Jump to who StartLine fits'],
-    ['#templates', 'Jump to template examples'],
-    ['#proof-points', 'Jump to proof points'],
+    ['/for-race-directors/', 'Explore StartLine services for race directors'],
+    ['/for-community-races/', 'Explore StartLine services for community races'],
+    ['/for-marathons/', 'Explore StartLine services for marathons and BQ races'],
+    ['/for-runsignup-races/', 'Explore StartLine services for RunSignup and platform-hosted races'],
+    ['/after-year-one/', 'Read about optional after-year-one services'],
+    ['/sample-audit/', 'Preview a sample StartLine private audit'],
+    ['/race-website-checklist/', 'Open the race website checklist'],
+    ['#proof-points', 'Jump to StartLine proof approach'],
     ['#how', 'Jump to how StartLine works'],
-    ['/after-year-one/', 'Read about after-year-one services'],
-    ['/race-website-checklist/', 'Open the race website checklist']
+    ['#faq', 'Jump to frequently asked questions']
   ]) {
     assert.match(indexSource, new RegExp(`<a href="${href.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}" aria-label="${label}">`));
   }
+});
+
+test('homepage condensation moves heavy demo sections off the homepage', () => {
+  for (const removedSection of [
+    /<section class="section-purpose-strip"/,
+    /<section class="templates" id="templates"/,
+    /<section class="sponsor-value" id="sponsors"/,
+    /<section class="proof community-before-after" id="mockups"/,
+    /<section class="proof performance-before-after" id="performance-mockup"/,
+    /<section class="technical-proof"/,
+    /<section class="launch-timeline"/,
+    /<section class="audit-path"/
+  ]) {
+    assert.doesNotMatch(indexSource, removedSection);
+  }
+
+  assert.match(indexSource, /Proof without pretend testimonials/);
+  assert.match(indexSource, /Example deliverable/);
+  assert.match(indexSource, /Pricing/);
+});
+
+test('homepage parent navigation preserves key resource and service destinations', () => {
+  for (const href of [
+    '#pricing',
+    '/for-race-directors/',
+    '/for-community-races/',
+    '/for-marathons/',
+    '/for-runsignup-races/',
+    '/after-year-one/',
+    '/sample-audit/',
+    '/race-website-checklist/',
+    '#proof-points',
+    '#how',
+    '#faq'
+  ]) {
+    assert.match(indexSource, new RegExp(`href="${href.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}"`));
+  }
+
+  assert.doesNotMatch(indexSource, /href="#templates"/);
 });
 
 test('homepage hero makes the primary audit path clear', () => {
@@ -136,8 +160,8 @@ test('homepage qualification copy respectfully explains who StartLine is not for
   assert.doesNotMatch(notForChunk, /guarantee|guaranteed|must buy|unlimited support/i);
 });
 
-test('homepage footer groups buyer, race, kickoff, and credibility links', () => {
-  for (const label of ['Buyer resources', 'For race types', 'Customer kickoff', 'Company / credibility']) {
+test('homepage footer mirrors services and resources without crowding the header', () => {
+  for (const label of ['Services', 'Resources', 'Customer kickoff', 'Company / credibility']) {
     assert.match(indexSource, new RegExp(`<div class="foot-title">${label}<\\/div>`));
   }
 
