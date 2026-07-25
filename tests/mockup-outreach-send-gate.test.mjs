@@ -10,6 +10,34 @@ import {
   validateMockupOutreachSend,
 } from '../scripts/lib/mockup-outreach-send-gate.mjs';
 
+test('operator portfolio outreach renders D-specific company language', () => {
+  const mockupUrl = 'https://mockups.startlinesites.com/private/mockups/operator-token/';
+  const { subject, text, html } = renderPrivateMockupOutreachEmail({
+    raceName: 'Example Turkey Trot',
+    companyName: 'Example Event Management',
+    contactName: 'Morgan',
+    mockupUrl,
+    emailTemplateKey: 'operator_portfolio_v1',
+  });
+
+  assert.equal(subject, 'A private website system idea for Example Event Management');
+  assert.match(text, /Hi Morgan/);
+  assert.match(text, /noticed the opportunity to give multiple events a clearer runner-facing web front door/);
+  assert.match(text, /using Example Turkey Trot to show what that could look like in practice/);
+  assert.match(text, /not meant to replace RunSignup, Race Roster, timing systems, or the registration tools/);
+  assert.match(text, /bigger than one race page/);
+  assert.match(text, /clearer portfolio system/);
+  assert.match(text, /scale across a small first set of your events/);
+  assert.match(text, /50% off the first website build/);
+  assert.doesNotMatch(text, /A free private website mockup for/);
+  assert.doesNotMatch(text, /early partner|early race partner|newly formed|new company|beta/i);
+  assert.equal(text.includes('—'), false);
+  assert.match(html, /A private StartLine Sites portfolio idea for Example Event Management/);
+  assert.match(html, /clearer portfolio system/);
+  assert.match(html, /Steve, CEO &amp; Founder/);
+  assert.deepEqual(assertBrandedMockupOutreachHtml({ html, mockupUrl }), []);
+});
+
 test('private mockup outreach send gate renders branded customer-facing email', () => {
   const mockupUrl = 'https://mockups.startlinesites.com/private/mockups/exampletoken/';
   const { subject, text, html } = renderPrivateMockupOutreachEmail({

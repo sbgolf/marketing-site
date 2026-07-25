@@ -73,6 +73,16 @@ Email template key: `operator_portfolio_v1`
 
 Primary pitch: a repeatable race-site system can give each race a stronger landing page and give the operator a clearer portfolio hub, while keeping registration on RunSignup/Race Roster.
 
+Default subject pattern: `A private website system idea for [Company Name]`
+
+Body requirements:
+
+- Frame the private mockup as one event example inside a multi-event system.
+- Speak to operator/company portfolio consistency, not only one race's website.
+- Explicitly state that StartLine complements RunSignup, Race Roster, timing systems, and existing registration tools.
+- Keep the approved 50% first-website-build campaign offer, but tie the next step to scaling across a few events rather than only one race.
+- Do not use the Lane A/B/C default subject `A free private website mockup for [Race Name]` for operator portfolio sends.
+
 ## Initial scoring model
 
 The first implementation scores each lane on a 100-point scale:

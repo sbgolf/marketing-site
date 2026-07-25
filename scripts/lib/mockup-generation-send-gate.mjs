@@ -1,4 +1,5 @@
 import { buildDuplicateFilters } from './mockup-outreach-log.mjs';
+import { validateEmailTemplateForCampaignLane } from './mockup-campaign-lanes.mjs';
 import {
   buildOutreachInputFromGenerationJob,
   validateGenerationJobSendReadiness,
@@ -103,10 +104,20 @@ export const buildGenerationJobSendPreparation = ({ generationJob = {}, prospect
     mockupUrl: input.mockupUrl,
     subject: input.subject,
     detail: input.detail,
+    emailTemplateKey: input.metadata.email_template_key,
+    companyName: input.companyName,
   });
   const htmlErrors = assertBrandedMockupOutreachHtml({ html: email.html, mockupUrl: input.mockupUrl });
+  const templateErrors = input.metadata.email_template_key ? validateEmailTemplateForCampaignLane({
+    emailTemplateKey: input.metadata.email_template_key,
+    campaignLane: input.metadata.campaign_lane,
+    prospectType: input.metadata.prospect_type,
+    segmentEvidence: input.metadata.segment_evidence,
+    operatorEventCount: input.metadata.operator_event_count,
+    recipientType: input.metadata.recipient_type,
+  }) : [];
   const payload = buildMockupOutreachPayload({ ...input, subject: email.subject, outreachStatus: 'sent' });
-  const errors = [...readinessErrors, ...sendErrors, ...htmlErrors];
+  const errors = [...readinessErrors, ...sendErrors, ...htmlErrors, ...templateErrors];
 
   return {
     ok: errors.length === 0,

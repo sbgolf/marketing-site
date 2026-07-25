@@ -3,6 +3,8 @@ import { buildDuplicateFilters, buildMockupOutreachPayload, clean, parseEmailLis
 import {
   assertBrandedMockupOutreachHtml,
   buildDefaultMockupOutreachDetail,
+  buildOperatorPortfolioOutreachDetail,
+  buildOperatorPortfolioSubject,
   renderPrivateMockupOutreachEmail,
   validateMockupOutreachSend,
 } from './mockup-outreach-send-gate.mjs';
@@ -80,20 +82,37 @@ export const buildOutreachInputFromGenerationJob = ({ generationJob = {}, prospe
   const recipientType = firstString(overrides.recipientType, prospect.recipient_type, prospectMetadata.recipient_type, prospectMetadata.contact_quality, 'race_director');
 
   const raceName = firstString(overrides.raceName, sourceBundle.race_name, prospect.race_name, metadata.config_identity_name);
+  const companyName = firstString(
+    overrides.companyName,
+    job.company_name,
+    prospect.company_name,
+    prospect.organization_name,
+    metadata.company_name,
+    metadata.organization_name,
+    prospectMetadata.company_name,
+    prospectMetadata.organization_name,
+    prospectMetadata.operator_name,
+  );
   const mockupUrl = firstString(overrides.mockupUrl, job.mockup_url);
   const mockupTemplate = firstString(overrides.mockupTemplate, job.template, job.mockup_template);
   const registrationUrl = firstString(overrides.registrationUrl, sourceBundle.registration_url, prospect.registration_url);
   const officialUrl = firstString(overrides.officialUrl, sourceBundle.official_url, prospect.official_url);
   const sourceUrl = firstString(sourceBundle.source_url, prospect.source_url);
   const toEmails = parseEmailList(overrides.toEmails).length ? parseEmailList(overrides.toEmails) : extractProspectEmails(prospect);
-  const subject = firstString(overrides.subject) || `A free private website mockup for ${raceName || 'your race'}`;
-  const detail = firstString(overrides.detail) || buildDefaultMockupOutreachDetail(raceName || 'your race');
+  const isOperatorPortfolioTemplate = emailTemplateKey === 'operator_portfolio_v1';
+  const subject = firstString(overrides.subject) || (isOperatorPortfolioTemplate
+    ? buildOperatorPortfolioSubject({ companyName, raceName })
+    : `A free private website mockup for ${raceName || 'your race'}`);
+  const detail = firstString(overrides.detail) || (isOperatorPortfolioTemplate
+    ? buildOperatorPortfolioOutreachDetail({ companyName, raceName })
+    : buildDefaultMockupOutreachDetail(raceName || 'your race'));
 
   return {
     raceName,
     raceSlug: firstString(overrides.raceSlug, prospect.race_slug, sourceBundle.race_slug),
     raceCity: firstString(overrides.raceCity, prospect.race_city),
     raceState: firstString(overrides.raceState, prospect.race_state),
+    companyName,
     officialUrl,
     registrationUrl,
     registrationPlatform: firstString(overrides.registrationPlatform, sourceBundle.registration_platform, prospect.registration_platform),
@@ -123,6 +142,7 @@ export const buildOutreachInputFromGenerationJob = ({ generationJob = {}, prospe
       campaign_lane: campaignLane || null,
       prospect_type: prospectType || null,
       email_template_key: emailTemplateKey || null,
+      company_name: companyName || null,
       segment_evidence: segmentEvidence,
       operator_event_count: Number.isFinite(operatorEventCount) ? operatorEventCount : 0,
       recipient_type: recipientType || null,
@@ -141,6 +161,8 @@ export const buildPreparedMockupOutreach = ({ generationJob = {}, prospect = {},
     mockupUrl: input.mockupUrl,
     subject: input.subject,
     detail: input.detail,
+    emailTemplateKey: input.metadata.email_template_key,
+    companyName: input.companyName,
   });
   const htmlErrors = assertBrandedMockupOutreachHtml({ html: email.html, mockupUrl: input.mockupUrl });
   const templateErrors = input.metadata.email_template_key ? validateEmailTemplateForCampaignLane({
