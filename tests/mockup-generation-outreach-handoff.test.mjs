@@ -97,6 +97,41 @@ test('generation-job outreach handoff prepares branded dry-run payload without s
   assert.ok(prepared.duplicate_filters.some((filter) => filter.includes('mockup_url=eq.')));
 });
 
+test('generation-job outreach handoff builds lane D operator portfolio email from campaign metadata', () => {
+  const prepared = buildPreparedMockupOutreach({
+    generationJob: {
+      ...generationJob,
+      metadata: {
+        campaign_lane: 'D',
+        prospect_type: 'race_management_company',
+        email_template_key: 'operator_portfolio_v1',
+        operator_event_count: 4,
+        segment_evidence: ['4 active/known events tied to this operator.', 'Multi-event calendar/portfolio language found.'],
+      },
+    },
+    prospect: {
+      ...prospect,
+      organization_name: 'Example Event Management',
+      metadata: {
+        recipient_type: 'company_routing_email',
+      },
+    },
+    ownerApprovedSend: true,
+    overrides: { contactName: 'Morgan' },
+  });
+
+  assert.equal(prepared.ok, true);
+  assert.equal(prepared.payload.subject, 'A private website system idea for Example Event Management');
+  assert.equal(prepared.payload.metadata.email_template_key, 'operator_portfolio_v1');
+  assert.equal(prepared.payload.metadata.company_name, 'Example Event Management');
+  assert.match(prepared.email.text, /Hi Morgan/);
+  assert.match(prepared.email.text, /give multiple events a clearer runner-facing web front door/);
+  assert.match(prepared.email.text, /using Example Hometown 5K to show what that could look like in practice/);
+  assert.match(prepared.email.text, /bigger than one race page/);
+  assert.match(prepared.email.text, /clearer portfolio system/);
+  assert.doesNotMatch(prepared.email.text, /A free private website mockup for/);
+});
+
 test('generation-job outreach handoff blocks duplicate-send jobs and rejected customer copy', () => {
   const prepared = buildPreparedMockupOutreach({
     generationJob: { ...generationJob, outreach_id: 'already-sent' },

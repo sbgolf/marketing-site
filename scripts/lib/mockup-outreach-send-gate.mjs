@@ -19,6 +19,8 @@ const REJECTED_CUSTOMER_COPY = [
 ];
 const PRELIMINARY_MOCKUP_NOTE = 'This is intentionally a preliminary mockup and a starting point to show the direction. If it looks useful, we can fine-tune the copy, sections, sponsor placement, and race-specific details before anything goes live.';
 const SELECTED_RACE_50_OFF_OFFER = 'As part of this private mockup campaign, StartLine is offering 50% off the first website build for a limited number of selected race organizations. If the preview feels useful, I’d be happy to walk through what it would take to turn it into a polished race website for your next event.';
+const OPERATOR_PORTFOLIO_TEMPLATE_KEY = 'operator_portfolio_v1';
+const OPERATOR_PORTFOLIO_OFFER = 'As part of this private mockup campaign, StartLine is offering 50% off the first website build for a limited number of selected race organizations. If this portfolio approach looks useful, I’d be happy to talk through how it could scale across a few of your events first.';
 
 export const DEFAULT_MOCKUP_OUTREACH_FROM = 'Steve <steve@startlinesites.com>';
 export const DEFAULT_MOCKUP_OUTREACH_REPLY_TO = 'support@startlinesites.com';
@@ -43,9 +45,9 @@ const renderDetailParagraphs = (detail) => splitDetailParagraphs(detail)
   .map((paragraph) => `<p style="margin:0 0 18px;">${escapeHtml(paragraph)}</p>`)
   .join('\n      ');
 
-const ensureSelectedRaceOffer = (detail) => (/50% off the first website build/i.test(detail)
+const ensureSelectedRaceOffer = (detail, offer = SELECTED_RACE_50_OFF_OFFER) => (/50% off the first website build/i.test(detail)
   ? detail
-  : [detail, SELECTED_RACE_50_OFF_OFFER].filter(Boolean).join('\n\n'));
+  : [detail, offer].filter(Boolean).join('\n\n'));
 
 export const buildDefaultMockupOutreachDetail = (raceName) => {
   const safeRaceName = clean(raceName, 160) || 'your race';
@@ -53,6 +55,26 @@ export const buildDefaultMockupOutreachDetail = (raceName) => {
     `I came across ${safeRaceName} and put together a private StartLine Sites preview showing how the race could look as a dedicated, mobile-friendly website.`,
     'The goal is not to replace RunSignup. It is to make the race easier for runners to understand, trust, and click through to register, with key race-day details, official registration links, community context, and runner questions organized in one clean place.',
     SELECTED_RACE_50_OFF_OFFER,
+  ].join('\n\n');
+};
+
+export const buildOperatorPortfolioSubject = ({ companyName, raceName } = {}) => {
+  const safeCompanyName = clean(companyName, 160);
+  const safeRaceName = clean(raceName, 160);
+  if (safeCompanyName) return `A private website system idea for ${safeCompanyName}`;
+  if (safeRaceName) return `A private website system idea using ${safeRaceName} as an example`;
+  return 'A private website system idea for your event portfolio';
+};
+
+export const buildOperatorPortfolioOutreachDetail = ({ companyName, raceName } = {}) => {
+  const safeCompanyName = clean(companyName, 160) || 'your team';
+  const safeRaceName = clean(raceName, 160) || 'one of your events';
+  return [
+    `I came across ${safeCompanyName} and noticed the opportunity to give multiple events a clearer runner-facing web front door.`,
+    `I put together a private StartLine Sites example using ${safeRaceName} to show what that could look like in practice.`,
+    'StartLine Sites is not meant to replace RunSignup, Race Roster, timing systems, or the registration tools your events already use. It complements them with fast, polished landing pages that help runners understand each race, trust the details, and click through to register.',
+    'For an operator or event company, the opportunity is bigger than one race page. Each event can get a consistent, search-friendly landing page while your company gets a clearer portfolio system that is easier to promote, sponsor, and reuse year after year.',
+    OPERATOR_PORTFOLIO_OFFER,
   ].join('\n\n');
 };
 
@@ -77,12 +99,25 @@ export const renderPrivateMockupOutreachEmail = ({
   mockupUrl,
   subject,
   detail,
+  emailTemplateKey,
+  companyName,
 }) => {
   const safeRaceName = clean(raceName, 160) || 'your race';
   const safeContactName = clean(contactName, 120) || 'there';
   const safeMockupUrl = clean(mockupUrl, 1000);
-  const safeSubject = clean(subject, 300) || `A free private website mockup for ${safeRaceName}`;
-  const safeDetail = ensureSelectedRaceOffer(cleanMultilineDetail(detail) || buildDefaultMockupOutreachDetail(safeRaceName));
+  const safeCompanyName = clean(companyName, 160);
+  const isOperatorPortfolio = clean(emailTemplateKey, 120) === OPERATOR_PORTFOLIO_TEMPLATE_KEY;
+  const defaultSubject = isOperatorPortfolio
+    ? buildOperatorPortfolioSubject({ companyName: safeCompanyName, raceName: safeRaceName })
+    : `A free private website mockup for ${safeRaceName}`;
+  const defaultDetail = isOperatorPortfolio
+    ? buildOperatorPortfolioOutreachDetail({ companyName: safeCompanyName, raceName: safeRaceName })
+    : buildDefaultMockupOutreachDetail(safeRaceName);
+  const safeSubject = clean(subject, 300) || defaultSubject;
+  const safeDetail = ensureSelectedRaceOffer(cleanMultilineDetail(detail) || defaultDetail, isOperatorPortfolio ? OPERATOR_PORTFOLIO_OFFER : SELECTED_RACE_50_OFF_OFFER);
+  const nextStepCopy = isOperatorPortfolio
+    ? 'If this is helpful, reply here and I can share how the same structure could scale across a small first set of your events. If someone else owns the event portfolio or website system, feel free to forward this along.'
+    : 'If this is helpful, reply here and I can share what a practical next step would look like. If someone else owns the race website, feel free to forward this along.';
 
   const text = [
     `Hi ${safeContactName},`,
@@ -93,14 +128,16 @@ export const renderPrivateMockupOutreachEmail = ({
     '',
     `Review the private mockup: ${safeMockupUrl}`,
     '',
-    'If this is helpful, reply here and I can share what a practical next step would look like. If someone else owns the race website, feel free to forward this along.',
+    nextStepCopy,
     '',
     CLIENT_SIGNATURE_TEXT,
   ].join('\n');
 
   const html = renderBrandedEmail({
     eyebrow: 'Private race website preview',
-    preheader: `A private StartLine Sites mockup for ${safeRaceName}.`,
+    preheader: isOperatorPortfolio && safeCompanyName
+      ? `A private StartLine Sites portfolio idea for ${safeCompanyName}.`
+      : `A private StartLine Sites mockup for ${safeRaceName}.`,
     heading: safeSubject,
     body: `
       <p style="margin:0 0 16px;">Hi ${escapeHtml(safeContactName)},</p>
@@ -110,14 +147,13 @@ export const renderPrivateMockupOutreachEmail = ({
         children: `<p style="margin:0;color:#DDE7F3;">${escapeHtml(PRELIMINARY_MOCKUP_NOTE)} The preview is for review only, not a public replacement for your current registration flow.</p>`,
       })}
       ${renderEmailButton({ href: safeMockupUrl, label: 'Review the private mockup' })}
-      <p style="margin:18px 0 0;">If this is helpful, reply here and I can share what a practical next step would look like. If someone else owns the race website, feel free to forward this along.</p>
+      <p style="margin:18px 0 0;">${escapeHtml(nextStepCopy)}</p>
       ${renderSignatureHtml()}
     `,
   });
 
   return { subject: safeSubject, text, html };
 };
-
 export const assertBrandedMockupOutreachHtml = ({ html, mockupUrl }) => {
   const errors = [];
   if (!/email-card/.test(html)) errors.push('branded email-card shell missing.');

@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
   buildGenerationJobQuery,
+  buildGenerationJobSendPreparation,
   sendMockupOutreachFromGenerationJob,
 } from '../scripts/lib/mockup-generation-send-gate.mjs';
 
@@ -115,6 +116,58 @@ test('generation-job send gate sends, records outreach, and patches the generati
   assert.ok(calls.some((call) => call.path.startsWith('race_mockup_outreach?select=')));
   assert.ok(calls.some((call) => call.path === 'race_mockup_outreach' && call.method === 'POST'));
   assert.ok(calls.some((call) => call.path === 'race_mockup_generation_jobs?id=eq.job-123' && call.method === 'PATCH' && call.body.outreach_id === 'outreach-456'));
+});
+
+test('generation-job send preparation uses D-specific operator portfolio copy and subject', () => {
+  const prepared = buildGenerationJobSendPreparation({
+    generationJob: {
+      ...generationJob,
+      metadata: {
+        campaign_lane: 'D',
+        prospect_type: 'race_management_company',
+        email_template_key: 'operator_portfolio_v1',
+        operator_event_count: 5,
+        segment_evidence: ['5 active/known events tied to this operator.', 'Company describes itself as race/event management or production.'],
+      },
+    },
+    prospect: {
+      ...prospect,
+      company_name: 'Example Timing Company',
+      metadata: { recipient_type: 'company_routing_email' },
+    },
+    ownerApprovedSend: true,
+    overrides: { contactName: 'Morgan' },
+  });
+
+  assert.equal(prepared.ok, true);
+  assert.equal(prepared.email.subject, 'A private website system idea for Example Timing Company');
+  assert.match(prepared.email.text, /give multiple events a clearer runner-facing web front door/);
+  assert.match(prepared.email.text, /bigger than one race page/);
+  assert.match(prepared.email.text, /clearer portfolio system/);
+  assert.doesNotMatch(prepared.email.text, /A free private website mockup for/);
+  assert.equal(prepared.payload.metadata.email_template_key, 'operator_portfolio_v1');
+});
+
+test('generation-job send preparation blocks D operator template without operator evidence', () => {
+  const prepared = buildGenerationJobSendPreparation({
+    generationJob: {
+      ...generationJob,
+      metadata: {
+        campaign_lane: 'A',
+        prospect_type: 'runsignup_only_community_race',
+        email_template_key: 'operator_portfolio_v1',
+        operator_event_count: 1,
+        segment_evidence: ['Some community race language found.'],
+      },
+    },
+    prospect,
+    ownerApprovedSend: true,
+  });
+
+  assert.equal(prepared.ok, false);
+  assert.ok(prepared.errors.some((error) => error.includes('operator_portfolio_v1 is only allowed for lane')));
+  assert.ok(prepared.errors.some((error) => error.includes('operator_event_count >= 3')));
+  assert.ok(prepared.errors.some((error) => error.includes('company/org/routing recipient type')));
 });
 
 test('generation-job send gate blocks duplicate outreach before sending or mutating rows', async () => {
