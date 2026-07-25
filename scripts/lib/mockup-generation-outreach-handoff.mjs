@@ -1,3 +1,4 @@
+import { validateEmailTemplateForCampaignLane } from './mockup-campaign-lanes.mjs';
 import { buildDuplicateFilters, buildMockupOutreachPayload, clean, parseEmailList } from './mockup-outreach-log.mjs';
 import {
   assertBrandedMockupOutreachHtml,
@@ -67,6 +68,16 @@ export const buildOutreachInputFromGenerationJob = ({ generationJob = {}, prospe
   const sourceBundle = normalizeObject(job.source_bundle);
   const metadata = normalizeObject(job.metadata);
   const prospectMetadata = normalizeObject(prospect.metadata);
+  const campaignLane = firstString(overrides.campaignLane, job.campaign_lane, prospect.campaign_lane, metadata.campaign_lane, prospectMetadata.campaign_lane);
+  const prospectType = firstString(overrides.prospectType, job.prospect_type, prospect.prospect_type, metadata.prospect_type, prospectMetadata.prospect_type);
+  const emailTemplateKey = firstString(overrides.emailTemplateKey, job.email_template_key, prospect.email_template_key, metadata.email_template_key, prospectMetadata.email_template_key);
+  const segmentEvidence = Array.isArray(overrides.segmentEvidence) ? overrides.segmentEvidence
+    : Array.isArray(prospect.segment_evidence) ? prospect.segment_evidence
+      : Array.isArray(metadata.segment_evidence) ? metadata.segment_evidence
+        : Array.isArray(prospectMetadata.segment_evidence) ? prospectMetadata.segment_evidence
+          : [];
+  const operatorEventCount = Number(overrides.operatorEventCount ?? job.operator_event_count ?? prospect.operator_event_count ?? metadata.operator_event_count ?? prospectMetadata.operator_event_count ?? 0);
+  const recipientType = firstString(overrides.recipientType, prospect.recipient_type, prospectMetadata.recipient_type, prospectMetadata.contact_quality, 'race_director');
 
   const raceName = firstString(overrides.raceName, sourceBundle.race_name, prospect.race_name, metadata.config_identity_name);
   const mockupUrl = firstString(overrides.mockupUrl, job.mockup_url);
@@ -109,6 +120,12 @@ export const buildOutreachInputFromGenerationJob = ({ generationJob = {}, prospe
       qa_status: job.qa_status || null,
       site_auditor_status: job.site_auditor_status || null,
       owner_approval_status: job.owner_approval_status || null,
+      campaign_lane: campaignLane || null,
+      prospect_type: prospectType || null,
+      email_template_key: emailTemplateKey || null,
+      segment_evidence: segmentEvidence,
+      operator_event_count: Number.isFinite(operatorEventCount) ? operatorEventCount : 0,
+      recipient_type: recipientType || null,
       prepared_by: 'scripts/prepare-mockup-outreach-from-job.mjs',
     },
   };
@@ -126,8 +143,16 @@ export const buildPreparedMockupOutreach = ({ generationJob = {}, prospect = {},
     detail: input.detail,
   });
   const htmlErrors = assertBrandedMockupOutreachHtml({ html: email.html, mockupUrl: input.mockupUrl });
+  const templateErrors = input.metadata.email_template_key ? validateEmailTemplateForCampaignLane({
+    emailTemplateKey: input.metadata.email_template_key,
+    campaignLane: input.metadata.campaign_lane,
+    prospectType: input.metadata.prospect_type,
+    segmentEvidence: input.metadata.segment_evidence,
+    operatorEventCount: input.metadata.operator_event_count,
+    recipientType: input.metadata.recipient_type,
+  }) : [];
   const payload = buildMockupOutreachPayload({ ...input, subject: email.subject, outreachStatus: overrides.outreachStatus || 'approved_ready_to_send' });
-  const errors = [...readinessErrors, ...sendErrors, ...htmlErrors];
+  const errors = [...readinessErrors, ...sendErrors, ...htmlErrors, ...templateErrors];
 
   return {
     ok: errors.length === 0,

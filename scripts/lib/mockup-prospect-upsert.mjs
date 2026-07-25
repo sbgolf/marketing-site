@@ -1,3 +1,4 @@
+import { classifyCampaignLane } from './mockup-campaign-lanes.mjs';
 import { scoreCommunityProspect } from './mockup-prospect-scoring.mjs';
 
 export const clean = (value, max = 1000) => {
@@ -81,7 +82,7 @@ export const buildRaceMockupProspectPayload = (input = {}, options = {}) => {
   const sourceCoverage = normalizeJsonObject(input.sourceCoverage || input.source_coverage);
   const extractedFacts = normalizeJsonObject(input.extractedFacts || input.extracted_facts);
   const distances = normalizeArray(input.distances || extractedFacts.distances);
-  const score = scoreCommunityProspect({
+  const normalizedProspect = {
     ...input,
     raceName,
     raceCity: input.raceCity || input.race_city || input.city,
@@ -93,8 +94,11 @@ export const buildRaceMockupProspectPayload = (input = {}, options = {}) => {
     contactSources,
     sourceUrls,
     sourceCoverage,
+    extractedFacts,
     distances,
-  }, options);
+  };
+  const score = scoreCommunityProspect(normalizedProspect, options);
+  const campaign = classifyCampaignLane(normalizedProspect, options);
 
   return {
     race_name: raceName,
@@ -133,6 +137,23 @@ export const buildRaceMockupProspectPayload = (input = {}, options = {}) => {
     metadata: {
       ...(normalizeJsonObject(input.metadata || {})),
       scoring_reasons: score.reasons,
+      campaign_lane: campaign.campaignLane,
+      campaign_lane_label: campaign.campaignLaneLabel,
+      prospect_type: campaign.prospectType,
+      email_template_key: campaign.emailTemplateKey,
+      contact_quality: campaign.contactQuality,
+      operator_event_count: campaign.operatorEventCount,
+      send_eligibility_status: campaign.sendEligibilityStatus,
+      segment_evidence: campaign.segmentEvidence,
+      campaign_disqualifiers: campaign.disqualifiers,
+      campaign_scores: {
+        total_score: campaign.totalScore,
+        budget_score: campaign.budgetScore,
+        website_pain_score: campaign.websitePainScore,
+        upside_score: campaign.upsideScore,
+        contact_score: campaign.contactScore,
+        lane_fit_score: campaign.laneFitScore,
+      },
       upsert_source: options.upsertSource || 'scripts/upsert-mockup-prospect.mjs',
     },
   };

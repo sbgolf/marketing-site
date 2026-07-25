@@ -40,12 +40,27 @@ const formatCandidate = (candidate = {}, index = 0) => {
   const risks = summarizeRisks(candidate);
   const lookupFilters = asArray(candidate.lookup_filters || candidate.lookupFilters).slice(0, 2);
 
+  const metadata = candidate.metadata && typeof candidate.metadata === 'object' ? candidate.metadata : {};
+  const campaignLane = clean(candidate.campaign_lane || candidate.campaignLane || metadata.campaign_lane, 5);
+  const campaignLabel = clean(candidate.campaign_lane_label || candidate.campaignLaneLabel || metadata.campaign_lane_label, 120);
+  const templateKey = clean(candidate.email_template_key || candidate.emailTemplateKey || metadata.email_template_key, 120);
+  const contactQuality = clean(candidate.contact_quality || candidate.contactQuality || metadata.contact_quality, 120);
+  const segmentEvidence = asArray(candidate.segment_evidence || candidate.segmentEvidence || metadata.segment_evidence)
+    .map((item) => clean(item, 160))
+    .filter(Boolean)
+    .slice(0, 3);
+
   const lines = [
     `${index + 1}. ${name}`,
     `   Date/location: ${date} — ${location}`,
     `   Score/status: ${score === null ? 'n/a' : score}/100 — ${status}`,
     `   Distances: ${formatDistanceList(candidate.distances)}`,
   ];
+
+  if (campaignLane || campaignLabel) lines.push(`   Campaign lane: ${campaignLane || 'n/a'}${campaignLabel ? ` — ${campaignLabel}` : ''}`);
+  if (templateKey) lines.push(`   Email template: ${templateKey}`);
+  if (contactQuality) lines.push(`   Contact quality: ${contactQuality}`);
+  if (segmentEvidence.length) lines.push(`   Segment evidence: ${segmentEvidence.join('; ')}.`);
 
   if (sourceUrl) lines.push(`   Source: ${sourceUrl}`);
   if (officialUrl) lines.push(`   Official site: ${officialUrl}`);
