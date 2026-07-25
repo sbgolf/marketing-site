@@ -27,6 +27,7 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - Conversion UX PR review prompts: `conversion-ux-pr-review-prompts.md`
 - Customer proof readiness checklist: `customer-proof-readiness-checklist.md`
 - RunSignup Community mockup prospect pipeline: `runsignup-community-prospect-pipeline.md`
+- A/B/C/D mockup campaign targeting: `startline-abcd-mockup-campaign-targeting.md`
 - Private mockup outreach log: `private-mockup-outreach-log.md`
 - Service agreement draft: `legal/service-agreement-draft.md`
 - Service agreement source notes: `legal/source-notes.md`
