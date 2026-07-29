@@ -21,6 +21,18 @@ export type OutreachLandingPage = {
     }>;
     note: string;
   };
+  campaignOffer?: {
+    kicker: string;
+    title: string;
+    lead: string;
+    offers: Array<{
+      pain: string;
+      outcome: string;
+      proof: string;
+      nextStep: string;
+    }>;
+    note: string;
+  };
   processProof: {
     kicker: string;
     title: string;
@@ -255,6 +267,34 @@ export const outreachLandingPages: OutreachLandingPage[] = [
       ],
       note:
         'StartLine does not replace RunSignup or claim a special integration here; it creates the marketing/search/trust layer around public links into your existing RunSignup flow.'
+    },
+    campaignOffer: {
+      kicker: 'Immediate campaign angle',
+      title: 'Three race-director pains this page can speak to directly.',
+      lead:
+        'Use this page in direct outreach, mockup follow-ups, and small paid tests when the race already uses RunSignup but still needs a stronger public website around the registration decision.',
+      offers: [
+        {
+          pain: 'Runners keep asking basic questions that should be answered before registration.',
+          outcome: 'A structured website puts schedule, parking, course, FAQs, and updates in one mobile-first path.',
+          proof: 'The private audit reviews the current site and RunSignup listing together, then identifies the highest-friction runner decision points.',
+          nextStep: 'Invite the director to request a private audit or review a private mockup when there is enough public source material.'
+        },
+        {
+          pain: 'Sponsors and community partners are present, but the registration page does not show their value clearly.',
+          outcome: 'StartLine gives sponsors a polished section without cluttering the path to the Register button.',
+          proof: 'The review checks title-sponsor placement, partner tiers, charity context, and mobile presentation before recommending changes.',
+          nextStep: 'Use sponsor visibility as a second hook for charity/community races that need renewal support.'
+        },
+        {
+          pain: 'The race depends on Facebook posts or a platform listing for marketing discovery.',
+          outcome: 'A crawlable race website gives search, social, email, and partner links a clearer destination before RunSignup checkout.',
+          proof: 'StartLine checks page titles, event details, FAQs, metadata, and tracked outbound registration CTAs without promising rankings or outcomes.',
+          nextStep: 'Position StartLine as the marketing layer that complements RunSignup, not as a replacement.'
+        }
+      ],
+      note:
+        'This is campaign positioning, not a public promise: keep claims tied to clarity, trust, sponsor visibility, and measurable handoff quality.'
     },
     painPoints: [
       'The RunSignup listing may be carrying homepage, race-story, FAQ, and sponsor context in addition to registration operations.',

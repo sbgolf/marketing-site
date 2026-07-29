@@ -70,5 +70,5 @@ test('persona CTAs still route only to the audit and sample audit paths', () => 
 test('process proof cards stack before tablet/mobile widths', () => {
   assert.match(outreachSource, /\.process-proof-grid\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
   assert.match(outreachSource, /@media\(max-width:980px\)/);
-  assert.match(outreachSource, /\.process-proof-grid,\.platform-flow\{grid-template-columns:1fr\}/);
+  assert.match(outreachSource, /\.process-proof-grid,\.platform-flow(?:,\.campaign-offer-grid)?\{grid-template-columns:1fr\}/);
 });

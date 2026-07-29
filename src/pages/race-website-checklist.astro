@@ -97,6 +97,24 @@ const quickWins = [
   'Confirm GA4, Search Console, and registration click tracking ownership now.'
 ];
 
+const scoreBands = [
+  {
+    range: '0–8',
+    label: 'Several runner-decision gaps',
+    copy: 'The site may be asking runners to piece together registration, logistics, and trust signals from too many places.'
+  },
+  {
+    range: '9–14',
+    label: 'Usable, but likely leaking clarity',
+    copy: 'The basics are probably present, but one or two high-intent paths may need a clearer mobile handoff before the next push.'
+  },
+  {
+    range: '15–20',
+    label: 'Strong foundation to polish',
+    copy: 'The site has the core answers. A StartLine review can focus on SEO structure, sponsor presentation, tracking, and pre-race tune-ups.'
+  }
+];
+
 const faqItems = [
   ['Is this checklist only for StartLine customers?', 'No. It is an evergreen planning checklist race directors can use before any website refresh, private audit, registration push, sponsor review, or race-week readiness check.'],
   ['Do we have to replace RunSignup, Race Roster, Haku, or Active?', 'No. A strong race website can keep your existing registration platform in place and send runners there through clearer, tracked CTAs.'],
@@ -175,6 +193,27 @@ const faqJson = {
           <li><strong>Mark decision gaps honestly.</strong> Green means clear today, yellow means usable but worth reviewing, and red means runners may leave or email the race team.</li>
           <li><strong>Fix the highest-intent path first.</strong> Prioritize the CTA, schedule, course, FAQ, and update areas before cosmetic changes.</li>
         </ol>
+      </div>
+    </section>
+
+    <section class="scorecard-section" aria-labelledby="scorecard-title">
+      <div class="scorecard-inner reveal">
+        <div class="section-head scorecard-head">
+          <div>
+            <div class="kicker">2-minute scorecard</div>
+            <h2 id="scorecard-title">Turn the checklist into a quick decision score.</h2>
+          </div>
+          <p class="lead">Give each category 0, 1, or 2 points: 0 if runners may struggle, 1 if the answer exists but needs polish, and 2 if the path is clear on mobile today.</p>
+        </div>
+        <div class="score-band-grid" aria-label="Race website score bands">
+          {scoreBands.map((band) => (
+            <article class="score-band">
+              <span>{band.range}</span>
+              <h3>{band.label}</h3>
+              <p>{band.copy}</p>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
 
