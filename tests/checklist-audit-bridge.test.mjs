@@ -18,6 +18,17 @@ test('checklist interpretation bridge routes to approved audit and sample-audit 
   assert.match(bridgeSection, /<a class="btn btn-ghost" href="\/sample-audit\/">See sample audit<\/a>/);
 });
 
+test('checklist page adds a simple race website scorecard interpretation', () => {
+  const scorecardSection = checklistSource.match(/<section class="scorecard-section"[\s\S]*?<\/section>/)?.[0] ?? '';
+
+  assert.match(scorecardSection, /2-minute scorecard/);
+  assert.match(scorecardSection, /Give each category 0, 1, or 2 points/);
+  assert.match(checklistSource, /Several runner-decision gaps/);
+  assert.match(checklistSource, /Usable, but likely leaking clarity/);
+  assert.match(checklistSource, /Strong foundation to polish/);
+  assert.doesNotMatch(scorecardSection, /broken site|failing|guarantee|guaranteed|increase registrations|registration lift|traffic lift|revenue lift/i);
+});
+
 test('checklist bridge copy avoids shame and unsupported urgency claims', () => {
   assert.doesNotMatch(
     bridgeSection,
