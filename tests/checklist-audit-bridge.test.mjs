@@ -29,6 +29,14 @@ test('checklist page adds a simple race website scorecard interpretation', () =>
   assert.doesNotMatch(scorecardSection, /broken site|failing|guarantee|guaranteed|increase registrations|registration lift|traffic lift|revenue lift/i);
 });
 
+test('scorecard section uses the same padded max-width container pattern as checklist content', () => {
+  assert.match(checklistSource, /\.scorecard-section\{padding:96px clamp\(20px,5vw,56px\)/);
+  assert.match(checklistSource, /\.scorecard-inner\{max-width:var\(--maxw\);margin:0 auto\}/);
+  assert.match(checklistSource, /\.score-band-grid\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(checklistSource, /\.process-cue-inner ol,\.score-band-grid,\.checklist-grid,\.faq-grid\{grid-template-columns:1fr\}/);
+  assert.match(checklistSource, /\.intro-strip,\.scorecard-section,\.checklist-section,\.interpretation-bridge/);
+});
+
 test('checklist bridge copy avoids shame and unsupported urgency claims', () => {
   assert.doesNotMatch(
     bridgeSection,
