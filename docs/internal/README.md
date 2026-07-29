@@ -28,6 +28,7 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - Customer proof readiness checklist: `customer-proof-readiness-checklist.md`
 - RunSignup Community mockup prospect pipeline: `runsignup-community-prospect-pipeline.md`
 - A/B/C/D mockup campaign targeting: `startline-abcd-mockup-campaign-targeting.md`
+- Future self-service update portal idea: `future-self-service-update-portal.md`
 - Private mockup outreach log: `private-mockup-outreach-log.md`
 - Service agreement draft: `legal/service-agreement-draft.md`
 - Service agreement source notes: `legal/source-notes.md`
