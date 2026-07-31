@@ -123,4 +123,16 @@ test('summarizes contact viability conservatively', () => {
   assert.equal(summarizeContactViability({ contactSources: [] }).contactQuality, 'none');
   assert.equal(summarizeContactViability({ contactSources: [{ type: 'form', url: 'https://example.test/contact' }] }).contactQuality, 'form_only');
   assert.equal(summarizeContactViability({ contactSources: [{ type: 'email', value: 'director@example.test', role: 'Race Director' }] }).contactQuality, 'named_email');
+  assert.equal(
+    summarizeContactViability({
+      contactSources: [{ type: 'routing_email', value: 'info@example.test', context: 'Not confirmed race director; verify before sending.' }],
+    }).contactQuality,
+    'routing_email',
+  );
+  assert.equal(
+    summarizeContactViability({
+      contactSources: [{ type: 'routing_email', value: 'office@example.test', context: 'School office/routing inbox.' }],
+    }).contactQuality,
+    'routing_email',
+  );
 });

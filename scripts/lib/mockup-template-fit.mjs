@@ -125,8 +125,11 @@ export const summarizeContactViability = (candidate = {}) => {
     const type = lowerText(source.type || source.kind || source.label);
     return emailTypes.has(type) || type.includes('email') || lowerText(source.email || source.value).includes('@');
   });
-  const namedEmails = directEmails.filter((source) => /director|race director|coordinator|manager|president|operations/i.test(cleanText(source.role || source.label || source.context || source.name)));
-  const routingEmails = directEmails.filter((source) => /info@|hello@|events@|support@|contact@|admin@/i.test(cleanText(source.email || source.value)));
+  const namedEmails = directEmails.filter((source) => {
+    const identityText = cleanText(source.role || source.label || source.name);
+    return /director|race director|coordinator|manager|president|operations/i.test(identityText);
+  });
+  const routingEmails = directEmails.filter((source) => /info@|hello@|events@|support@|contact@|admin@|office@/i.test(cleanText(source.email || source.value)));
   const forms = contactSources.filter((source) => lowerText(source.type || source.kind || source.label).includes('form') || lowerText(source.url).includes('/contact'));
 
   let quality = 'none';
