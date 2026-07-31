@@ -1,5 +1,6 @@
 import { classifyCampaignLane } from './mockup-campaign-lanes.mjs';
 import { scoreCommunityProspect } from './mockup-prospect-scoring.mjs';
+import { classifyTemplateFits } from './mockup-template-fit.mjs';
 
 export const clean = (value, max = 1000) => {
   if (value === null || value === undefined) return '';
@@ -98,6 +99,7 @@ export const buildRaceMockupProspectPayload = (input = {}, options = {}) => {
     distances,
   };
   const score = scoreCommunityProspect(normalizedProspect, options);
+  const templateFit = classifyTemplateFits(normalizedProspect, options);
   const campaign = classifyCampaignLane(normalizedProspect, options);
 
   return {
@@ -137,6 +139,14 @@ export const buildRaceMockupProspectPayload = (input = {}, options = {}) => {
     metadata: {
       ...(normalizeJsonObject(input.metadata || {})),
       scoring_reasons: score.reasons,
+      primary_template_fit: templateFit.primaryTemplateFit,
+      secondary_template_fits: templateFit.secondaryTemplateFits,
+      template_fit_scores: templateFit.templateFitScores,
+      recommended_lane: templateFit.recommendedLane,
+      template_readiness_status: templateFit.templateReadinessStatus,
+      contact_quality: templateFit.contactQuality,
+      startline_value_score: templateFit.startlineValueScore,
+      candidate_backlog_model: 'template_agnostic_v1',
       campaign_lane: campaign.campaignLane,
       campaign_lane_label: campaign.campaignLaneLabel,
       prospect_type: campaign.prospectType,

@@ -14,6 +14,7 @@
     "send:mockup-outreach": "node scripts/send-mockup-outreach.mjs",
     "discover:runsignup-prospects": "node scripts/discover-runsignup-prospects.mjs",
     "digest:mockup-prospects": "node scripts/build-mockup-prospect-digest.mjs",
+    "rank:mockup-backlog": "node scripts/rank-mockup-candidate-backlog.mjs",
     "generate:mockup-config": "node scripts/generate-mockup-config.mjs",
     "record:mockup-generation-job": "node scripts/record-mockup-generation-job.mjs",
     "prepare:mockup-outreach-from-job": "node scripts/prepare-mockup-outreach-from-job.mjs",
