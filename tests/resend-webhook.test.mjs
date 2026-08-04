@@ -3,6 +3,8 @@ import { createHmac } from 'node:crypto';
 import test from 'node:test';
 
 import {
+  addChicagoBusinessDays,
+  buildOutreachEngagementUpdate,
   handler,
   maskEmail,
   normalizeResendEvent,
@@ -68,13 +70,23 @@ const makeFetch = ({ duplicate = false, outreach = [{
   prospect_id: 'prospect-1',
   generation_job_id: 'job-1',
   campaign_id: 'community-2026-08-w1',
-}], failOnWrite = false } = {}) => {
+}], aggregateRow = {
+  id: 'outreach-1',
+  engagement_status: 'no_activity',
+  open_count: 0,
+  click_count: 0,
+  clicked_urls: [],
+}, failOnWrite = false } = {}) => {
   const calls = [];
   const fetchImpl = async (url, options = {}) => {
     calls.push({ url: String(url), options });
     const path = String(url);
-    if (path.includes('/rest/v1/race_mockup_outreach?')) {
+    if (path.includes('/rest/v1/race_mockup_outreach?') && path.includes('resend_email_id=')) {
       return new Response(JSON.stringify(outreach), { status: 200, headers: { 'content-type': 'application/json' } });
+    }
+    if (path.includes('/rest/v1/race_mockup_outreach?') && path.includes('id=eq.')) {
+      if (options.method === 'PATCH') return new Response(null, { status: 204 });
+      return new Response(JSON.stringify([aggregateRow]), { status: 200, headers: { 'content-type': 'application/json' } });
     }
     if (path.includes('/rest/v1/outreach_engagement_events')) {
       if (failOnWrite) return new Response('database unavailable', { status: 500 });
@@ -161,6 +173,8 @@ test('handler stores a valid signed Resend event, links outreach, and preserves 
     assert.equal(body.event_type, 'clicked');
     assert.equal(body.outreach_matched, true);
     assert.equal(body.suppression_prepared, false);
+    assert.equal(body.engagement_status, 'clicked');
+    assert.equal(body.aggregation_skipped, false);
 
     const insertCall = calls.find((call) => call.url.includes('/outreach_engagement_events'));
     assert.ok(insertCall);
@@ -171,6 +185,13 @@ test('handler stores a valid signed Resend event, links outreach, and preserves 
     assert.equal(inserted.generation_job_id, 'job-1');
     assert.equal(inserted.raw_event.data.to[0], 'di***[at]example.org');
     assert.equal(inserted.raw_event.data.click.link, 'https://mockups.startlinesites.com/ocean-marathon?t=%5Bredacted%5D');
+    const aggregatePatch = calls.find((call) => call.url.includes('/race_mockup_outreach?id=eq.outreach-1') && call.options.method === 'PATCH');
+    assert.ok(aggregatePatch);
+    const aggregateBody = JSON.parse(aggregatePatch.options.body);
+    assert.equal(aggregateBody.engagement_status, 'clicked');
+    assert.equal(aggregateBody.click_count, 1);
+    assert.equal(aggregateBody.clicked_urls[0], 'https://mockups.startlinesites.com/ocean-marathon?t=%5Bredacted%5D');
+    assert.match(aggregateBody.next_follow_up_at, /^2026-08-/);
     assert.equal(calls.some((call) => String(call.url).includes('api.resend.com')), false);
   } finally {
     globalThis.fetch = originalFetch;
@@ -213,7 +234,7 @@ test('handler fails closed when the webhook secret is missing', async () => {
 
 test('handler treats duplicate valid provider events as successful dedupes', async () => withEnv(async () => {
   const originalFetch = globalThis.fetch;
-  const { fetchImpl } = makeFetch({ duplicate: true });
+  const { calls, fetchImpl } = makeFetch({ duplicate: true });
   globalThis.fetch = fetchImpl;
   try {
     const response = await handler(event());
@@ -221,6 +242,8 @@ test('handler treats duplicate valid provider events as successful dedupes', asy
     assert.equal(response.statusCode, 200);
     assert.equal(body.ok, true);
     assert.equal(body.duplicate, true);
+    assert.equal(body.aggregation_skipped, true);
+    assert.equal(calls.some((call) => call.url.includes('/race_mockup_outreach?id=eq.') && call.options.method === 'PATCH'), false);
   } finally {
     globalThis.fetch = originalFetch;
   }
@@ -255,6 +278,7 @@ test('handler prepares suppression rows for bounce and complaint-class events', 
     const parsed = JSON.parse(response.body);
     assert.equal(response.statusCode, 200);
     assert.equal(parsed.suppression_prepared, true);
+    assert.equal(parsed.engagement_status, 'bounced');
 
     const suppressionCall = calls.find((call) => call.url.includes('/outreach_suppressions'));
     assert.ok(suppressionCall);
@@ -266,6 +290,48 @@ test('handler prepares suppression rows for bounce and complaint-class events', 
     globalThis.fetch = originalFetch;
   }
 }));
+
+test('buildOutreachEngagementUpdate applies precedence, counts, and owner-reviewed cadence', () => {
+  const delivered = buildOutreachEngagementUpdate({
+    current: { engagement_status: 'no_activity', open_count: 0, click_count: 0, clicked_urls: [] },
+    event: { event_type: 'delivered', event_timestamp: '2026-08-03T15:00:00.000Z' },
+  }).update;
+  assert.equal(delivered.engagement_status, 'delivered');
+  assert.equal(delivered.delivered_at, '2026-08-03T15:00:00.000Z');
+  assert.equal(delivered.next_follow_up_at, addChicagoBusinessDays('2026-08-03T15:00:00.000Z', 8));
+
+  const opened = buildOutreachEngagementUpdate({
+    current: { ...delivered, open_count: 1, click_count: 0, clicked_urls: [] },
+    event: { event_type: 'opened', event_timestamp: '2026-08-04T15:00:00.000Z' },
+  }).update;
+  assert.equal(opened.engagement_status, 'opened');
+  assert.equal(opened.open_count, 2);
+  assert.equal(opened.first_opened_at, '2026-08-04T15:00:00.000Z');
+
+  const clicked = buildOutreachEngagementUpdate({
+    current: { ...delivered, ...opened, click_count: 0, clicked_urls: [] },
+    event: { event_type: 'clicked', event_timestamp: '2026-08-05T15:00:00.000Z', clicked_url: 'https://mockups.startlinesites.com/race?t=%5Bredacted%5D' },
+  }).update;
+  assert.equal(clicked.engagement_status, 'clicked');
+  assert.equal(clicked.click_count, 1);
+  assert.deepEqual(clicked.clicked_urls, ['https://mockups.startlinesites.com/race?t=%5Bredacted%5D']);
+  assert.match(clicked.follow_up_reason, /do not mention tracking/i);
+
+  const bounced = buildOutreachEngagementUpdate({
+    current: { ...delivered, ...opened, ...clicked },
+    event: { event_type: 'bounced', event_timestamp: '2026-08-06T15:00:00.000Z' },
+  }).update;
+  assert.equal(bounced.engagement_status, 'bounced');
+  assert.equal(bounced.next_follow_up_at, null);
+  assert.match(bounced.follow_up_reason, /Do not follow up/);
+
+  const suppressed = buildOutreachEngagementUpdate({
+    current: { ...delivered, ...opened, ...clicked },
+    event: { event_type: 'complained', event_timestamp: '2026-08-06T15:00:00.000Z' },
+  }).update;
+  assert.equal(suppressed.engagement_status, 'suppressed');
+  assert.equal(suppressed.next_follow_up_at, null);
+});
 
 test('maskEmail keeps owner reports useful without revealing full addresses', () => {
   assert.equal(maskEmail('director@example.org'), 'di***[at]example.org');

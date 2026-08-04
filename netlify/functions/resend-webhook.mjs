@@ -401,6 +401,168 @@ const upsertSuppression = async ({ supabaseUrl, serviceKey, event, eventRecord }
   return { skipped: false };
 };
 
+
+const CHICAGO_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Chicago',
+  weekday: 'short',
+});
+
+const chicagoWeekday = (date) => CHICAGO_DATE_FORMATTER.format(date);
+const isChicagoBusinessDay = (date) => !['Sat', 'Sun'].includes(chicagoWeekday(date));
+
+export const addChicagoBusinessDays = (isoDate, businessDays) => {
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime()) || !businessDays) return null;
+  let remaining = businessDays;
+  while (remaining > 0) {
+    date.setUTCDate(date.getUTCDate() + 1);
+    if (isChicagoBusinessDay(date)) remaining -= 1;
+  }
+  return date.toISOString();
+};
+
+const toIsoOrNull = (value) => {
+  const parsed = value ? new Date(value) : null;
+  return parsed && !Number.isNaN(parsed.getTime()) ? parsed.toISOString() : null;
+};
+
+const earliestIso = (...values) => {
+  const dates = values.map(toIsoOrNull).filter(Boolean).sort();
+  return dates[0] || null;
+};
+
+const latestIso = (...values) => {
+  const dates = values.map(toIsoOrNull).filter(Boolean).sort();
+  return dates.at(-1) || null;
+};
+
+const mergeClickedUrls = (existing = [], clickedUrl) => {
+  const urls = Array.isArray(existing) ? existing.filter(Boolean) : [];
+  if (clickedUrl && !urls.includes(clickedUrl)) urls.push(clickedUrl);
+  return urls.slice(0, 25);
+};
+
+export const buildOutreachEngagementUpdate = ({ current = {}, event }) => {
+  if (!event?.event_type) return { update: {}, reason: 'missing_event_type' };
+  const timestamp = toIsoOrNull(event.event_timestamp) || new Date().toISOString();
+  const priorStatus = current.engagement_status || 'no_activity';
+  const update = {
+    last_engagement_at: latestIso(current.last_engagement_at, timestamp),
+  };
+
+  if (event.campaign_id && !current.campaign_id) update.campaign_id = event.campaign_id;
+
+  if (event.event_type === 'delivered') {
+    update.delivered_at = earliestIso(current.delivered_at, timestamp);
+  }
+
+  if (event.event_type === 'opened') {
+    update.first_opened_at = earliestIso(current.first_opened_at, timestamp);
+    update.last_opened_at = latestIso(current.last_opened_at, timestamp);
+    update.open_count = Number(current.open_count || 0) + 1;
+  }
+
+  if (event.event_type === 'clicked') {
+    update.first_clicked_at = earliestIso(current.first_clicked_at, timestamp);
+    update.last_clicked_at = latestIso(current.last_clicked_at, timestamp);
+    update.click_count = Number(current.click_count || 0) + 1;
+    update.clicked_urls = mergeClickedUrls(current.clicked_urls, event.clicked_url);
+  }
+
+  if (event.event_type === 'bounced') update.bounced_at = earliestIso(current.bounced_at, timestamp);
+  if (event.event_type === 'complained') update.complained_at = earliestIso(current.complained_at, timestamp);
+  if (event.event_type === 'unsubscribed') update.unsubscribed_at = earliestIso(current.unsubscribed_at, timestamp);
+  if (event.event_type === 'suppressed') update.suppressed_at = earliestIso(current.suppressed_at, timestamp);
+
+  const hasSuppression = Boolean(
+    update.suppressed_at || current.suppressed_at
+    || update.complained_at || current.complained_at
+    || update.unsubscribed_at || current.unsubscribed_at,
+  );
+  const hasBounce = Boolean(update.bounced_at || current.bounced_at);
+  const hasClick = Boolean(update.first_clicked_at || current.first_clicked_at || update.click_count || current.click_count);
+  const hasOpen = Boolean(update.first_opened_at || current.first_opened_at || update.open_count || current.open_count);
+  const hasDelivery = Boolean(update.delivered_at || current.delivered_at);
+
+  let status = priorStatus;
+  if (hasSuppression) status = 'suppressed';
+  else if (hasBounce) status = 'bounced';
+  else if (['negative_reply', 'replied'].includes(priorStatus)) status = priorStatus;
+  else if (hasClick) status = 'clicked';
+  else if (hasOpen) status = 'opened';
+  else if (hasDelivery) status = 'delivered';
+  else status = 'no_activity';
+
+  update.engagement_status = status;
+
+  if (status === 'suppressed' || status === 'bounced' || ['complained', 'unsubscribed', 'suppressed'].includes(event.event_type)) {
+    update.next_follow_up_at = null;
+    update.follow_up_reason = 'Do not follow up: recipient is suppressed or generated a negative deliverability signal.';
+  } else if (status === 'clicked') {
+    update.next_follow_up_at = addChicagoBusinessDays(timestamp, 2);
+    update.follow_up_reason = 'Recommended owner-reviewed personalized follow-up after private mockup click; do not mention tracking.';
+  } else if (status === 'opened') {
+    update.next_follow_up_at = addChicagoBusinessDays(timestamp, 4);
+    update.follow_up_reason = 'Recommended owner-reviewed soft follow-up after open without click; do not mention tracking.';
+  } else if (status === 'delivered') {
+    update.next_follow_up_at = addChicagoBusinessDays(timestamp, 8);
+    update.follow_up_reason = 'Recommended owner-reviewed final nudge after delivery with no tracked engagement.';
+  } else {
+    update.next_follow_up_at = null;
+    update.follow_up_reason = null;
+  }
+
+  return { update, reason: 'updated' };
+};
+
+const OUTREACH_AGGREGATE_SELECT = [
+  'id',
+  'delivered_at',
+  'first_opened_at',
+  'last_opened_at',
+  'open_count',
+  'first_clicked_at',
+  'last_clicked_at',
+  'click_count',
+  'clicked_urls',
+  'bounced_at',
+  'complained_at',
+  'unsubscribed_at',
+  'suppressed_at',
+  'engagement_status',
+  'next_follow_up_at',
+  'follow_up_reason',
+  'last_engagement_at',
+  'campaign_id',
+].join(',');
+
+const aggregateOutreachEngagement = async ({ supabaseUrl, serviceKey, event }) => {
+  if (!event.outreach_id) return { skipped: true, reason: 'no_outreach_match' };
+  const query = new URLSearchParams({
+    id: `eq.${event.outreach_id}`,
+    select: OUTREACH_AGGREGATE_SELECT,
+    limit: '1',
+  });
+  const rows = await supabaseFetch({
+    supabaseUrl,
+    serviceKey,
+    path: `race_mockup_outreach?${query.toString()}`,
+  });
+  const current = Array.isArray(rows) ? rows[0] || null : null;
+  if (!current) return { skipped: true, reason: 'outreach_missing' };
+
+  const { update } = buildOutreachEngagementUpdate({ current, event });
+  await supabaseFetch({
+    supabaseUrl,
+    serviceKey,
+    path: `race_mockup_outreach?id=eq.${encodeURIComponent(event.outreach_id)}`,
+    method: 'PATCH',
+    body: update,
+    headers: { prefer: 'return=minimal' },
+  });
+  return { skipped: false, engagement_status: update.engagement_status, next_follow_up_at: update.next_follow_up_at || null };
+};
+
 const resolveConfig = () => {
   const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, '');
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -458,12 +620,18 @@ export async function handler(event) {
       event: row,
     });
 
+    let aggregate = { skipped: true, reason: inserted.duplicate ? 'duplicate_event' : 'not_attempted' };
     if (!inserted.duplicate) {
       await upsertSuppression({
         supabaseUrl: config.supabaseUrl,
         serviceKey: config.serviceKey,
         event: row,
         eventRecord: inserted.record,
+      });
+      aggregate = await aggregateOutreachEngagement({
+        supabaseUrl: config.supabaseUrl,
+        serviceKey: config.serviceKey,
+        event: row,
       });
     }
 
@@ -472,6 +640,9 @@ export async function handler(event) {
       duplicate: inserted.duplicate,
       event_type: row.event_type,
       outreach_matched: Boolean(row.outreach_id),
+      engagement_status: aggregate.engagement_status || null,
+      next_follow_up_at: aggregate.next_follow_up_at || null,
+      aggregation_skipped: Boolean(aggregate.skipped),
       suppression_prepared: Boolean(SUPPRESSION_REASONS[row.event_type] && row.recipient_email_hash && !inserted.duplicate),
     });
   } catch (error) {
