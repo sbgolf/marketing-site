@@ -102,6 +102,8 @@ Goal: turn the approved process into exact build contracts before runtime change
 
 ## PR 2: Supabase schema foundation
 
+Status: In review — PR #171
+
 Recommended branch: `feat/outreach-engagement-schema`
 Type: schema + tests/docs
 Goal: add durable storage for raw events, suppression, and aggregation targets.
