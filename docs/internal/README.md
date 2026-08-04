@@ -31,6 +31,7 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - Private mockup outreach log: `private-mockup-outreach-log.md`
 - Outreach engagement tracking process: `outreach-engagement-tracking-process.md`
 - Outreach engagement implementation backlog: `outreach-engagement-implementation-backlog.md`
+- Outreach engagement implementation spec: `outreach-engagement-implementation-spec.md`
 - Service agreement draft: `legal/service-agreement-draft.md`
 - Service agreement source notes: `legal/source-notes.md`
 - Current blockers: `blockers.md`
