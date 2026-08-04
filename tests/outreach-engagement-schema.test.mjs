@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
-const migration = readFileSync(
-  new URL('../supabase/migrations/20260804213000_create_outreach_engagement_schema.sql', import.meta.url),
-  'utf8',
-);
+const migration = [
+  '../supabase/migrations/20260804213000_create_outreach_engagement_schema.sql',
+  '../supabase/migrations/20260804224500_add_outreach_next_follow_up_at.sql',
+].map((path) => readFileSync(new URL(path, import.meta.url), 'utf8')).join('\n');
 
 const normalized = migration.replace(/\s+/g, ' ').toLowerCase();
 
@@ -46,6 +46,7 @@ test('race_mockup_outreach receives engagement aggregate fields and precedence s
     'unsubscribed_at',
     'suppressed_at',
     'engagement_status',
+    'next_follow_up_at',
     'follow_up_reason',
     'last_engagement_at',
     'campaign_id',
