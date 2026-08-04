@@ -163,6 +163,8 @@ Future implementation should confirm exact Resend header names from current Rese
 
 PR 2 should add the schema foundation. Recommended tables and fields follow.
 
+Production/admin note: merging the schema PR does not apply the migration automatically unless the deployment path explicitly runs Supabase migrations. After merge, Steve/admin or an authorized operator must apply the migration to production Supabase, then verify the tables and new `race_mockup_outreach` columns through Supabase REST or the dashboard before enabling the Resend webhook.
+
 ### `outreach_engagement_events`
 
 Purpose: append-only raw engagement event log with idempotency.
