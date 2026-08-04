@@ -1,7 +1,7 @@
 # Outreach engagement tracking implementation backlog
 
 Owner: StartLine Sites internal ops
-Status: planned / not implemented
+Status: implementation in progress — PR 3 webhook receiver in review
 Source process: `outreach-engagement-tracking-process.md`
 Scope: concrete PR sequence to fully wire Resend open/click tracking, webhook ingestion, Supabase event storage, outreach aggregation, suppression, owner reporting, and owner-gated follow-up recommendations.
 
@@ -152,6 +152,8 @@ outreach_suppressions
 - Post-merge checklist includes applying the production migration and verifying tables through Supabase REST or dashboard.
 
 ## PR 3: Resend webhook receiver
+
+Status: In review — PR #172
 
 Recommended branch: `feat/resend-outreach-webhook`
 Type: Netlify Function + tests

@@ -157,7 +157,7 @@ Requirements:
 - Return non-2xx for invalid signatures or malformed required fields.
 - Return 2xx when a duplicate valid event was intentionally deduped.
 
-Future implementation should confirm exact Resend header names from current Resend docs during PR 3. If the provider uses Svix-style signatures, document the exact headers and verification helper in that PR.
+Future implementation confirmed that Resend webhook verification uses Svix-style headers: `svix-id`, `svix-timestamp`, and `svix-signature`. PR 3 should verify signatures over the preserved raw body with `RESEND_WEBHOOK_SECRET`, tolerate only fresh timestamps, and avoid logging the signature header.
 
 ## Supabase schema contract
 
