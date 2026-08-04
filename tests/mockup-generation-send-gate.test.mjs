@@ -6,6 +6,9 @@ import {
   buildGenerationJobSendPreparation,
   sendMockupOutreachFromGenerationJob,
 } from '../scripts/lib/mockup-generation-send-gate.mjs';
+import {
+  hashSuppressionRecipient,
+} from '../scripts/lib/outreach-suppression-send-gate.mjs';
 
 const generationJob = {
   id: 'job-123',
@@ -38,12 +41,13 @@ const prospect = {
   contact_sources: [{ type: 'email', email: 'director@example.test' }],
 };
 
-const makeSupabaseStub = ({ duplicates = [] } = {}) => {
+const makeSupabaseStub = ({ duplicates = [], suppressions = [] } = {}) => {
   const calls = [];
   const supabaseRequest = async (request) => {
     calls.push(request);
     if (request.path.startsWith('race_mockup_generation_jobs?')) return [generationJob];
     if (request.path.startsWith('race_mockup_prospects?')) return [prospect];
+    if (request.path.startsWith('outreach_suppressions?')) return suppressions;
     if (request.path.startsWith('race_mockup_outreach?')) return duplicates;
     if (request.path === 'race_mockup_outreach' && request.method === 'POST') {
       return [{ id: 'outreach-456', ...request.body }];
@@ -83,10 +87,13 @@ test('generation-job send gate dry-run fetches Supabase rows and prepares outrea
   assert.match(result.email.text, /Hi Taylor/);
   assert.match(result.email.text, /As part of this private mockup campaign, StartLine is offering 50% off the first website build for a limited number of selected race organizations\./);
   assert.doesNotMatch(result.email.text, /early partner|early race partner|newly formed|new company|beta/i);
-  assert.deepEqual(calls.map((call) => `${call.method || 'GET'} ${call.path}`), [
+  assert.equal(result.suppression_check.blocked, false);
+  assert.equal(result.suppression_check.recipients_checked.length, 1);
+  assert.deepEqual(calls.map((call) => `${call.method || 'GET'} ${call.path}`).slice(0, 2), [
     'GET race_mockup_generation_jobs?select=*&id=eq.job-123&limit=1',
     'GET race_mockup_prospects?select=*&id=eq.11111111-2222-4333-8444-555555555555&limit=1',
   ]);
+  assert.ok(calls.some((call) => call.path.startsWith('outreach_suppressions?select=')));
 });
 
 test('generation-job send gate sends, records outreach, and patches the generation job after provider acceptance', async () => {
@@ -168,6 +175,39 @@ test('generation-job send preparation blocks D operator template without operato
   assert.ok(prepared.errors.some((error) => error.includes('operator_portfolio_v1 is only allowed for lane')));
   assert.ok(prepared.errors.some((error) => error.includes('operator_event_count >= 3')));
   assert.ok(prepared.errors.some((error) => error.includes('company/org/routing recipient type')));
+});
+
+test('generation-job send gate blocks suppressed recipients before Resend or outreach mutation', async () => {
+  const suppressedHash = hashSuppressionRecipient('director@example.test');
+  const { calls, supabaseRequest } = makeSupabaseStub({
+    suppressions: [{
+      id: 'suppression-1',
+      recipient_email_hash: suppressedHash,
+      recipient_email_masked: 'di***[at]example.test',
+      reason: 'complaint',
+      source_provider: 'resend',
+      source_outreach_id: 'outreach-old',
+      created_at: '2026-08-04T20:00:00.000Z',
+    }],
+  });
+
+  const result = await sendMockupOutreachFromGenerationJob({
+    generationJobId: 'job-123',
+    ownerApprovedSend: true,
+    dryRun: false,
+    supabaseRequest,
+    sendWithResend: async () => { throw new Error('suppressed recipient must not send'); },
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.blocked, true);
+  assert.equal(result.reason, 'recipient_suppressed');
+  assert.equal(result.suppressions[0].reason, 'complaint');
+  assert.equal(result.suppressions[0].recipient_email_masked, 'di***[at]example.test');
+  assert.ok(calls.some((call) => call.path.startsWith('outreach_suppressions?select=')));
+  assert.equal(calls.some((call) => call.path.startsWith('race_mockup_outreach?select=')), false);
+  assert.equal(calls.some((call) => call.path === 'race_mockup_outreach' && call.method === 'POST'), false);
+  assert.equal(calls.some((call) => call.path.startsWith('race_mockup_generation_jobs?id=eq.') && call.method === 'PATCH'), false);
 });
 
 test('generation-job send gate blocks duplicate outreach before sending or mutating rows', async () => {

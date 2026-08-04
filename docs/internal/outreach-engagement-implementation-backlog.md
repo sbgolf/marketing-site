@@ -1,7 +1,7 @@
 # Outreach engagement tracking implementation backlog
 
 Owner: StartLine Sites internal ops
-Status: implementation in progress — PR 4 aggregation/status logic in review
+Status: implementation in progress — PR 5 suppression send-gate enforcement in review
 Source process: `outreach-engagement-tracking-process.md`
 Scope: concrete PR sequence to fully wire Resend open/click tracking, webhook ingestion, Supabase event storage, outreach aggregation, suppression, owner reporting, and owner-gated follow-up recommendations.
 
@@ -206,7 +206,7 @@ netlify/functions/resend-webhook.mjs
 
 ## PR 4: outreach aggregation and engagement status
 
-Status: In review — PR #173
+Status: Merged — PR #173
 
 Recommended branch: `feat/outreach-engagement-aggregation`
 Type: serverless/helper logic + tests
@@ -265,6 +265,8 @@ Goal: update `race_mockup_outreach` with useful engagement summaries.
 - Tests cover precedence and idempotency.
 
 ## PR 5: suppression enforcement in send gate
+
+Status: In review — PR #174
 
 Recommended branch: `feat/outreach-suppression-send-gate`
 Type: send-gate logic + tests

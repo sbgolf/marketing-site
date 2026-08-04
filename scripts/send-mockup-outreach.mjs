@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 import { buildDuplicateFilters, buildMockupOutreachPayload } from './lib/mockup-outreach-log.mjs';
 import {
+  buildSuppressionBlockedResult,
+  findSuppressedRecipients,
+} from './lib/outreach-suppression-send-gate.mjs';
+import {
   DEFAULT_MOCKUP_OUTREACH_FROM,
   DEFAULT_MOCKUP_OUTREACH_REPLY_TO,
   assertBrandedMockupOutreachHtml,
@@ -135,8 +139,28 @@ const main = async () => {
   const payload = buildMockupOutreachPayload({ ...input, subject: email.subject });
   const dryRun = args['dry-run'] === true;
 
+  const suppression = await findSuppressedRecipients({ payload, supabaseRequest });
+  if (suppression.blocked) {
+    console.log(JSON.stringify(buildSuppressionBlockedResult({
+      suppression,
+      duplicateFilters: buildDuplicateFilters(payload),
+    }), null, 2));
+    process.exitCode = 2;
+    return;
+  }
+
   if (dryRun) {
-    console.log(JSON.stringify({ ok: true, dry_run: true, email: { subject: email.subject, text: email.text, html_checks: 'passed' }, payload, duplicate_filters: buildDuplicateFilters(payload) }, null, 2));
+    console.log(JSON.stringify({
+      ok: true,
+      dry_run: true,
+      email: { subject: email.subject, text: email.text, html_checks: 'passed' },
+      payload,
+      suppression_check: {
+        blocked: false,
+        recipients_checked: suppression.recipients_checked,
+      },
+      duplicate_filters: buildDuplicateFilters(payload),
+    }, null, 2));
     return;
   }
 
