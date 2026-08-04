@@ -310,7 +310,7 @@ Goal: make suppression block future customer/race-director outreach before any R
 
 ## PR 6: owner digest engagement reporting
 
-Status: In progress — branch `feat/outreach-engagement-owner-digest`
+Status: In review — PR #175
 
 Recommended branch: `feat/outreach-engagement-owner-digest`
 Type: reporting script/digest logic + tests
