@@ -1,7 +1,7 @@
 # Outreach engagement tracking implementation backlog
 
 Owner: StartLine Sites internal ops
-Status: implementation in progress — PR 7 internal smoke-test harness in review
+Status: Phase 1 implementation merged through PR 7; PR 8 is blocked until a safe internal production smoke test passes
 Source process: `outreach-engagement-tracking-process.md`
 Scope: concrete PR sequence to fully wire Resend open/click tracking, webhook ingestion, Supabase event storage, outreach aggregation, suppression, owner reporting, and owner-gated follow-up recommendations.
 
@@ -356,7 +356,7 @@ Goal: surface engagement and recommendations to Steve without sending customer f
 
 ## PR 7: internal smoke test and production verification harness
 
-Status: In review — PR #176
+Status: Merged — PR #176
 
 Recommended branch: `feat/outreach-engagement-smoke-test`
 Type: script/tests/docs
@@ -395,6 +395,8 @@ Goal: provide a repeatable safe test proving the full loop works before external
 - Report includes exact evidence from the internal test: provider message ID, masked recipient, event counts, outreach row ID, and suppression dry-run result.
 
 ## PR 8: owner-reviewed follow-up workflow
+
+Status: Blocked — do not start until PR 7's internal production smoke test has passed and evidence is recorded
 
 Recommended branch: `feat/outreach-follow-up-drafts`
 Type: follow-up draft generation + owner gate
