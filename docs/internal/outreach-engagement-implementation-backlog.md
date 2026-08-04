@@ -356,7 +356,7 @@ Goal: surface engagement and recommendations to Steve without sending customer f
 
 ## PR 7: internal smoke test and production verification harness
 
-Status: In progress — branch `feat/outreach-engagement-smoke-test`
+Status: In review — PR #176
 
 Recommended branch: `feat/outreach-engagement-smoke-test`
 Type: script/tests/docs
