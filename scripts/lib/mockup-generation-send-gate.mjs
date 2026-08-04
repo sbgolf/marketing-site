@@ -13,6 +13,10 @@ import {
   validateMockupOutreachSend,
 } from './mockup-outreach-send-gate.mjs';
 import { buildMockupOutreachPayload } from './mockup-outreach-log.mjs';
+import {
+  buildSuppressionBlockedResult,
+  findSuppressedRecipients,
+} from './outreach-suppression-send-gate.mjs';
 
 const encode = (value) => encodeURIComponent(String(value || '').trim());
 const firstRow = (rows) => Array.isArray(rows) && rows.length ? rows[0] : null;
@@ -150,6 +154,15 @@ export const sendMockupOutreachFromGenerationJob = async ({
     };
   }
 
+  const suppression = await findSuppressedRecipients({ payload: prepared.payload, supabaseRequest });
+  if (suppression.blocked) {
+    return buildSuppressionBlockedResult({
+      generationJobId: generationJob.id || generationJobId,
+      suppression,
+      duplicateFilters: prepared.duplicate_filters,
+    });
+  }
+
   if (dryRun) {
     return {
       ok: true,
@@ -163,6 +176,10 @@ export const sendMockupOutreachFromGenerationJob = async ({
         html_checks: 'passed',
       },
       payload: prepared.payload,
+      suppression_check: {
+        blocked: false,
+        recipients_checked: suppression.recipients_checked,
+      },
       duplicate_filters: prepared.duplicate_filters,
     };
   }
