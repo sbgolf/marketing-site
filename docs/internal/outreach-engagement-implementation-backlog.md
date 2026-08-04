@@ -1,7 +1,7 @@
 # Outreach engagement tracking implementation backlog
 
 Owner: StartLine Sites internal ops
-Status: implementation in progress — PR 5 suppression send-gate enforcement in review
+Status: implementation in progress — PR 6 owner digest engagement reporting in review
 Source process: `outreach-engagement-tracking-process.md`
 Scope: concrete PR sequence to fully wire Resend open/click tracking, webhook ingestion, Supabase event storage, outreach aggregation, suppression, owner reporting, and owner-gated follow-up recommendations.
 
@@ -266,7 +266,7 @@ Goal: update `race_mockup_outreach` with useful engagement summaries.
 
 ## PR 5: suppression enforcement in send gate
 
-Status: In review — PR #174
+Status: Merged — PR #174
 
 Recommended branch: `feat/outreach-suppression-send-gate`
 Type: send-gate logic + tests
@@ -309,6 +309,8 @@ Goal: make suppression block future customer/race-director outreach before any R
 - Post-merge smoke includes a seeded suppressed recipient dry-run.
 
 ## PR 6: owner digest engagement reporting
+
+Status: In progress — branch `feat/outreach-engagement-owner-digest`
 
 Recommended branch: `feat/outreach-engagement-owner-digest`
 Type: reporting script/digest logic + tests
