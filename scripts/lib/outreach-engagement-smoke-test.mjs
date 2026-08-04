@@ -151,7 +151,7 @@ export const buildSmokeFixture = (options = {}, env = process.env) => {
 };
 
 export const buildSmokeOutreachQuery = ({ outreachId, smokeId } = {}) => {
-  const select = encodeURIComponent('id,race_name,race_slug,outreach_status,resend_email_id,to_emails,sent_at,delivered_at,opened_at,clicked_at,engagement_status,open_count,click_count,last_event_at,metadata');
+  const select = encodeURIComponent('id,race_name,race_slug,outreach_status,resend_email_id,to_emails,sent_at,delivered_at,first_opened_at,last_opened_at,engagement_status,open_count,first_clicked_at,last_clicked_at,click_count,last_engagement_at,metadata');
   if (outreachId) return `race_mockup_outreach?select=${select}&id=eq.${encodeURIComponent(outreachId)}&limit=1`;
   const slug = `internal-smoke-${slugifyRace(buildSmokeId(smokeId), 'smoke')}`;
   return `race_mockup_outreach?select=${select}&race_slug=eq.${encodeURIComponent(slug)}&limit=1`;
@@ -159,14 +159,14 @@ export const buildSmokeOutreachQuery = ({ outreachId, smokeId } = {}) => {
 
 export const buildSmokeEventsQuery = (outreachId) => {
   if (!outreachId) throw new Error('outreachId is required.');
-  const select = encodeURIComponent('id,event_type,provider_event_id,recipient_hash,url,created_at,metadata');
-  return `outreach_engagement_events?select=${select}&outreach_id=eq.${encodeURIComponent(outreachId)}&order=created_at.desc&limit=50`;
+  const select = encodeURIComponent('id,event_type,provider_event_id,recipient_email_hash,clicked_url,event_timestamp,created_at,raw_event');
+  return `outreach_engagement_events?select=${select}&outreach_id=eq.${encodeURIComponent(outreachId)}&order=event_timestamp.desc&limit=50`;
 };
 
 export const buildSuppressionQuery = (recipientHash) => {
   if (!recipientHash) throw new Error('recipientHash is required.');
-  const select = encodeURIComponent('id,recipient_hash,reason,status,source,created_at,metadata');
-  return `outreach_suppressions?select=${select}&recipient_hash=eq.${encodeURIComponent(recipientHash)}&status=eq.active&limit=5`;
+  const select = encodeURIComponent('id,recipient_email_hash,reason,source_provider,source_outreach_id,created_at,notes');
+  return `outreach_suppressions?select=${select}&recipient_email_hash=eq.${encodeURIComponent(recipientHash)}&limit=5`;
 };
 
 export const summarizeSmokeEvidence = ({ outreach = {}, events = [], suppressions = [], maskedRecipient = '' } = {}) => {
