@@ -69,11 +69,25 @@ test('smoke fixture builds branded internal-only payload and masks recipient evi
 });
 
 test('query builders target only internal smoke rows and engagement evidence', () => {
-  assert.match(buildSmokeOutreachQuery({ smokeId: 'abc 123' }), /race_slug=eq\.internal-smoke-abc-123/);
+  const outreachQuery = buildSmokeOutreachQuery({ smokeId: 'abc 123' });
+  const eventsQuery = buildSmokeEventsQuery('outreach-1');
+  const suppressionQuery = buildSuppressionQuery(hashRecipient('support@startlinesites.com'));
+
+  assert.match(outreachQuery, /race_slug=eq\.internal-smoke-abc-123/);
   assert.match(buildSmokeOutreachQuery({ outreachId: 'outreach-1' }), /id=eq\.outreach-1/);
-  assert.match(buildSmokeEventsQuery('outreach-1'), /outreach_engagement_events/);
-  assert.match(buildSmokeEventsQuery('outreach-1'), /outreach_id=eq\.outreach-1/);
-  assert.match(buildSuppressionQuery(hashRecipient('support@startlinesites.com')), /outreach_suppressions/);
+  assert.match(decodeURIComponent(outreachQuery), /first_opened_at/);
+  assert.match(decodeURIComponent(outreachQuery), /last_engagement_at/);
+  assert.doesNotMatch(decodeURIComponent(outreachQuery), /(^|,)opened_at(,|&)/);
+  assert.doesNotMatch(decodeURIComponent(outreachQuery), /last_event_at/);
+  assert.match(eventsQuery, /outreach_engagement_events/);
+  assert.match(eventsQuery, /outreach_id=eq\.outreach-1/);
+  assert.match(decodeURIComponent(eventsQuery), /clicked_url/);
+  assert.match(decodeURIComponent(eventsQuery), /event_timestamp/);
+  assert.doesNotMatch(decodeURIComponent(eventsQuery), /(^|,)recipient_hash(,|&)/);
+  assert.doesNotMatch(decodeURIComponent(eventsQuery), /(^|,)url(,|&)/);
+  assert.match(suppressionQuery, /outreach_suppressions/);
+  assert.match(decodeURIComponent(suppressionQuery), /recipient_email_hash/);
+  assert.doesNotMatch(decodeURIComponent(suppressionQuery), /status=eq\.active/);
 });
 
 test('smoke evidence report masks emails and classifies missing events as blocker', () => {
