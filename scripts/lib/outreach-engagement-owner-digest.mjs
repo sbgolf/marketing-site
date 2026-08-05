@@ -12,7 +12,7 @@ const NEGATIVE_STATUSES = new Set(['bounced', 'complained', 'unsubscribed', 'sup
 export const OUTREACH_DIGEST_SELECT = [
   'id',
   'race_name',
-  'race_domain',
+  'official_domain',
   'mockup_url',
   'mockup_template',
   'outreach_status',
@@ -171,7 +171,7 @@ export const summarizeOutreachEngagementRows = (rows = [], events = [], options 
 
 const formatRowLabel = (row = {}) => {
   const raceName = clean(row.race_name || 'Unnamed race', 120);
-  const domain = clean(row.race_domain, 120);
+  const domain = clean(row.official_domain || row.race_domain, 120);
   const recipients = recipientMasks(row);
   const parts = [raceName];
   if (domain) parts.push(domain);

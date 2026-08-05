@@ -14,7 +14,7 @@ const fixtureRows = [
   {
     id: 'outreach-clicked',
     race_name: 'Sample River 5K',
-    race_domain: 'sampleriver5k.org',
+    official_domain: 'sampleriver5k.org',
     mockup_url: 'https://mockups.startlinesites.com/private/sample-river-5k?t=abc',
     outreach_status: 'sent',
     sent_at: '2026-08-01T14:00:00Z',
@@ -33,7 +33,7 @@ const fixtureRows = [
   {
     id: 'outreach-opened',
     race_name: 'Example Town 10K',
-    race_domain: 'exampletown10k.org',
+    official_domain: 'exampletown10k.org',
     outreach_status: 'sent',
     sent_at: '2026-08-01T14:00:00Z',
     to_emails: 'info@exampletown10k.org',
@@ -47,7 +47,7 @@ const fixtureRows = [
   {
     id: 'outreach-suppressed',
     race_name: 'Blocked Sprint',
-    race_domain: 'blockedsprint.org',
+    official_domain: 'blockedsprint.org',
     outreach_status: 'sent',
     sent_at: '2026-08-01T14:00:00Z',
     to_emails: ['blocked@example.com'],
@@ -126,6 +126,8 @@ test('query builders and loader read outreach rows then matching raw events', as
   assert.equal(result.outreach.length, 2);
   assert.equal(result.events.length, 3);
   assert.match(paths[0], /^race_mockup_outreach\?/);
+  assert.doesNotMatch(paths[0], /race_domain/);
+  assert.match(paths[0], /official_domain/);
   assert.match(paths[0], /campaign_id=eq\.community-wave-1/);
   assert.match(paths[1], /^outreach_engagement_events\?/);
   assert.match(paths[1], /outreach_id=in\.%28outreach-clicked%2Coutreach-opened%29/);

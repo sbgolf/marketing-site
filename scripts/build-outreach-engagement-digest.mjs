@@ -17,6 +17,7 @@ customer/race-director follow-ups and never writes to Supabase.
 Options:
   --campaign-id <id>       Filter digest to one campaign/wave id
   --since <iso>            Include outreach sent at/after this timestamp
+  --since-days <n>         Include outreach sent in the last n days
   --until <iso>            Include outreach sent at/before this timestamp
   --limit <n>              Max outreach rows to read, default 100
   --generated-at <iso>     Deterministic timestamp for reviews/tests
@@ -61,6 +62,14 @@ const readJsonInput = async (path) => {
   }
 };
 
+const isoDaysAgo = (days, now = new Date()) => {
+  const numeric = Number(days);
+  if (!Number.isFinite(numeric) || numeric <= 0) return null;
+  const date = new Date(now);
+  date.setUTCDate(date.getUTCDate() - numeric);
+  return date.toISOString();
+};
+
 const main = async () => {
   const args = parseArgs();
   if (args.help) {
@@ -69,10 +78,11 @@ const main = async () => {
   }
 
   const input = await readJsonInput(args.input);
+  const since = args.since || isoDaysAgo(args['since-days']);
   const data = input || await loadOutreachEngagementDigestData({
     supabaseRequest: createSupabaseRestRequester(),
     campaignId: args['campaign-id'],
-    since: args.since,
+    since,
     until: args.until,
     limit: args.limit ? Number(args.limit) : undefined,
   });
