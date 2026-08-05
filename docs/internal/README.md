@@ -30,6 +30,7 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - A/B/C/D mockup campaign targeting: `startline-abcd-mockup-campaign-targeting.md`
 - Private mockup outreach log: `private-mockup-outreach-log.md`
 - Outreach engagement tracking process: `outreach-engagement-tracking-process.md`
+- Outreach follow-up draft workflow: `outreach-follow-up-draft-workflow.md`
 - Outreach engagement implementation backlog: `outreach-engagement-implementation-backlog.md`
 - Outreach engagement implementation spec: `outreach-engagement-implementation-spec.md`
 - Service agreement draft: `legal/service-agreement-draft.md`

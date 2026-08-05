@@ -20,6 +20,7 @@
     "prepare:mockup-outreach-from-job": "node scripts/prepare-mockup-outreach-from-job.mjs",
     "send:mockup-outreach-from-job": "node scripts/send-mockup-outreach-from-job.mjs",
     "digest:outreach-engagement": "node scripts/build-outreach-engagement-digest.mjs",
+    "draft:outreach-follow-up": "node scripts/build-outreach-follow-up-draft.mjs",
     "smoke:outreach-engagement": "node scripts/smoke-outreach-engagement.mjs",
     "upsert:mockup-prospect": "node scripts/upsert-mockup-prospect.mjs",
     "smoke:audit-request": "node scripts/smoke-audit-request.mjs",
