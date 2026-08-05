@@ -77,9 +77,9 @@ const findDuplicates = async (payload) => {
   return [...seen.values()];
 };
 
-const sendWithResend = async ({ to, cc, bcc, subject, text, html, from, replyTo }) => {
+const sendWithResend = async ({ to, cc, bcc, subject, text, html, from, replyTo, tracking = {} }) => {
   const apiKey = process.env.RESEND_API_KEY || process.env.STARTLINE_RESEND_API_KEY;
-  const payload = buildResendMockupOutreachPayload({ apiKey, from, replyTo, to, cc, bcc, subject, text, html });
+  const payload = buildResendMockupOutreachPayload({ apiKey, from, replyTo, to, cc, bcc, subject, text, html, ...tracking });
   const response = await fetch(payload.endpoint, {
     method: 'POST',
     headers: payload.headers,
@@ -180,6 +180,15 @@ const main = async () => {
     html: email.html,
     from: input.fromEmail,
     replyTo: input.replyToEmail,
+    tracking: {
+      campaignId: payload.campaign_id,
+      campaignLane: payload.campaign_lane,
+      campaignWave: payload.campaign_wave,
+      sendGateVersion: payload.send_gate_version,
+      mockupTemplate: payload.mockup_template,
+      generationJobId: payload.metadata?.generation_job_id,
+      prospectId: payload.metadata?.prospect_id,
+    },
   });
 
   const rows = await supabaseRequest({

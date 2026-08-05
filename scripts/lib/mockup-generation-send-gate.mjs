@@ -206,6 +206,13 @@ export const sendMockupOutreachFromGenerationJob = async ({
     html: prepared.email.html,
     from: fromEmail,
     replyTo: replyToEmail,
+    campaignId: prepared.payload.campaign_id,
+    campaignLane: prepared.payload.campaign_lane,
+    campaignWave: prepared.payload.campaign_wave,
+    sendGateVersion: prepared.payload.send_gate_version,
+    mockupTemplate: prepared.payload.mockup_template,
+    generationJobId: prepared.payload.metadata?.generation_job_id,
+    prospectId: prepared.payload.metadata?.prospect_id,
   });
 
   const outreachRows = await supabaseRequest({
