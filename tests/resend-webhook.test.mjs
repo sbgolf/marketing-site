@@ -67,8 +67,6 @@ const withEnv = async (fn) => {
 
 const makeFetch = ({ duplicate = false, outreach = [{
   id: 'outreach-1',
-  prospect_id: 'prospect-1',
-  generation_job_id: 'job-1',
   campaign_id: 'community-2026-08-w1',
 }], aggregateRow = {
   id: 'outreach-1',
@@ -181,8 +179,8 @@ test('handler stores a valid signed Resend event, links outreach, and preserves 
     assert.match(insertCall.url, /on_conflict=provider%2Cprovider_event_id|on_conflict=provider,provider_event_id/);
     const inserted = JSON.parse(insertCall.options.body);
     assert.equal(inserted.outreach_id, 'outreach-1');
-    assert.equal(inserted.prospect_id, 'prospect-1');
-    assert.equal(inserted.generation_job_id, 'job-1');
+    assert.equal(inserted.prospect_id, null);
+    assert.equal(inserted.generation_job_id, null);
     assert.equal(inserted.raw_event.data.to[0], 'di***[at]example.org');
     assert.equal(inserted.raw_event.data.click.link, 'https://mockups.startlinesites.com/ocean-marathon?t=%5Bredacted%5D');
     const aggregatePatch = calls.find((call) => call.url.includes('/race_mockup_outreach?id=eq.outreach-1') && call.options.method === 'PATCH');

@@ -348,7 +348,7 @@ const supabaseFetch = async ({ supabaseUrl, serviceKey, path, method = 'GET', bo
 const findOutreach = async ({ supabaseUrl, serviceKey, resendEmailId }) => {
   const query = new URLSearchParams({
     resend_email_id: `eq.${resendEmailId}`,
-    select: 'id,prospect_id,generation_job_id,campaign_id',
+    select: 'id,campaign_id',
     limit: '1',
   });
   const rows = await supabaseFetch({
