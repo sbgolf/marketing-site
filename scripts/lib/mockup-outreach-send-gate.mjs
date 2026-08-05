@@ -6,7 +6,13 @@ import {
   renderInfoCard,
   renderSignatureHtml,
 } from '../../netlify/functions/lib/branded-email.mjs';
-import { clean, parseEmailList, validateMockupOutreachInput } from './mockup-outreach-log.mjs';
+import {
+  DEFAULT_MOCKUP_OUTREACH_CAMPAIGN_ID,
+  DEFAULT_MOCKUP_OUTREACH_SEND_GATE_VERSION,
+  clean,
+  parseEmailList,
+  validateMockupOutreachInput,
+} from './mockup-outreach-log.mjs';
 
 const REJECTED_CUSTOMER_COPY = [
   /no-index/i,
@@ -167,6 +173,51 @@ export const assertBrandedMockupOutreachHtml = ({ html, mockupUrl }) => {
   return errors;
 };
 
+const RESEND_TAG_NAME_RE = /[^A-Za-z0-9_-]+/g;
+const RESEND_TAG_VALUE_RE = /[^A-Za-z0-9_./:@+-]+/g;
+
+const sanitizeResendTagName = (value) => clean(value, 256)
+  .replace(RESEND_TAG_NAME_RE, '_')
+  .replace(/^_+|_+$/g, '')
+  .slice(0, 256);
+
+const sanitizeResendTagValue = (value) => clean(value, 256)
+  .replace(RESEND_TAG_VALUE_RE, '_')
+  .replace(/^_+|_+$/g, '')
+  .slice(0, 256);
+
+export const buildResendMockupOutreachTags = ({
+  campaignId = DEFAULT_MOCKUP_OUTREACH_CAMPAIGN_ID,
+  campaignLane,
+  campaignWave,
+  sendGateVersion = DEFAULT_MOCKUP_OUTREACH_SEND_GATE_VERSION,
+  mockupTemplate,
+  generationJobId,
+  prospectId,
+} = {}) => {
+  const tagEntries = [
+    ['campaign_id', campaignId || DEFAULT_MOCKUP_OUTREACH_CAMPAIGN_ID],
+    ['send_gate_version', sendGateVersion || DEFAULT_MOCKUP_OUTREACH_SEND_GATE_VERSION],
+    ['mockup_template', mockupTemplate],
+    ['campaign_lane', campaignLane],
+    ['campaign_wave', campaignWave],
+    ['generation_job_id', generationJobId],
+    ['prospect_id', prospectId],
+  ];
+
+  return tagEntries
+    .map(([name, value]) => ({ name: sanitizeResendTagName(name), value: sanitizeResendTagValue(value) }))
+    .filter((tag) => tag.name && tag.value);
+};
+
+export const assertResendTrackingTags = (tags = []) => {
+  const tagMap = new Map((Array.isArray(tags) ? tags : []).map((tag) => [tag.name, tag.value]));
+  const errors = [];
+  if (!tagMap.get('campaign_id')) errors.push('Resend campaign_id tag missing.');
+  if (!tagMap.get('send_gate_version')) errors.push('Resend send_gate_version tag missing.');
+  return errors;
+};
+
 export const buildResendMockupOutreachPayload = ({
   apiKey,
   from = DEFAULT_MOCKUP_OUTREACH_FROM,
@@ -177,8 +228,27 @@ export const buildResendMockupOutreachPayload = ({
   subject,
   text,
   html,
+  campaignId,
+  campaignLane,
+  campaignWave,
+  sendGateVersion,
+  mockupTemplate,
+  generationJobId,
+  prospectId,
 }) => {
   if (!apiKey) throw new Error('RESEND_API_KEY or STARTLINE_RESEND_API_KEY is required.');
+  const tags = buildResendMockupOutreachTags({
+    campaignId,
+    campaignLane,
+    campaignWave,
+    sendGateVersion,
+    mockupTemplate,
+    generationJobId,
+    prospectId,
+  });
+  const tagErrors = assertResendTrackingTags(tags);
+  if (tagErrors.length) throw new Error(`Resend tracking tag validation failed: ${tagErrors.join(' ')}`);
+
   return {
     endpoint: 'https://api.resend.com/emails',
     headers: {
@@ -195,6 +265,7 @@ export const buildResendMockupOutreachPayload = ({
       subject: clean(subject, 300),
       text,
       html,
+      tags,
     },
   };
 };

@@ -13,6 +13,9 @@ export const parseEmailList = (value) => {
     .filter(Boolean);
 };
 
+export const DEFAULT_MOCKUP_OUTREACH_CAMPAIGN_ID = 'private-mockup-outreach';
+export const DEFAULT_MOCKUP_OUTREACH_SEND_GATE_VERSION = 'mockup-outreach-send-gate-v1';
+
 export const slugifyRace = (value, fallback = 'race-mockup') => {
   const slug = clean(value, 160)
     .toLowerCase()
@@ -101,6 +104,10 @@ export const buildMockupOutreachPayload = (input = {}) => {
     next_follow_up_at: clean(input.nextFollowUpAt, 80) || null,
     response_status: clean(input.responseStatus, 80) || 'none',
     owner: clean(input.owner, 120) || null,
+    campaign_id: clean(input.campaignId, 200) || clean(input.metadata?.campaign_id, 200) || DEFAULT_MOCKUP_OUTREACH_CAMPAIGN_ID,
+    campaign_lane: clean(input.campaignLane, 120) || clean(input.metadata?.campaign_lane, 120) || null,
+    campaign_wave: clean(input.campaignWave, 120) || clean(input.metadata?.campaign_wave, 120) || null,
+    send_gate_version: clean(input.sendGateVersion, 120) || clean(input.metadata?.send_gate_version, 120) || DEFAULT_MOCKUP_OUTREACH_SEND_GATE_VERSION,
     metadata: input.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata) ? input.metadata : {},
   };
 };

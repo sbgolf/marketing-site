@@ -130,7 +130,28 @@ test('normalizeResendEvent maps click events to the StartLine canonical row shap
   assert.equal(result.event.clicked_url, 'https://mockups.startlinesites.com/ocean-marathon?t=%5Bredacted%5D');
   assert.equal(result.event.recipient_email_masked, 'di***[at]example.org');
   assert.match(result.event.recipient_email_hash, /^[a-f0-9]{64}$/);
+  assert.equal(result.event.campaign_id, 'community-2026-08-w1');
   assert.equal(result.event.raw_event.data.to[0], 'di***[at]example.org');
+});
+
+test('normalizeResendEvent accepts Resend tag arrays from future send payloads', () => {
+  const result = normalizeResendEvent({
+    payload: payload({
+      data: {
+        email_id: 're_123',
+        to: ['director@example.org'],
+        click: { link: 'https://mockups.startlinesites.com/ocean-marathon/' },
+        tags: [
+          { name: 'campaign_id', value: 'private-mockup-outreach' },
+          { name: 'send_gate_version', value: 'mockup-outreach-send-gate-v1' },
+        ],
+      },
+    }),
+    svixId: 'msg_test_123',
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.event.campaign_id, 'private-mockup-outreach');
 });
 
 test('sanitizePayload masks full recipients and strips sensitive keys before storage', () => {

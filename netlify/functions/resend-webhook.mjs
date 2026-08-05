@@ -268,6 +268,16 @@ const extractClickedUrl = (payload, normalizedType) => {
   }
 };
 
+const extractTagValue = (tags, name) => {
+  if (!tags) return '';
+  if (Array.isArray(tags)) {
+    const match = tags.find((tag) => clean(tag?.name, 256) === name);
+    return clean(match?.value, 500);
+  }
+  if (typeof tags === 'object') return clean(tags[name], 500);
+  return '';
+};
+
 const deriveProviderEventId = ({ payload, svixId, eventType, providerMessageId, recipientEmail, clickedUrl }) => clean(
   firstString(payload.id, payload.event_id, getDeep(payload, [['data', 'id']]), svixId)
   || createHash('sha256')
@@ -314,7 +324,11 @@ export const normalizeResendEvent = ({ payload, svixId }) => {
       recipient_email_hash: hashRecipient(recipientEmail) || null,
       recipient_email_masked: maskEmail(recipientEmail) || null,
       clicked_url: clickedUrl,
-      campaign_id: clean(firstString(getDeep(payload, [['data', 'tags', 'campaign_id']]), getDeep(payload, [['data', 'campaign_id']]), payload.campaign_id), 200) || null,
+      campaign_id: clean(firstString(
+        extractTagValue(getDeep(payload, [['data', 'tags']]), 'campaign_id'),
+        getDeep(payload, [['data', 'campaign_id']]),
+        payload.campaign_id,
+      ), 200) || null,
       raw_event: sanitizePayload(payload),
     },
   };

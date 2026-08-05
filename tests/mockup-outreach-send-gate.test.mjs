@@ -5,7 +5,9 @@ import {
   DEFAULT_MOCKUP_OUTREACH_FROM,
   DEFAULT_MOCKUP_OUTREACH_REPLY_TO,
   assertBrandedMockupOutreachHtml,
+  assertResendTrackingTags,
   buildResendMockupOutreachPayload,
+  buildResendMockupOutreachTags,
   renderPrivateMockupOutreachEmail,
   validateMockupOutreachSend,
 } from '../scripts/lib/mockup-outreach-send-gate.mjs';
@@ -91,7 +93,7 @@ test('private mockup outreach send gate rejects missing template and rejected wo
   assert.ok(errors.some((error) => error.includes('beta')));
 });
 
-test('resend payload uses StartLine founder sender and support reply-to defaults', () => {
+test('resend payload uses StartLine founder sender, support reply-to, and engagement tags', () => {
   const payload = buildResendMockupOutreachPayload({
     apiKey: 'test-key',
     to: 'director@example.test',
@@ -99,6 +101,13 @@ test('resend payload uses StartLine founder sender and support reply-to defaults
     subject: 'A private website mockup',
     text: 'Text body',
     html: '<p>HTML body</p>',
+    campaignId: 'community-2026-08-w1',
+    campaignLane: 'community',
+    campaignWave: '2026-08-w1',
+    sendGateVersion: 'mockup-outreach-send-gate-v1',
+    mockupTemplate: 'community_v1',
+    generationJobId: 'job-123',
+    prospectId: 'prospect-456',
   });
 
   assert.equal(payload.endpoint, 'https://api.resend.com/emails');
@@ -109,4 +118,29 @@ test('resend payload uses StartLine founder sender and support reply-to defaults
   assert.equal(payload.body.subject, 'A private website mockup');
   assert.equal(payload.body.text, 'Text body');
   assert.equal(payload.body.html, '<p>HTML body</p>');
+  assert.deepEqual(payload.body.tags, [
+    { name: 'campaign_id', value: 'community-2026-08-w1' },
+    { name: 'send_gate_version', value: 'mockup-outreach-send-gate-v1' },
+    { name: 'mockup_template', value: 'community_v1' },
+    { name: 'campaign_lane', value: 'community' },
+    { name: 'campaign_wave', value: '2026-08-w1' },
+    { name: 'generation_job_id', value: 'job-123' },
+    { name: 'prospect_id', value: 'prospect-456' },
+  ]);
+  assert.deepEqual(assertResendTrackingTags(payload.body.tags), []);
+});
+
+test('resend tracking tags default and sanitize to Resend-safe values', () => {
+  const tags = buildResendMockupOutreachTags({
+    campaignId: 'Community Wave #1',
+    sendGateVersion: '',
+    mockupTemplate: 'community/template v1',
+  });
+
+  assert.deepEqual(tags.slice(0, 3), [
+    { name: 'campaign_id', value: 'Community_Wave_1' },
+    { name: 'send_gate_version', value: 'mockup-outreach-send-gate-v1' },
+    { name: 'mockup_template', value: 'community/template_v1' },
+  ]);
+  assert.deepEqual(assertResendTrackingTags(tags), []);
 });
