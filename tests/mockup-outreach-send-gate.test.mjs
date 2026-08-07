@@ -30,7 +30,8 @@ test('operator portfolio outreach renders D-specific company language', () => {
   assert.match(text, /bigger than one race page/);
   assert.match(text, /clearer portfolio system/);
   assert.match(text, /scale across a small first set of your events/);
-  assert.match(text, /50% off the first website build/);
+  assert.match(text, /selected-race website credit/);
+  assert.match(text, /25% off the first website build, up to \$750/);
   assert.doesNotMatch(text, /A free private website mockup for/);
   assert.doesNotMatch(text, /early partner|early race partner|newly formed|new company|beta/i);
   assert.equal(text.includes('—'), false);
@@ -52,7 +53,8 @@ test('private mockup outreach send gate renders branded customer-facing email', 
   assert.equal(subject, 'A Nashville-local website mockup for Example 10K');
   assert.match(text, /Hi Taylor/);
   assert.match(text, /The goal is not to replace RunSignup\. It is to make/);
-  assert.match(text, /As part of this private mockup campaign, StartLine is offering 50% off the first website build for a limited number of selected race organizations\./);
+  assert.match(text, /As part of this private mockup campaign, StartLine is offering a selected-race website credit for a limited number of organizations\./);
+  assert.match(text, /25% off the first website build, up to \$750/);
   assert.doesNotMatch(text, /early partner|early race partner|newly formed|new company|beta/i);
   assert.equal(text.includes('—'), false);
   assert.match(text, /website\.\n\nThe goal is not to replace RunSignup/);
@@ -65,7 +67,8 @@ test('private mockup outreach send gate renders branded customer-facing email', 
   assert.match(html, /email-button-link/);
   assert.match(html, /Private race website preview/);
   assert.match(html, /The goal is not to replace RunSignup\. It is to make/);
-  assert.match(html, /As part of this private mockup campaign, StartLine is offering 50% off the first website build for a limited number of selected race organizations\./);
+  assert.match(html, /As part of this private mockup campaign, StartLine is offering a selected-race website credit for a limited number of organizations\./);
+  assert.match(html, /25% off the first website build, up to \$750/);
   assert.doesNotMatch(html, /early partner|early race partner|newly formed|new company|beta/i);
   assert.equal(html.includes('—'), false);
   assert.match(html, /<p style="margin:0 0 18px;">I came across Example 10K/);
