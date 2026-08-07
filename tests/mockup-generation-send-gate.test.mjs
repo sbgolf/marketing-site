@@ -85,7 +85,8 @@ test('generation-job send gate dry-run fetches Supabase rows and prepares outrea
   assert.equal(result.payload.metadata.generation_job_id, 'job-123');
   assert.equal(result.email.html_checks, 'passed');
   assert.match(result.email.text, /Hi Taylor/);
-  assert.match(result.email.text, /As part of this private mockup campaign, StartLine is offering 50% off the first website build for a limited number of selected race organizations\./);
+  assert.match(result.email.text, /As part of this private mockup campaign, StartLine is offering a selected-race website credit for a limited number of organizations\./);
+  assert.match(result.email.text, /25% off the first website build, up to \$750/);
   assert.doesNotMatch(result.email.text, /early partner|early race partner|newly formed|new company|beta/i);
   assert.equal(result.suppression_check.blocked, false);
   assert.equal(result.suppression_check.recipients_checked.length, 1);
@@ -117,8 +118,10 @@ test('generation-job send gate sends, records outreach, and patches the generati
   assert.equal(result.resend_email_id, 'resend-789');
   assert.equal(sent.length, 1);
   assert.equal(sent[0].to, 'director@example.test');
-  assert.match(sent[0].text, /50% off the first website build/);
-  assert.match(sent[0].html, /50% off the first website build/);
+  assert.match(sent[0].text, /selected-race website credit/);
+  assert.match(sent[0].text, /25% off the first website build, up to \$750/);
+  assert.match(sent[0].html, /selected-race website credit/);
+  assert.match(sent[0].html, /25% off the first website build, up to \$750/);
   assert.doesNotMatch(`${sent[0].text}\n${sent[0].html}`, /early partner|early race partner|newly formed|new company|beta/i);
   assert.ok(calls.some((call) => call.path.startsWith('race_mockup_outreach?select=')));
   assert.ok(calls.some((call) => call.path === 'race_mockup_outreach' && call.method === 'POST'));

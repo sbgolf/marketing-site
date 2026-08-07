@@ -24,9 +24,9 @@ const REJECTED_CUSTOMER_COPY = [
   /\bbeta\b/i,
 ];
 const PRELIMINARY_MOCKUP_NOTE = 'This is intentionally a preliminary mockup and a starting point to show the direction. If it looks useful, we can fine-tune the copy, sections, sponsor placement, and race-specific details before anything goes live.';
-const SELECTED_RACE_50_OFF_OFFER = 'As part of this private mockup campaign, StartLine is offering 50% off the first website build for a limited number of selected race organizations. If the preview feels useful, I’d be happy to walk through what it would take to turn it into a polished race website for your next event.';
+const SELECTED_RACE_WEBSITE_CREDIT_OFFER = 'As part of this private mockup campaign, StartLine is offering a selected-race website credit for a limited number of organizations. If the preview feels useful and you decide to move forward, I can apply 25% off the first website build, up to $750.\n\nThe goal is to make the first build easier to start while still giving the race a polished, production-ready site we can stand behind.';
 const OPERATOR_PORTFOLIO_TEMPLATE_KEY = 'operator_portfolio_v1';
-const OPERATOR_PORTFOLIO_OFFER = 'As part of this private mockup campaign, StartLine is offering 50% off the first website build for a limited number of selected race organizations. If this portfolio approach looks useful, I’d be happy to talk through how it could scale across a few of your events first.';
+const OPERATOR_PORTFOLIO_OFFER = 'As part of this private mockup campaign, StartLine is offering a selected-race website credit for a limited number of organizations. If this portfolio approach looks useful and you decide to start with a small first set of events, I can apply 25% off the first website build, up to $750.\n\nThe goal is to make the first build easier to start while still giving the race a polished, production-ready site we can stand behind.';
 
 export const DEFAULT_MOCKUP_OUTREACH_FROM = 'Steve <steve@startlinesites.com>';
 export const DEFAULT_MOCKUP_OUTREACH_REPLY_TO = 'support@startlinesites.com';
@@ -51,7 +51,7 @@ const renderDetailParagraphs = (detail) => splitDetailParagraphs(detail)
   .map((paragraph) => `<p style="margin:0 0 18px;">${escapeHtml(paragraph)}</p>`)
   .join('\n      ');
 
-const ensureSelectedRaceOffer = (detail, offer = SELECTED_RACE_50_OFF_OFFER) => (/50% off the first website build/i.test(detail)
+const ensureSelectedRaceOffer = (detail, offer = SELECTED_RACE_WEBSITE_CREDIT_OFFER) => (/25% off the first website build|selected-race website credit/i.test(detail)
   ? detail
   : [detail, offer].filter(Boolean).join('\n\n'));
 
@@ -60,7 +60,7 @@ export const buildDefaultMockupOutreachDetail = (raceName) => {
   return [
     `I came across ${safeRaceName} and put together a private StartLine Sites preview showing how the race could look as a dedicated, mobile-friendly website.`,
     'The goal is not to replace RunSignup. It is to make the race easier for runners to understand, trust, and click through to register, with key race-day details, official registration links, community context, and runner questions organized in one clean place.',
-    SELECTED_RACE_50_OFF_OFFER,
+    SELECTED_RACE_WEBSITE_CREDIT_OFFER,
   ].join('\n\n');
 };
 
@@ -120,7 +120,7 @@ export const renderPrivateMockupOutreachEmail = ({
     ? buildOperatorPortfolioOutreachDetail({ companyName: safeCompanyName, raceName: safeRaceName })
     : buildDefaultMockupOutreachDetail(safeRaceName);
   const safeSubject = clean(subject, 300) || defaultSubject;
-  const safeDetail = ensureSelectedRaceOffer(cleanMultilineDetail(detail) || defaultDetail, isOperatorPortfolio ? OPERATOR_PORTFOLIO_OFFER : SELECTED_RACE_50_OFF_OFFER);
+  const safeDetail = ensureSelectedRaceOffer(cleanMultilineDetail(detail) || defaultDetail, isOperatorPortfolio ? OPERATOR_PORTFOLIO_OFFER : SELECTED_RACE_WEBSITE_CREDIT_OFFER);
   const nextStepCopy = isOperatorPortfolio
     ? 'If this is helpful, reply here and I can share how the same structure could scale across a small first set of your events. If someone else owns the event portfolio or website system, feel free to forward this along.'
     : 'If this is helpful, reply here and I can share what a practical next step would look like. If someone else owns the race website, feel free to forward this along.';
