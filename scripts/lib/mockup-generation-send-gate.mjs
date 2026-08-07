@@ -1,3 +1,4 @@
+import { assertCustomerEmailCompliance } from '../../netlify/functions/lib/branded-email.mjs';
 import { buildDuplicateFilters } from './mockup-outreach-log.mjs';
 import { validateEmailTemplateForCampaignLane } from './mockup-campaign-lanes.mjs';
 import {
@@ -181,6 +182,21 @@ export const sendMockupOutreachFromGenerationJob = async ({
         recipients_checked: suppression.recipients_checked,
       },
       duplicate_filters: prepared.duplicate_filters,
+    };
+  }
+
+  const liveComplianceErrors = assertCustomerEmailCompliance({
+    text: prepared.email.text,
+    html: prepared.email.html,
+    requireConfiguredPostalAddress: true,
+  });
+  if (liveComplianceErrors.length) {
+    return {
+      ok: false,
+      blocked: true,
+      reason: 'customer_email_compliance_failed',
+      generation_job_id: generationJob.id || generationJobId,
+      errors: liveComplianceErrors,
     };
   }
 

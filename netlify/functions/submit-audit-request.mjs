@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto';
 
 import {
   CLIENT_SIGNATURE_TEXT,
+  appendComplianceFooterText,
+  assertCustomerEmailCompliance,
   escapeHtml,
   renderBrandedEmail,
   renderEmailButton,
@@ -177,7 +179,7 @@ export const renderCustomerAuditConfirmationEmail = ({ row }) => {
     : selectedPackage?.proposal_required
       ? 'Premium projects start with a reviewed proposal before any first-year package deposit link is sent.'
       : 'We will review your race site and follow up with the clearest package recommendation.';
-  const text = [
+  const textBody = [
     `Hi ${row.contact_name},`,
     '',
     `Thanks — we received the private StartLine Sites audit request for ${row.race_name}.`,
@@ -196,6 +198,7 @@ export const renderCustomerAuditConfirmationEmail = ({ row }) => {
     '',
     CLIENT_SIGNATURE_TEXT,
   ].join('\n');
+  const text = appendComplianceFooterText(textBody);
 
   const html = emailShell({
     preheader: `We received your private StartLine audit request for ${row.race_name}.`,
@@ -234,6 +237,8 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
     || process.env.STARTLINE_LEAD_NOTIFY_EMAIL
     || undefined;
   const { text, html } = renderCustomerAuditConfirmationEmail({ row });
+  const complianceErrors = assertCustomerEmailCompliance({ text, html, requireConfiguredPostalAddress: true });
+  if (complianceErrors.length) throw new Error(`Customer audit confirmation compliance failed: ${complianceErrors.join(' ')}`);
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',

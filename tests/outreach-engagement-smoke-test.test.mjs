@@ -19,6 +19,7 @@ const env = {
   RESEND_API_KEY: 're_test_key',
   SUPABASE_URL: 'https://example.supabase.co',
   SUPABASE_SERVICE_ROLE_KEY: 'service-role',
+  STARTLINE_POSTAL_ADDRESS: 'PO Box 123, Nashville, TN 37201',
 };
 
 test('smoke harness refuses to run without explicit internal confirmation', () => {
@@ -49,6 +50,7 @@ test('smoke harness refuses live customer/prospect context notes', () => {
 });
 
 test('smoke fixture builds branded internal-only payload and masks recipient evidence', () => {
+  process.env.STARTLINE_POSTAL_ADDRESS = env.STARTLINE_POSTAL_ADDRESS;
   const fixture = buildSmokeFixture({
     internalRecipient: 'support@startlinesites.com',
     confirmInternalSmoke: true,

@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto';
 
 import {
   CLIENT_SIGNATURE_TEXT,
+  appendComplianceFooterText,
+  assertCustomerEmailCompliance,
   escapeHtml,
   renderBrandedEmail,
   renderEmailButton,
@@ -431,7 +433,7 @@ const sendSupportNotification = async ({ record, row, customerRecord, checklist 
 };
 
 export const renderCustomerIntakeConfirmationEmail = ({ row, checklistUrl }) => {
-  const text = [
+  const textBody = [
     `Hi ${row.contact_name},`,
     '',
     `Thanks — we received the StartLine Sites 20–30 minute intake for ${row.race_name}.`,
@@ -447,6 +449,7 @@ export const renderCustomerIntakeConfirmationEmail = ({ row, checklistUrl }) => 
     '',
     CLIENT_SIGNATURE_TEXT,
   ].join('\n');
+  const text = appendComplianceFooterText(textBody);
 
   const html = renderBrandedEmail({
     preheader: `We received the StartLine intake for ${row.race_name}.`,
@@ -481,6 +484,8 @@ const sendCustomerConfirmation = async ({ row }) => {
     || undefined;
   const checklistUrl = process.env.STARTLINE_ASSET_CHECKLIST_URL || 'https://startlinesites.com/asset-checklist';
   const { text, html } = renderCustomerIntakeConfirmationEmail({ row, checklistUrl });
+  const complianceErrors = assertCustomerEmailCompliance({ text, html, requireConfiguredPostalAddress: true });
+  if (complianceErrors.length) throw new Error(`Customer intake confirmation compliance failed: ${complianceErrors.join(' ')}`);
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',

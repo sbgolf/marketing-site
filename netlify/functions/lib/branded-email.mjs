@@ -17,12 +17,61 @@ export const CLIENT_SIGNATURE_TEXT = [
   'StartLineSites.com',
 ].join('\n');
 
+export const DEFAULT_STARTLINE_UNSUBSCRIBE_URL = 'mailto:support@startlinesites.com?subject=Unsubscribe%20from%20StartLine%20Sites';
+export const MISSING_POSTAL_ADDRESS_MESSAGE = 'STARTLINE_POSTAL_ADDRESS must be configured before customer emails are sent.';
+
 export const escapeHtml = (value) => String(value ?? '')
   .replaceAll('&', '&amp;')
   .replaceAll('<', '&lt;')
   .replaceAll('>', '&gt;')
   .replaceAll('"', '&quot;')
   .replaceAll("'", '&#39;');
+
+const escapeRegex = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+export const getStartLineUnsubscribeUrl = ({ env = process.env } = {}) => String(
+  env.STARTLINE_UNSUBSCRIBE_URL || DEFAULT_STARTLINE_UNSUBSCRIBE_URL,
+).trim();
+
+export const getStartLinePostalAddress = ({ env = process.env } = {}) => String(
+  env.STARTLINE_POSTAL_ADDRESS || env.STARTLINE_MAILING_ADDRESS || '',
+).trim();
+
+export const renderComplianceFooterText = ({ env = process.env } = {}) => [
+  `Unsubscribe: ${getStartLineUnsubscribeUrl({ env })}`,
+  `Mailing address: ${getStartLinePostalAddress({ env }) || MISSING_POSTAL_ADDRESS_MESSAGE}`,
+].join('\n');
+
+export const appendComplianceFooterText = (text, options = {}) => [
+  String(text || '').trim(),
+  '',
+  renderComplianceFooterText(options),
+].join('\n');
+
+export const renderComplianceFooterHtml = ({ env = process.env } = {}) => {
+  const unsubscribeUrl = getStartLineUnsubscribeUrl({ env });
+  const postalAddress = getStartLinePostalAddress({ env }) || MISSING_POSTAL_ADDRESS_MESSAGE;
+  return `StartLine Sites · Race websites built to turn interest into registrations.<br>`
+    + `<a href="${escapeHtml(unsubscribeUrl)}" style="color:#FF8A7A;text-decoration:underline;">Unsubscribe</a>`
+    + ` · ${escapeHtml(postalAddress)}`;
+};
+
+export const assertCustomerEmailCompliance = ({ text = '', html = '', env = process.env, requireConfiguredPostalAddress = false } = {}) => {
+  const errors = [];
+  const unsubscribeUrl = getStartLineUnsubscribeUrl({ env });
+  const postalAddress = getStartLinePostalAddress({ env });
+  if (!unsubscribeUrl) errors.push('Customer email unsubscribe URL is missing.');
+  if (!postalAddress) errors.push('Customer email postal address is missing. Configure STARTLINE_POSTAL_ADDRESS.');
+  if (requireConfiguredPostalAddress && !postalAddress) errors.push('STARTLINE_POSTAL_ADDRESS is required before live customer sends.');
+
+  const haystack = `${text}\n${html}`;
+  if (!/unsubscribe/i.test(haystack)) errors.push('Customer email is missing visible unsubscribe copy.');
+  if (!html || !new RegExp(`href="${escapeRegex(escapeHtml(unsubscribeUrl))}"`).test(html)) {
+    errors.push('Customer email HTML is missing the unsubscribe link.');
+  }
+  if (postalAddress && !haystack.includes(postalAddress)) errors.push('Customer email is missing the configured postal address.');
+  return errors;
+};
 
 export const renderSignatureHtml = () => '<p style="margin:24px 0 0;color:#F6F8FB;font-weight:800;">Thanks,<br>Steve, CEO &amp; Founder<br><a href="https://startlinesites.com/" style="color:#FF8A7A;text-decoration:underline;">StartLineSites.com</a></p>';
 
@@ -162,7 +211,7 @@ export const renderLaunchReadinessCustomerEmail = ({
   const safeRaceName = raceName || 'your race';
   const subject = definition.heading({ raceName: safeRaceName });
   const detailLine = detail ? `${detail}\n\n` : '';
-  const text = [
+  const textBody = [
     `Hi ${customerName || 'there'},`,
     '',
     detailLine ? detailLine.trim() : `This is the next Launch Readiness step for ${safeRaceName}.`,
@@ -178,6 +227,7 @@ export const renderLaunchReadinessCustomerEmail = ({
     '',
     CLIENT_SIGNATURE_TEXT,
   ].filter(Boolean).join('\n');
+  const text = appendComplianceFooterText(textBody);
 
   const html = renderBrandedEmail({
     eyebrow: definition.eyebrow,
@@ -258,7 +308,7 @@ export const renderBrandedEmail = ({ preheader = '', heading, eyebrow = 'StartLi
             </tr>
             <tr>
               <td class="email-footer" style="padding:0 28px 28px;background:#0E1729;color:#93A4BB;font-size:13px;line-height:1.5;">
-                <div style="border-top:1px solid rgba(255,255,255,.10);padding-top:18px;">StartLine Sites · Race websites built to turn interest into registrations.</div>
+                <div style="border-top:1px solid rgba(255,255,255,.10);padding-top:18px;">${renderComplianceFooterHtml()}</div>
               </td>
             </tr>
           </table>

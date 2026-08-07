@@ -5,13 +5,16 @@ import { renderCustomerAuditConfirmationEmail } from '../netlify/functions/submi
 import { renderCustomerIntakeConfirmationEmail } from '../netlify/functions/submit-customer-intake.mjs';
 import { renderCustomerKickoffEmail } from '../netlify/functions/stripe-webhook.mjs';
 import {
+  assertCustomerEmailCompliance,
   launchReadinessEmailTemplateNames,
   renderBrandedEmail,
   renderEmailButton,
   renderLaunchReadinessCustomerEmail,
 } from '../netlify/functions/lib/branded-email.mjs';
 
-const assertBrandedCustomerEmail = (html) => {
+process.env.STARTLINE_POSTAL_ADDRESS = 'PO Box 123, Nashville, TN 37201';
+
+const assertBrandedCustomerEmail = (html, text = '') => {
   assert.match(html, /<meta name="color-scheme" content="light dark">/);
   assert.match(html, /<meta name="supported-color-schemes" content="light dark">/);
   assert.match(html, /@media \(prefers-color-scheme: dark\)/);
@@ -45,10 +48,14 @@ const assertBrandedCustomerEmail = (html) => {
   assert.match(html, /\[data-ogsc\] \.email-button a,\s*\[data-ogsc\] \.email-button-link \{ color:#ffffff !important;text-decoration:none !important; \}/);
   assert.match(html, /<a href="[^"]+" class="email-button-link" style="[^"]*color:#ffffff !important;[^"]*text-decoration:none !important;[^"]*">/);
   assert.match(html, /Thanks,<br>Steve, CEO &amp; Founder<br><a href="https:\/\/startlinesites\.com\//);
+  assert.match(html, /Unsubscribe/);
+  assert.match(html, /mailto:support@startlinesites\.com\?subject=Unsubscribe%20from%20StartLine%20Sites/);
+  assert.match(html, /PO Box 123, Nashville, TN 37201/);
+  assert.deepEqual(assertCustomerEmailCompliance({ text, html }), []);
 };
 
 test('customer audit confirmation uses branded email shell with light/dark mode safeguards', () => {
-  const { html } = renderCustomerAuditConfirmationEmail({
+  const { html, text } = renderCustomerAuditConfirmationEmail({
     row: {
       contact_name: 'Taylor',
       contact_email: 'director@example.com',
@@ -58,7 +65,7 @@ test('customer audit confirmation uses branded email shell with light/dark mode 
     },
   });
 
-  assertBrandedCustomerEmail(html);
+  assertBrandedCustomerEmail(html, text);
   assert.match(html, /Pay the first-year package deposit/);
 });
 
@@ -76,7 +83,7 @@ test('customer kickoff email uses Launch Readiness Kit language and customer ema
     accessGuidesUrl: 'https://startlinesites.com/access-guides',
   });
 
-  assertBrandedCustomerEmail(html);
+  assertBrandedCustomerEmail(html, text);
   assert.match(html, /Launch Readiness Kit/);
   assert.match(html, /Open Launch Readiness Checklist/);
   assert.match(html, /Review the Asset Hub/);
@@ -90,7 +97,7 @@ test('customer kickoff email uses Launch Readiness Kit language and customer ema
 });
 
 test('customer intake confirmation uses branded email shell and asset-checklist CTA', () => {
-  const { html } = renderCustomerIntakeConfirmationEmail({
+  const { html, text } = renderCustomerIntakeConfirmationEmail({
     row: {
       contact_name: 'Taylor',
       contact_email: 'director@example.com',
@@ -99,7 +106,7 @@ test('customer intake confirmation uses branded email shell and asset-checklist 
     checklistUrl: 'https://startlinesites.com/asset-checklist',
   });
 
-  assertBrandedCustomerEmail(html);
+  assertBrandedCustomerEmail(html, text);
   assert.match(html, /Review the asset checklist/);
 });
 
@@ -136,7 +143,7 @@ test('Launch Readiness customer template set covers deposit through launch appro
     });
 
     assert.ok(subject.includes('Ocean Marathon'));
-    assertBrandedCustomerEmail(html);
+    assertBrandedCustomerEmail(html, text);
     assert.match(text, /Thanks,\nSteve, CEO & Founder\nStartLineSites\.com/);
     assert.match(html, /StartLine is grouping the next Launch Readiness step/);
     assert.doesNotMatch(html, /passwords? by email as the default/i);

@@ -10,6 +10,8 @@ import {
   hashSuppressionRecipient,
 } from '../scripts/lib/outreach-suppression-send-gate.mjs';
 
+process.env.STARTLINE_POSTAL_ADDRESS = 'PO Box 123, Nashville, TN 37201';
+
 const generationJob = {
   id: 'job-123',
   prospect_id: '11111111-2222-4333-8444-555555555555',

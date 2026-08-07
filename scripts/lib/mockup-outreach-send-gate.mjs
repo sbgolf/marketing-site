@@ -1,5 +1,7 @@
 import {
   CLIENT_SIGNATURE_TEXT,
+  appendComplianceFooterText,
+  assertCustomerEmailCompliance,
   escapeHtml,
   renderBrandedEmail,
   renderEmailButton,
@@ -125,7 +127,7 @@ export const renderPrivateMockupOutreachEmail = ({
     ? 'If this is helpful, reply here and I can share how the same structure could scale across a small first set of your events. If someone else owns the event portfolio or website system, feel free to forward this along.'
     : 'If this is helpful, reply here and I can share what a practical next step would look like. If someone else owns the race website, feel free to forward this along.';
 
-  const text = [
+  const textBody = [
     `Hi ${safeContactName},`,
     '',
     safeDetail,
@@ -138,6 +140,7 @@ export const renderPrivateMockupOutreachEmail = ({
     '',
     CLIENT_SIGNATURE_TEXT,
   ].join('\n');
+  const text = appendComplianceFooterText(textBody);
 
   const html = renderBrandedEmail({
     eyebrow: 'Private race website preview',
@@ -167,6 +170,7 @@ export const assertBrandedMockupOutreachHtml = ({ html, mockupUrl }) => {
   if (!/<meta name="color-scheme" content="light dark">/.test(html)) errors.push('light/dark color-scheme metadata missing.');
   if (!/Steve, CEO &amp; Founder/.test(html)) errors.push('approved StartLine signature missing.');
   if (mockupUrl && !html.includes(escapeHtml(mockupUrl))) errors.push('mockup URL missing from HTML.');
+  errors.push(...assertCustomerEmailCompliance({ html }));
   for (const pattern of REJECTED_CUSTOMER_COPY) {
     if (pattern.test(html)) errors.push(`HTML contains rejected wording: ${pattern}`);
   }

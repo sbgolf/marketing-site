@@ -64,6 +64,7 @@ const withEnvAndFetch = async (fetchImpl, callback) => {
   process.env.STARTLINE_LEAD_NOTIFY_EMAIL = 'support@startlinesites.com';
   process.env.STARTLINE_ADMIN_EMAIL = 'admin@startlinesites.com';
   process.env.STARTLINE_KICKOFF_REPLY_TO = 'kickoff@startlinesites.com';
+  process.env.STARTLINE_POSTAL_ADDRESS = 'PO Box 123, Nashville, TN 37201';
   global.fetch = fetchImpl;
   try {
     await callback();

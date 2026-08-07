@@ -1,6 +1,7 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 import {
+  assertCustomerEmailCompliance,
   renderLaunchReadinessCustomerEmail,
 } from './lib/branded-email.mjs';
 
@@ -762,6 +763,11 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
   const replyTo = clean(process.env.STARTLINE_KICKOFF_REPLY_TO || process.env.STARTLINE_ADMIN_EMAIL || '', 254) || undefined;
   const tokenizedIntakeUrl = appendIntakeToken(intakeUrl, result.intake_token);
   const { subject, text, html } = renderCustomerKickoffEmail({ customer, session, tier, intakeUrl: tokenizedIntakeUrl, assetChecklistUrl, accessGuidesUrl });
+  const complianceErrors = assertCustomerEmailCompliance({ text, html, requireConfiguredPostalAddress: true });
+  if (complianceErrors.length) {
+    console.error('Kickoff email compliance failed', complianceErrors.join(' '));
+    return { sent: false, skipped: 'compliance_failed' };
+  }
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
