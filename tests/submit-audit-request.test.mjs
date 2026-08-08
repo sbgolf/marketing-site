@@ -40,6 +40,7 @@ test('submit-audit-request stores notes and sends admin plus customer confirmati
   process.env.STARTLINE_NOTIFY_FROM = 'StartLine Sites <hello@startlinesites.com>';
   process.env.STARTLINE_ADMIN_EMAIL = 'steve@example.com';
   process.env.STARTLINE_KICKOFF_REPLY_TO = 'support@startlinesites.com';
+  process.env.STARTLINE_POSTAL_ADDRESS = 'PO Box 123, Nashville, TN 37201';
   delete process.env['STRIPE_SECRET_KEY'];
 
   global.fetch = async (url, options = {}) => {
@@ -94,6 +95,8 @@ test('submit-audit-request stores notes and sends admin plus customer confirmati
     assert.match(emailCalls[1].body.text, /Steve reviews the findings before your response is sent/);
     assert.doesNotMatch(emailCalls[1].body.text, /buy\.stripe\.com/);
     assert.match(emailCalls[1].body.text, /Thanks,\nSteve, CEO & Founder\nStartLineSites\.com/);
+    assert.match(emailCalls[1].body.text, /Unsubscribe: (?:mailto:support@startlinesites\.com\?subject=Unsubscribe%20from%20StartLine%20Sites|https:\/\/startlinesites\.com\/\.netlify\/functions\/unsubscribe\?p=)/);
+    assert.match(emailCalls[1].body.text, /Mailing address: PO Box 123, Nashville, TN 37201/);
     assert.doesNotMatch(emailCalls[1].body.text, /agent|\bAI\b|scrape/i);
     assert.match(emailCalls[1].body.html, /Your private audit request is in/);
     assert.match(emailCalls[1].body.html, /Steve, CEO &amp; Founder/);
@@ -113,6 +116,7 @@ test('customer confirmation failure does not fail audit submission', async () =>
   process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role';
   process.env.RESEND_API_KEY = 're_test';
   process.env.STARTLINE_ADMIN_EMAIL = 'steve@example.com';
+  process.env.STARTLINE_POSTAL_ADDRESS = 'PO Box 123, Nashville, TN 37201';
   delete process.env['STRIPE_SECRET_KEY'];
 
   global.fetch = async (url, options = {}) => {

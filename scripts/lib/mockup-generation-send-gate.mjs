@@ -1,4 +1,5 @@
-import { buildDuplicateFilters } from './mockup-outreach-log.mjs';
+import { assertCustomerEmailCompliance } from '../../netlify/functions/lib/branded-email.mjs';
+import { buildDuplicateFilters, buildMockupOutreachPayload, parseEmailList } from './mockup-outreach-log.mjs';
 import { validateEmailTemplateForCampaignLane } from './mockup-campaign-lanes.mjs';
 import {
   buildOutreachInputFromGenerationJob,
@@ -12,7 +13,6 @@ import {
   renderPrivateMockupOutreachEmail,
   validateMockupOutreachSend,
 } from './mockup-outreach-send-gate.mjs';
-import { buildMockupOutreachPayload } from './mockup-outreach-log.mjs';
 import {
   buildSuppressionBlockedResult,
   findSuppressedRecipients,
@@ -110,6 +110,8 @@ export const buildGenerationJobSendPreparation = ({ generationJob = {}, prospect
     detail: input.detail,
     emailTemplateKey: input.metadata.email_template_key,
     companyName: input.companyName,
+    recipientEmail: parseEmailList(input.toEmails)[0],
+    campaignId: input.campaignId,
   });
   const htmlErrors = assertBrandedMockupOutreachHtml({ html: email.html, mockupUrl: input.mockupUrl });
   const templateErrors = input.metadata.email_template_key ? validateEmailTemplateForCampaignLane({
@@ -181,6 +183,21 @@ export const sendMockupOutreachFromGenerationJob = async ({
         recipients_checked: suppression.recipients_checked,
       },
       duplicate_filters: prepared.duplicate_filters,
+    };
+  }
+
+  const liveComplianceErrors = assertCustomerEmailCompliance({
+    text: prepared.email.text,
+    html: prepared.email.html,
+    requireConfiguredPostalAddress: true,
+  });
+  if (liveComplianceErrors.length) {
+    return {
+      ok: false,
+      blocked: true,
+      reason: 'customer_email_compliance_failed',
+      generation_job_id: generationJob.id || generationJobId,
+      errors: liveComplianceErrors,
     };
   }
 

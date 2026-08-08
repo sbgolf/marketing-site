@@ -12,6 +12,8 @@ import {
   validateMockupOutreachSend,
 } from '../scripts/lib/mockup-outreach-send-gate.mjs';
 
+process.env.STARTLINE_POSTAL_ADDRESS = 'PO Box 123, Nashville, TN 37201';
+
 test('operator portfolio outreach renders D-specific company language', () => {
   const mockupUrl = 'https://mockups.startlinesites.com/private/mockups/operator-token/';
   const { subject, text, html } = renderPrivateMockupOutreachEmail({
@@ -38,6 +40,10 @@ test('operator portfolio outreach renders D-specific company language', () => {
   assert.match(html, /A private StartLine Sites portfolio idea for Example Event Management/);
   assert.match(html, /clearer portfolio system/);
   assert.match(html, /Steve, CEO &amp; Founder/);
+  assert.match(text, /Unsubscribe: (?:mailto:support@startlinesites\.com\?subject=Unsubscribe%20from%20StartLine%20Sites|https:\/\/startlinesites\.com\/\.netlify\/functions\/unsubscribe\?p=)/);
+  assert.match(text, /Mailing address: PO Box 123, Nashville, TN 37201/);
+  assert.match(html, /Unsubscribe/);
+  assert.match(html, /PO Box 123, Nashville, TN 37201/);
   assert.deepEqual(assertBrandedMockupOutreachHtml({ html, mockupUrl }), []);
 });
 
@@ -78,6 +84,10 @@ test('private mockup outreach send gate renders branded customer-facing email', 
   assert.match(html, /fine-tune the copy, sections, sponsor placement, and race-specific details/);
   assert.match(html, /before anything goes live/);
   assert.match(html, /Steve, CEO &amp; Founder/);
+  assert.match(text, /Unsubscribe: (?:mailto:support@startlinesites\.com\?subject=Unsubscribe%20from%20StartLine%20Sites|https:\/\/startlinesites\.com\/\.netlify\/functions\/unsubscribe\?p=)/);
+  assert.match(text, /Mailing address: PO Box 123, Nashville, TN 37201/);
+  assert.match(html, /Unsubscribe/);
+  assert.match(html, /PO Box 123, Nashville, TN 37201/);
   assert.deepEqual(assertBrandedMockupOutreachHtml({ html, mockupUrl }), []);
 });
 

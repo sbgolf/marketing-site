@@ -166,6 +166,7 @@ test('webhook handler records a paid Standard deposit and creates kickoff-ready 
   process.env.STRIPE_WEBHOOK_SECRET = secret;
   process.env.STRIPE_WEBHOOK_TOLERANCE_SECONDS = '999999999';
   process.env.RESEND_API_KEY = 're_test';
+  process.env.STARTLINE_POSTAL_ADDRESS = 'PO Box 123, Nashville, TN 37201';
   delete process.env.STARTLINE_RESEND_API_KEY;
   process.env.STARTLINE_INTAKE_FORM_URL = 'https://startlinesites.com/intake?source=kickoff';
   process.env.STARTLINE_ASSET_CHECKLIST_URL = 'https://startlinesites.com/asset-checklist';

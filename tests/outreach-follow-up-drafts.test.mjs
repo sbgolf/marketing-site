@@ -12,6 +12,8 @@ import {
   validateOutreachFollowUpDraft,
 } from '../scripts/lib/outreach-follow-up-drafts.mjs';
 
+process.env.STARTLINE_POSTAL_ADDRESS = 'PO Box 123, Nashville, TN 37201';
+
 const baseInput = {
   raceName: 'Sample River 5K',
   contactName: 'Jordan',
@@ -26,6 +28,8 @@ const assertCleanCustomerBody = (body) => {
   assert.doesNotMatch(body, /opened|clicked|tracking|track(ed|ing)?|I saw you|we saw you/i);
   assert.doesNotMatch(body, /early partner|newly formed|new company|beta/i);
   assert.match(body, /Thanks,\nSteve, CEO & Founder\nStartLineSites\.com/);
+  assert.match(body, /Unsubscribe: (?:mailto:support@startlinesites\.com\?subject=Unsubscribe%20from%20StartLine%20Sites|https:\/\/startlinesites\.com\/\.netlify\/functions\/unsubscribe\?p=)/);
+  assert.match(body, /Mailing address: PO Box 123, Nashville, TN 37201/);
 };
 
 test('clicked scenario builds a high-intent owner-review draft without surveillance language', () => {

@@ -163,6 +163,8 @@ export const buildPreparedMockupOutreach = ({ generationJob = {}, prospect = {},
     detail: input.detail,
     emailTemplateKey: input.metadata.email_template_key,
     companyName: input.companyName,
+    recipientEmail: parseEmailList(input.toEmails)[0],
+    campaignId: input.campaignId,
   });
   const htmlErrors = assertBrandedMockupOutreachHtml({ html: email.html, mockupUrl: input.mockupUrl });
   const templateErrors = input.metadata.email_template_key ? validateEmailTemplateForCampaignLane({

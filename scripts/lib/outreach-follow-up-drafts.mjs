@@ -1,3 +1,8 @@
+import {
+  appendComplianceFooterText,
+  assertCustomerEmailCompliance,
+} from '../../netlify/functions/lib/branded-email.mjs';
+
 const clean = (value, max = 1000) => String(value ?? '')
   .replace(/\s+/g, ' ')
   .trim()
@@ -97,7 +102,7 @@ const subjectFor = (scenario, raceName) => {
   };
 };
 
-const bodyFor = ({ scenario, raceName, contactName, mockupUrl, recommendedPackage, raceContext, packageReason }) => {
+const bodyFor = ({ scenario, raceName, contactName, mockupUrl, recommendedPackage, raceContext, packageReason, recipientEmail, outreachId, campaignId }) => {
   const safeRace = clean(raceName || 'your race', 120) || 'your race';
   const url = clean(mockupUrl, 500);
   const intro = greeting(contactName);
@@ -111,8 +116,10 @@ const bodyFor = ({ scenario, raceName, contactName, mockupUrl, recommendedPackag
 Do not send a follow-up for ${safeRace}. This row has a suppression, bounce, complaint, unsubscribe, or other negative deliverability signal. Ask Steve to verify a replacement contact before any future customer outreach.`);
   }
 
+  const footerOptions = { recipientEmail, outreachId, campaignId };
+
   if (scenario === 'clicked') {
-    return cleanMultiline(`${intro}
+    return appendComplianceFooterText(cleanMultiline(`${intro}
 
 I wanted to follow up on the private StartLine preview for ${safeRace}. ${contextLine(raceContext)}
 
@@ -122,11 +129,11 @@ ${packageLine({ recommendedPackage, packageReason })}
 
 Would you like me to send over the recommended next step, or would you rather reply with anything you would want changed first?
 
-${signoff}`);
+${signoff}`), footerOptions);
   }
 
   if (scenario === 'opened') {
-    return cleanMultiline(`${intro}
+    return appendComplianceFooterText(cleanMultiline(`${intro}
 
 I wanted to resend the private StartLine preview for ${safeRace} in case it is useful as you think about the next race cycle. The idea is simple: give runners a clearer path from interest to registration, especially on mobile.
 
@@ -136,11 +143,11 @@ ${contextLine(raceContext)}
 
 If it would help, I can send a short recommendation for what I would change first.
 
-${signoff}`);
+${signoff}`), footerOptions);
   }
 
   if (scenario === 'final_close') {
-    return cleanMultiline(`${intro}
+    return appendComplianceFooterText(cleanMultiline(`${intro}
 
 I will close the loop for now on the private StartLine preview for ${safeRace}.
 
@@ -148,10 +155,10 @@ ${previewSentence}
 
 If the website becomes a priority later, you can reply here and I will be happy to take another look.
 
-${signoff}`);
+${signoff}`), footerOptions);
   }
 
-  return cleanMultiline(`${intro}
+  return appendComplianceFooterText(cleanMultiline(`${intro}
 
 Just closing the loop on the private StartLine preview for ${safeRace}.
 
@@ -161,7 +168,7 @@ If improving the race website is not a priority right now, no problem at all. If
 
 Should I keep this open, or is now not the right time?
 
-${signoff}`);
+${signoff}`), footerOptions);
 };
 
 export const buildOutreachFollowUpDraft = (input = {}) => {
@@ -181,6 +188,9 @@ export const buildOutreachFollowUpDraft = (input = {}) => {
       recommendedPackage: input.recommendedPackage || input.recommended_package,
       raceContext: input.raceContext || input.race_context,
       packageReason: input.packageReason || input.package_reason,
+      recipientEmail: input.recipientEmail || input.recipient_email || input.contactEmail || input.contact_email,
+      outreachId: input.outreachId || input.outreach_id,
+      campaignId: input.campaignId || input.campaign_id,
     }),
   };
   draft.validation = validateOutreachFollowUpDraft(draft);
@@ -197,13 +207,16 @@ export const buildOutreachFollowUpDraftFromRow = (row = {}, overrides = {}) => {
     recommendedPackage: overrides.recommendedPackage || row.recommended_package || metadata.recommended_package || metadata.package_recommendation,
     raceContext: overrides.raceContext || row.race_context || metadata.race_context || metadata.follow_up_context,
     packageReason: overrides.packageReason || row.package_reason || metadata.package_reason || metadata.recommended_package_reason,
+    recipientEmail: overrides.recipientEmail || row.contact_email || metadata.contact_email || metadata.recommended_contact_email,
+    outreachId: overrides.outreachId || row.id,
+    campaignId: overrides.campaignId || row.campaign_id || metadata.campaign_id,
   });
 };
 
 const rejectedBodyPatterns = [
   { label: 'tracking or surveillance language', pattern: /\b(opened|clicked|tracking|tracked|I saw you|we saw you|you opened|you clicked)\b/i },
   { label: 'rejected early-partner or beta framing', pattern: /early partner|newly formed|new company|beta/i },
-  { label: 'unapproved visible email address', pattern: /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i },
+  { label: 'unapproved visible email address', pattern: /\b(?!support@startlinesites\.com\b)[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i },
 ];
 
 export const validateOutreachFollowUpDraft = (draft = {}) => {
@@ -216,6 +229,10 @@ export const validateOutreachFollowUpDraft = (draft = {}) => {
   if (body.includes('—')) issues.push('Customer-facing body contains an em dash.');
   for (const { label, pattern } of rejectedBodyPatterns) {
     if (pattern.test(body)) issues.push(`Customer-facing body contains ${label}.`);
+  }
+  if (draft.sendable !== false) {
+    const complianceErrors = assertCustomerEmailCompliance({ text: body });
+    for (const issue of complianceErrors.filter((item) => !/HTML/.test(item))) issues.push(issue);
   }
   if (draft.sendable !== false && !/Thanks,\s*\nSteve, CEO & Founder\s*\nStartLineSites\.com/.test(body)) {
     issues.push('Customer-facing body is missing the approved StartLine signature.');

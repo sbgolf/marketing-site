@@ -1,3 +1,5 @@
+import { createSignedUnsubscribeUrl, getFallbackUnsubscribeUrl } from './unsubscribe-link.mjs';
+
 export const BRAND = {
   bg: '#050A14',
   ink: '#0E1729',
@@ -17,12 +19,69 @@ export const CLIENT_SIGNATURE_TEXT = [
   'StartLineSites.com',
 ].join('\n');
 
+export const DEFAULT_STARTLINE_UNSUBSCRIBE_URL = 'mailto:support@startlinesites.com?subject=Unsubscribe%20from%20StartLine%20Sites';
+export const MISSING_POSTAL_ADDRESS_MESSAGE = 'STARTLINE_POSTAL_ADDRESS must be configured before customer emails are sent.';
+
 export const escapeHtml = (value) => String(value ?? '')
   .replaceAll('&', '&amp;')
   .replaceAll('<', '&lt;')
   .replaceAll('>', '&gt;')
   .replaceAll('"', '&quot;')
   .replaceAll("'", '&#39;');
+
+const escapeRegex = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+export const getStartLineUnsubscribeUrl = ({
+  env = process.env,
+  recipientEmail,
+  outreachId,
+  campaignId,
+  createdAt,
+} = {}) => (recipientEmail
+  ? createSignedUnsubscribeUrl({ recipientEmail, outreachId, campaignId, env, createdAt })
+  : getFallbackUnsubscribeUrl({ env }) || DEFAULT_STARTLINE_UNSUBSCRIBE_URL);
+
+export const getStartLinePostalAddress = ({ env = process.env } = {}) => String(
+  env.STARTLINE_POSTAL_ADDRESS || env.STARTLINE_MAILING_ADDRESS || '',
+).trim();
+
+export const renderComplianceFooterText = (options = {}) => [
+  `Unsubscribe: ${getStartLineUnsubscribeUrl(options)}`,
+  `Mailing address: ${getStartLinePostalAddress(options) || MISSING_POSTAL_ADDRESS_MESSAGE}`,
+].join('\n');
+
+export const appendComplianceFooterText = (text, options = {}) => [
+  String(text || '').trim(),
+  '',
+  renderComplianceFooterText(options),
+].join('\n');
+
+export const renderComplianceFooterHtml = (options = {}) => {
+  const unsubscribeUrl = getStartLineUnsubscribeUrl(options);
+  const postalAddress = getStartLinePostalAddress(options) || MISSING_POSTAL_ADDRESS_MESSAGE;
+  return `StartLine Sites · Race websites built to turn interest into registrations.<br>`
+    + `<a href="${escapeHtml(unsubscribeUrl)}" style="color:#FF8A7A;text-decoration:underline;">Unsubscribe</a>`
+    + ` · ${escapeHtml(postalAddress)}`;
+};
+
+export const assertCustomerEmailCompliance = ({ text = '', html = '', env = process.env, requireConfiguredPostalAddress = false, recipientEmail, outreachId, campaignId } = {}) => {
+  const errors = [];
+  const unsubscribeUrl = getStartLineUnsubscribeUrl({ env, recipientEmail, outreachId, campaignId });
+  const postalAddress = getStartLinePostalAddress({ env });
+  if (!unsubscribeUrl) errors.push('Customer email unsubscribe URL is missing.');
+  if (!postalAddress) errors.push('Customer email postal address is missing. Configure STARTLINE_POSTAL_ADDRESS.');
+  if (requireConfiguredPostalAddress && !postalAddress) errors.push('STARTLINE_POSTAL_ADDRESS is required before live customer sends.');
+
+  const haystack = `${text}\n${html}`;
+  if (!/unsubscribe/i.test(haystack)) errors.push('Customer email is missing visible unsubscribe copy.');
+  const hasExpectedUnsubscribeHref = html && new RegExp(`href="${escapeRegex(escapeHtml(unsubscribeUrl))}"`).test(html);
+  const hasSignedUnsubscribeHref = html && /href="https?:\/\/[^\"]+\/\.netlify\/functions\/unsubscribe\?[^\"]*\bp=/.test(html);
+  if (!hasExpectedUnsubscribeHref && !hasSignedUnsubscribeHref) {
+    errors.push('Customer email HTML is missing the unsubscribe link.');
+  }
+  if (postalAddress && !haystack.includes(postalAddress)) errors.push('Customer email is missing the configured postal address.');
+  return errors;
+};
 
 export const renderSignatureHtml = () => '<p style="margin:24px 0 0;color:#F6F8FB;font-weight:800;">Thanks,<br>Steve, CEO &amp; Founder<br><a href="https://startlinesites.com/" style="color:#FF8A7A;text-decoration:underline;">StartLineSites.com</a></p>';
 
@@ -154,7 +213,9 @@ export const renderLaunchReadinessCustomerEmail = ({
   primaryUrl,
   secondaryUrl,
   tertiaryUrl,
-  detail = '',
+  detail,
+  recipientEmail,
+  campaignId,
 }) => {
   const definition = launchReadinessTemplateDefinitions[template];
   if (!definition) throw new Error(`Unknown Launch Readiness email template: ${template}`);
@@ -162,7 +223,7 @@ export const renderLaunchReadinessCustomerEmail = ({
   const safeRaceName = raceName || 'your race';
   const subject = definition.heading({ raceName: safeRaceName });
   const detailLine = detail ? `${detail}\n\n` : '';
-  const text = [
+  const textBody = [
     `Hi ${customerName || 'there'},`,
     '',
     detailLine ? detailLine.trim() : `This is the next Launch Readiness step for ${safeRaceName}.`,
@@ -178,11 +239,15 @@ export const renderLaunchReadinessCustomerEmail = ({
     '',
     CLIENT_SIGNATURE_TEXT,
   ].filter(Boolean).join('\n');
+  const footerOptions = { recipientEmail, campaignId };
+  const text = appendComplianceFooterText(textBody, footerOptions);
 
   const html = renderBrandedEmail({
     eyebrow: definition.eyebrow,
     preheader: definition.preheader({ raceName: safeRaceName }),
     heading: subject,
+    recipientEmail,
+    campaignId,
     body: `
       <p style="margin:0 0 16px;">Hi ${escapeHtml(customerName || 'there')},</p>
       <p style="margin:0 0 18px;">${detail ? escapeHtml(detail) : `This is the next Launch Readiness step for ${escapeHtml(safeRaceName)}.`}</p>
@@ -201,7 +266,7 @@ export const renderLaunchReadinessCustomerEmail = ({
   return { subject, text, html };
 };
 
-export const renderBrandedEmail = ({ preheader = '', heading, eyebrow = 'StartLine Sites', body }) => `<!doctype html>
+export const renderBrandedEmail = ({ preheader = '', heading, eyebrow = 'StartLine Sites', body, recipientEmail, outreachId, campaignId }) => `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -258,7 +323,7 @@ export const renderBrandedEmail = ({ preheader = '', heading, eyebrow = 'StartLi
             </tr>
             <tr>
               <td class="email-footer" style="padding:0 28px 28px;background:#0E1729;color:#93A4BB;font-size:13px;line-height:1.5;">
-                <div style="border-top:1px solid rgba(255,255,255,.10);padding-top:18px;">StartLine Sites · Race websites built to turn interest into registrations.</div>
+                <div style="border-top:1px solid rgba(255,255,255,.10);padding-top:18px;">${renderComplianceFooterHtml({ recipientEmail, outreachId, campaignId })}</div>
               </td>
             </tr>
           </table>
