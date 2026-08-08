@@ -1,5 +1,5 @@
 import { assertCustomerEmailCompliance } from '../../netlify/functions/lib/branded-email.mjs';
-import { buildDuplicateFilters } from './mockup-outreach-log.mjs';
+import { buildDuplicateFilters, buildMockupOutreachPayload, parseEmailList } from './mockup-outreach-log.mjs';
 import { validateEmailTemplateForCampaignLane } from './mockup-campaign-lanes.mjs';
 import {
   buildOutreachInputFromGenerationJob,
@@ -13,7 +13,6 @@ import {
   renderPrivateMockupOutreachEmail,
   validateMockupOutreachSend,
 } from './mockup-outreach-send-gate.mjs';
-import { buildMockupOutreachPayload } from './mockup-outreach-log.mjs';
 import {
   buildSuppressionBlockedResult,
   findSuppressedRecipients,
@@ -111,6 +110,8 @@ export const buildGenerationJobSendPreparation = ({ generationJob = {}, prospect
     detail: input.detail,
     emailTemplateKey: input.metadata.email_template_key,
     companyName: input.companyName,
+    recipientEmail: parseEmailList(input.toEmails)[0],
+    campaignId: input.campaignId,
   });
   const htmlErrors = assertBrandedMockupOutreachHtml({ html: email.html, mockupUrl: input.mockupUrl });
   const templateErrors = input.metadata.email_template_key ? validateEmailTemplateForCampaignLane({

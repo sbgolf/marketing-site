@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { buildDuplicateFilters, buildMockupOutreachPayload } from './lib/mockup-outreach-log.mjs';
+import { buildDuplicateFilters, buildMockupOutreachPayload, parseEmailList } from './lib/mockup-outreach-log.mjs';
 import {
   buildSuppressionBlockedResult,
   findSuppressedRecipients,
@@ -132,6 +132,8 @@ const main = async () => {
     mockupUrl: input.mockupUrl,
     subject: input.subject,
     detail: input.detail,
+    recipientEmail: parseEmailList(input.toEmails)[0],
+    campaignId: input.campaignId,
   });
   const htmlErrors = assertBrandedMockupOutreachHtml({ html: email.html, mockupUrl: input.mockupUrl });
   if (htmlErrors.length) throw new Error(`Branded email validation failed: ${htmlErrors.join(' ')}`);

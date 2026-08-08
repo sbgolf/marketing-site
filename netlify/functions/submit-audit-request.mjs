@@ -198,11 +198,13 @@ export const renderCustomerAuditConfirmationEmail = ({ row }) => {
     '',
     CLIENT_SIGNATURE_TEXT,
   ].join('\n');
-  const text = appendComplianceFooterText(textBody);
+  const footerOptions = { recipientEmail: row.contact_email, campaignId: 'customer-audit-confirmation' };
+  const text = appendComplianceFooterText(textBody, footerOptions);
 
   const html = emailShell({
     preheader: `We received your private StartLine audit request for ${row.race_name}.`,
     heading: 'Your private audit request is in',
+    ...footerOptions,
     body: `
       <p style="margin:0 0 16px;">Hi ${escapeHtml(row.contact_name)},</p>
       <p style="margin:0 0 18px;">Thanks — we received the private StartLine Sites audit request for <strong>${escapeHtml(row.race_name)}</strong>.</p>

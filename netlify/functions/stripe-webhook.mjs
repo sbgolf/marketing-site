@@ -730,7 +730,7 @@ const sendDepositNotification = async ({ result, session, tier }) => {
   }
 };
 
-export const renderCustomerKickoffEmail = ({ customer, session, tier, intakeUrl, assetChecklistUrl, accessGuidesUrl }) => {
+export const renderCustomerKickoffEmail = ({ customer, session, tier, intakeUrl, assetChecklistUrl, accessGuidesUrl, recipientEmail }) => {
   const raceName = customer.race_name || session.metadata?.race_name || 'your race';
   const customerName = customer.primary_contact_name || session.customer_details?.name || 'there';
   const amount = `$${(session.amount_total / 100).toLocaleString('en-US')}`;
@@ -742,6 +742,8 @@ export const renderCustomerKickoffEmail = ({ customer, session, tier, intakeUrl,
     primaryUrl: intakeUrl,
     secondaryUrl: assetChecklistUrl,
     tertiaryUrl: accessGuidesUrl,
+    recipientEmail,
+    campaignId: 'deposit-kickoff',
     detail: `Thanks — we received the ${amount} ${tier} setup deposit for ${raceName}. Use the Launch Readiness Kit to confirm what StartLine found, add what only your team knows, and gather the access-owner notes needed before launch.`,
   });
 };
@@ -762,7 +764,15 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
   const from = process.env.STARTLINE_NOTIFY_FROM || 'StartLine Sites <support@startlinesites.com>';
   const replyTo = clean(process.env.STARTLINE_KICKOFF_REPLY_TO || process.env.STARTLINE_ADMIN_EMAIL || '', 254) || undefined;
   const tokenizedIntakeUrl = appendIntakeToken(intakeUrl, result.intake_token);
-  const { subject, text, html } = renderCustomerKickoffEmail({ customer, session, tier, intakeUrl: tokenizedIntakeUrl, assetChecklistUrl, accessGuidesUrl });
+  const { subject, text, html } = renderCustomerKickoffEmail({
+    customer,
+    session,
+    tier,
+    intakeUrl: tokenizedIntakeUrl,
+    assetChecklistUrl,
+    accessGuidesUrl,
+    recipientEmail: toEmail,
+  });
   const complianceErrors = assertCustomerEmailCompliance({ text, html, requireConfiguredPostalAddress: true });
   if (complianceErrors.length) {
     console.error('Kickoff email compliance failed', complianceErrors.join(' '));

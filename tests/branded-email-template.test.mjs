@@ -49,7 +49,7 @@ const assertBrandedCustomerEmail = (html, text = '') => {
   assert.match(html, /<a href="[^"]+" class="email-button-link" style="[^"]*color:#ffffff !important;[^"]*text-decoration:none !important;[^"]*">/);
   assert.match(html, /Thanks,<br>Steve, CEO &amp; Founder<br><a href="https:\/\/startlinesites\.com\//);
   assert.match(html, /Unsubscribe/);
-  assert.match(html, /mailto:support@startlinesites\.com\?subject=Unsubscribe%20from%20StartLine%20Sites/);
+  assert.match(html, /(?:mailto:support@startlinesites\.com\?subject=Unsubscribe%20from%20StartLine%20Sites|https:\/\/startlinesites\.com\/\.netlify\/functions\/unsubscribe\?p=)/);
   assert.match(html, /PO Box 123, Nashville, TN 37201/);
   assert.deepEqual(assertCustomerEmailCompliance({ text, html }), []);
 };

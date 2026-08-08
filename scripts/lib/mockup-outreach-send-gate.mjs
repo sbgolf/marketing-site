@@ -109,6 +109,9 @@ export const renderPrivateMockupOutreachEmail = ({
   detail,
   emailTemplateKey,
   companyName,
+  recipientEmail,
+  outreachId,
+  campaignId,
 }) => {
   const safeRaceName = clean(raceName, 160) || 'your race';
   const safeContactName = clean(contactName, 120) || 'there';
@@ -140,7 +143,8 @@ export const renderPrivateMockupOutreachEmail = ({
     '',
     CLIENT_SIGNATURE_TEXT,
   ].join('\n');
-  const text = appendComplianceFooterText(textBody);
+  const footerOptions = { recipientEmail, outreachId, campaignId };
+  const text = appendComplianceFooterText(textBody, footerOptions);
 
   const html = renderBrandedEmail({
     eyebrow: 'Private race website preview',
@@ -148,6 +152,9 @@ export const renderPrivateMockupOutreachEmail = ({
       ? `A private StartLine Sites portfolio idea for ${safeCompanyName}.`
       : `A private StartLine Sites mockup for ${safeRaceName}.`,
     heading: safeSubject,
+    recipientEmail,
+    outreachId,
+    campaignId,
     body: `
       <p style="margin:0 0 16px;">Hi ${escapeHtml(safeContactName)},</p>
       ${renderDetailParagraphs(safeDetail)}

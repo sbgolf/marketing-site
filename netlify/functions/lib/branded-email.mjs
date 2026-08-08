@@ -1,3 +1,5 @@
+import { createSignedUnsubscribeUrl, getFallbackUnsubscribeUrl } from './unsubscribe-link.mjs';
+
 export const BRAND = {
   bg: '#050A14',
   ink: '#0E1729',
@@ -29,17 +31,23 @@ export const escapeHtml = (value) => String(value ?? '')
 
 const escapeRegex = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-export const getStartLineUnsubscribeUrl = ({ env = process.env } = {}) => String(
-  env.STARTLINE_UNSUBSCRIBE_URL || DEFAULT_STARTLINE_UNSUBSCRIBE_URL,
-).trim();
+export const getStartLineUnsubscribeUrl = ({
+  env = process.env,
+  recipientEmail,
+  outreachId,
+  campaignId,
+  createdAt,
+} = {}) => (recipientEmail
+  ? createSignedUnsubscribeUrl({ recipientEmail, outreachId, campaignId, env, createdAt })
+  : getFallbackUnsubscribeUrl({ env }) || DEFAULT_STARTLINE_UNSUBSCRIBE_URL);
 
 export const getStartLinePostalAddress = ({ env = process.env } = {}) => String(
   env.STARTLINE_POSTAL_ADDRESS || env.STARTLINE_MAILING_ADDRESS || '',
 ).trim();
 
-export const renderComplianceFooterText = ({ env = process.env } = {}) => [
-  `Unsubscribe: ${getStartLineUnsubscribeUrl({ env })}`,
-  `Mailing address: ${getStartLinePostalAddress({ env }) || MISSING_POSTAL_ADDRESS_MESSAGE}`,
+export const renderComplianceFooterText = (options = {}) => [
+  `Unsubscribe: ${getStartLineUnsubscribeUrl(options)}`,
+  `Mailing address: ${getStartLinePostalAddress(options) || MISSING_POSTAL_ADDRESS_MESSAGE}`,
 ].join('\n');
 
 export const appendComplianceFooterText = (text, options = {}) => [
@@ -48,17 +56,17 @@ export const appendComplianceFooterText = (text, options = {}) => [
   renderComplianceFooterText(options),
 ].join('\n');
 
-export const renderComplianceFooterHtml = ({ env = process.env } = {}) => {
-  const unsubscribeUrl = getStartLineUnsubscribeUrl({ env });
-  const postalAddress = getStartLinePostalAddress({ env }) || MISSING_POSTAL_ADDRESS_MESSAGE;
+export const renderComplianceFooterHtml = (options = {}) => {
+  const unsubscribeUrl = getStartLineUnsubscribeUrl(options);
+  const postalAddress = getStartLinePostalAddress(options) || MISSING_POSTAL_ADDRESS_MESSAGE;
   return `StartLine Sites · Race websites built to turn interest into registrations.<br>`
     + `<a href="${escapeHtml(unsubscribeUrl)}" style="color:#FF8A7A;text-decoration:underline;">Unsubscribe</a>`
     + ` · ${escapeHtml(postalAddress)}`;
 };
 
-export const assertCustomerEmailCompliance = ({ text = '', html = '', env = process.env, requireConfiguredPostalAddress = false } = {}) => {
+export const assertCustomerEmailCompliance = ({ text = '', html = '', env = process.env, requireConfiguredPostalAddress = false, recipientEmail, outreachId, campaignId } = {}) => {
   const errors = [];
-  const unsubscribeUrl = getStartLineUnsubscribeUrl({ env });
+  const unsubscribeUrl = getStartLineUnsubscribeUrl({ env, recipientEmail, outreachId, campaignId });
   const postalAddress = getStartLinePostalAddress({ env });
   if (!unsubscribeUrl) errors.push('Customer email unsubscribe URL is missing.');
   if (!postalAddress) errors.push('Customer email postal address is missing. Configure STARTLINE_POSTAL_ADDRESS.');
@@ -66,7 +74,9 @@ export const assertCustomerEmailCompliance = ({ text = '', html = '', env = proc
 
   const haystack = `${text}\n${html}`;
   if (!/unsubscribe/i.test(haystack)) errors.push('Customer email is missing visible unsubscribe copy.');
-  if (!html || !new RegExp(`href="${escapeRegex(escapeHtml(unsubscribeUrl))}"`).test(html)) {
+  const hasExpectedUnsubscribeHref = html && new RegExp(`href="${escapeRegex(escapeHtml(unsubscribeUrl))}"`).test(html);
+  const hasSignedUnsubscribeHref = html && /href="https?:\/\/[^\"]+\/\.netlify\/functions\/unsubscribe\?[^\"]*\bp=/.test(html);
+  if (!hasExpectedUnsubscribeHref && !hasSignedUnsubscribeHref) {
     errors.push('Customer email HTML is missing the unsubscribe link.');
   }
   if (postalAddress && !haystack.includes(postalAddress)) errors.push('Customer email is missing the configured postal address.');
@@ -203,7 +213,9 @@ export const renderLaunchReadinessCustomerEmail = ({
   primaryUrl,
   secondaryUrl,
   tertiaryUrl,
-  detail = '',
+  detail,
+  recipientEmail,
+  campaignId,
 }) => {
   const definition = launchReadinessTemplateDefinitions[template];
   if (!definition) throw new Error(`Unknown Launch Readiness email template: ${template}`);
@@ -227,12 +239,15 @@ export const renderLaunchReadinessCustomerEmail = ({
     '',
     CLIENT_SIGNATURE_TEXT,
   ].filter(Boolean).join('\n');
-  const text = appendComplianceFooterText(textBody);
+  const footerOptions = { recipientEmail, campaignId };
+  const text = appendComplianceFooterText(textBody, footerOptions);
 
   const html = renderBrandedEmail({
     eyebrow: definition.eyebrow,
     preheader: definition.preheader({ raceName: safeRaceName }),
     heading: subject,
+    recipientEmail,
+    campaignId,
     body: `
       <p style="margin:0 0 16px;">Hi ${escapeHtml(customerName || 'there')},</p>
       <p style="margin:0 0 18px;">${detail ? escapeHtml(detail) : `This is the next Launch Readiness step for ${escapeHtml(safeRaceName)}.`}</p>
@@ -251,7 +266,7 @@ export const renderLaunchReadinessCustomerEmail = ({
   return { subject, text, html };
 };
 
-export const renderBrandedEmail = ({ preheader = '', heading, eyebrow = 'StartLine Sites', body }) => `<!doctype html>
+export const renderBrandedEmail = ({ preheader = '', heading, eyebrow = 'StartLine Sites', body, recipientEmail, outreachId, campaignId }) => `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -308,7 +323,7 @@ export const renderBrandedEmail = ({ preheader = '', heading, eyebrow = 'StartLi
             </tr>
             <tr>
               <td class="email-footer" style="padding:0 28px 28px;background:#0E1729;color:#93A4BB;font-size:13px;line-height:1.5;">
-                <div style="border-top:1px solid rgba(255,255,255,.10);padding-top:18px;">${renderComplianceFooterHtml()}</div>
+                <div style="border-top:1px solid rgba(255,255,255,.10);padding-top:18px;">${renderComplianceFooterHtml({ recipientEmail, outreachId, campaignId })}</div>
               </td>
             </tr>
           </table>

@@ -449,11 +449,13 @@ export const renderCustomerIntakeConfirmationEmail = ({ row, checklistUrl }) => 
     '',
     CLIENT_SIGNATURE_TEXT,
   ].join('\n');
-  const text = appendComplianceFooterText(textBody);
+  const footerOptions = { recipientEmail: row.contact_email, campaignId: 'customer-intake-confirmation' };
+  const text = appendComplianceFooterText(textBody, footerOptions);
 
   const html = renderBrandedEmail({
     preheader: `We received the StartLine intake for ${row.race_name}.`,
     heading: `We received your intake for ${row.race_name}`,
+    ...footerOptions,
     body: `
       <p style="margin:0 0 16px;">Hi ${escapeHtml(row.contact_name)},</p>
       <p style="margin:0 0 18px;">Thanks — we received the StartLine Sites 20–30 minute intake for <strong>${escapeHtml(row.race_name)}</strong>.</p>
