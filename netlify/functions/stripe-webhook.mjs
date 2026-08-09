@@ -194,13 +194,43 @@ const supabaseFetch = async ({ supabaseUrl, serviceKey, path, method = 'GET', bo
   return text ? JSON.parse(text) : null;
 };
 
+const fetchWebhookEvent = async ({ supabaseUrl, serviceKey, stripeEventId }) => {
+  const rows = await supabaseFetch({
+    supabaseUrl,
+    serviceKey,
+    path: `stripe_webhook_events?select=${encodeURIComponent('id,stripe_event_id,processing_status,processed_at,processing_claim_id,processing_attempts')}&stripe_event_id=eq.${encodeURIComponent(stripeEventId)}&limit=1`,
+  });
+  return rows?.[0] || null;
+};
+
+const claimRetryableWebhookEvent = async ({ supabaseUrl, serviceKey, stripeEventId, claimId }) => {
+  const rows = await supabaseFetch({
+    supabaseUrl,
+    serviceKey,
+    path: `stripe_webhook_events?stripe_event_id=eq.${encodeURIComponent(stripeEventId)}&processing_status=in.(failed_retryable,failed_terminal,failed)&select=${encodeURIComponent('id,stripe_event_id,processing_status,processing_claim_id,processing_attempts')}`,
+    method: 'PATCH',
+    body: {
+      processing_status: 'processing',
+      processing_claim_id: claimId,
+      processing_claimed_at: new Date().toISOString(),
+      processed_at: null,
+      error_message: null,
+    },
+    headers: { prefer: 'return=representation' },
+  });
+  return rows?.[0] || null;
+};
+
 const insertWebhookEvent = async ({ supabaseUrl, serviceKey, stripeEvent, session }) => {
+  const claimId = `${stripeEvent.id}:${Date.now()}:${Math.random().toString(36).slice(2)}`;
   const row = {
     stripe_event_id: stripeEvent.id,
     event_type: stripeEvent.type,
     stripe_created: stripeEvent.created ? new Date(stripeEvent.created * 1000).toISOString() : null,
     livemode: Boolean(stripeEvent.livemode),
     processing_status: 'processing',
+    processing_claim_id: claimId,
+    processing_claimed_at: new Date().toISOString(),
     checkout_session_id: session?.id || null,
     payment_intent_id: typeof session?.payment_intent === 'string' ? session.payment_intent : null,
     stripe_customer_id: typeof session?.customer === 'string' ? session.customer : null,
@@ -216,10 +246,20 @@ const insertWebhookEvent = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
       body: row,
       headers: { prefer: 'return=representation' },
     });
-    return { duplicate: false, record: inserted?.[0] || null };
+    return { duplicate: false, record: inserted?.[0] || null, claimId };
   } catch (error) {
-    if (error.status === 409) return { duplicate: true, record: null };
-    throw error;
+    if (error.status !== 409) throw error;
+    const existing = await fetchWebhookEvent({ supabaseUrl, serviceKey, stripeEventId: stripeEvent.id });
+    if (!existing) return { duplicate: true, duplicateStatus: 'unknown_duplicate', record: null };
+    if (existing.processing_status === 'processed' || existing.processing_status === 'ignored') {
+      return { duplicate: true, duplicateStatus: 'duplicate_processed', record: existing };
+    }
+    if (['failed_retryable', 'failed_terminal', 'failed'].includes(existing.processing_status)) {
+      const claimed = await claimRetryableWebhookEvent({ supabaseUrl, serviceKey, stripeEventId: stripeEvent.id, claimId });
+      if (claimed) return { duplicate: false, resumed: true, record: claimed, claimId };
+      return { duplicate: true, duplicateStatus: 'retry_claim_lost', record: existing };
+    }
+    return { duplicate: true, duplicateStatus: 'duplicate_processing', record: existing };
   }
 };
 
@@ -884,7 +924,7 @@ export async function handler(event) {
   }
 
   if (webhookRecord.duplicate) {
-    return json(200, { ok: true, status: 'duplicate' });
+    return json(200, { ok: true, status: webhookRecord.duplicateStatus || 'duplicate_processing' });
   }
 
   if (stripeEvent.type === 'invoice.paid') {
@@ -913,7 +953,7 @@ export async function handler(event) {
         supabaseUrl,
         serviceKey,
         stripeEventId: stripeEvent.id,
-        patch: { processing_status: 'failed', error_message: clean(error.message, 1200), processed_at: new Date().toISOString() },
+        patch: { processing_status: 'failed_retryable', error_message: clean(error.message, 1200), processed_at: null },
       });
       return json(500, { ok: false, error: 'Webhook processing failed.' });
     }
@@ -964,7 +1004,7 @@ export async function handler(event) {
       supabaseUrl,
       serviceKey,
       stripeEventId: stripeEvent.id,
-      patch: { processing_status: 'failed', error_message: clean(error.message, 1200), processed_at: new Date().toISOString() },
+      patch: { processing_status: 'failed_retryable', error_message: clean(error.message, 1200), processed_at: null },
     });
     return json(500, { ok: false, error: 'Webhook processing failed.' });
   }

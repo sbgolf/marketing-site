@@ -174,7 +174,9 @@ form?.addEventListener('submit', async (event) => {
   const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
   const formData = new FormData(form);
   const selectedTier = String(formData.get('packageTier') || '');
+  const submissionIdempotencyToken = window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const payload = {
+    submission_idempotency_token: submissionIdempotencyToken,
     race_name: String(formData.get('raceName') || ''),
     current_url: String(formData.get('currentUrl') || ''),
     contact_name: String(formData.get('auditName') || ''),

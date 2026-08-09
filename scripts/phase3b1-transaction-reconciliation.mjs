@@ -1,0 +1,64 @@
+#!/usr/bin/env node
+import { formatReconciliationAlert, buildReconciliationFindings } from './lib/phase3b1-transaction-reconciliation.mjs';
+
+const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, '');
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+const request = async (path, options = {}) => {
+  const response = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
+    method: options.method || 'GET',
+    headers: {
+      apikey: serviceKey,
+      authorization: `Bearer ${serviceKey}`,
+      'content-type': 'application/json',
+      accept: 'application/json',
+      ...(options.prefer ? { prefer: options.prefer } : {}),
+    },
+    body: options.body ? JSON.stringify(options.body) : undefined,
+  });
+  if (!response.ok) throw new Error(`Supabase ${path} failed: ${response.status} ${await response.text()}`);
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
+};
+
+const anomalyKey = (finding) => `${finding.workflow}:${finding.id}:${finding.reason}`;
+
+const filterNewFindings = async (findings) => {
+  const fresh = [];
+  for (const finding of findings) {
+    const key = anomalyKey(finding);
+    const existing = await request(`transaction_reconciliation_alerts?select=id,last_alerted_at&anomaly_key=eq.${encodeURIComponent(key)}&anomaly_state=eq.${encodeURIComponent(finding.state)}&resolved_at=is.null&limit=1`).catch(() => []);
+    if (existing?.length) continue;
+    await request('transaction_reconciliation_alerts', {
+      method: 'POST',
+      body: {
+        anomaly_key: key,
+        anomaly_state: finding.state,
+        metadata: finding,
+      },
+      prefer: 'return=minimal',
+    }).catch((error) => {
+      // If alert-dedupe state cannot be written, fail closed by surfacing the finding.
+      console.error(`Alert dedupe persistence failed for ${key}: ${error.message}`);
+    });
+    fresh.push(finding);
+  }
+  return fresh;
+};
+
+const main = async () => {
+  if (!supabaseUrl || !serviceKey) throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.');
+  const stripeEvents = await request('stripe_webhook_events?select=stripe_event_id,livemode,processing_status,created_at,updated_at,error_message&processing_status=in.(processing,failed_retryable,failed_terminal)&order=updated_at.asc&limit=100');
+  const customerRecords = await request('customer_records?select=id,deposit_status,kickoff_status,intake_status,build_status,stripe_livemode,created_at,updated_at,metadata&deposit_status=eq.paid&order=updated_at.asc&limit=100');
+  const outreachAttempts = await request('outreach_send_attempts?select=id,business_key,attempt_status,created_at,updated_at,provider_message_id&attempt_status=in.(sending,delivery_unknown)&order=updated_at.asc&limit=100').catch(() => []);
+  const outreachRows = await request('race_mockup_outreach?select=id,outreach_status,resend_email_id,created_at,updated_at&outreach_status=eq.sent&resend_email_id=is.null&order=updated_at.asc&limit=100');
+  const findings = buildReconciliationFindings({ stripeEvents, customerRecords, outreachAttempts, outreachRows });
+  const newFindings = await filterNewFindings(findings);
+  if (!newFindings.length) return;
+  console.log(formatReconciliationAlert(newFindings));
+};
+
+main().catch((error) => {
+  console.error(`StartLine Phase 3B-1 reconciliation monitor failed: ${error.message}`);
+  process.exitCode = 1;
+});
