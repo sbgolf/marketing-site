@@ -24,6 +24,7 @@
     "smoke:outreach-engagement": "node scripts/smoke-outreach-engagement.mjs",
     "upsert:mockup-prospect": "node scripts/upsert-mockup-prospect.mjs",
     "smoke:audit-request": "node scripts/smoke-audit-request.mjs",
+    "monitor:phase3b1-transactions": "node scripts/phase3b1-transaction-reconciliation.mjs",
     "test": "node --test"
   },
   "dependencies": {

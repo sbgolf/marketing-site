@@ -68,7 +68,10 @@ export const sendWithResend = async ({ apiKey = process.env.RESEND_API_KEY || pr
 
   if (!response.ok) {
     const detail = await response.text();
-    throw new Error(`Resend send failed: ${response.status} ${detail}`);
+    const error = new Error(`Resend send failed: ${response.status} ${detail}`);
+    error.status = response.status;
+    error.providerRejected = response.status >= 400 && response.status < 500;
+    throw error;
   }
 
   return response.json();
@@ -134,6 +137,61 @@ export const buildGenerationJobSendPreparation = ({ generationJob = {}, prospect
     duplicate_filters: buildDuplicateFilters(payload),
   };
 };
+
+const buildOutreachBusinessKey = ({ payload, generationJob, prospect }) => {
+  const emails = parseEmailList(payload.to_emails || payload.toEmails || '').join(',').toLowerCase();
+  return [
+    'mockup-outreach-v1',
+    generationJob?.id || payload.metadata?.generation_job_id || '',
+    prospect?.id || payload.metadata?.prospect_id || '',
+    payload.mockup_url || '',
+    emails,
+    payload.campaign_id || payload.metadata?.campaign_id || '',
+  ].map((part) => String(part || '').trim()).join('|');
+};
+
+const findOutreachSendAttempt = async ({ businessKey, supabaseRequest }) => firstRow(await supabaseRequest({
+  path: `outreach_send_attempts?select=*&business_key=eq.${encode(businessKey)}&limit=1`,
+}));
+
+const createOutreachSendAttempt = async ({ businessKey, prepared, generationJob, prospect, supabaseRequest }) => firstRow(await supabaseRequest({
+  path: 'outreach_send_attempts',
+  method: 'POST',
+  body: {
+    business_key: businessKey,
+    attempt_status: 'claimed',
+    generation_job_id: generationJob.id || null,
+    prospect_id: prospect.id || generationJob.prospect_id || null,
+    recipient_emails: parseEmailList(prepared.payload.to_emails || prepared.input.toEmails),
+    campaign_id: prepared.payload.campaign_id || null,
+    approved_send_version: prepared.payload.send_gate_version || 'mockup_generation_send_gate_v1',
+    metadata: {
+      mockup_url: prepared.payload.mockup_url,
+      race_name: prepared.payload.race_name,
+      duplicate_filters: prepared.duplicate_filters,
+    },
+  },
+}));
+
+const patchOutreachSendAttempt = async ({ attemptId, body, supabaseRequest }) => {
+  if (!attemptId) return null;
+  return firstRow(await supabaseRequest({
+    path: `outreach_send_attempts?id=eq.${encode(attemptId)}`,
+    method: 'PATCH',
+    body,
+  }));
+};
+
+const claimOutreachSendAttemptForSending = async ({ sendAttempt, supabaseRequest }) => {
+  if (!sendAttempt?.id) return null;
+  return firstRow(await supabaseRequest({
+    path: `outreach_send_attempts?id=eq.${encode(sendAttempt.id)}&attempt_status=in.(claimed,failed_safe_to_retry)&select=*`,
+    method: 'PATCH',
+    body: { attempt_status: 'sending' },
+  }));
+};
+
+const isConfirmedProviderRejection = (error) => error?.providerRejected === true || (Number.isInteger(error?.status) && error.status >= 400 && error.status < 500);
 
 export const sendMockupOutreachFromGenerationJob = async ({
   generationJobId,
@@ -212,41 +270,146 @@ export const sendMockupOutreachFromGenerationJob = async ({
     };
   }
 
+  const businessKey = buildOutreachBusinessKey({ payload: prepared.payload, generationJob, prospect });
+  let sendAttempt = await findOutreachSendAttempt({ businessKey, supabaseRequest });
+  if (sendAttempt?.attempt_status === 'sent') {
+    return {
+      ok: false,
+      blocked: true,
+      reason: 'prior_send_attempt_sent',
+      generation_job_id: generationJob.id || generationJobId,
+      send_attempt: sendAttempt,
+    };
+  }
+  if (sendAttempt?.attempt_status === 'delivery_unknown' || sendAttempt?.attempt_status === 'sending') {
+    return {
+      ok: false,
+      blocked: true,
+      reason: 'delivery_unknown_reconciliation_required',
+      generation_job_id: generationJob.id || generationJobId,
+      send_attempt: sendAttempt,
+    };
+  }
+  if (!sendAttempt) {
+    try {
+      sendAttempt = await createOutreachSendAttempt({ businessKey, prepared, generationJob, prospect, supabaseRequest });
+    } catch (error) {
+      sendAttempt = await findOutreachSendAttempt({ businessKey, supabaseRequest });
+      if (sendAttempt) {
+        return {
+          ok: false,
+          blocked: true,
+          reason: sendAttempt.attempt_status === 'delivery_unknown' ? 'delivery_unknown_reconciliation_required' : 'prior_send_attempt_found',
+          generation_job_id: generationJob.id || generationJobId,
+          send_attempt: sendAttempt,
+        };
+      }
+      throw error;
+    }
+  }
+
+  const claimedAttempt = await claimOutreachSendAttemptForSending({ sendAttempt, supabaseRequest });
+  if (!claimedAttempt) {
+    return {
+      ok: false,
+      blocked: true,
+      reason: 'send_attempt_claim_lost',
+      generation_job_id: generationJob.id || generationJobId,
+      send_attempt: sendAttempt,
+    };
+  }
+  sendAttempt = claimedAttempt;
+
   const fromEmail = overrides.fromEmail || DEFAULT_MOCKUP_OUTREACH_FROM;
   const replyToEmail = overrides.replyToEmail || DEFAULT_MOCKUP_OUTREACH_REPLY_TO;
-  const resendResult = await send({
-    to: prepared.input.toEmails.join(','),
-    cc: Array.isArray(prepared.input.ccEmails) ? prepared.input.ccEmails.join(',') : prepared.input.ccEmails,
-    bcc: Array.isArray(prepared.input.bccEmails) ? prepared.input.bccEmails.join(',') : prepared.input.bccEmails,
-    subject: prepared.email.subject,
-    text: prepared.email.text,
-    html: prepared.email.html,
-    from: fromEmail,
-    replyTo: replyToEmail,
-    campaignId: prepared.payload.campaign_id,
-    campaignLane: prepared.payload.campaign_lane,
-    campaignWave: prepared.payload.campaign_wave,
-    sendGateVersion: prepared.payload.send_gate_version,
-    mockupTemplate: prepared.payload.mockup_template,
-    generationJobId: prepared.payload.metadata?.generation_job_id,
-    prospectId: prepared.payload.metadata?.prospect_id,
-  });
-
-  const outreachRows = await supabaseRequest({
-    path: 'race_mockup_outreach',
-    method: 'POST',
-    body: {
-      ...prepared.payload,
-      resend_email_id: resendResult.id || null,
-      from_email: fromEmail,
-      reply_to_email: replyToEmail,
-      metadata: {
-        ...normalizeObject(prepared.payload.metadata),
-        send_gate: 'scripts/send-mockup-outreach-from-job.mjs',
+  let resendResult;
+  try {
+    resendResult = await send({
+      to: prepared.input.toEmails.join(','),
+      cc: Array.isArray(prepared.input.ccEmails) ? prepared.input.ccEmails.join(',') : prepared.input.ccEmails,
+      bcc: Array.isArray(prepared.input.bccEmails) ? prepared.input.bccEmails.join(',') : prepared.input.bccEmails,
+      subject: prepared.email.subject,
+      text: prepared.email.text,
+      html: prepared.email.html,
+      from: fromEmail,
+      replyTo: replyToEmail,
+      campaignId: prepared.payload.campaign_id,
+      campaignLane: prepared.payload.campaign_lane,
+      campaignWave: prepared.payload.campaign_wave,
+      sendGateVersion: prepared.payload.send_gate_version,
+      mockupTemplate: prepared.payload.mockup_template,
+      generationJobId: prepared.payload.metadata?.generation_job_id,
+      prospectId: prepared.payload.metadata?.prospect_id,
+    });
+  } catch (error) {
+    const confirmedRejection = isConfirmedProviderRejection(error);
+    await patchOutreachSendAttempt({
+      attemptId: sendAttempt?.id,
+      supabaseRequest,
+      body: {
+        attempt_status: confirmedRejection ? 'failed_safe_to_retry' : 'delivery_unknown',
+        last_error: String(error.message || error).slice(0, 1000),
       },
+    });
+    if (!confirmedRejection) {
+      return {
+        ok: false,
+        blocked: true,
+        reason: 'delivery_unknown_reconciliation_required',
+        generation_job_id: generationJob.id || generationJobId,
+        send_attempt_id: sendAttempt?.id || null,
+      };
+    }
+    throw error;
+  }
+
+  let outreachRow = {};
+  try {
+    const outreachRows = await supabaseRequest({
+      path: 'race_mockup_outreach',
+      method: 'POST',
+      body: {
+        ...prepared.payload,
+        resend_email_id: resendResult.id || null,
+        from_email: fromEmail,
+        reply_to_email: replyToEmail,
+        metadata: {
+          ...normalizeObject(prepared.payload.metadata),
+          send_gate: 'scripts/send-mockup-outreach-from-job.mjs',
+          outreach_send_attempt_id: sendAttempt?.id || null,
+        },
+      },
+    });
+    outreachRow = firstRow(outreachRows) || {};
+  } catch (error) {
+    await patchOutreachSendAttempt({
+      attemptId: sendAttempt?.id,
+      supabaseRequest,
+      body: {
+        attempt_status: 'delivery_unknown',
+        provider_message_id: resendResult.id || null,
+        last_error: `Provider accepted but outreach persistence failed: ${String(error.message || error).slice(0, 900)}`,
+      },
+    });
+    return {
+      ok: false,
+      blocked: true,
+      reason: 'delivery_unknown_reconciliation_required',
+      generation_job_id: generationJob.id || generationJobId,
+      resend_email_id: resendResult.id || null,
+      send_attempt_id: sendAttempt?.id || null,
+    };
+  }
+
+  await patchOutreachSendAttempt({
+    attemptId: sendAttempt?.id,
+    supabaseRequest,
+    body: {
+      attempt_status: 'sent',
+      provider_message_id: resendResult.id || null,
+      outreach_id: outreachRow.id || null,
     },
   });
-  const outreachRow = firstRow(outreachRows) || {};
 
   if (outreachRow.id && generationJob.id) {
     await supabaseRequest({

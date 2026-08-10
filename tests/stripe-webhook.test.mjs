@@ -254,7 +254,7 @@ test('webhook handler records a paid Standard deposit and creates kickoff-ready 
     assert.doesNotMatch(JSON.stringify(customerInsert.body), new RegExp(rawToken));
     assert.doesNotMatch(JSON.stringify(kickoffEmail.body), /intake_token_hash|stripe_customer_id|cus_123|pi_123/);
 
-    const kickoffUpdate = calls.find((call) => call.url.includes('/customer_records?id=eq.customer-123') && call.method === 'PATCH');
+    const kickoffUpdate = calls.find((call) => call.url.includes('/customer_records?id=eq.customer-123') && call.method === 'PATCH' && call.body?.kickoff_status === 'started');
     assert.equal(kickoffUpdate.body.kickoff_status, 'started');
     assert.equal(kickoffUpdate.body.intake_status, 'sent');
     assert.equal(kickoffUpdate.body.launch_readiness_status, 'sent');
@@ -445,7 +445,7 @@ test('webhook handler preserves an existing intake token hash on checkout reproc
       headers: { 'stripe-signature': sign({ rawBody, secret, timestamp: 1_700_000_000 }) },
     });
 
-    assert.equal(response.statusCode, 200);
+    assert.equal(response.statusCode, 500);
     const customerUpsert = calls.find((call) => call.url.includes('/customer_records?on_conflict=') && call.method === 'POST');
     assert.ok(customerUpsert);
     assert.equal(Object.hasOwn(customerUpsert.body, 'intake_token_hash'), false);

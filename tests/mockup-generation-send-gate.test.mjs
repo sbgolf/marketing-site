@@ -45,11 +45,21 @@ const prospect = {
 
 const makeSupabaseStub = ({ duplicates = [], suppressions = [] } = {}) => {
   const calls = [];
+  let sendAttempt = null;
   const supabaseRequest = async (request) => {
     calls.push(request);
     if (request.path.startsWith('race_mockup_generation_jobs?')) return [generationJob];
     if (request.path.startsWith('race_mockup_prospects?')) return [prospect];
     if (request.path.startsWith('outreach_suppressions?')) return suppressions;
+    if (request.path.startsWith('outreach_send_attempts?select=')) return sendAttempt ? [sendAttempt] : [];
+    if (request.path === 'outreach_send_attempts' && request.method === 'POST') {
+      sendAttempt = { id: 'attempt-123', ...request.body };
+      return [sendAttempt];
+    }
+    if (request.path.startsWith('outreach_send_attempts?id=eq.attempt-123') && request.method === 'PATCH') {
+      sendAttempt = { ...sendAttempt, ...request.body };
+      return [sendAttempt];
+    }
     if (request.path.startsWith('race_mockup_outreach?')) return duplicates;
     if (request.path === 'race_mockup_outreach' && request.method === 'POST') {
       return [{ id: 'outreach-456', ...request.body }];

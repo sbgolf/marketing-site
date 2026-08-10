@@ -194,13 +194,43 @@ const supabaseFetch = async ({ supabaseUrl, serviceKey, path, method = 'GET', bo
   return text ? JSON.parse(text) : null;
 };
 
+const fetchWebhookEvent = async ({ supabaseUrl, serviceKey, stripeEventId }) => {
+  const rows = await supabaseFetch({
+    supabaseUrl,
+    serviceKey,
+    path: `stripe_webhook_events?select=${encodeURIComponent('id,stripe_event_id,processing_status,processed_at,processing_claim_id,processing_attempts')}&stripe_event_id=eq.${encodeURIComponent(stripeEventId)}&limit=1`,
+  });
+  return rows?.[0] || null;
+};
+
+const claimRetryableWebhookEvent = async ({ supabaseUrl, serviceKey, stripeEventId, claimId }) => {
+  const rows = await supabaseFetch({
+    supabaseUrl,
+    serviceKey,
+    path: `stripe_webhook_events?stripe_event_id=eq.${encodeURIComponent(stripeEventId)}&processing_status=in.(failed_retryable,failed)&select=${encodeURIComponent('id,stripe_event_id,processing_status,processing_claim_id,processing_attempts')}`,
+    method: 'PATCH',
+    body: {
+      processing_status: 'processing',
+      processing_claim_id: claimId,
+      processing_claimed_at: new Date().toISOString(),
+      processed_at: null,
+      error_message: null,
+    },
+    headers: { prefer: 'return=representation' },
+  });
+  return rows?.[0] || null;
+};
+
 const insertWebhookEvent = async ({ supabaseUrl, serviceKey, stripeEvent, session }) => {
+  const claimId = `${stripeEvent.id}:${Date.now()}:${Math.random().toString(36).slice(2)}`;
   const row = {
     stripe_event_id: stripeEvent.id,
     event_type: stripeEvent.type,
     stripe_created: stripeEvent.created ? new Date(stripeEvent.created * 1000).toISOString() : null,
     livemode: Boolean(stripeEvent.livemode),
     processing_status: 'processing',
+    processing_claim_id: claimId,
+    processing_claimed_at: new Date().toISOString(),
     checkout_session_id: session?.id || null,
     payment_intent_id: typeof session?.payment_intent === 'string' ? session.payment_intent : null,
     stripe_customer_id: typeof session?.customer === 'string' ? session.customer : null,
@@ -216,10 +246,23 @@ const insertWebhookEvent = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
       body: row,
       headers: { prefer: 'return=representation' },
     });
-    return { duplicate: false, record: inserted?.[0] || null };
+    return { duplicate: false, record: inserted?.[0] || null, claimId };
   } catch (error) {
-    if (error.status === 409) return { duplicate: true, record: null };
-    throw error;
+    if (error.status !== 409) throw error;
+    const existing = await fetchWebhookEvent({ supabaseUrl, serviceKey, stripeEventId: stripeEvent.id });
+    if (!existing) return { duplicate: true, duplicateStatus: 'unknown_duplicate', record: null };
+    if (existing.processing_status === 'processed' || existing.processing_status === 'ignored') {
+      return { duplicate: true, duplicateStatus: 'duplicate_processed', record: existing };
+    }
+    if (existing.processing_status === 'failed_retryable' || existing.processing_status === 'failed') {
+      const claimed = await claimRetryableWebhookEvent({ supabaseUrl, serviceKey, stripeEventId: stripeEvent.id, claimId });
+      if (claimed) return { duplicate: false, resumed: true, record: claimed, claimId };
+      return { duplicate: true, duplicateStatus: 'retry_claim_lost', record: existing };
+    }
+    if (existing.processing_status === 'failed_terminal') {
+      return { duplicate: true, duplicateStatus: 'duplicate_terminal_not_resumed', record: existing };
+    }
+    return { duplicate: true, duplicateStatus: 'duplicate_processing', record: existing };
   }
 };
 
@@ -570,6 +613,8 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
   });
   const existingCustomer = Array.isArray(existingCustomerRows) ? existingCustomerRows[0] : null;
   const existingLaunchReadinessSent = existingCustomer?.launch_readiness_status === 'sent' || Boolean(existingCustomer?.metadata?.kickoff_email?.sent_at);
+  const existingLaunchReadinessAmbiguous = ['sending', 'delivery_unknown'].includes(existingCustomer?.launch_readiness_status)
+    || ['sending', 'delivery_unknown'].includes(existingCustomer?.metadata?.kickoff_email?.attempt_status);
   const shouldCreateIntakeToken = !existingCustomer?.intake_token_hash;
   const rawIntakeToken = shouldCreateIntakeToken ? generateIntakeToken() : null;
   const intakeTokenHash = rawIntakeToken ? hashIntakeToken(rawIntakeToken) : null;
@@ -636,9 +681,9 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
       deposit_status: 'paid',
       final_invoice_status: 'not_sent',
       subscription_status: 'not_started',
-      kickoff_status: existingLaunchReadinessSent ? (existingCustomer.kickoff_status || 'started') : 'ready',
-      intake_status: existingLaunchReadinessSent ? (existingCustomer.intake_status || 'sent') : 'ready_to_send',
-      launch_readiness_status: existingLaunchReadinessSent ? 'sent' : 'ready_to_send',
+      kickoff_status: existingLaunchReadinessSent ? (existingCustomer.kickoff_status || 'started') : existingLaunchReadinessAmbiguous ? (existingCustomer.kickoff_status || 'ready') : 'ready',
+      intake_status: existingLaunchReadinessSent ? (existingCustomer.intake_status || 'sent') : existingLaunchReadinessAmbiguous ? (existingCustomer.intake_status || 'ready_to_send') : 'ready_to_send',
+      launch_readiness_status: existingLaunchReadinessSent ? 'sent' : existingLaunchReadinessAmbiguous ? existingCustomer.launch_readiness_status : 'ready_to_send',
       ...(existingLaunchReadinessSent ? {
         launch_readiness_sent_at: existingCustomer.launch_readiness_sent_at || existingCustomer.metadata?.kickoff_email?.sent_at,
         intake_sent_at: existingCustomer.intake_sent_at || existingCustomer.metadata?.kickoff_email?.sent_at,
@@ -680,10 +725,10 @@ const processPaidDeposit = async ({ supabaseUrl, serviceKey, stripeEvent, sessio
     } : null,
     intake_token: rawIntakeToken,
     launch_readiness_already_sent: existingLaunchReadinessSent,
+    launch_readiness_delivery_unknown: existingLaunchReadinessAmbiguous,
     mapping_method: mappingMethod,
   };
 };
-
 const sendDepositNotification = async ({ result, session, tier }) => {
   const apiKey = process.env.RESEND_API_KEY || process.env.STARTLINE_RESEND_API_KEY;
   if (!apiKey || result.status !== 'processed') return;
@@ -756,7 +801,10 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
   const customer = result.customer_record;
   const toEmail = customer?.primary_contact_email || session.customer_details?.email || session.customer_email;
 
-  if (!apiKey || result.status !== 'processed' || !customer?.id || !toEmail || !intakeUrl || !assetChecklistUrl) return { sent: false };
+  if (!apiKey || result.status !== 'processed' || !customer?.id || !toEmail || !intakeUrl || !assetChecklistUrl) return { sent: false, skipped: 'missing_configuration' };
+  if (result.launch_readiness_delivery_unknown || ['sending', 'delivery_unknown'].includes(customer.launch_readiness_status) || ['sending', 'delivery_unknown'].includes(customer.metadata?.kickoff_email?.attempt_status)) {
+    return { sent: false, skipped: 'delivery_unknown_reconciliation_required' };
+  }
   if (result.launch_readiness_already_sent || customer.launch_readiness_status === 'sent' || customer.metadata?.kickoff_email?.sent_at) {
     return { sent: false, skipped: 'already_sent' };
   }
@@ -778,6 +826,27 @@ const sendCustomerKickoffEmail = async ({ supabaseUrl, serviceKey, result, sessi
     console.error('Kickoff email compliance failed', complianceErrors.join(' '));
     return { sent: false, skipped: 'compliance_failed' };
   }
+
+  await supabaseFetch({
+    supabaseUrl,
+    serviceKey,
+    path: `customer_records?id=eq.${encodeURIComponent(customer.id)}`,
+    method: 'PATCH',
+    body: {
+      launch_readiness_status: 'sending',
+      launch_readiness_updated_at: new Date().toISOString(),
+      metadata: {
+        ...(customer.metadata || {}),
+        kickoff_email: {
+          ...(customer.metadata?.kickoff_email || {}),
+          attempt_status: 'sending',
+          template: 'depositKickoff',
+          to: toEmail,
+        },
+      },
+    },
+    headers: { prefer: 'return=minimal' },
+  });
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -884,7 +953,7 @@ export async function handler(event) {
   }
 
   if (webhookRecord.duplicate) {
-    return json(200, { ok: true, status: 'duplicate' });
+    return json(200, { ok: true, status: webhookRecord.duplicateStatus || 'duplicate_processing' });
   }
 
   if (stripeEvent.type === 'invoice.paid') {
@@ -913,7 +982,7 @@ export async function handler(event) {
         supabaseUrl,
         serviceKey,
         stripeEventId: stripeEvent.id,
-        patch: { processing_status: 'failed', error_message: clean(error.message, 1200), processed_at: new Date().toISOString() },
+        patch: { processing_status: 'failed_retryable', error_message: clean(error.message, 1200), processed_at: null },
       });
       return json(500, { ok: false, error: 'Webhook processing failed.' });
     }
@@ -948,15 +1017,18 @@ export async function handler(event) {
 
   try {
     const result = await processPaidDeposit({ supabaseUrl, serviceKey, stripeEvent, session, classification });
+    await sendDepositNotification({ result, session, tier: classification.tier });
+    const kickoffResult = await sendCustomerKickoffEmail({ supabaseUrl, serviceKey, result, session, tier: classification.tier });
+    if (!kickoffResult.sent && !['already_sent'].includes(kickoffResult.skipped)) {
+      throw new Error(`customer_kickoff_unresolved:${kickoffResult.skipped || 'not_sent'}`);
+    }
     await updateWebhookEvent({
       supabaseUrl,
       serviceKey,
       stripeEventId: stripeEvent.id,
       patch: { processing_status: 'processed', processed_at: new Date().toISOString() },
     });
-    await sendDepositNotification({ result, session, tier: classification.tier });
-    await sendCustomerKickoffEmail({ supabaseUrl, serviceKey, result, session, tier: classification.tier });
-    const { customer_record: _customerRecord, intake_token: _intakeToken, launch_readiness_already_sent: _launchReadinessAlreadySent, ...publicResult } = result;
+    const { customer_record: _customerRecord, intake_token: _intakeToken, launch_readiness_already_sent: _LaunchReadinessAlreadySent, launch_readiness_delivery_unknown: _LaunchReadinessDeliveryUnknown, ...publicResult } = result;
     return json(200, { ok: true, ...publicResult });
   } catch (error) {
     console.error('Stripe deposit processing failed', error);
@@ -964,7 +1036,7 @@ export async function handler(event) {
       supabaseUrl,
       serviceKey,
       stripeEventId: stripeEvent.id,
-      patch: { processing_status: 'failed', error_message: clean(error.message, 1200), processed_at: new Date().toISOString() },
+      patch: { processing_status: 'failed_retryable', error_message: clean(error.message, 1200), processed_at: null },
     });
     return json(500, { ok: false, error: 'Webhook processing failed.' });
   }

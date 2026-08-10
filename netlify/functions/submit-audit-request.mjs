@@ -265,6 +265,34 @@ const sendCustomerAuditConfirmation = async ({ row }) => {
   }
 };
 
+const findAuditRequestByIdempotencyKey = async ({ supabaseUrl, serviceKey, idempotencyKey }) => {
+  if (!idempotencyKey) return null;
+  const response = await fetch(`${supabaseUrl}/rest/v1/audit_requests?select=${encodeURIComponent('id,submission_idempotency_key,submission_idempotency_response')}&submission_idempotency_key=eq.${encodeURIComponent(idempotencyKey)}&limit=1`, {
+    headers: {
+      apikey: serviceKey,
+      authorization: `Bearer ${serviceKey}`,
+      accept: 'application/json',
+    },
+  });
+  if (!response.ok) return null;
+  const rows = await response.json();
+  return rows?.[0] || null;
+};
+
+const persistSubmissionIdempotencyResponse = async ({ supabaseUrl, serviceKey, auditRequestId, responseBody }) => {
+  if (!auditRequestId) return;
+  await fetch(`${supabaseUrl}/rest/v1/audit_requests?id=eq.${encodeURIComponent(auditRequestId)}`, {
+    method: 'PATCH',
+    headers: {
+      apikey: serviceKey,
+      authorization: `Bearer ${serviceKey}`,
+      'content-type': 'application/json',
+      prefer: 'return=minimal',
+    },
+    body: JSON.stringify({ submission_idempotency_response: responseBody }),
+  });
+};
+
 const persistCheckoutSessionMetadata = async ({ supabaseUrl, serviceKey, auditRequestId, checkoutSession, metadata }) => {
   const sessionId = clean(checkoutSession?.id, 200);
   if (!sessionId || !auditRequestId) return;
@@ -328,6 +356,7 @@ export async function handler(event) {
   const notes = optionalClean(payload.notes, 1200);
   const preferredLaunchDate = optionalClean(payload.preferred_launch_date, 20);
   const packageTier = clean(payload.package_tier, 40).toLowerCase();
+  const submissionIdempotencyKey = clean(payload.submission_idempotency_token || payload.idempotency_token || '', 160);
   const selectedPackage = getDepositPackage(packageTier);
 
   const errors = {};
@@ -342,6 +371,19 @@ export async function handler(event) {
     return json(422, { ok: false, error: 'Please check the form fields.', fields: errors });
   }
 
+  const existingSubmission = await findAuditRequestByIdempotencyKey({ supabaseUrl, serviceKey, idempotencyKey: submissionIdempotencyKey });
+  if (existingSubmission?.submission_idempotency_response) {
+    return json(200, existingSubmission.submission_idempotency_response);
+  }
+  if (existingSubmission && submissionIdempotencyKey) {
+    return json(202, {
+      ok: false,
+      pending: true,
+      id: existingSubmission.id,
+      message: 'Your private audit request is still being finalized. Please retry in a moment; this retry will use the same submission token.',
+    });
+  }
+
   const referrer = clean(payload.referrer || event.headers?.referer || '', 1000) || null;
   const landingPage = clean(payload.landing_page || '', 1000) || null;
   const userAgent = clean(event.headers?.['user-agent'] || '', 1000) || null;
@@ -353,6 +395,7 @@ export async function handler(event) {
     contact_email: contactEmail,
     notes,
     source: 'marketing_site',
+    submission_idempotency_key: submissionIdempotencyKey || null,
     referrer: referrer,
     landing_page: landingPage,
     user_agent: userAgent,
@@ -394,6 +437,18 @@ export async function handler(event) {
   });
 
   if (!response.ok) {
+    if (response.status === 409 && submissionIdempotencyKey) {
+      const existing = await findAuditRequestByIdempotencyKey({ supabaseUrl, serviceKey, idempotencyKey: submissionIdempotencyKey });
+      if (existing?.submission_idempotency_response) return json(200, existing.submission_idempotency_response);
+      if (existing) {
+        return json(202, {
+          ok: false,
+          pending: true,
+          id: existing.id,
+          message: 'Your private audit request is still being finalized. Please retry in a moment; this retry will use the same submission token.',
+        });
+      }
+    }
     const detail = await response.text();
     console.error('Supabase insert failed', response.status, detail);
     return json(502, { ok: false, error: 'We could not submit your request. Please try again.' });
@@ -449,11 +504,19 @@ export async function handler(event) {
     console.error('Customer audit confirmation failed', error);
   }
 
-  return json(201, {
+  const responseBody = {
     ok: true,
     id: record?.id,
     message: 'Thanks — your private audit request was received.',
     checkout_url: checkoutSession?.url || null,
     checkout_url_source: checkoutSession?.url ? 'dynamic_checkout_session' : null,
-  });
+  };
+
+  if (submissionIdempotencyKey) {
+    await persistSubmissionIdempotencyResponse({ supabaseUrl, serviceKey, auditRequestId: record?.id, responseBody }).catch((error) => {
+      console.error('Submission idempotency response persistence failed', error);
+    });
+  }
+
+  return json(201, responseBody);
 }
