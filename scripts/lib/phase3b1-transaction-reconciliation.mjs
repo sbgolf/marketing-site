@@ -6,7 +6,15 @@ const ageMinutes = (now, updatedAt) => {
   return Math.max(0, Math.floor((now.getTime() - t) / 60000));
 };
 
-const isLiveRecord = (record) => record?.livemode === true || record?.stripe_livemode === true || record?.metadata?.stripe_livemode === true;
+const stripeModeLabel = (record = {}) => {
+  if (record?.livemode === true) return 'live';
+  if (record?.livemode === false) return 'test';
+  if (record?.metadata?.stripe_livemode === true || record?.metadata?.stripe_livemode === 'true') return 'live';
+  if (record?.metadata?.stripe_livemode === false || record?.metadata?.stripe_livemode === 'false') return 'test';
+  if (record?.metadata?.stripe_mode === 'live' || record?.metadata?.checkout_mode === 'live') return 'live';
+  if (record?.metadata?.stripe_mode === 'test' || record?.metadata?.checkout_mode === 'test') return 'test';
+  return 'unknown';
+};
 
 export const anomalyKey = (finding) => `${finding.workflow}:${finding.id}:${finding.reason}`;
 
@@ -113,7 +121,6 @@ export const buildReconciliationFindings = ({
   for (const row of stripeEvents || []) {
     const status = clean(row.processing_status, 80);
     if (!['processing', 'failed_retryable', 'failed_terminal'].includes(status)) continue;
-    if (row.livemode === false) continue;
     const age = ageMinutes(now, row.updated_at || row.created_at);
     if (status === 'processing' && age !== null && age < staleMinutes) continue;
     findings.push({
@@ -123,12 +130,11 @@ export const buildReconciliationFindings = ({
       age_minutes: age,
       reason: status === 'processing' ? 'stripe_event_stale_processing' : 'stripe_event_failed_or_terminal',
       first_action: 'Inspect stripe_webhook_events row, Stripe dashboard event, and fulfillment state before replay/retry.',
-      live_mode: row.livemode === true ? 'live' : row.livemode === false ? 'test' : 'unknown',
+      stripe_mode: stripeModeLabel(row),
     });
   }
 
   for (const row of customerRecords || []) {
-    if (row.stripe_livemode === false) continue;
     const paid = row.deposit_status === 'paid';
     const kickoffStatus = clean(row.kickoff_status, 80);
     const intakeStatus = clean(row.intake_status, 80);
@@ -144,7 +150,7 @@ export const buildReconciliationFindings = ({
       age_minutes: ageMinutes(now, row.updated_at || row.created_at),
       reason: 'paid_customer_missing_expected_downstream_fulfillment',
       first_action: 'Verify payment mode and customer record; send/repair Launch Readiness only after confirming no prior ambiguous customer email.',
-      live_mode: isLiveRecord(row) ? 'live' : 'unknown',
+      stripe_mode: stripeModeLabel(row),
     });
   }
 
