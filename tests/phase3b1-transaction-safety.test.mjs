@@ -162,6 +162,46 @@ test('Phase 3B-1 reconciliation includes test-mode Stripe failures and does not 
 });
 
 
+test('Phase 3B-1 reconciliation suppresses only durable historical outreach reconciliation metadata', () => {
+  const findings = buildReconciliationFindings({
+    now: new Date('2026-08-09T12:00:00Z'),
+    outreachRows: [
+      { id: 'unresolved-future-row', outreach_status: 'sent', resend_email_id: null, updated_at: '2026-08-09T11:00:00Z', metadata: {} },
+      {
+        id: 'historical-accepted-row',
+        outreach_status: 'sent',
+        resend_email_id: null,
+        updated_at: '2026-07-13T21:30:38Z',
+        metadata: {
+          phase3b1_reconciliation: {
+            classification: 'SENT_BUT_PROVIDER_ID_UNRECOVERABLE',
+            state: 'historical_legacy_send_accepted_provider_id_unavailable',
+            provider_id_available: false,
+            no_auto_resend: true,
+          },
+        },
+      },
+      {
+        id: 'incomplete-metadata-row',
+        outreach_status: 'sent',
+        resend_email_id: null,
+        updated_at: '2026-07-13T21:30:38Z',
+        metadata: {
+          phase3b1_reconciliation: {
+            classification: 'SENT_BUT_PROVIDER_ID_UNRECOVERABLE',
+            state: 'historical_legacy_send_accepted_provider_id_unavailable',
+            provider_id_available: false,
+          },
+        },
+      },
+    ],
+  });
+  assert.equal(findings.some((f) => f.id === 'unresolved-future-row'), true);
+  assert.equal(findings.some((f) => f.id === 'historical-accepted-row'), false);
+  assert.equal(findings.some((f) => f.id === 'incomplete-metadata-row'), true);
+});
+
+
 test('Phase 3B-1 audit submission existing token without persisted response returns pending without duplicate side effects', async () => {
   const originalEnv = { ...process.env };
   const originalFetch = global.fetch;
