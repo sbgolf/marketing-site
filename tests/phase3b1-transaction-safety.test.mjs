@@ -425,6 +425,35 @@ test('Phase 3B-1 reconciliation stdout dry-run does not count as delivered', asy
   );
 });
 
+test('Phase 3B-1 reconciliation validates Supabase runtime config before building URLs', async () => {
+  const { validateSupabaseRuntimeConfig } = await import('../scripts/lib/phase3b1-transaction-reconciliation.mjs');
+  assert.equal(validateSupabaseRuntimeConfig({ supabaseUrl: 'https://hscafigfjlzdmbpeyrti.supabase.co', serviceKey: 'sb_secret' }).ok, true);
+  for (const supabaseUrl of ['', '[MASKED]', 'No project id found. Have you linked this directory?', 'https://example.com', 'http://hscafigfjlzdmbpeyrti.supabase.co']) {
+    const result = validateSupabaseRuntimeConfig({ supabaseUrl, serviceKey: 'sb_secret' });
+    assert.equal(result.ok, false);
+    assert.equal(result.failure.severity, 'setup_once');
+    assert.match(result.failure.first_action, /netlify link --name startline-sites|SUPABASE_URL/);
+  }
+});
+
+test('Phase 3B-1 setup failures alert once, suppress repeats, remind later, and report recovery', async () => {
+  const { planOperationalFailureAlert, planOperationalRecoveryAlert } = await import('../scripts/lib/phase3b1-transaction-reconciliation.mjs');
+  const failure = { fingerprint: 'phase3b1:config:invalid-supabase-url', title: 'Invalid SUPABASE_URL', first_action: 'Run netlify link --name startline-sites.', severity: 'setup_once' };
+  const first = planOperationalFailureAlert({ failure, previousState: null, now: new Date('2026-08-10T10:00:00Z') });
+  assert.equal(first.shouldAlert, true);
+  assert.match(first.message, /suppressed unless it changes or persists/);
+  const repeat = planOperationalFailureAlert({ failure, previousState: first.nextState, now: new Date('2026-08-10T10:05:00Z') });
+  assert.equal(repeat.shouldAlert, false);
+  const changed = planOperationalFailureAlert({ failure: { ...failure, fingerprint: 'phase3b1:config:missing-service-key' }, previousState: repeat.nextState, now: new Date('2026-08-10T10:10:00Z') });
+  assert.equal(changed.shouldAlert, true);
+  const reminder = planOperationalFailureAlert({ failure, previousState: first.nextState, now: new Date('2026-08-10T11:01:00Z'), reminderMinutes: 60 });
+  assert.equal(reminder.shouldAlert, true);
+  assert.match(reminder.message, /still failing/);
+  const recovery = planOperationalRecoveryAlert({ previousState: first.nextState, now: new Date('2026-08-10T11:05:00Z') });
+  assert.equal(recovery.shouldAlert, true);
+  assert.match(recovery.message, /resolved/i);
+});
+
 test('Phase 3B-1 reconciliation failed notification remains retryable and undelivered', async () => {
   const { deliverReconciliationAlert, filterDeliverableFindings } = await import('../scripts/lib/phase3b1-transaction-reconciliation.mjs');
   const finding = { workflow: 'fixture', id: 'delivery-fail', state: 'open', reason: 'safe_fixture' };
