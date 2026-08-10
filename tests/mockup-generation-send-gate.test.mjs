@@ -56,7 +56,7 @@ const makeSupabaseStub = ({ duplicates = [], suppressions = [] } = {}) => {
       sendAttempt = { id: 'attempt-123', ...request.body };
       return [sendAttempt];
     }
-    if (request.path === 'outreach_send_attempts?id=eq.attempt-123' && request.method === 'PATCH') {
+    if (request.path.startsWith('outreach_send_attempts?id=eq.attempt-123') && request.method === 'PATCH') {
       sendAttempt = { ...sendAttempt, ...request.body };
       return [sendAttempt];
     }

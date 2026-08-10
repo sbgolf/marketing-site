@@ -68,7 +68,10 @@ export const sendWithResend = async ({ apiKey = process.env.RESEND_API_KEY || pr
 
   if (!response.ok) {
     const detail = await response.text();
-    throw new Error(`Resend send failed: ${response.status} ${detail}`);
+    const error = new Error(`Resend send failed: ${response.status} ${detail}`);
+    error.status = response.status;
+    error.providerRejected = response.status >= 400 && response.status < 500;
+    throw error;
   }
 
   return response.json();
@@ -178,6 +181,17 @@ const patchOutreachSendAttempt = async ({ attemptId, body, supabaseRequest }) =>
     body,
   }));
 };
+
+const claimOutreachSendAttemptForSending = async ({ sendAttempt, supabaseRequest }) => {
+  if (!sendAttempt?.id) return null;
+  return firstRow(await supabaseRequest({
+    path: `outreach_send_attempts?id=eq.${encode(sendAttempt.id)}&attempt_status=in.(claimed,failed_safe_to_retry)&select=*`,
+    method: 'PATCH',
+    body: { attempt_status: 'sending' },
+  }));
+};
+
+const isConfirmedProviderRejection = (error) => error?.providerRejected === true || (Number.isInteger(error?.status) && error.status >= 400 && error.status < 500);
 
 export const sendMockupOutreachFromGenerationJob = async ({
   generationJobId,
@@ -294,7 +308,17 @@ export const sendMockupOutreachFromGenerationJob = async ({
     }
   }
 
-  await patchOutreachSendAttempt({ attemptId: sendAttempt?.id, supabaseRequest, body: { attempt_status: 'sending' } });
+  const claimedAttempt = await claimOutreachSendAttemptForSending({ sendAttempt, supabaseRequest });
+  if (!claimedAttempt) {
+    return {
+      ok: false,
+      blocked: true,
+      reason: 'send_attempt_claim_lost',
+      generation_job_id: generationJob.id || generationJobId,
+      send_attempt: sendAttempt,
+    };
+  }
+  sendAttempt = claimedAttempt;
 
   const fromEmail = overrides.fromEmail || DEFAULT_MOCKUP_OUTREACH_FROM;
   const replyToEmail = overrides.replyToEmail || DEFAULT_MOCKUP_OUTREACH_REPLY_TO;
@@ -318,7 +342,24 @@ export const sendMockupOutreachFromGenerationJob = async ({
       prospectId: prepared.payload.metadata?.prospect_id,
     });
   } catch (error) {
-    await patchOutreachSendAttempt({ attemptId: sendAttempt?.id, supabaseRequest, body: { attempt_status: 'failed_safe_to_retry', last_error: String(error.message || error).slice(0, 1000) } });
+    const confirmedRejection = isConfirmedProviderRejection(error);
+    await patchOutreachSendAttempt({
+      attemptId: sendAttempt?.id,
+      supabaseRequest,
+      body: {
+        attempt_status: confirmedRejection ? 'failed_safe_to_retry' : 'delivery_unknown',
+        last_error: String(error.message || error).slice(0, 1000),
+      },
+    });
+    if (!confirmedRejection) {
+      return {
+        ok: false,
+        blocked: true,
+        reason: 'delivery_unknown_reconciliation_required',
+        generation_job_id: generationJob.id || generationJobId,
+        send_attempt_id: sendAttempt?.id || null,
+      };
+    }
     throw error;
   }
 

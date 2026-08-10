@@ -59,7 +59,8 @@ create table if not exists public.transaction_reconciliation_alerts (
   updated_at timestamptz not null default now(),
   anomaly_key text not null,
   anomaly_state text not null,
-  last_alerted_at timestamptz not null default now(),
+  last_alerted_at timestamptz,
+  delivered_at timestamptz,
   resolved_at timestamptz,
   metadata jsonb not null default '{}'::jsonb
 );

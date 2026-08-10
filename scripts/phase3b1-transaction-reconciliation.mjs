@@ -1,5 +1,11 @@
 #!/usr/bin/env node
-import { formatReconciliationAlert, buildReconciliationFindings } from './lib/phase3b1-transaction-reconciliation.mjs';
+import {
+  formatReconciliationAlert,
+  buildReconciliationFindings,
+  filterDeliverableFindings,
+  markDeliveredAlerts,
+  markResolvedAlerts,
+} from './lib/phase3b1-transaction-reconciliation.mjs';
 
 const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, '');
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -21,29 +27,20 @@ const request = async (path, options = {}) => {
   return text ? JSON.parse(text) : null;
 };
 
-const anomalyKey = (finding) => `${finding.workflow}:${finding.id}:${finding.reason}`;
-
-const filterNewFindings = async (findings) => {
-  const fresh = [];
-  for (const finding of findings) {
-    const key = anomalyKey(finding);
-    const existing = await request(`transaction_reconciliation_alerts?select=id,last_alerted_at&anomaly_key=eq.${encodeURIComponent(key)}&anomaly_state=eq.${encodeURIComponent(finding.state)}&resolved_at=is.null&limit=1`).catch(() => []);
-    if (existing?.length) continue;
-    await request('transaction_reconciliation_alerts', {
-      method: 'POST',
-      body: {
-        anomaly_key: key,
-        anomaly_state: finding.state,
-        metadata: finding,
-      },
-      prefer: 'return=minimal',
-    }).catch((error) => {
-      // If alert-dedupe state cannot be written, fail closed by surfacing the finding.
-      console.error(`Alert dedupe persistence failed for ${key}: ${error.message}`);
-    });
-    fresh.push(finding);
+const sendTelegramAlert = async (message) => {
+  const endpoint = process.env.HERMES_SEND_MESSAGE_WEBHOOK_URL;
+  const token = process.env.HERMES_SEND_MESSAGE_WEBHOOK_TOKEN;
+  if (!endpoint || !token) {
+    console.log(message);
+    return { platform: 'stdout', delivered: true };
   }
-  return fresh;
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+    body: JSON.stringify({ target: process.env.STARTLINE_TRANSACTION_ALERT_TARGET || 'origin', message }),
+  });
+  if (!response.ok) throw new Error(`Telegram alert delivery failed: ${response.status} ${await response.text()}`);
+  return { platform: 'telegram', delivered: true, response: await response.text().catch(() => '') };
 };
 
 const main = async () => {
@@ -53,9 +50,12 @@ const main = async () => {
   const outreachAttempts = await request('outreach_send_attempts?select=id,business_key,attempt_status,created_at,updated_at,provider_message_id&attempt_status=in.(sending,delivery_unknown)&order=updated_at.asc&limit=100').catch(() => []);
   const outreachRows = await request('race_mockup_outreach?select=id,outreach_status,resend_email_id,created_at,updated_at&outreach_status=eq.sent&resend_email_id=is.null&order=updated_at.asc&limit=100');
   const findings = buildReconciliationFindings({ stripeEvents, customerRecords, outreachAttempts, outreachRows });
-  const newFindings = await filterNewFindings(findings);
+  await markResolvedAlerts({ activeFindings: findings, request });
+  const newFindings = await filterDeliverableFindings({ findings, request });
   if (!newFindings.length) return;
-  console.log(formatReconciliationAlert(newFindings));
+  const message = formatReconciliationAlert(newFindings);
+  const delivery = await sendTelegramAlert(message);
+  await markDeliveredAlerts({ findings: newFindings, request, delivery });
 };
 
 main().catch((error) => {

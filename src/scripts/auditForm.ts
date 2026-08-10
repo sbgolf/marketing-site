@@ -20,6 +20,18 @@ const msg = document.getElementById('formMsg');
 const packageTier = document.getElementById('packageTier') as HTMLInputElement | null;
 const selectedPackage = document.getElementById('selectedPackage');
 const selectedPackageLabel = document.getElementById('selectedPackageLabel');
+let activeAuditSubmissionToken: string | null = null;
+
+const createSubmissionToken = () => window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+const getActiveAuditSubmissionToken = () => {
+  if (!activeAuditSubmissionToken) activeAuditSubmissionToken = createSubmissionToken();
+  return activeAuditSubmissionToken;
+};
+
+const resetAuditSubmissionToken = () => {
+  activeAuditSubmissionToken = null;
+};
 
 const showCheckoutReturnMessage = () => {
   const params = new URLSearchParams(window.location.search);
@@ -174,7 +186,7 @@ form?.addEventListener('submit', async (event) => {
   const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
   const formData = new FormData(form);
   const selectedTier = String(formData.get('packageTier') || '');
-  const submissionIdempotencyToken = window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const submissionIdempotencyToken = getActiveAuditSubmissionToken();
   const payload = {
     submission_idempotency_token: submissionIdempotencyToken,
     race_name: String(formData.get('raceName') || ''),
@@ -198,7 +210,12 @@ form?.addEventListener('submit', async (event) => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json().catch(() => null) as { message?: string; error?: string; checkout_url?: string } | null;
+    const result = await response.json().catch(() => null) as { message?: string; error?: string; checkout_url?: string; pending?: boolean } | null;
+
+    if (response.status === 202 && result?.pending) {
+      setMessage(result.message || 'Your request is still being finalized. Please retry in a moment.', 'info');
+      return;
+    }
 
     if (!response.ok || !result?.message) {
       throw new Error(result?.error || 'Submission failed.');
@@ -218,6 +235,7 @@ form?.addEventListener('submit', async (event) => {
     }
 
     form.reset();
+    resetAuditSubmissionToken();
     if (selectedPackage) selectedPackage.hidden = true;
     document.querySelectorAll<HTMLElement>('[data-package-card]').forEach((card) => card.classList.remove('selected'));
   } catch (error) {

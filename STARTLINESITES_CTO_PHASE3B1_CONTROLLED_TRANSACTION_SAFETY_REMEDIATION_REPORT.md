@@ -347,3 +347,108 @@ Recommended next independent review items, after CTO approval only:
 5. Reconcile historical outreach provider-ID anomalies before adding any future provider-ID uniqueness constraint.
 
 Do not begin Phase 3B-2 until Steve explicitly approves after independent CTO review.
+
+
+---
+
+## 2026-08-09 19:25 CDT Production-Readiness Hardening Addendum
+
+Status: **PHASE 3B-1 PRODUCTION READINESS GATE — GO for CTO re-review / NO MERGE UNTIL STEVE APPROVES.**
+
+This addendum covers the independent CTO NO-GO hardening pass on PR #184 only. Phase 3B-2 was not started. The production migration was not applied. PR #184 was not merged.
+
+### Audit submission token lifecycle evidence
+
+Implemented:
+
+- Browser now keeps one active logical `submission_idempotency_token` across submit retries and resets it only after successful accepted completion/form reset.
+- Server now returns HTTP 202 `pending: true` when an audit row exists for a token but `submission_idempotency_response` is not yet available, avoiding new side effects and avoiding a forced new logical submission.
+- Same-token conflict handling now returns the existing response if present, or pending 202 if the row exists but final response is not persisted yet.
+
+Evidence:
+
+- `Phase 3B-1 audit submission same idempotency token returns existing result without second checkout or notification`: passed.
+- `Phase 3B-1 audit submission existing token without persisted response returns pending without duplicate side effects`: passed.
+- Same-token retry evidence: one Checkout Session call across first request + retry; no second audit insert on pending row; no Stripe Checkout call and no Resend call when pending row exists.
+- New logical submission after success receives a new token via `resetAuditSubmissionToken()` after accepted completion.
+
+### Stripe fulfillment resumability evidence
+
+Implemented:
+
+- Automatic duplicate resume claims are limited to `failed_retryable`/legacy `failed`; `failed_terminal` is not auto-resumed.
+- Deposit webhook status is not marked `processed` until customer kickoff fulfillment is either sent or known already sent.
+- Missing or unresolved kickoff fulfillment raises a retryable webhook failure instead of silently treating the event as complete.
+- Ambiguous kickoff states (`sending` / `delivery_unknown`) block blind resend and keep the webhook visible as unresolved.
+- A pre-send `launch_readiness_status: sending` boundary is recorded before kickoff email provider call, so ambiguous outcomes become visible instead of disappearing.
+
+Evidence:
+
+- `Phase 3B-1 Stripe duplicate processed event exits without fulfillment while retryable duplicate resumes`: passed.
+- `Phase 3B-1 Stripe failed_terminal duplicate does not automatically resume fulfillment`: passed.
+- `Phase 3B-1 Stripe ambiguous kickoff-email outcome does not auto-resend on resume`: passed.
+- Existing Stripe webhook tests passed, including paid Standard deposit, already-sent kickoff skip, existing intake token preservation, and final invoice failure handling.
+- Focused Stripe/audit/outreach/reconciliation command passed: `node --test tests/phase3b1-transaction-safety.test.mjs tests/stripe-webhook.test.mjs` — 19/19.
+
+### Outreach retry concurrency and provider ambiguity evidence
+
+Implemented:
+
+- Retry claim from `failed_safe_to_retry`/`claimed` to `sending` is now an atomic guarded patch before provider call.
+- Concurrent retry workers now result in one provider call; losing worker returns `send_attempt_claim_lost` and does not send.
+- Explicit provider rejection before acceptance is classified as `failed_safe_to_retry`.
+- Unknown provider/network/transport failures are classified as `delivery_unknown`, not automatically safe to retry.
+- Accepted provider result followed by DB persistence failure remains `delivery_unknown` and does not call the provider on retry.
+
+Evidence:
+
+- `Phase 3B-1 outreach retry claim allows only one concurrent provider call`: passed.
+- `Phase 3B-1 outreach confirmed provider rejection is safe to retry without delivery_unknown`: passed.
+- `Phase 3B-1 outreach network timeout is delivery_unknown and not safe-to-retry`: passed.
+- `Phase 3B-1 outreach accepted then persistence failure marks delivery_unknown and retry does not call provider again`: passed.
+- Existing `tests/mockup-generation-send-gate.test.mjs`: passed after updating stubs for guarded claim path.
+
+### Reconciliation monitor lifecycle evidence
+
+Implemented:
+
+- Monitor now has a deterministic npm/Hermes entrypoint: `npm run monitor:phase3b1-transactions`.
+- Disabled, explicit Hermes activation manifest added at `ops/hermes/phase3b1-transaction-reconciliation-cron.DISABLED.md`.
+- Production scheduling is documented but **not activated**.
+- Alert candidate persistence no longer counts as delivery; dedupe checks require `delivered_at`.
+- Delivered alerts are marked only after successful delivery.
+- Resolved anomalies are marked `resolved_at`.
+- Same anomaly can alert again after it resolves and recurs.
+- Test-mode Stripe/customer records are filtered out of production findings.
+- Healthy/no-finding run is quiet by design.
+
+Evidence:
+
+- `Phase 3B-1 reconciliation alert lifecycle only dedupes after delivery and allows recurrence after resolution`: passed.
+- `Phase 3B-1 reconciliation distinguishes live failures from test-mode fixtures`: passed.
+- Migration now adds `transaction_reconciliation_alerts.delivered_at` and nullable `last_alerted_at` so undelivered candidates cannot suppress delivery.
+
+### Final validation evidence from hardening pass
+
+Commands run and observed results:
+
+- Focused Phase 3B-1 transaction suite: `node --test tests/phase3b1-transaction-safety.test.mjs` — pass, 11/11.
+- Focused combined transaction/webhook suite: `node --test tests/phase3b1-transaction-safety.test.mjs tests/stripe-webhook.test.mjs` — pass, 19/19.
+- Full test suite: `npm test` — pass, 248/248.
+- Build: `npm run build` — pass; Astro check/build reported 0 errors, 0 warnings, 13 pages built.
+- Whitespace: `git diff --check` — pass.
+- Diff secret scan: pass; no live-looking Stripe, Resend, Bearer, or JWT secrets found in git diff.
+
+Expected simulated error logs appear in the test output for controlled failure cases (`customer_kickoff_unresolved`, final-invoice card problem, Resend 503); all related assertions passed.
+
+### Proposed migration/deployment order
+
+1. Keep PR #184 unmerged until Steve explicitly approves.
+2. CTO reviews this hardening diff and validates the new test evidence.
+3. Deploy branch preview and run preview smoke checks.
+4. Apply additive Supabase migration `20260809130000_phase3b1_transaction_safety.sql` in production during a controlled window.
+5. Refresh Supabase/PostgREST schema cache if needed.
+6. Deploy PR #184 code to production only after migration is verified.
+7. Run `npm run monitor:phase3b1-transactions` once manually and confirm healthy quiet state or handle reported anomalies.
+8. After one clean manual monitor run, Steve may approve activating the disabled Hermes cron manifest.
+9. Continue monitoring; do not begin Phase 3B-2 until separately approved.

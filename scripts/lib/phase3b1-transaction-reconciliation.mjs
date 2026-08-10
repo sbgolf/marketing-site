@@ -8,6 +8,60 @@ const ageMinutes = (now, updatedAt) => {
 
 const isLiveRecord = (record) => record?.livemode === true || record?.stripe_livemode === true || record?.metadata?.stripe_livemode === true;
 
+export const anomalyKey = (finding) => `${finding.workflow}:${finding.id}:${finding.reason}`;
+
+export const filterDeliverableFindings = async ({ findings = [], request }) => {
+  const fresh = [];
+  for (const finding of findings) {
+    const key = anomalyKey(finding);
+    const existingDelivered = await request(`transaction_reconciliation_alerts?select=id,delivered_at&anomaly_key=eq.${encodeURIComponent(key)}&anomaly_state=eq.${encodeURIComponent(finding.state)}&resolved_at=is.null&delivered_at=not.is.null&limit=1`).catch(() => []);
+    if (existingDelivered?.length) continue;
+    await request('transaction_reconciliation_alerts', {
+      method: 'POST',
+      body: {
+        anomaly_key: key,
+        anomaly_state: finding.state,
+        metadata: finding,
+      },
+      prefer: 'return=representation',
+    }).catch((error) => {
+      console.error(`Alert candidate persistence failed for ${key}: ${error.message}`);
+    });
+    fresh.push(finding);
+  }
+  return fresh;
+};
+
+export const markDeliveredAlerts = async ({ findings = [], request, delivery = {} }) => {
+  const deliveredAt = new Date().toISOString();
+  for (const finding of findings) {
+    const key = anomalyKey(finding);
+    await request(`transaction_reconciliation_alerts?anomaly_key=eq.${encodeURIComponent(key)}&anomaly_state=eq.${encodeURIComponent(finding.state)}&resolved_at=is.null`, {
+      method: 'PATCH',
+      body: {
+        delivered_at: deliveredAt,
+        last_alerted_at: deliveredAt,
+        metadata: { ...finding, delivery },
+      },
+      prefer: 'return=minimal',
+    });
+  }
+};
+
+export const markResolvedAlerts = async ({ activeFindings = [], request }) => {
+  const active = new Set(activeFindings.map((finding) => `${anomalyKey(finding)}|${finding.state}`));
+  const open = await request('transaction_reconciliation_alerts?select=id,anomaly_key,anomaly_state&resolved_at=is.null&limit=1000').catch(() => []);
+  const resolvedAt = new Date().toISOString();
+  for (const row of open || []) {
+    if (active.has(`${row.anomaly_key}|${row.anomaly_state}`)) continue;
+    await request(`transaction_reconciliation_alerts?id=eq.${encodeURIComponent(row.id)}`, {
+      method: 'PATCH',
+      body: { resolved_at: resolvedAt },
+      prefer: 'return=minimal',
+    });
+  }
+};
+
 export const buildReconciliationFindings = ({
   now = new Date(),
   stripeEvents = [],
@@ -21,9 +75,7 @@ export const buildReconciliationFindings = ({
   for (const row of stripeEvents || []) {
     const status = clean(row.processing_status, 80);
     if (!['processing', 'failed_retryable', 'failed_terminal'].includes(status)) continue;
-    // Explicit test-mode history is not a production failure. If livemode is absent, surface it;
-    // the monitor must not hardcode row IDs, but unknown mode is still actionable.
-    if (row.livemode === false && status === 'processed') continue;
+    if (row.livemode === false) continue;
     const age = ageMinutes(now, row.updated_at || row.created_at);
     if (status === 'processing' && age !== null && age < staleMinutes) continue;
     findings.push({

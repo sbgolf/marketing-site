@@ -375,6 +375,14 @@ export async function handler(event) {
   if (existingSubmission?.submission_idempotency_response) {
     return json(200, existingSubmission.submission_idempotency_response);
   }
+  if (existingSubmission && submissionIdempotencyKey) {
+    return json(202, {
+      ok: false,
+      pending: true,
+      id: existingSubmission.id,
+      message: 'Your private audit request is still being finalized. Please retry in a moment; this retry will use the same submission token.',
+    });
+  }
 
   const referrer = clean(payload.referrer || event.headers?.referer || '', 1000) || null;
   const landingPage = clean(payload.landing_page || '', 1000) || null;
@@ -432,6 +440,14 @@ export async function handler(event) {
     if (response.status === 409 && submissionIdempotencyKey) {
       const existing = await findAuditRequestByIdempotencyKey({ supabaseUrl, serviceKey, idempotencyKey: submissionIdempotencyKey });
       if (existing?.submission_idempotency_response) return json(200, existing.submission_idempotency_response);
+      if (existing) {
+        return json(202, {
+          ok: false,
+          pending: true,
+          id: existing.id,
+          message: 'Your private audit request is still being finalized. Please retry in a moment; this retry will use the same submission token.',
+        });
+      }
     }
     const detail = await response.text();
     console.error('Supabase insert failed', response.status, detail);
