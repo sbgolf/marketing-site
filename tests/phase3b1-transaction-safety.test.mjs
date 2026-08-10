@@ -140,21 +140,24 @@ test('Phase 3B-1 outreach accepted then persistence failure marks delivery_unkno
   process.env = originalEnv;
 });
 
-test('Phase 3B-1 reconciliation distinguishes live failures from test-mode fixtures', () => {
+test('Phase 3B-1 reconciliation includes test-mode Stripe failures and does not require customer stripe_livemode', () => {
   const findings = buildReconciliationFindings({
     now: new Date('2026-08-09T12:00:00Z'),
     stripeEvents: [
       { stripe_event_id: 'evt_live_failed', livemode: true, processing_status: 'failed_retryable', updated_at: '2026-08-09T10:00:00Z' },
+      { stripe_event_id: 'evt_test_failed', livemode: false, processing_status: 'failed_retryable', updated_at: '2026-08-09T10:10:00Z' },
       { stripe_event_id: 'evt_test_history', livemode: false, processing_status: 'processed', updated_at: '2026-07-01T10:00:00Z' },
     ],
     customerRecords: [
-      { id: 'live-customer', stripe_livemode: true, deposit_status: 'paid', launch_readiness_status: 'ready_to_send', updated_at: '2026-08-09T09:00:00Z' },
-      { id: 'test-customer', stripe_livemode: false, deposit_status: 'paid', launch_readiness_status: 'sent', updated_at: '2026-07-04T09:00:00Z' },
+      { id: 'customer-without-mode-column', deposit_status: 'paid', kickoff_status: 'not_started', intake_status: 'not_sent', updated_at: '2026-08-09T09:00:00Z' },
+      { id: 'healthy-test-customer', deposit_status: 'paid', kickoff_status: 'sent', intake_status: 'sent', metadata: { stripe_mode: 'test' }, updated_at: '2026-07-04T09:00:00Z' },
     ],
     outreachAttempts: [{ id: 'attempt-unknown', attempt_status: 'delivery_unknown', updated_at: '2026-08-09T11:00:00Z' }],
   });
-  assert.equal(findings.some((f) => f.id === 'evt_live_failed'), true);
-  assert.equal(findings.some((f) => f.id === 'test-customer' || f.id === 'evt_test_history'), false);
+  assert.equal(findings.some((f) => f.id === 'evt_live_failed' && f.stripe_mode === 'live'), true);
+  assert.equal(findings.some((f) => f.id === 'evt_test_failed' && f.stripe_mode === 'test'), true);
+  assert.equal(findings.some((f) => f.id === 'customer-without-mode-column' && f.reason === 'paid_customer_missing_expected_downstream_fulfillment'), true);
+  assert.equal(findings.some((f) => f.id === 'evt_test_history' || f.id === 'healthy-test-customer'), false);
   assert.equal(findings.some((f) => f.id === 'attempt-unknown'), true);
 });
 
