@@ -16,6 +16,18 @@ const stripeModeLabel = (record = {}) => {
   return 'unknown';
 };
 
+
+const isHistoricalOutreachReconciled = (row = {}) => {
+  const reconciliation = row?.metadata?.phase3b1_reconciliation || row?.metadata?.historical_reconciliation;
+  if (!reconciliation || typeof reconciliation !== 'object') return false;
+  const classification = clean(reconciliation.classification, 120);
+  const state = clean(reconciliation.state || reconciliation.status, 160);
+  return reconciliation.no_auto_resend === true
+    && reconciliation.provider_id_available === false
+    && ['SENT_BUT_PROVIDER_ID_UNRECOVERABLE', 'DELIVERY_STATE_UNKNOWN'].includes(classification)
+    && ['historical_legacy_send_accepted_provider_id_unavailable', 'historical_delivery_state_unknown_no_auto_resend'].includes(state);
+};
+
 export const anomalyKey = (finding) => `${finding.workflow}:${finding.id}:${finding.reason}`;
 
 export const filterDeliverableFindings = async ({ findings = [], request }) => {
@@ -170,6 +182,7 @@ export const buildReconciliationFindings = ({
   }
 
   for (const row of outreachRows || []) {
+    if (isHistoricalOutreachReconciled(row)) continue;
     if (row.outreach_status === 'sent' && !row.resend_email_id) {
       findings.push({
         workflow: 'race_mockup_outreach',

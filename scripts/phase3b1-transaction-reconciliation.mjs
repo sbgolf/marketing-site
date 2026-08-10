@@ -33,7 +33,7 @@ const main = async () => {
   const stripeEvents = await request('stripe_webhook_events?select=stripe_event_id,livemode,processing_status,created_at,updated_at,error_message&processing_status=in.(processing,failed_retryable,failed_terminal)&order=updated_at.asc&limit=100');
   const customerRecords = await request('customer_records?select=id,deposit_status,kickoff_status,intake_status,build_status,created_at,updated_at,metadata,stripe_checkout_session_id,stripe_deposit_payment_intent_id&deposit_status=eq.paid&order=updated_at.asc&limit=100');
   const outreachAttempts = await request('outreach_send_attempts?select=id,business_key,attempt_status,created_at,updated_at,provider_message_id&attempt_status=in.(sending,delivery_unknown)&order=updated_at.asc&limit=100').catch(() => []);
-  const outreachRows = await request('race_mockup_outreach?select=id,outreach_status,resend_email_id,created_at,updated_at&outreach_status=eq.sent&resend_email_id=is.null&order=updated_at.asc&limit=100');
+  const outreachRows = await request('race_mockup_outreach?select=id,outreach_status,resend_email_id,created_at,updated_at,metadata&outreach_status=eq.sent&resend_email_id=is.null&order=updated_at.asc&limit=100');
   const findings = buildReconciliationFindings({ stripeEvents, customerRecords, outreachAttempts, outreachRows });
   await markResolvedAlerts({ activeFindings: findings, request });
   const newFindings = await filterDeliverableFindings({ findings, request });
