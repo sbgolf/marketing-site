@@ -32,7 +32,45 @@ export const filterDeliverableFindings = async ({ findings = [], request }) => {
   return fresh;
 };
 
+export const isConfirmedAlertDelivery = (delivery = {}) => Boolean(
+  delivery.delivered === true
+  && delivery.platform
+  && delivery.platform !== 'stdout'
+);
+
+export const deliverReconciliationAlert = async ({
+  message,
+  fetchImpl = globalThis.fetch,
+  env = process.env,
+  stdout = console.log,
+} = {}) => {
+  const endpoint = env.HERMES_SEND_MESSAGE_WEBHOOK_URL;
+  const token = env.HERMES_SEND_MESSAGE_WEBHOOK_TOKEN;
+  const allowStdout = env.PHASE3B1_RECONCILIATION_STDOUT_DRY_RUN === '1';
+
+  if (!endpoint || !token) {
+    if (allowStdout) {
+      stdout(message);
+      return { platform: 'stdout', delivered: false, dry_run: true };
+    }
+    throw new Error('Hermes direct notification configuration is required before marking reconciliation alerts delivered.');
+  }
+  if (typeof fetchImpl !== 'function') throw new Error('fetch is required for Hermes direct notification delivery.');
+
+  const response = await fetchImpl(endpoint, {
+    method: 'POST',
+    headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+    body: JSON.stringify({ target: env.STARTLINE_TRANSACTION_ALERT_TARGET || 'origin', message }),
+  });
+  const responseText = await response.text().catch(() => '');
+  if (!response.ok) throw new Error(`Telegram alert delivery failed: ${response.status} ${responseText}`);
+  return { platform: 'telegram', delivered: true, response: responseText };
+};
+
 export const markDeliveredAlerts = async ({ findings = [], request, delivery = {} }) => {
+  if (!isConfirmedAlertDelivery(delivery)) {
+    throw new Error(`Refusing to mark reconciliation alert delivered without confirmed non-stdout delivery: ${delivery.platform || 'missing_platform'}`);
+  }
   const deliveredAt = new Date().toISOString();
   for (const finding of findings) {
     const key = anomalyKey(finding);

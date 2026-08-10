@@ -266,7 +266,7 @@ test('Phase 3B-1 reconciliation alert lifecycle only dedupes after delivery and 
   assert.equal(fresh.length, 1);
   fresh = await filterDeliverableFindings({ findings: [finding], request });
   assert.equal(fresh.length, 1, 'undelivered dedupe row must not suppress alert');
-  await markDeliveredAlerts({ findings: [finding], request, delivery: { platform: 'telegram', message_id: 'msg-1' } });
+  await markDeliveredAlerts({ findings: [finding], request, delivery: { platform: 'telegram', delivered: true, message_id: 'msg-1' } });
   fresh = await filterDeliverableFindings({ findings: [finding], request });
   assert.equal(fresh.length, 0);
   await markResolvedAlerts({ activeFindings: [], request });
@@ -357,4 +357,51 @@ test('Phase 3B-1 Stripe ambiguous kickoff-email outcome does not auto-resend on 
     process.env = originalEnv;
     global.fetch = originalFetch;
   }
+});
+
+
+test('Phase 3B-1 reconciliation stdout dry-run does not count as delivered', async () => {
+  const {
+    deliverReconciliationAlert,
+    markDeliveredAlerts,
+    isConfirmedAlertDelivery,
+  } = await import('../scripts/lib/phase3b1-transaction-reconciliation.mjs');
+  const output = [];
+  const delivery = await deliverReconciliationAlert({
+    message: 'safe fixture alert',
+    env: { PHASE3B1_RECONCILIATION_STDOUT_DRY_RUN: '1' },
+    stdout: (message) => output.push(message),
+  });
+  assert.equal(output[0], 'safe fixture alert');
+  assert.equal(delivery.platform, 'stdout');
+  assert.equal(delivery.delivered, false);
+  assert.equal(isConfirmedAlertDelivery(delivery), false);
+  await assert.rejects(
+    markDeliveredAlerts({ findings: [{ workflow: 'fixture', id: 'stdout', state: 'open', reason: 'dry_run' }], request: async () => [] , delivery }),
+    /Refusing to mark reconciliation alert delivered/,
+  );
+});
+
+test('Phase 3B-1 reconciliation failed notification remains retryable and undelivered', async () => {
+  const { deliverReconciliationAlert, filterDeliverableFindings } = await import('../scripts/lib/phase3b1-transaction-reconciliation.mjs');
+  const finding = { workflow: 'fixture', id: 'delivery-fail', state: 'open', reason: 'safe_fixture' };
+  const rows = [];
+  const request = async (path, options = {}) => {
+    if (path.startsWith('transaction_reconciliation_alerts?select=')) return rows.filter((row) => row.delivered_at && !row.resolved_at);
+    if (path === 'transaction_reconciliation_alerts' && options.method === 'POST') { rows.push({ id: `alert-${rows.length + 1}`, ...options.body }); return [rows.at(-1)]; }
+    return [];
+  };
+  const first = await filterDeliverableFindings({ findings: [finding], request });
+  assert.equal(first.length, 1);
+  await assert.rejects(
+    deliverReconciliationAlert({
+      message: 'safe fixture alert',
+      env: { HERMES_SEND_MESSAGE_WEBHOOK_URL: 'https://example.invalid/webhook', HERMES_SEND_MESSAGE_WEBHOOK_TOKEN: 'token' },
+      fetchImpl: async () => ({ ok: false, status: 503, text: async () => 'temporary failure' }),
+    }),
+    /Telegram alert delivery failed: 503/,
+  );
+  assert.equal(rows.some((row) => row.delivered_at), false);
+  const retry = await filterDeliverableFindings({ findings: [finding], request });
+  assert.equal(retry.length, 1, 'failed notification must remain deliverable for retry');
 });
