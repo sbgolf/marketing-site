@@ -1,0 +1,45 @@
+{
+  "experiment_id": "sls_community_lane_a_pilot_v1",
+  "status": "preparation_only",
+  "target_segment": "Local or regional RunSignup-first races without a meaningful standalone race-marketing website",
+  "campaign_id": "sls_community_lane_a_pilot_v1",
+  "campaign_lane": "lane_a",
+  "mockup_template_family": "community",
+  "initial_email_template_id": "individual_mockup_v1",
+  "initial_email_template_version": "pilot_no_credit_v1",
+  "opened_followup_template_id": "community_opened_signal_followup_v1",
+  "opened_followup_template_version": "pilot_no_credit_v1",
+  "clicked_followup_template_id": "community_clicked_signal_followup_v1",
+  "clicked_followup_template_version": "pilot_no_credit_v1",
+  "commercial_offer_id": "community_dedicated_race_site_v1",
+  "recommended_tier": "standard",
+  "fallback_tier": "starter",
+  "selected_race_credit": "disabled",
+  "cta": "review_private_mockup_then_request_audit_or_proposal",
+  "owner_approval_required": true,
+  "auto_send": false,
+  "one_recipient_per_send": true,
+  "followup_cap": 1,
+  "followup_timing": {
+    "clicked_signal_business_days": 2,
+    "opened_signal_business_days": 4,
+    "timezone": "America/Chicago",
+    "expiry_recommendation": "Review pilot follow-up eligibility for expiry after 10 business days without a human reply; Steve approval required before activation."
+  },
+  "eligibility_criteria": ["lane_a", "runsignup_first", "community_or_local_regional_race", "no_meaningful_standalone_race_marketing_website", "verified_direct_or_routing_email", "community_mockup_exists_and_passed_qa", "private_preview_current_and_accessible", "full_attribution_payload_available"],
+  "exclusion_criteria": ["credible_standalone_website", "outdated_site_modernization_lane", "sponsor_heavy_charity_experiment", "multi_event_operator_lane_d", "destination_major", "performance_or_bq_focus", "trail_or_ultra_if_excluded_by_current_rules", "contact_form_only", "missing_verified_email", "prior_manual_contact_or_outreach", "reply_audit_proposal_checkout_purchase", "unsubscribe_bounce_complaint_or_suppression", "duplicate_prospect", "race_too_close_to_event_day"],
+  "attribution_required_fields": ["experiment_id", "prospect_id", "source_platform", "source_external_id", "campaign_id", "campaign_lane", "mockup_template_family", "mockup_generation_job_id", "mockup_url", "initial_email_template_id", "initial_email_template_version", "commercial_offer_id", "recommended_tier", "fallback_tier", "recipient_email_hash", "recipient_role", "owner_approval_status", "owner_approved_at", "send_gate_version", "test_live_classification", "response_status", "owner_action_status"],
+  "followup_required_fields": ["source_outreach_id", "engagement_recipient_hash", "engagement_signal_type", "engagement_signal_confidence", "followup_scenario", "followup_template_id", "followup_template_version", "followup_eligibility_at", "followup_owner_decision", "suppression_snapshot"],
+  "success_metrics": {
+    "primary": ["genuine_human_reply", "audit_request", "proposal_request", "checkout_initiated", "verified_live_deposit", "verified_live_revenue"],
+    "secondary_diagnostics": ["delivered", "opened", "clicked", "preview_viewed", "signal_confidence"],
+    "quality": ["100_percent_attribution", "100_percent_one_recipient", "100_percent_owner_approval", "zero_suppressed_sends", "zero_duplicate_sends", "zero_wrong_template_sends", "zero_r0_incidents"]
+  },
+  "jobs_that_must_remain_paused": ["3fa6b0d6e719", "668b79544ca5", "b1734beec1a2", "4c9434e2f10a"],
+  "template_registry": [
+    {"canonical_id": "community", "version": "current_private_mockup_family", "type": "mockup", "channel": "private_mockup_url", "segment": "local_regional_runsignup_first", "campaign_lane": "lane_a", "experiment_id": "sls_community_lane_a_pilot_v1", "offer": "community_dedicated_race_site_v1", "recommended_tier": "standard", "cta": "review_private_mockup", "required_variables": ["race_name", "race_date", "location", "registration_url", "runner_decision_details"], "prohibited_claims": ["guaranteed_registration_growth", "guaranteed_seo_rankings", "selected_race_credit"], "approval_requirement": "mockup QA/site auditor pass plus Steve owner review before external send", "state": "pilot_proof_asset_only", "source_file": "race-templates/src/data/private-mockups/*.json", "checksum_or_version_identifier": "external race-templates artifact", "discount_policy": "selected_race_credit_disabled", "runsignup_preservation_requirement": "RunSignup remains registration/payment destination", "bmqr_usage_rule": "credibility only, not a second product"},
+    {"canonical_id": "individual_mockup_v1", "version": "pilot_no_credit_v1", "type": "initial_email", "channel": "resend_email_after_owner_approval_only", "segment": "local_regional_runsignup_first", "campaign_lane": "lane_a", "experiment_id": "sls_community_lane_a_pilot_v1", "offer": "community_dedicated_race_site_v1", "recommended_tier": "standard", "cta": "review_private_mockup", "required_variables": ["race_name", "recipient_email_hash", "mockup_url", "registration_url"], "prohibited_claims": ["early_partner", "new_company", "beta", "guaranteed_growth", "selected_race_credit", "premium_or_custom_offer"], "approval_requirement": "explicit Steve approval for exact recipient/race", "state": "pilot_preparation_only", "source_file": "scripts/lib/mockup-outreach-send-gate.mjs", "checksum_or_version_identifier": "pilot_no_credit_v1", "discount_policy": "selected_race_credit_disabled", "runsignup_preservation_requirement": "copy complements RunSignup and drives registration there", "bmqr_usage_rule": "credibility only when contextually appropriate"},
+    {"canonical_id": "community_opened_signal_followup_v1", "version": "pilot_no_credit_v1", "type": "follow-up email", "channel": "owner_review_preview_only_in_phase_2a_1", "segment": "local_regional_runsignup_first", "campaign_lane": "lane_a", "experiment_id": "sls_community_lane_a_pilot_v1", "offer": "community_dedicated_race_site_v1", "recommended_tier": "standard", "cta": "review_private_mockup", "required_variables": ["source_outreach_id", "engagement_recipient_hash", "mockup_url", "race_name"], "prohibited_claims": ["I saw you opened", "we saw you opened", "selected_race_credit", "new_discount", "new_package"], "approval_requirement": "Steve owner approval after suppression/reply/manual-contact review", "state": "pilot_preparation_only", "source_file": "scripts/lib/community-pilot-governance.mjs", "checksum_or_version_identifier": "pilot_no_credit_v1", "discount_policy": "selected_race_credit_disabled", "runsignup_preservation_requirement": "same RunSignup-preserving CTA journey", "bmqr_usage_rule": "do not introduce BMQR as a product"},
+    {"canonical_id": "community_clicked_signal_followup_v1", "version": "pilot_no_credit_v1", "type": "follow-up email", "channel": "owner_review_preview_only_in_phase_2a_1", "segment": "local_regional_runsignup_first", "campaign_lane": "lane_a", "experiment_id": "sls_community_lane_a_pilot_v1", "offer": "community_dedicated_race_site_v1", "recommended_tier": "standard", "cta": "review_private_mockup_then_choose_a_next_step", "required_variables": ["source_outreach_id", "engagement_recipient_hash", "mockup_url", "race_name", "clicked_url"], "prohibited_claims": ["I saw you clicked", "we saw you clicked", "selected_race_credit", "premium_upsell", "guaranteed_growth"], "approval_requirement": "Steve owner approval after suppression/reply/manual-contact review", "state": "pilot_preparation_only", "source_file": "scripts/lib/community-pilot-governance.mjs", "checksum_or_version_identifier": "pilot_no_credit_v1", "discount_policy": "selected_race_credit_disabled", "runsignup_preservation_requirement": "same RunSignup-preserving CTA journey", "bmqr_usage_rule": "do not introduce BMQR as a product"}
+  ]
+}
