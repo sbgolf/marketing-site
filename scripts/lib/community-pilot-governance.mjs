@@ -1,22 +1,32 @@
-import crypto from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import fs from 'node:fs/promises';
+import { hashSuppressionRecipient as productionHashRecipient, normalizeSuppressionEmail } from './outreach-suppression-send-gate.mjs';
+
+const loadExperimentConfig = () => JSON.parse(readFileSync(new URL('../../config/startline-community-pilot-v1.json', import.meta.url), 'utf8'));
+export const experimentConfig = loadExperimentConfig();
 
 const clean = (value, max = 1000) => String(value ?? '').replace(/\s+/g, ' ').trim().slice(0, max);
 const asArray = (value) => Array.isArray(value) ? value : (value == null ? [] : [value]);
 const lc = (value) => clean(value, 500).toLowerCase();
 const nowIso = () => new Date().toISOString();
 
-export const EXPERIMENT_ID = 'sls_community_lane_a_pilot_v1';
-export const CAMPAIGN_LANE = 'lane_a';
-export const MOCKUP_TEMPLATE_FAMILY = 'community';
-export const COMMERCIAL_OFFER_ID = 'community_dedicated_race_site_v1';
-export const INITIAL_EMAIL_TEMPLATE_ID = 'individual_mockup_v1';
-export const INITIAL_EMAIL_TEMPLATE_VERSION = 'pilot_no_credit_v1';
-export const OPENED_FOLLOWUP_TEMPLATE_ID = 'community_opened_signal_followup_v1';
-export const CLICKED_FOLLOWUP_TEMPLATE_ID = 'community_clicked_signal_followup_v1';
-export const FOLLOWUP_TEMPLATE_VERSION = 'pilot_no_credit_v1';
+export const EXPERIMENT_ID = experimentConfig.experiment_id;
+export const CAMPAIGN_LANE = experimentConfig.campaign_lane;
+export const MOCKUP_TEMPLATE_FAMILY = experimentConfig.mockup_template_family;
+export const COMMERCIAL_OFFER_ID = experimentConfig.commercial_offer_id;
+export const INITIAL_EMAIL_TEMPLATE_ID = experimentConfig.initial_email_template_id;
+export const INITIAL_EMAIL_TEMPLATE_VERSION = experimentConfig.initial_email_template_version;
+export const OPENED_FOLLOWUP_TEMPLATE_ID = experimentConfig.opened_followup_template_id;
+export const CLICKED_FOLLOWUP_TEMPLATE_ID = experimentConfig.clicked_followup_template_id;
+export const OPENED_FOLLOWUP_TEMPLATE_VERSION = experimentConfig.opened_followup_template_version;
+export const CLICKED_FOLLOWUP_TEMPLATE_VERSION = experimentConfig.clicked_followup_template_version;
+export const FOLLOWUP_TEMPLATE_VERSION = OPENED_FOLLOWUP_TEMPLATE_VERSION;
+export const RECOMMENDED_TIER = experimentConfig.recommended_tier;
+export const FALLBACK_TIER = experimentConfig.fallback_tier;
+export const FOLLOWUP_CLICKED_DELAY_BUSINESS_DAYS = experimentConfig.followup_timing.clicked_signal_business_days;
+export const FOLLOWUP_OPENED_DELAY_BUSINESS_DAYS = experimentConfig.followup_timing.opened_signal_business_days;
 export const SIGNAL_CONFIDENCE = ['raw_unverified', 'possible_automation', 'moderate_signal', 'human_confirmed'];
-export const FOLLOWUP_SIGNAL_EXPIRY_BUSINESS_DAYS = 10;
+export const FOLLOWUP_SIGNAL_EXPIRY_BUSINESS_DAYS = experimentConfig.followup_timing.followup_signal_expiry_business_days;
 
 export const classifyCandidateUrl = (url = '') => {
   const value = clean(url, 1000);
@@ -68,21 +78,12 @@ export const terminologyContract = {
   engagement_signal_confidence: 'Confidence classification; human_confirmed requires reply/audit/proposal/checkout/purchase or explicit manual confirmation.',
 };
 
-export const requiredAttributionFields = [
-  'experiment_id', 'prospect_id', 'source_platform', 'source_external_id', 'campaign_id', 'campaign_lane',
-  'mockup_template_family', 'mockup_generation_job_id', 'mockup_url', 'initial_email_template_id',
-  'initial_email_template_version', 'commercial_offer_id', 'recommended_tier', 'fallback_tier',
-  'recipient_email_hash', 'recipient_role', 'owner_approval_status', 'owner_approved_at',
-  'send_gate_version', 'test_live_classification', 'response_status', 'owner_action_status',
-];
+export const requiredAttributionFields = [...experimentConfig.attribution_required_fields];
 
-export const requiredFollowupFields = [
-  'source_outreach_id', 'engagement_recipient_hash', 'engagement_signal_type', 'engagement_signal_confidence',
-  'followup_scenario', 'followup_template_id', 'followup_template_version', 'followup_eligibility_at',
-  'followup_owner_decision', 'suppression_snapshot',
-];
+export const requiredFollowupFields = [...experimentConfig.followup_required_fields];
 
-export const hashRecipient = (email = '') => crypto.createHash('sha256').update(lc(email)).digest('hex');
+export const normalizeRecipientEmail = (email = '') => normalizeSuppressionEmail(email);
+export const hashRecipient = (email = '', options = {}) => productionHashRecipient(email, options);
 export const maskEmail = (email = '') => {
   const [local, domain] = lc(email).split('@');
   if (!local || !domain) return '';
@@ -103,9 +104,10 @@ export const extractVerifiedEmails = (prospect = {}) => {
   const add = (email, source = {}) => {
     const e = lc(email);
     if (!e || !e.includes('@')) return;
-    const status = lc(source.status || source.confidence || source.classification || 'source_backed');
+    const status = lc(source.status || source.confidence || source.verification_status || source.classification || 'unverified');
     const type = lc(source.type || 'email');
-    if (type.includes('form') || status.includes('unconfirmed') || status.includes('candidate')) return;
+    const verified = ['source_backed', 'verified', 'confirmed', 'official_source', 'routing_verified', 'direct_verified'].some((token) => status === token || status.includes(`${token}_`) || status.includes(`_${token}`));
+    if (!verified || type.includes('form') || status.includes('unconfirmed') || status.includes('candidate')) return;
     if (!emails.some((item) => item.email === e)) emails.push({
       email: e,
       role: clean(source.role || source.classification || source.type || 'routing_email', 120),
@@ -122,14 +124,36 @@ export const extractVerifiedEmails = (prospect = {}) => {
 
 export const classifyOfficialSite = (prospect = {}) => {
   const assessment = lc(prospect.official_site_assessment || metadata(prospect).official_site_assessment || metadata(prospect).official_site_status || '');
-  const official = lc(prospect.official_url || prospect.official_domain || '');
-  const noSiteEvidence = assessment.includes('no meaningful') || assessment.includes('no standalone') || assessment.includes('runsignup-first') || assessment.includes('runsignup first') || assessment.includes('platform') || assessment.includes('social') || assessment.includes('blank') || assessment.includes('unrelated') || assessment.includes('thin');
-  if (!official) return noSiteEvidence ? { qualifies: true, reason: assessment.slice(0, 120) || 'verified_no_meaningful_standalone_site' } : { qualifies: false, reason: 'missing_official_site_assessment' };
-  if (assessment.includes('credible') || assessment.includes('dedicated') || assessment.includes('meaningful standalone')) return { qualifies: false, reason: 'credible_standalone_website' };
-  if (official.includes('runsignup.com')) return { qualifies: true, reason: 'platform_hosted_runsignup' };
-  if (noSiteEvidence) return { qualifies: true, reason: assessment.slice(0, 120) || 'thin_non_standalone_site' };
-  return { qualifies: Boolean(metadata(prospect).lane_a_override === true || prospect.lane_a_qualified === true), reason: metadata(prospect).lane_a_override ? 'manual_lane_a_override' : 'official_site_requires_manual_review' };
+  const accepted = new Set(['no_meaningful_standalone_site', 'runsignup_platform_only', 'social_only']);
+  const blocked = new Set(['credible_standalone_race_site', 'credible_standalone_website', 'operator_page_only', 'unverified_access_failure']);
+  const explicit = assessment.replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+  if (!explicit) return { qualifies: false, reason: 'missing_official_site_assessment' };
+  if (accepted.has(explicit)) return { qualifies: true, reason: explicit };
+  if (blocked.has(explicit) || assessment.includes('credible') || assessment.includes('dedicated')) return { qualifies: false, reason: explicit === 'credible_standalone_website' ? 'credible_standalone_race_site' : 'credible_standalone_race_site' };
+  return { qualifies: false, reason: 'official_site_requires_explicit_classification' };
 };
+
+export const extractPlausibleContactEmails = (prospect = {}) => {
+  const emails = [];
+  const add = (email, source = {}) => {
+    const e = normalizeRecipientEmail(email);
+    if (!e || !e.includes('@')) return;
+    const type = lc(source.type || 'email');
+    const status = lc(source.status || source.confidence || source.verification_status || source.classification || 'unverified');
+    if (type.includes('form') || status.includes('unconfirmed') || status.includes('candidate')) return;
+    if (!emails.includes(e)) emails.push(e);
+  };
+  add(prospect.contact_email, { type: 'direct_email' });
+  for (const source of contactSources(prospect)) {
+    if (typeof source === 'string') add(source, { type: 'email' });
+    else if (source && typeof source === 'object') add(source.email || source.value || source.address, source);
+  }
+  return emails;
+};
+
+const normalizeLane = (value = '') => ({ a: 'lane_a', lanea: 'lane_a', lane_a: 'lane_a' }[lc(value).replace(/[-\s]/g, '_')] || lc(value));
+const normalizeProspectType = (value = '') => lc(value).replace(/[-\s]/g, '_');
+export const APPROVED_LANE_A_PROSPECT_TYPES = new Set(['runsignup_first_community_race', 'runsignup_only_community_race', 'community_runsignup_first_race']);
 
 export const isRaceTooClose = ({ raceDate = '', now = nowIso(), minimumLeadDays = 45 } = {}) => {
   const raceTime = Date.parse(raceDate);
@@ -144,8 +168,8 @@ export const validatePrivatePreview = (url = '', row = {}) => {
   if (!/^https:\/\//i.test(previewUrl)) blockers.push('private preview must be an externally accessible https URL.');
   const current = row.private_preview_current ?? metadata(row).private_preview_current ?? metadata(row).private_preview_current_and_accessible;
   const accessible = row.private_preview_accessible ?? metadata(row).private_preview_accessible ?? metadata(row).private_preview_current_and_accessible;
-  if (current === false || lc(current) === 'false' || lc(current) === 'expired') blockers.push('private preview is not current.');
-  if (accessible === false || lc(accessible) === 'false' || lc(accessible) === 'inaccessible') blockers.push('private preview is not accessible.');
+  if (current !== true && lc(current) !== 'true' && lc(current) !== 'current') blockers.push('private preview current evidence is required.');
+  if (accessible !== true && lc(accessible) !== 'true' && lc(accessible) !== 'accessible') blockers.push('private preview accessibility evidence is required.');
   return blockers;
 };
 
@@ -162,7 +186,7 @@ const hasAny = (row = {}, keys = []) => keys.some((key) => {
 export const buildAttributionPayload = ({ prospect = {}, generationJob = {}, recipientEmail = '', now = nowIso() } = {}) => ({
   experiment_id: EXPERIMENT_ID,
   prospect_id: clean(prospect.id || generationJob.prospect_id, 120),
-  source_platform: clean(prospect.source_platform || sourceBundle(generationJob).source_platform || 'runsignup', 80),
+  source_platform: clean(prospect.source_platform || sourceBundle(generationJob).source_platform, 80),
   source_external_id: clean(prospect.source_race_id || prospect.registration_race_id || sourceBundle(generationJob).source_race_id || sourceBundle(generationJob).registration_race_id, 120),
   campaign_id: EXPERIMENT_ID,
   campaign_lane: CAMPAIGN_LANE,
@@ -172,8 +196,8 @@ export const buildAttributionPayload = ({ prospect = {}, generationJob = {}, rec
   initial_email_template_id: INITIAL_EMAIL_TEMPLATE_ID,
   initial_email_template_version: INITIAL_EMAIL_TEMPLATE_VERSION,
   commercial_offer_id: COMMERCIAL_OFFER_ID,
-  recommended_tier: 'standard',
-  fallback_tier: 'starter',
+  recommended_tier: RECOMMENDED_TIER,
+  fallback_tier: FALLBACK_TIER,
   recipient_email_hash: recipientEmail ? hashRecipient(recipientEmail) : '',
   recipient_role: clean(extractVerifiedEmails(prospect).find((item) => item.email === lc(recipientEmail))?.role || 'routing_email', 120),
   owner_approval_status: 'not_requested_phase_2a1_preview_only',
@@ -191,56 +215,96 @@ export const validatePilotInitialSend = ({ prospect = {}, generationJob = {}, re
   const blockers = [];
   const warnings = [];
   const bundle = sourceBundle(generationJob);
-  const lane = lc(prospect.campaign_lane || generationJob.campaign_lane || metadata(prospect).campaign_lane || bundle.campaign_lane || metadata(generationJob).campaign_lane || 'lane_a');
-  const prospectType = lc(prospect.prospect_type || metadata(prospect).prospect_type || 'runsignup_first_community_race');
-  const emails = parseEmailList(recipientEmails.length ? recipientEmails : extractVerifiedEmails(prospect).map((item) => item.email));
+  const lane = normalizeLane(prospect.campaign_lane || generationJob.campaign_lane || metadata(prospect).campaign_lane || bundle.campaign_lane || metadata(generationJob).campaign_lane || '');
+  const prospectType = normalizeProspectType(prospect.prospect_type || metadata(prospect).prospect_type || '');
+  const explicitSourcePlatform = clean(prospect.source_platform || sourceBundle(generationJob).source_platform, 80);
+  const explicitRegistrationUrl = clean(prospect.registration_url || sourceBundle(generationJob).registration_url, 1000);
+  const verifiedContacts = extractVerifiedEmails(prospect);
+  const verifiedSet = new Set(verifiedContacts.map((item) => normalizeRecipientEmail(item.email)));
+  const requestedRecipients = parseEmailList(recipientEmails);
+  const invalidRequestedRecipients = requestedRecipients.filter((email) => !verifiedSet.has(normalizeRecipientEmail(email)));
+  const emails = requestedRecipients.length ? requestedRecipients.filter((email) => verifiedSet.has(normalizeRecipientEmail(email))) : verifiedContacts.map((item) => item.email);
   const site = classifyOfficialSite(prospect);
   const attribution = buildAttributionPayload({ prospect, generationJob, recipientEmail: emails[0], now });
 
-  if (lane && !['a', 'lane_a'].includes(lane)) blockers.push(`campaign_lane must be lane_a; received ${lane}.`);
-  if (!prospectType.includes('runsignup') && lc(prospect.source_platform) !== 'runsignup') blockers.push('prospect must be RunSignup-first.');
-  const urlClassification = classifyCandidateUrl(prospect.registration_url || sourceBundle(generationJob).registration_url || prospect.source_url || sourceBundle(generationJob).source_url || '');
+  if (!lane) blockers.push('campaign_lane is required.');
+  else if (lane !== CAMPAIGN_LANE) blockers.push(`campaign_lane must be lane_a; received ${lane}.`);
+  if (!prospectType) blockers.push('prospect_type is required.');
+  else if (!APPROVED_LANE_A_PROSPECT_TYPES.has(prospectType)) blockers.push(`prospect_type must be an approved Lane A RunSignup Community race type; received ${prospectType}.`);
+  if (!explicitSourcePlatform) blockers.push('source_platform is required.');
+  else if (lc(explicitSourcePlatform) !== 'runsignup') blockers.push(`source_platform must be runsignup; received ${lc(explicitSourcePlatform)}.`);
+  if (!explicitRegistrationUrl) blockers.push('registration_url is required; source_url is not a substitute.');
+  const urlClassification = classifyCandidateUrl(explicitRegistrationUrl);
   if (urlClassification.category !== 'runsignup_race_page') blockers.push(`registration_url must be a RunSignup race page; received ${urlClassification.category}.`);
   if (lc(generationJob.template || generationJob.mockup_template || prospect.recommended_template) !== MOCKUP_TEMPLATE_FAMILY) blockers.push('mockup_template_family must be community.');
   const previewUrl = clean(generationJob.mockup_url || prospect.mockup_url || metadata(prospect).mockup_url, 600);
   if (!previewUrl) blockers.push('Community mockup URL is required.');
   blockers.push(...validatePrivatePreview(previewUrl, generationJob));
-  if (isRaceTooClose({ raceDate: prospect.event_date || prospect.race_date || bundle.event_date, now })) blockers.push('race_too_close_to_event_day.');
+  const raceDate = prospect.event_date || prospect.race_date || bundle.event_date;
+  const raceTime = Date.parse(raceDate || '');
+  const nowTime = Date.parse(now);
+  if (!raceDate || !Number.isFinite(raceTime)) blockers.push('valid future race date is required.');
+  else if (Number.isFinite(nowTime) && raceTime <= nowTime) blockers.push('race date is in the past.');
+  else if (isRaceTooClose({ raceDate, now })) blockers.push('race_too_close_to_event_day.');
   if (!['passed', 'pass', 'approved', 'ready'].includes(lc(generationJob.qa_status))) blockers.push('Community mockup QA must be passed.');
   if (generationJob.site_auditor_status && !['passed', 'pass', 'approved', 'ready', 'not_requested'].includes(lc(generationJob.site_auditor_status))) blockers.push('site auditor status is not acceptable for review.');
   if (!site.qualifies) blockers.push(`Lane A excluded: ${site.reason}.`);
   if (!site.reason || ['official_site_requires_manual_review', 'missing_official_site_assessment'].includes(site.reason)) warnings.push('Official-site assessment requires manual CMO review before inclusion.');
-  if (emails.length === 0) blockers.push('verified direct or routing email is required; contact-form-only/missing email is excluded.');
-  if (emails.length > 1) blockers.push('one recipient per pilot send is required; multiple recipient emails were provided.');
+  const categoricalBlockersBeforeContact = blockers.length;
+  if (invalidRequestedRecipients.length) blockers.push('selected recipient must be present in source-backed verified contact evidence.');
+  if (emails.length === 0) blockers.push('verified direct or routing email is required; missing or unverified email is excluded.');
+  if (emails.length > 1) blockers.push('multiple verified recipients require Steve to select exactly one recipient.');
   if (parseEmailList(prospect.cc_emails).length || parseEmailList(prospect.bcc_emails).length) blockers.push('CC/BCC are not allowed for pilot sends.');
-  if (hasAny(prospect, ['contact_form_only', 'contact_form_url'])) blockers.push('contact-form-only prospect is excluded.');
+  const contactFormOnly = prospect.contact_form_only === true || lc(prospect.contact_method || metadata(prospect).contact_method) === 'contact_form_only' || (Boolean(prospect.contact_form_url || metadata(prospect).contact_form_url) && emails.length === 0);
+  if (contactFormOnly) blockers.push('contact-form-only prospect is excluded.');
   if (hasAny(prospect, ['prior_reply_at', 'manual_contacted_at', 'audit_request_id', 'proposal_id', 'checkout_session_id', 'customer_record_id', 'purchase_at'])) blockers.push('prior reply/manual contact/audit/proposal/checkout/purchase blocks pilot send.');
   if (priorOutreach.length || generationJob.outreach_id || metadata(prospect).outreach_id || metadata(prospect).outreach?.outreach_id) blockers.push('duplicate/prior outreach exists for this prospect/mockup.');
   if (suppressions.length || hasAny(prospect, ['suppressed_at', 'bounced_at', 'complained_at', 'unsubscribed_at'])) blockers.push('suppression or negative delivery signal blocks pilot send.');
   const missing = validateAttributionPayload(attribution);
   if (missing.length) blockers.push(`missing attribution fields: ${missing.join(', ')}.`);
 
-  return { ok: blockers.length === 0, blockers, warnings, selected_recipient_masked: maskEmail(emails[0]), attribution_payload: attribution, official_site_assessment: site };
+  const onlyContactNeedsDecision = categoricalBlockersBeforeContact === 0
+    && !invalidRequestedRecipients.length
+    && !parseEmailList(prospect.cc_emails).length
+    && !parseEmailList(prospect.bcc_emails).length;
+  let recommendation = blockers.length === 0 ? 'INCLUDE' : 'EXCLUDE';
+  if (onlyContactNeedsDecision && emails.length > 1) recommendation = 'NEEDS_STEVE_DECISION — SELECT_ONE_RECIPIENT';
+  else if (onlyContactNeedsDecision && emails.length === 0 && extractPlausibleContactEmails(prospect).length) recommendation = 'NEEDS_STEVE_DECISION — CONTACT_VERIFICATION';
+  return { ok: blockers.length === 0, blockers, warnings, recommendation, selected_recipient_masked: maskEmail(emails[0]), attribution_payload: attribution, official_site_assessment: site };
 };
 
 export const classifyEngagementSignal = ({ outreach = {}, events = [], recipientEmailHash = '' } = {}) => {
   const targetHash = clean(recipientEmailHash || outreach.recipient_email_hash || outreach.to_email_hash, 200);
-  const matched = asArray(events).filter((event) => clean(event.recipient_email_hash, 200) === targetHash);
+  const sourceOutreachId = clean(outreach.id || outreach.outreach_id, 200);
+  const sourceProviderId = clean(outreach.resend_email_id || outreach.provider_message_id || outreach.provider_id, 200);
+  const matched = asArray(events).filter((event) => {
+    if (clean(event.recipient_email_hash, 200) !== targetHash) return false;
+    const eventOutreachId = clean(event.outreach_id || event.source_outreach_id || event.metadata?.outreach_id, 200);
+    const eventProviderId = clean(event.provider_message_id || event.resend_email_id || event.email_id || event.metadata?.provider_message_id, 200);
+    if (sourceOutreachId && eventOutreachId && sourceOutreachId !== eventOutreachId) return false;
+    if (sourceProviderId && eventProviderId && sourceProviderId !== eventProviderId) return false;
+    const outreachMatches = sourceOutreachId && eventOutreachId && sourceOutreachId === eventOutreachId;
+    const providerMatches = sourceProviderId && eventProviderId && sourceProviderId === eventProviderId;
+    return outreachMatches || providerMatches;
+  });
   const eventTypes = matched.map((event) => lc(event.event_type));
-  const clicked = eventTypes.some((type) => type.includes('click')) || lc(outreach.engagement_status) === 'clicked';
-  const opened = eventTypes.some((type) => type.includes('open')) || lc(outreach.engagement_status) === 'opened';
-  const delivered = eventTypes.some((type) => type.includes('deliver')) || lc(outreach.engagement_status) === 'delivered';
-  const negative = eventTypes.find((type) => ['email.bounced', 'bounced', 'complained', 'complaint', 'unsubscribed', 'suppressed'].includes(type));
   const clickedEvents = matched.filter((event) => lc(event.event_type).includes('click'));
+  const openedEvents = matched.filter((event) => lc(event.event_type).includes('open'));
+  const deliveredEvents = matched.filter((event) => lc(event.event_type).includes('deliver'));
+  const clicked = clickedEvents.length > 0;
+  const opened = openedEvents.length > 0;
+  const delivered = deliveredEvents.length > 0;
+  const negative = eventTypes.find((type) => ['email.bounced', 'bounced', 'complained', 'complaint', 'unsubscribed', 'suppressed'].includes(type));
   const immediateClick = clickedEvents.some((event) => {
     const deliveredAt = Date.parse(outreach.delivered_at || outreach.sent_at || '');
     const clickedAt = Date.parse(event.event_timestamp || event.created_at || '');
     return Number.isFinite(deliveredAt) && Number.isFinite(clickedAt) && clickedAt - deliveredAt >= 0 && clickedAt - deliveredAt < 120000;
   });
-  if (negative) return { signal_type: 'negative_delivery', confidence: 'raw_unverified', matched_event_count: matched.length, scanner_caveat: false };
-  if (clicked) return { signal_type: 'clicked_signal', confidence: immediateClick ? 'possible_automation' : 'moderate_signal', matched_event_count: matched.length, scanner_caveat: immediateClick };
-  if (opened) return { signal_type: 'opened_signal', confidence: 'raw_unverified', matched_event_count: matched.length, scanner_caveat: true };
-  if (delivered) return { signal_type: 'delivered_signal', confidence: 'raw_unverified', matched_event_count: matched.length, scanner_caveat: false };
+  const latestOf = (rows) => rows.map((event) => event.event_timestamp || event.created_at || event.timestamp).filter(Boolean).sort().at(-1) || '';
+  if (negative) return { signal_type: 'negative_delivery', confidence: 'raw_unverified', matched_event_count: matched.length, signal_at: latestOf(matched), scanner_caveat: false };
+  if (clicked) return { signal_type: 'clicked_signal', confidence: immediateClick ? 'possible_automation' : 'moderate_signal', matched_event_count: matched.length, signal_at: latestOf(clickedEvents), scanner_caveat: immediateClick };
+  if (opened) return { signal_type: 'opened_signal', confidence: 'raw_unverified', matched_event_count: matched.length, signal_at: latestOf(openedEvents), scanner_caveat: true };
+  if (delivered) return { signal_type: 'delivered_signal', confidence: 'raw_unverified', matched_event_count: matched.length, signal_at: latestOf(deliveredEvents), scanner_caveat: false };
   return { signal_type: matched.length ? 'ambiguous' : 'no_signal', confidence: 'raw_unverified', matched_event_count: matched.length, scanner_caveat: false };
 };
 
@@ -262,15 +326,18 @@ export const buildFollowupReview = ({ outreach = {}, events = [], suppressions =
   if (priorFollowups.length || outreach.followup_sent_at || outreach.behavioral_followup_sent_at) blockers.push('one_behavioral_followup_cap_reached');
   if (!recipientHash) blockers.push('missing_recipient_level_match');
   if (!['clicked_signal', 'opened_signal'].includes(signal.signal_type)) blockers.push('no_opened_or_clicked_signal_for_behavioral_followup');
-  const latestSignalAt = events
-    .filter((event) => clean(event.recipient_email_hash, 200) === recipientHash)
-    .map((event) => event.event_timestamp || event.created_at || event.timestamp)
-    .filter(Boolean)
-    .sort()
-    .at(-1) || outreach.last_engagement_at || outreach.opened_at || outreach.clicked_at || outreach.sent_at;
+  const sourceMissing = ['experiment_id', 'campaign_lane', 'recipient_email_hash', 'initial_email_template_id', 'initial_email_template_version', 'commercial_offer_id', 'recommended_tier'].filter((field) => !clean(outreach[field] || outreach.metadata?.[field]));
+  if (sourceMissing.length) blockers.push(`missing source outreach attribution: ${sourceMissing.join(', ')}`);
+  const latestSignalAt = signal.signal_at;
+  if (!latestSignalAt) blockers.push('missing scenario-specific signal timestamp');
   if (isFollowupSignalExpired({ signalAt: latestSignalAt, now })) blockers.push(`behavioral_signal_expired_after_${FOLLOWUP_SIGNAL_EXPIRY_BUSINESS_DAYS}_business_days`);
   const scenario = signal.signal_type === 'clicked_signal' ? 'clicked_signal' : signal.signal_type === 'opened_signal' ? 'opened_signal' : null;
+  const delayDays = scenario === 'clicked_signal' ? FOLLOWUP_CLICKED_DELAY_BUSINESS_DAYS : scenario === 'opened_signal' ? FOLLOWUP_OPENED_DELAY_BUSINESS_DAYS : null;
+  const eligibilityAtDate = delayDays == null ? null : addBusinessDaysChicago(latestSignalAt, delayDays);
+  const eligibilityAt = eligibilityAtDate ? eligibilityAtDate.toISOString() : '';
+  if (eligibilityAtDate && Date.parse(now) < eligibilityAtDate.getTime()) blockers.push(`behavioral_followup_delay_not_met_${delayDays}_business_days`);
   const templateId = scenario === 'clicked_signal' ? CLICKED_FOLLOWUP_TEMPLATE_ID : scenario === 'opened_signal' ? OPENED_FOLLOWUP_TEMPLATE_ID : null;
+  const templateVersion = scenario === 'clicked_signal' ? CLICKED_FOLLOWUP_TEMPLATE_VERSION : scenario === 'opened_signal' ? OPENED_FOLLOWUP_TEMPLATE_VERSION : null;
   const payload = {
     source_outreach_id: clean(outreach.id || outreach.outreach_id, 120),
     engagement_recipient_hash: recipientHash,
@@ -278,9 +345,9 @@ export const buildFollowupReview = ({ outreach = {}, events = [], suppressions =
     engagement_signal_confidence: signal.confidence,
     followup_scenario: scenario,
     followup_template_id: templateId,
-    followup_template_version: FOLLOWUP_TEMPLATE_VERSION,
+    followup_template_version: templateVersion,
     followup_owner_decision: 'preview_only_steve_decision_required',
-    followup_eligibility_at: now,
+    followup_eligibility_at: eligibilityAt,
     suppression_snapshot: { suppressions: suppressions.length, checked_at: now },
   };
   const missing = validateFollowupPayload(payload);
@@ -330,6 +397,8 @@ export const buildOwnerReviewDossierItem = ({ prospect = {}, generationJob = {},
   const validation = validatePilotInitialSend({ prospect, generationJob, recipientEmails: emails.map((item) => item.email), suppressions, priorOutreach, now });
   const raceName = clean(prospect.race_name || sourceBundle(generationJob).race_name || 'Unknown race', 160);
   const mockupUrl = clean(generationJob.mockup_url || metadata(prospect).mockup_url, 600);
+  const recommendation = validation.recommendation;
+  const includePreview = recommendation === 'INCLUDE' || recommendation.startsWith('NEEDS_STEVE_DECISION');
   return {
     race_name: raceName,
     location: [prospect.race_city, prospect.race_state].filter(Boolean).join(', '),
@@ -341,17 +410,18 @@ export const buildOwnerReviewDossierItem = ({ prospect = {}, generationJob = {},
     duplicate_suppression_checks: { prior_outreach_count: priorOutreach.length, suppression_count: suppressions.length },
     community_mockup_url_redacted: mockupUrl ? redactPrivateUrl(mockupUrl) : '',
     mockup_qa_status: generationJob.qa_status || 'unknown',
-    initial_email_preview: buildInitialEmailPreview({ raceName, mockupUrl: '[private mockup URL redacted]' }),
-    opened_followup_preview: buildOpenedFollowupPreview({ raceName, mockupUrl: '[private mockup URL redacted]' }),
-    clicked_followup_preview: buildClickedFollowupPreview({ raceName, mockupUrl: '[private mockup URL redacted]' }),
+    initial_email_preview: includePreview ? buildInitialEmailPreview({ raceName, mockupUrl: '[private mockup URL redacted]' }) : '',
+    opened_followup_preview: includePreview ? buildOpenedFollowupPreview({ raceName, mockupUrl: '[private mockup URL redacted]' }) : '',
+    clicked_followup_preview: includePreview ? buildClickedFollowupPreview({ raceName, mockupUrl: '[private mockup URL redacted]' }) : '',
     experiment_attribution_payload: validation.attribution_payload,
-    recommended_tier: 'standard',
+    recommended_tier: RECOMMENDED_TIER,
     owner_concerns: [...validation.blockers, ...validation.warnings],
-    final_dry_run_recommendation: validation.ok ? 'INCLUDE' : 'EXCLUDE',
+    final_dry_run_recommendation: recommendation,
   };
 };
 
 export const buildDossierMarkdown = (items = [], { generatedAt = nowIso(), source = 'read-only dry-run evidence' } = {}) => {
+  const reviewItems = items.filter((item) => item.final_dry_run_recommendation === 'INCLUDE' || String(item.final_dry_run_recommendation).startsWith('NEEDS_STEVE_DECISION'));
   const lines = [
     '# StartLineSites CMO Phase 2A-1 Community Pilot Dry-Run Dossier',
     '',
@@ -360,12 +430,13 @@ export const buildDossierMarkdown = (items = [], { generatedAt = nowIso(), sourc
     '',
     'No race-director outreach, customer email, contact form submission, send approval persistence, production migration, or growth-job activation occurred while generating this dossier.',
     '',
-    `Qualified INCLUDE count: ${items.filter((item) => item.final_dry_run_recommendation === 'INCLUDE').length}`,
-    `Excluded/needs review count: ${items.filter((item) => item.final_dry_run_recommendation !== 'INCLUDE').length}`,
+    `Qualified INCLUDE count: ${reviewItems.filter((item) => item.final_dry_run_recommendation === 'INCLUDE').length}`,
+    `Needs Steve decision count: ${reviewItems.filter((item) => String(item.final_dry_run_recommendation).startsWith('NEEDS_STEVE_DECISION')).length}`,
+    `Categorical exclusions withheld from owner dossier: ${items.length - reviewItems.length}`,
     '',
   ];
-  if (!items.length) lines.push('No candidate rows were supplied or selected. Do not weaken qualification to reach ten.');
-  items.forEach((item, index) => {
+  if (!reviewItems.length) lines.push('No INCLUDE or NEEDS_STEVE_DECISION rows were selected. Categorical exclusions are reported only in the separate private exclusion waterfall.');
+  reviewItems.forEach((item, index) => {
     lines.push(`## ${index + 1}. ${item.race_name}`);
     lines.push(`- Recommendation: ${item.final_dry_run_recommendation}`);
     lines.push(`- Location: ${item.location || 'unknown'}`);
