@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StartLine Lane A Source Evidence",
+  "type": "object",
+  "required": ["candidateId", "raceName", "runSignupUrl", "sourceSnapshotId", "evidenceHash", "eventReliability", "contactState", "historyState", "websiteNeedComponents", "commercialCapacityComponents", "sourceReferences"],
+  "properties": {
+    "candidateId": { "type": ["string", "number"] },
+    "raceName": { "type": "string" },
+    "runSignupUrl": { "type": "string" },
+    "sourceSnapshotId": { "type": "string" },
+    "evidenceHash": { "type": "string" },
+    "eventReliability": { "enum": ["CURRENT_AND_CONSISTENT", "STALE_OR_CONFLICTING", "UNVERIFIED"] },
+    "contactState": { "enum": ["VERIFIED_RACE_DIRECT", "VERIFIED_ORGANIZER_ROUTING", "PLAUSIBLE_REQUIRES_STEVE_VERIFICATION", "CONTACT_FORM_ONLY", "NO_CONTACT", "INVALID_OR_WRONG_ORGANIZATION"] },
+    "historyState": { "enum": ["NEW_NO_HISTORY", "PRIOR_REAL_EXTERNAL_OUTREACH", "PRIOR_CONTACT_FORM_OUTREACH", "PRIOR_COMMERCIAL_HISTORY", "INTERNAL_TEST_ONLY", "AMBIGUOUS_REQUIRES_STEVE_CONFIRMATION"] },
+    "websiteNeedComponents": { "type": "array", "items": { "$ref": "#/$defs/component" } },
+    "commercialCapacityComponents": { "type": "array", "items": { "$ref": "#/$defs/component" } },
+    "sourceReferences": { "type": "array", "items": { "type": "object", "required": ["type", "url", "accessedAt"], "properties": { "type": { "type": "string" }, "url": { "type": "string" }, "accessedAt": { "type": "string" } } } }
+  },
+  "$defs": { "component": { "type": "object", "required": ["id", "score", "evidenceRefs"], "properties": { "id": { "type": "string" }, "score": { "type": "number" }, "evidenceRefs": { "type": "array", "items": { "type": "string" } } } } },
+  "additionalProperties": true
+}

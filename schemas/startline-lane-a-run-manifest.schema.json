@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StartLine Lane A Run Manifest",
+  "type": "object",
+  "required": ["runId", "policyId", "policyVersion", "policySha256", "codeCommitSha", "sopSha256", "evaluationTimestamp", "mode", "preflight", "populationCounts", "outputArtifactHashes", "deviations", "finalDecisions", "postflight"],
+  "properties": {
+    "runId": { "type": "string" },
+    "policyId": { "type": "string" },
+    "policyVersion": { "type": "string" },
+    "policySha256": { "type": "string" },
+    "codeCommitSha": { "type": "string" },
+    "sopSha256": { "type": "string" },
+    "evaluationTimestamp": { "type": "string" },
+    "mode": { "enum": ["fixture", "live-read-only"] },
+    "preflight": { "type": "object" },
+    "populationCounts": { "type": "object" },
+    "outputArtifactHashes": { "type": "object" },
+    "deviations": { "type": "array" },
+    "finalDecisions": { "type": "object" },
+    "postflight": { "type": "object" }
+  },
+  "additionalProperties": true
+}

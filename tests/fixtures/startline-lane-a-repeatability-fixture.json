@@ -1,0 +1,1575 @@
+{
+  "candidates": [
+    {
+      "candidateId": 5,
+      "commercialCapacityComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-cap-recurring_event_history"
+          ],
+          "id": "recurring_event_history",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-paid_entry"
+          ],
+          "id": "paid_entry",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-participant_field_evidence"
+          ],
+          "id": "participant_field_evidence",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-sponsors"
+          ],
+          "id": "sponsors",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-organizer_type"
+          ],
+          "id": "organizer_type",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-multiple_distances"
+          ],
+          "id": "multiple_distances",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-professional_marketing_media"
+          ],
+          "id": "professional_marketing_media",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-fundraising"
+          ],
+          "id": "fundraising",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-operational_scale"
+          ],
+          "id": "operational_scale",
+          "score": 0
+        }
+      ],
+      "contactState": "PLAUSIBLE_REQUIRES_STEVE_VERIFICATION",
+      "deepReviewReady": true,
+      "duplicateState": "CLEAR",
+      "eventReliability": "CURRENT_AND_CONSISTENT",
+      "evidenceHash": "sha256:bacd61628c1a03c37e3680946734d6ff5b8afdb4ac12f91066494022e6bf1d0f",
+      "historyState": "NEW_NO_HISTORY",
+      "laneAFit": true,
+      "leadTimeDays": 150,
+      "obviousIncrementalValue": true,
+      "raceName": "5K Run for the Donut \u2014 sanitized frozen candidate",
+      "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate5",
+      "sourceReferences": [
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "race_level_runsignup_page",
+          "url": "https://runsignup.com/Race/Sanitized/Candidate5"
+        },
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "official_contact_page",
+          "url": "https://sanitized-source.invalid/candidate-5/contact"
+        }
+      ],
+      "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
+      "strongMediumNeed": true,
+      "suppressionClear": true,
+      "websiteNeedComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-need-standalone_site_gap"
+          ],
+          "id": "standalone_site_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-runsignup_completeness_gap"
+          ],
+          "id": "runsignup_completeness_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-current_information_consistency"
+          ],
+          "id": "current_information_consistency",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-race_specific_brand_story_gap"
+          ],
+          "id": "race_specific_brand_story_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-sponsor_presentation_gap"
+          ],
+          "id": "sponsor_presentation_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-routes_faq_logistics_gap"
+          ],
+          "id": "routes_faq_logistics_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-year_round_seo_gap"
+          ],
+          "id": "year_round_seo_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-photos_media_gap"
+          ],
+          "id": "photos_media_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-charity_donation_story_gap"
+          ],
+          "id": "charity_donation_story_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-contact_capture_gap"
+          ],
+          "id": "contact_capture_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-incremental_value_beyond_current_experience"
+          ],
+          "id": "incremental_value_beyond_current_experience",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "candidateId": 10,
+      "commercialCapacityComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-cap-recurring_event_history"
+          ],
+          "id": "recurring_event_history",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-paid_entry"
+          ],
+          "id": "paid_entry",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-participant_field_evidence"
+          ],
+          "id": "participant_field_evidence",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-sponsors"
+          ],
+          "id": "sponsors",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-organizer_type"
+          ],
+          "id": "organizer_type",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-multiple_distances"
+          ],
+          "id": "multiple_distances",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-professional_marketing_media"
+          ],
+          "id": "professional_marketing_media",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-fundraising"
+          ],
+          "id": "fundraising",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-operational_scale"
+          ],
+          "id": "operational_scale",
+          "score": 0
+        }
+      ],
+      "contactState": "VERIFIED_ORGANIZER_ROUTING",
+      "deepReviewReady": true,
+      "duplicateState": "CLEAR",
+      "eventReliability": "CURRENT_AND_CONSISTENT",
+      "evidenceHash": "sha256:c7116dc65d0f5d09bf4b30484af201e631deebe65f4bd438fb0fa604938c14e2",
+      "historyState": "NEW_NO_HISTORY",
+      "laneAFit": true,
+      "leadTimeDays": 92,
+      "obviousIncrementalValue": true,
+      "raceName": "Hytrol Industrial Park 5K/10K \u2014 sanitized frozen candidate",
+      "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate10",
+      "sourceReferences": [
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "race_level_runsignup_page",
+          "url": "https://runsignup.com/Race/Sanitized/Candidate10"
+        },
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "official_contact_page",
+          "url": "https://sanitized-source.invalid/candidate-10/contact"
+        }
+      ],
+      "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
+      "strongMediumNeed": true,
+      "suppressionClear": true,
+      "websiteNeedComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-need-standalone_site_gap"
+          ],
+          "id": "standalone_site_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-runsignup_completeness_gap"
+          ],
+          "id": "runsignup_completeness_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-current_information_consistency"
+          ],
+          "id": "current_information_consistency",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-race_specific_brand_story_gap"
+          ],
+          "id": "race_specific_brand_story_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-sponsor_presentation_gap"
+          ],
+          "id": "sponsor_presentation_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-routes_faq_logistics_gap"
+          ],
+          "id": "routes_faq_logistics_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-year_round_seo_gap"
+          ],
+          "id": "year_round_seo_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-photos_media_gap"
+          ],
+          "id": "photos_media_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-charity_donation_story_gap"
+          ],
+          "id": "charity_donation_story_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-contact_capture_gap"
+          ],
+          "id": "contact_capture_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-incremental_value_beyond_current_experience"
+          ],
+          "id": "incremental_value_beyond_current_experience",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "candidateId": 13,
+      "commercialCapacityComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-cap-recurring_event_history"
+          ],
+          "id": "recurring_event_history",
+          "score": 3
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-paid_entry"
+          ],
+          "id": "paid_entry",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-participant_field_evidence"
+          ],
+          "id": "participant_field_evidence",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-sponsors"
+          ],
+          "id": "sponsors",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-organizer_type"
+          ],
+          "id": "organizer_type",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-multiple_distances"
+          ],
+          "id": "multiple_distances",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-professional_marketing_media"
+          ],
+          "id": "professional_marketing_media",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-fundraising"
+          ],
+          "id": "fundraising",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-operational_scale"
+          ],
+          "id": "operational_scale",
+          "score": 2
+        }
+      ],
+      "contactState": "VERIFIED_ORGANIZER_ROUTING",
+      "deepReviewReady": true,
+      "duplicateState": "CLEAR",
+      "eventReliability": "CURRENT_AND_CONSISTENT",
+      "evidenceHash": "sha256:835ae58349e2947d20193fdf9fad68cc52ee65e31b0859051f3f31fdf1a5cdef",
+      "historyState": "NEW_NO_HISTORY",
+      "laneAFit": true,
+      "leadTimeDays": 150,
+      "obviousIncrementalValue": false,
+      "raceName": "CMH Heroes for Hospice \u2014 sanitized frozen candidate",
+      "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate13",
+      "sourceReferences": [
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "race_level_runsignup_page",
+          "url": "https://runsignup.com/Race/Sanitized/Candidate13"
+        },
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "official_contact_page",
+          "url": "https://sanitized-source.invalid/candidate-13/contact"
+        }
+      ],
+      "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
+      "strongMediumNeed": true,
+      "suppressionClear": true,
+      "websiteNeedComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-need-standalone_site_gap"
+          ],
+          "id": "standalone_site_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-runsignup_completeness_gap"
+          ],
+          "id": "runsignup_completeness_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-current_information_consistency"
+          ],
+          "id": "current_information_consistency",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-race_specific_brand_story_gap"
+          ],
+          "id": "race_specific_brand_story_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-sponsor_presentation_gap"
+          ],
+          "id": "sponsor_presentation_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-routes_faq_logistics_gap"
+          ],
+          "id": "routes_faq_logistics_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-year_round_seo_gap"
+          ],
+          "id": "year_round_seo_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-photos_media_gap"
+          ],
+          "id": "photos_media_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-charity_donation_story_gap"
+          ],
+          "id": "charity_donation_story_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-contact_capture_gap"
+          ],
+          "id": "contact_capture_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-incremental_value_beyond_current_experience"
+          ],
+          "id": "incremental_value_beyond_current_experience",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "candidateId": 15,
+      "commercialCapacityComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-cap-recurring_event_history"
+          ],
+          "id": "recurring_event_history",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-paid_entry"
+          ],
+          "id": "paid_entry",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-participant_field_evidence"
+          ],
+          "id": "participant_field_evidence",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-sponsors"
+          ],
+          "id": "sponsors",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-organizer_type"
+          ],
+          "id": "organizer_type",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-multiple_distances"
+          ],
+          "id": "multiple_distances",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-professional_marketing_media"
+          ],
+          "id": "professional_marketing_media",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-fundraising"
+          ],
+          "id": "fundraising",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-operational_scale"
+          ],
+          "id": "operational_scale",
+          "score": 0
+        }
+      ],
+      "contactState": "VERIFIED_ORGANIZER_ROUTING",
+      "deepReviewReady": true,
+      "duplicateState": "CLEAR",
+      "eventReliability": "CURRENT_AND_CONSISTENT",
+      "evidenceHash": "sha256:5aa6bfb496ecbfd17f1c63ca960f989c6abce9a72d5a93f03fbe4fcaffb3881f",
+      "historyState": "NEW_NO_HISTORY",
+      "laneAFit": true,
+      "leadTimeDays": 150,
+      "obviousIncrementalValue": false,
+      "raceName": "Cape Carteret Turkey Trot \u2014 sanitized frozen candidate",
+      "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate15",
+      "sourceReferences": [
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "race_level_runsignup_page",
+          "url": "https://runsignup.com/Race/Sanitized/Candidate15"
+        },
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "official_contact_page",
+          "url": "https://sanitized-source.invalid/candidate-15/contact"
+        }
+      ],
+      "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
+      "strongMediumNeed": true,
+      "suppressionClear": true,
+      "websiteNeedComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-need-standalone_site_gap"
+          ],
+          "id": "standalone_site_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-runsignup_completeness_gap"
+          ],
+          "id": "runsignup_completeness_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-current_information_consistency"
+          ],
+          "id": "current_information_consistency",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-race_specific_brand_story_gap"
+          ],
+          "id": "race_specific_brand_story_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-sponsor_presentation_gap"
+          ],
+          "id": "sponsor_presentation_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-routes_faq_logistics_gap"
+          ],
+          "id": "routes_faq_logistics_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-year_round_seo_gap"
+          ],
+          "id": "year_round_seo_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-photos_media_gap"
+          ],
+          "id": "photos_media_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-charity_donation_story_gap"
+          ],
+          "id": "charity_donation_story_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-contact_capture_gap"
+          ],
+          "id": "contact_capture_gap",
+          "score": 0
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-incremental_value_beyond_current_experience"
+          ],
+          "id": "incremental_value_beyond_current_experience",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "candidateId": 17,
+      "commercialCapacityComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-cap-recurring_event_history"
+          ],
+          "id": "recurring_event_history",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-paid_entry"
+          ],
+          "id": "paid_entry",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-participant_field_evidence"
+          ],
+          "id": "participant_field_evidence",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-sponsors"
+          ],
+          "id": "sponsors",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-organizer_type"
+          ],
+          "id": "organizer_type",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-multiple_distances"
+          ],
+          "id": "multiple_distances",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-professional_marketing_media"
+          ],
+          "id": "professional_marketing_media",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-fundraising"
+          ],
+          "id": "fundraising",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-operational_scale"
+          ],
+          "id": "operational_scale",
+          "score": 0
+        }
+      ],
+      "contactState": "VERIFIED_ORGANIZER_ROUTING",
+      "deepReviewReady": true,
+      "duplicateState": "CLEAR",
+      "eventReliability": "CURRENT_AND_CONSISTENT",
+      "evidenceHash": "sha256:e7f10c3058f645fb2a2ce526e5dd900132de5a70df1b6adaf2fbb89a4b3433ad",
+      "historyState": "NEW_NO_HISTORY",
+      "laneAFit": true,
+      "leadTimeDays": 150,
+      "obviousIncrementalValue": true,
+      "raceName": "Greater Things on the Move 5K \u2014 sanitized frozen candidate",
+      "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate17",
+      "sourceReferences": [
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "race_level_runsignup_page",
+          "url": "https://runsignup.com/Race/Sanitized/Candidate17"
+        },
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "official_contact_page",
+          "url": "https://sanitized-source.invalid/candidate-17/contact"
+        }
+      ],
+      "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
+      "strongMediumNeed": true,
+      "suppressionClear": true,
+      "websiteNeedComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-need-standalone_site_gap"
+          ],
+          "id": "standalone_site_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-runsignup_completeness_gap"
+          ],
+          "id": "runsignup_completeness_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-current_information_consistency"
+          ],
+          "id": "current_information_consistency",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-race_specific_brand_story_gap"
+          ],
+          "id": "race_specific_brand_story_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-sponsor_presentation_gap"
+          ],
+          "id": "sponsor_presentation_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-routes_faq_logistics_gap"
+          ],
+          "id": "routes_faq_logistics_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-year_round_seo_gap"
+          ],
+          "id": "year_round_seo_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-photos_media_gap"
+          ],
+          "id": "photos_media_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-charity_donation_story_gap"
+          ],
+          "id": "charity_donation_story_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-contact_capture_gap"
+          ],
+          "id": "contact_capture_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-incremental_value_beyond_current_experience"
+          ],
+          "id": "incremental_value_beyond_current_experience",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "candidateId": 19,
+      "commercialCapacityComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-cap-recurring_event_history"
+          ],
+          "id": "recurring_event_history",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-paid_entry"
+          ],
+          "id": "paid_entry",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-participant_field_evidence"
+          ],
+          "id": "participant_field_evidence",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-sponsors"
+          ],
+          "id": "sponsors",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-organizer_type"
+          ],
+          "id": "organizer_type",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-multiple_distances"
+          ],
+          "id": "multiple_distances",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-professional_marketing_media"
+          ],
+          "id": "professional_marketing_media",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-fundraising"
+          ],
+          "id": "fundraising",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-operational_scale"
+          ],
+          "id": "operational_scale",
+          "score": 0
+        }
+      ],
+      "contactState": "CONTACT_FORM_ONLY",
+      "deepReviewReady": true,
+      "duplicateState": "CLEAR",
+      "eventReliability": "CURRENT_AND_CONSISTENT",
+      "evidenceHash": "sha256:67433757db54987022caaa2f9782e58ac1d64b72ba63741a5f037d9f6f53288c",
+      "historyState": "NEW_NO_HISTORY",
+      "laneAFit": true,
+      "leadTimeDays": 150,
+      "obviousIncrementalValue": true,
+      "raceName": "ACC Turkey Trot \u2014 sanitized frozen candidate",
+      "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate19",
+      "sourceReferences": [
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "race_level_runsignup_page",
+          "url": "https://runsignup.com/Race/Sanitized/Candidate19"
+        },
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "official_contact_page",
+          "url": "https://sanitized-source.invalid/candidate-19/contact"
+        }
+      ],
+      "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
+      "strongMediumNeed": true,
+      "suppressionClear": true,
+      "websiteNeedComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-need-standalone_site_gap"
+          ],
+          "id": "standalone_site_gap",
+          "score": 3
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-runsignup_completeness_gap"
+          ],
+          "id": "runsignup_completeness_gap",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-current_information_consistency"
+          ],
+          "id": "current_information_consistency",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-race_specific_brand_story_gap"
+          ],
+          "id": "race_specific_brand_story_gap",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-sponsor_presentation_gap"
+          ],
+          "id": "sponsor_presentation_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-routes_faq_logistics_gap"
+          ],
+          "id": "routes_faq_logistics_gap",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-year_round_seo_gap"
+          ],
+          "id": "year_round_seo_gap",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-photos_media_gap"
+          ],
+          "id": "photos_media_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-charity_donation_story_gap"
+          ],
+          "id": "charity_donation_story_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-contact_capture_gap"
+          ],
+          "id": "contact_capture_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-incremental_value_beyond_current_experience"
+          ],
+          "id": "incremental_value_beyond_current_experience",
+          "score": 3
+        }
+      ]
+    },
+    {
+      "candidateId": 22,
+      "commercialCapacityComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-cap-recurring_event_history"
+          ],
+          "id": "recurring_event_history",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-paid_entry"
+          ],
+          "id": "paid_entry",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-participant_field_evidence"
+          ],
+          "id": "participant_field_evidence",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-sponsors"
+          ],
+          "id": "sponsors",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-organizer_type"
+          ],
+          "id": "organizer_type",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-multiple_distances"
+          ],
+          "id": "multiple_distances",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-professional_marketing_media"
+          ],
+          "id": "professional_marketing_media",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-fundraising"
+          ],
+          "id": "fundraising",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-operational_scale"
+          ],
+          "id": "operational_scale",
+          "score": 0
+        }
+      ],
+      "contactState": "VERIFIED_ORGANIZER_ROUTING",
+      "deepReviewReady": true,
+      "duplicateState": "DUPLICATE_OR_SUPPRESSED",
+      "eventReliability": "CURRENT_AND_CONSISTENT",
+      "evidenceHash": "sha256:d262ed5701bb9644acc87062049c8e758bacea8ab7e48520585bb1d64e5e261f",
+      "historyState": "AMBIGUOUS_REQUIRES_STEVE_CONFIRMATION",
+      "laneAFit": false,
+      "leadTimeDays": 150,
+      "obviousIncrementalValue": true,
+      "raceName": "Run With Meb \u2014 sanitized frozen candidate",
+      "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate22",
+      "sourceReferences": [
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "race_level_runsignup_page",
+          "url": "https://runsignup.com/Race/Sanitized/Candidate22"
+        },
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "official_contact_page",
+          "url": "https://sanitized-source.invalid/candidate-22/contact"
+        }
+      ],
+      "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
+      "strongMediumNeed": true,
+      "suppressionClear": false,
+      "websiteNeedComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-need-standalone_site_gap"
+          ],
+          "id": "standalone_site_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-runsignup_completeness_gap"
+          ],
+          "id": "runsignup_completeness_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-current_information_consistency"
+          ],
+          "id": "current_information_consistency",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-race_specific_brand_story_gap"
+          ],
+          "id": "race_specific_brand_story_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-sponsor_presentation_gap"
+          ],
+          "id": "sponsor_presentation_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-routes_faq_logistics_gap"
+          ],
+          "id": "routes_faq_logistics_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-year_round_seo_gap"
+          ],
+          "id": "year_round_seo_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-photos_media_gap"
+          ],
+          "id": "photos_media_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-charity_donation_story_gap"
+          ],
+          "id": "charity_donation_story_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-contact_capture_gap"
+          ],
+          "id": "contact_capture_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-incremental_value_beyond_current_experience"
+          ],
+          "id": "incremental_value_beyond_current_experience",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "candidateId": 24,
+      "commercialCapacityComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-cap-recurring_event_history"
+          ],
+          "id": "recurring_event_history",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-paid_entry"
+          ],
+          "id": "paid_entry",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-participant_field_evidence"
+          ],
+          "id": "participant_field_evidence",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-sponsors"
+          ],
+          "id": "sponsors",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-organizer_type"
+          ],
+          "id": "organizer_type",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-multiple_distances"
+          ],
+          "id": "multiple_distances",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-professional_marketing_media"
+          ],
+          "id": "professional_marketing_media",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-fundraising"
+          ],
+          "id": "fundraising",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-operational_scale"
+          ],
+          "id": "operational_scale",
+          "score": 0
+        }
+      ],
+      "contactState": "VERIFIED_ORGANIZER_ROUTING",
+      "deepReviewReady": true,
+      "duplicateState": "CLEAR",
+      "eventReliability": "CURRENT_AND_CONSISTENT",
+      "evidenceHash": "sha256:0e6ba2f5a40a925110c44b5fe09055823f4f6c817a8d35d2189aec7197d8ed69",
+      "historyState": "PRIOR_COMMERCIAL_HISTORY",
+      "laneAFit": true,
+      "leadTimeDays": 150,
+      "obviousIncrementalValue": true,
+      "raceName": "A Running Start for Hope 5K \u2014 sanitized frozen candidate",
+      "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate24",
+      "sourceReferences": [
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "race_level_runsignup_page",
+          "url": "https://runsignup.com/Race/Sanitized/Candidate24"
+        },
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "official_contact_page",
+          "url": "https://sanitized-source.invalid/candidate-24/contact"
+        }
+      ],
+      "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
+      "strongMediumNeed": true,
+      "suppressionClear": true,
+      "websiteNeedComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-need-standalone_site_gap"
+          ],
+          "id": "standalone_site_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-runsignup_completeness_gap"
+          ],
+          "id": "runsignup_completeness_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-current_information_consistency"
+          ],
+          "id": "current_information_consistency",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-race_specific_brand_story_gap"
+          ],
+          "id": "race_specific_brand_story_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-sponsor_presentation_gap"
+          ],
+          "id": "sponsor_presentation_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-routes_faq_logistics_gap"
+          ],
+          "id": "routes_faq_logistics_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-year_round_seo_gap"
+          ],
+          "id": "year_round_seo_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-photos_media_gap"
+          ],
+          "id": "photos_media_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-charity_donation_story_gap"
+          ],
+          "id": "charity_donation_story_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-contact_capture_gap"
+          ],
+          "id": "contact_capture_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-incremental_value_beyond_current_experience"
+          ],
+          "id": "incremental_value_beyond_current_experience",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "candidateId": 30,
+      "commercialCapacityComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-cap-recurring_event_history"
+          ],
+          "id": "recurring_event_history",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-paid_entry"
+          ],
+          "id": "paid_entry",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-participant_field_evidence"
+          ],
+          "id": "participant_field_evidence",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-sponsors"
+          ],
+          "id": "sponsors",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-organizer_type"
+          ],
+          "id": "organizer_type",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-multiple_distances"
+          ],
+          "id": "multiple_distances",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-professional_marketing_media"
+          ],
+          "id": "professional_marketing_media",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-fundraising"
+          ],
+          "id": "fundraising",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-cap-operational_scale"
+          ],
+          "id": "operational_scale",
+          "score": 0
+        }
+      ],
+      "contactState": "VERIFIED_ORGANIZER_ROUTING",
+      "deepReviewReady": true,
+      "duplicateState": "CLEAR",
+      "eventReliability": "STALE_OR_CONFLICTING",
+      "evidenceHash": "sha256:66d55972d57b85b69fe275e63b109c6bc228a00f60238872d7186dc632bd7afb",
+      "historyState": "NEW_NO_HISTORY",
+      "laneAFit": true,
+      "leadTimeDays": 150,
+      "obviousIncrementalValue": true,
+      "raceName": "4.01K Reindeer Run \u2014 sanitized frozen candidate",
+      "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate30",
+      "sourceReferences": [
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "race_level_runsignup_page",
+          "url": "https://runsignup.com/Race/Sanitized/Candidate30"
+        },
+        {
+          "accessedAt": "2026-08-14T12:00:00-05:00",
+          "type": "official_contact_page",
+          "url": "https://sanitized-source.invalid/candidate-30/contact"
+        }
+      ],
+      "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
+      "strongMediumNeed": true,
+      "suppressionClear": true,
+      "websiteNeedComponents": [
+        {
+          "evidenceRefs": [
+            "sanitized-need-standalone_site_gap"
+          ],
+          "id": "standalone_site_gap",
+          "score": 3
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-runsignup_completeness_gap"
+          ],
+          "id": "runsignup_completeness_gap",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-current_information_consistency"
+          ],
+          "id": "current_information_consistency",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-race_specific_brand_story_gap"
+          ],
+          "id": "race_specific_brand_story_gap",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-sponsor_presentation_gap"
+          ],
+          "id": "sponsor_presentation_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-routes_faq_logistics_gap"
+          ],
+          "id": "routes_faq_logistics_gap",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-year_round_seo_gap"
+          ],
+          "id": "year_round_seo_gap",
+          "score": 2
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-photos_media_gap"
+          ],
+          "id": "photos_media_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-charity_donation_story_gap"
+          ],
+          "id": "charity_donation_story_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-contact_capture_gap"
+          ],
+          "id": "contact_capture_gap",
+          "score": 1
+        },
+        {
+          "evidenceRefs": [
+            "sanitized-need-incremental_value_beyond_current_experience"
+          ],
+          "id": "incremental_value_beyond_current_experience",
+          "score": 3
+        }
+      ]
+    }
+  ],
+  "frozenEvaluationTimestamp": "2026-08-14T12:00:00-05:00",
+  "mode": "fixture",
+  "modelProviderWhereAiJudgmentUsed": "none-fixture-deterministic",
+  "policyId": "startline-lane-a-sourcing-policy",
+  "policyVersion": "1.0.0",
+  "productionHistorySnapshotTimestamp": "2026-08-14T12:00:00-05:00",
+  "queryCounts": {
+    "productionHistorySelects": 0,
+    "publicSourceFetches": 0
+  },
+  "rowCounts": {
+    "sourceEvidenceRows": 9
+  },
+  "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14"
+}

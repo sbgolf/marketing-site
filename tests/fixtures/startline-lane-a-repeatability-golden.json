@@ -1,0 +1,98 @@
+{
+  "candidateMapping": {
+    "10": {
+      "hardExclusions": [],
+      "ownerDecisionReasons": [
+        "LIMITED_RUNWAY"
+      ],
+      "reason": "NARROW_OWNER_DECISION_REQUIRED",
+      "recommendation": "NEEDS_STEVE_DECISION"
+    },
+    "13": {
+      "hardExclusions": [
+        "LOW_WEBSITE_NEED",
+        "NO_OBVIOUS_INCREMENTAL_VALUE"
+      ],
+      "ownerDecisionReasons": [],
+      "reason": "HARD_EXCLUSION_FAIL_CLOSED",
+      "recommendation": "EXCLUDE"
+    },
+    "15": {
+      "hardExclusions": [
+        "LOW_WEBSITE_NEED",
+        "NO_OBVIOUS_INCREMENTAL_VALUE"
+      ],
+      "ownerDecisionReasons": [],
+      "reason": "HARD_EXCLUSION_FAIL_CLOSED",
+      "recommendation": "EXCLUDE"
+    },
+    "17": {
+      "hardExclusions": [],
+      "ownerDecisionReasons": [],
+      "reason": "ALL_REPEATABILITY_GATES_PASS_CONDITIONAL_ON_FRESH_HISTORY_RECHECK_BEFORE_PHASE_2A_1C",
+      "recommendation": "APPROVE_FOR_ASSET_PREPARATION"
+    },
+    "19": {
+      "hardExclusions": [
+        "CONTACT_FORM_ONLY"
+      ],
+      "ownerDecisionReasons": [],
+      "reason": "HARD_EXCLUSION_FAIL_CLOSED",
+      "recommendation": "EXCLUDE"
+    },
+    "22": {
+      "hardExclusions": [
+        "DUPLICATE_OR_SUPPRESSED",
+        "NOT_LANE_A_FIT"
+      ],
+      "ownerDecisionReasons": [
+        "AMBIGUOUS_HISTORY"
+      ],
+      "reason": "HARD_EXCLUSION_FAIL_CLOSED",
+      "recommendation": "EXCLUDE"
+    },
+    "24": {
+      "hardExclusions": [
+        "PRIOR_COMMERCIAL_HISTORY"
+      ],
+      "ownerDecisionReasons": [],
+      "reason": "HARD_EXCLUSION_FAIL_CLOSED",
+      "recommendation": "EXCLUDE"
+    },
+    "30": {
+      "hardExclusions": [
+        "STALE_OR_CONFLICTING_EVENT_DETAILS"
+      ],
+      "ownerDecisionReasons": [],
+      "reason": "HARD_EXCLUSION_FAIL_CLOSED",
+      "recommendation": "EXCLUDE"
+    },
+    "5": {
+      "hardExclusions": [],
+      "ownerDecisionReasons": [
+        "CONTACT_VERIFICATION"
+      ],
+      "reason": "NARROW_OWNER_DECISION_REQUIRED",
+      "recommendation": "NEEDS_STEVE_DECISION"
+    }
+  },
+  "finalDecisions": {
+    "APPROVE_FOR_ASSET_PREPARATION": 1,
+    "EXCLUDE": 6,
+    "NEEDS_STEVE_DECISION": 2
+  },
+  "noSideEffect": {
+    "countsReconcile": true,
+    "noContactFormsSubmitted": true,
+    "noCronStateChanged": true,
+    "noDatabaseMutation": true,
+    "noEmailsSent": true,
+    "noMockupsCreated": true,
+    "noProspectsWritten": true,
+    "noResendSendCapabilityAvailable": true,
+    "outputSchemaValid": true,
+    "phase2a1cAuthorized": false,
+    "phase2a2Authorized": false,
+    "recurringSourcingCronCreated": false
+  }
+}

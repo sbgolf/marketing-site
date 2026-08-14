@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StartLine Lane A Deviation Record",
+  "type": "object",
+  "required": ["runId", "policyId", "policyVersion", "stage", "expectedCondition", "actualCondition", "reason", "affectedRecords", "evidenceFreshness", "ownerApprovalRequired", "remediation", "finalRunStatus"],
+  "properties": {
+    "runId": { "type": "string" },
+    "policyId": { "type": "string" },
+    "policyVersion": { "type": "string" },
+    "stage": { "type": "string" },
+    "expectedCondition": { "type": "string" },
+    "actualCondition": { "type": "string" },
+    "reason": { "type": "string" },
+    "affectedRecords": { "type": "array" },
+    "evidenceFreshness": { "type": "string" },
+    "ownerApprovalRequired": { "type": "boolean" },
+    "remediation": { "type": "string" },
+    "finalRunStatus": { "type": "string" },
+    "resolvedTimestamp": { "type": "string" }
+  },
+  "additionalProperties": true
+}
