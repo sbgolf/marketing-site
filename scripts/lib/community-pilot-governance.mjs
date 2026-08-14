@@ -211,66 +211,134 @@ export const buildAttributionPayload = ({ prospect = {}, generationJob = {}, rec
 
 export const validateAttributionPayload = (payload = {}) => requiredAttributionFields.filter((field) => !clean(payload[field]));
 
-export const validatePilotInitialSend = ({ prospect = {}, generationJob = {}, recipientEmails = [], suppressions = [], priorOutreach = [], now = nowIso() } = {}) => {
-  const blockers = [];
-  const warnings = [];
+export const OUTCOME_HISTORY_DETERMINISTICALLY_CLEAR = 'DETERMINISTICALLY_CLEAR';
+export const OUTCOME_HISTORY_DETERMINISTICALLY_BLOCKED = 'DETERMINISTICALLY_BLOCKED';
+export const OUTCOME_HISTORY_OWNER_CONFIRMATION_REQUIRED = 'OWNER_HISTORY_CONFIRMATION_REQUIRED';
+
+export const classifyOutcomeHistoryState = (outcomeEvidence = {}) => {
+  const positive = [
+    ...asArray(outcomeEvidence.priorReplies),
+    ...asArray(outcomeEvidence.manualContacts),
+    ...asArray(outcomeEvidence.auditRequests),
+    ...asArray(outcomeEvidence.proposals),
+    ...asArray(outcomeEvidence.checkouts),
+    ...asArray(outcomeEvidence.customerRecords),
+  ].filter(Boolean);
+  if (positive.length) return { state: OUTCOME_HISTORY_DETERMINISTICALLY_BLOCKED, reasons: [`positive durable outcome/history evidence found (${positive.length})`] };
+  const gaps = [...asArray(outcomeEvidence.unavailableSources), ...asArray(outcomeEvidence.unverifiedLinkages)].filter(Boolean);
+  if (gaps.length) return { state: OUTCOME_HISTORY_OWNER_CONFIRMATION_REQUIRED, reasons: gaps.map((gap) => clean(gap, 180)) };
+  return { state: OUTCOME_HISTORY_DETERMINISTICALLY_CLEAR, reasons: [] };
+};
+
+export const buildInitialEligibilityEvidence = ({ prospect = {}, generationJob = {}, recipientEmails = [], suppressions = [], priorOutreach = [], outcomeEvidence = {}, now = nowIso() } = {}) => {
   const bundle = sourceBundle(generationJob);
   const lane = normalizeLane(prospect.campaign_lane || generationJob.campaign_lane || metadata(prospect).campaign_lane || bundle.campaign_lane || metadata(generationJob).campaign_lane || '');
-  const prospectType = normalizeProspectType(prospect.prospect_type || metadata(prospect).prospect_type || '');
-  const explicitSourcePlatform = clean(prospect.source_platform || sourceBundle(generationJob).source_platform, 80);
-  const explicitRegistrationUrl = clean(prospect.registration_url || sourceBundle(generationJob).registration_url, 1000);
+  const prospectType = normalizeProspectType(prospect.prospect_type || generationJob.prospect_type || metadata(prospect).prospect_type || metadata(generationJob).prospect_type || '');
+  const explicitSourcePlatform = clean(prospect.source_platform || bundle.source_platform, 80);
+  const explicitRegistrationUrl = clean(prospect.registration_url || bundle.registration_url, 1000);
   const verifiedContacts = extractVerifiedEmails(prospect);
   const verifiedSet = new Set(verifiedContacts.map((item) => normalizeRecipientEmail(item.email)));
   const requestedRecipients = parseEmailList(recipientEmails);
   const invalidRequestedRecipients = requestedRecipients.filter((email) => !verifiedSet.has(normalizeRecipientEmail(email)));
   const emails = requestedRecipients.length ? requestedRecipients.filter((email) => verifiedSet.has(normalizeRecipientEmail(email))) : verifiedContacts.map((item) => item.email);
+  const plausibleContacts = extractPlausibleContactEmails(prospect);
   const site = classifyOfficialSite(prospect);
-  const attribution = buildAttributionPayload({ prospect, generationJob, recipientEmail: emails[0], now });
-
-  if (!lane) blockers.push('campaign_lane is required.');
-  else if (lane !== CAMPAIGN_LANE) blockers.push(`campaign_lane must be lane_a; received ${lane}.`);
-  if (!prospectType) blockers.push('prospect_type is required.');
-  else if (!APPROVED_LANE_A_PROSPECT_TYPES.has(prospectType)) blockers.push(`prospect_type must be an approved Lane A RunSignup Community race type; received ${prospectType}.`);
-  if (!explicitSourcePlatform) blockers.push('source_platform is required.');
-  else if (lc(explicitSourcePlatform) !== 'runsignup') blockers.push(`source_platform must be runsignup; received ${lc(explicitSourcePlatform)}.`);
-  if (!explicitRegistrationUrl) blockers.push('registration_url is required; source_url is not a substitute.');
-  const urlClassification = classifyCandidateUrl(explicitRegistrationUrl);
-  if (urlClassification.category !== 'runsignup_race_page') blockers.push(`registration_url must be a RunSignup race page; received ${urlClassification.category}.`);
-  if (lc(generationJob.template || generationJob.mockup_template || prospect.recommended_template) !== MOCKUP_TEMPLATE_FAMILY) blockers.push('mockup_template_family must be community.');
   const previewUrl = clean(generationJob.mockup_url || prospect.mockup_url || metadata(prospect).mockup_url, 600);
-  if (!previewUrl) blockers.push('Community mockup URL is required.');
-  blockers.push(...validatePrivatePreview(previewUrl, generationJob));
+  const previewBlockers = validatePrivatePreview(previewUrl, generationJob);
   const raceDate = prospect.event_date || prospect.race_date || bundle.event_date;
   const raceTime = Date.parse(raceDate || '');
   const nowTime = Date.parse(now);
-  if (!raceDate || !Number.isFinite(raceTime)) blockers.push('valid future race date is required.');
-  else if (Number.isFinite(nowTime) && raceTime <= nowTime) blockers.push('race date is in the past.');
-  else if (isRaceTooClose({ raceDate, now })) blockers.push('race_too_close_to_event_day.');
-  if (!['passed', 'pass', 'approved', 'ready'].includes(lc(generationJob.qa_status))) blockers.push('Community mockup QA must be passed.');
-  if (generationJob.site_auditor_status && !['passed', 'pass', 'approved', 'ready', 'not_requested'].includes(lc(generationJob.site_auditor_status))) blockers.push('site auditor status is not acceptable for review.');
-  if (!site.qualifies) blockers.push(`Lane A excluded: ${site.reason}.`);
-  if (!site.reason || ['official_site_requires_manual_review', 'missing_official_site_assessment'].includes(site.reason)) warnings.push('Official-site assessment requires manual CMO review before inclusion.');
-  const categoricalBlockersBeforeContact = blockers.length;
-  if (invalidRequestedRecipients.length) blockers.push('selected recipient must be present in source-backed verified contact evidence.');
-  if (emails.length === 0) blockers.push('verified direct or routing email is required; missing or unverified email is excluded.');
-  if (emails.length > 1) blockers.push('multiple verified recipients require Steve to select exactly one recipient.');
-  if (parseEmailList(prospect.cc_emails).length || parseEmailList(prospect.bcc_emails).length) blockers.push('CC/BCC are not allowed for pilot sends.');
+  const attribution = buildAttributionPayload({ prospect, generationJob, recipientEmail: emails[0], now });
+  const missingAttribution = validateAttributionPayload(attribution);
+  const outcomeHistory = classifyOutcomeHistoryState(outcomeEvidence);
   const contactFormOnly = prospect.contact_form_only === true || lc(prospect.contact_method || metadata(prospect).contact_method) === 'contact_form_only' || (Boolean(prospect.contact_form_url || metadata(prospect).contact_form_url) && emails.length === 0);
-  if (contactFormOnly) blockers.push('contact-form-only prospect is excluded.');
-  if (hasAny(prospect, ['prior_reply_at', 'manual_contacted_at', 'audit_request_id', 'proposal_id', 'checkout_session_id', 'customer_record_id', 'purchase_at'])) blockers.push('prior reply/manual contact/audit/proposal/checkout/purchase blocks pilot send.');
-  if (priorOutreach.length || generationJob.outreach_id || metadata(prospect).outreach_id || metadata(prospect).outreach?.outreach_id) blockers.push('duplicate/prior outreach exists for this prospect/mockup.');
-  if (suppressions.length || hasAny(prospect, ['suppressed_at', 'bounced_at', 'complained_at', 'unsubscribed_at'])) blockers.push('suppression or negative delivery signal blocks pilot send.');
-  const missing = validateAttributionPayload(attribution);
-  if (missing.length) blockers.push(`missing attribution fields: ${missing.join(', ')}.`);
+  const ccBccPresent = parseEmailList(prospect.cc_emails).length > 0 || parseEmailList(prospect.bcc_emails).length > 0;
+  const priorOutcomeFieldsPresent = hasAny(prospect, ['prior_reply_at', 'manual_contacted_at', 'audit_request_id', 'proposal_id', 'checkout_session_id', 'customer_record_id', 'purchase_at']);
+  const contactState = emails.length === 1 && !invalidRequestedRecipients.length ? 'ONE_VERIFIED_RECIPIENT' : emails.length > 1 ? 'MULTIPLE_VERIFIED_RECIPIENTS' : plausibleContacts.length ? 'PLAUSIBLE_UNVERIFIED_CONTACT' : 'NO_VERIFIED_CONTACT';
+  const effectiveMissingAttribution = ['PLAUSIBLE_UNVERIFIED_CONTACT', 'NO_VERIFIED_CONTACT'].includes(contactState) ? missingAttribution.filter((field) => field !== 'recipient_email_hash') : missingAttribution;
+  return {
+    lane,
+    prospect_type: prospectType,
+    source_platform: explicitSourcePlatform,
+    registration_url: explicitRegistrationUrl,
+    verified_contacts_count: verifiedContacts.length,
+    selected_recipients: emails,
+    invalid_selected_recipients: invalidRequestedRecipients,
+    plausible_contacts_count: plausibleContacts.length,
+    prospect_type_valid: Boolean(prospectType) && APPROVED_LANE_A_PROSPECT_TYPES.has(prospectType),
+    lane_valid: lane === CAMPAIGN_LANE,
+    source_platform_valid: lc(explicitSourcePlatform) === 'runsignup',
+    registration_url_valid: Boolean(explicitRegistrationUrl) && classifyCandidateUrl(explicitRegistrationUrl).category === 'runsignup_race_page',
+    registration_url_category: classifyCandidateUrl(explicitRegistrationUrl).category,
+    race_date_valid: Boolean(raceDate) && Number.isFinite(raceTime) && (!Number.isFinite(nowTime) || raceTime > nowTime),
+    lead_time_valid: Boolean(raceDate) && Number.isFinite(raceTime) && (!Number.isFinite(nowTime) || raceTime > nowTime) && !isRaceTooClose({ raceDate, now }),
+    prior_outreach_clear: priorOutreach.length === 0 && !generationJob.outreach_id && !metadata(prospect).outreach_id && !metadata(prospect).outreach?.outreach_id,
+    outcome_history_state: outcomeHistory.state,
+    outcome_history_reasons: outcomeHistory.reasons,
+    outcome_history_clear: outcomeHistory.state === OUTCOME_HISTORY_DETERMINISTICALLY_CLEAR,
+    manual_history_confirmation_required: outcomeHistory.state === OUTCOME_HISTORY_OWNER_CONFIRMATION_REQUIRED,
+    contact_state: contactState,
+    contact_form_only: contactFormOnly,
+    cc_bcc_present: ccBccPresent,
+    suppression_clear: suppressions.length === 0 && !hasAny(prospect, ['suppressed_at', 'bounced_at', 'complained_at', 'unsubscribed_at']),
+    community_mockup_present: Boolean(previewUrl) && lc(generationJob.template || generationJob.mockup_template || prospect.recommended_template) === MOCKUP_TEMPLATE_FAMILY,
+    preview_ready: previewBlockers.length === 0,
+    preview_blockers: previewBlockers,
+    qa_valid: ['passed', 'pass', 'approved', 'ready'].includes(lc(generationJob.qa_status)) && (!generationJob.site_auditor_status || ['passed', 'pass', 'approved', 'ready', 'not_requested'].includes(lc(generationJob.site_auditor_status))),
+    official_site_valid: site.qualifies,
+    official_site_reason: site.reason,
+    attribution_complete: effectiveMissingAttribution.length === 0,
+    missing_attribution_fields: effectiveMissingAttribution,
+    prior_outcome_fields_present: priorOutcomeFieldsPresent,
+    attribution,
+    official_site_assessment: site,
+  };
+};
 
-  const onlyContactNeedsDecision = categoricalBlockersBeforeContact === 0
-    && !invalidRequestedRecipients.length
-    && !parseEmailList(prospect.cc_emails).length
-    && !parseEmailList(prospect.bcc_emails).length;
-  let recommendation = blockers.length === 0 ? 'INCLUDE' : 'EXCLUDE';
-  if (onlyContactNeedsDecision && emails.length > 1) recommendation = 'NEEDS_STEVE_DECISION — SELECT_ONE_RECIPIENT';
-  else if (onlyContactNeedsDecision && emails.length === 0 && extractPlausibleContactEmails(prospect).length) recommendation = 'NEEDS_STEVE_DECISION — CONTACT_VERIFICATION';
-  return { ok: blockers.length === 0, blockers, warnings, recommendation, selected_recipient_masked: maskEmail(emails[0]), attribution_payload: attribution, official_site_assessment: site };
+export const validatePilotInitialSend = ({ prospect = {}, generationJob = {}, recipientEmails = [], suppressions = [], priorOutreach = [], outcomeEvidence = {}, now = nowIso() } = {}) => {
+  const hard_blockers = [];
+  const contact_decision_items = [];
+  const warnings = [];
+  const evidence = buildInitialEligibilityEvidence({ prospect, generationJob, recipientEmails, suppressions, priorOutreach, outcomeEvidence, now });
+
+  if (!evidence.lane) hard_blockers.push('campaign_lane is required.');
+  else if (!evidence.lane_valid) hard_blockers.push(`campaign_lane must be lane_a; received ${evidence.lane}.`);
+  if (!evidence.prospect_type) hard_blockers.push('prospect_type is required.');
+  else if (!evidence.prospect_type_valid) hard_blockers.push(`prospect_type must be an approved Lane A RunSignup Community race type; received ${evidence.prospect_type}.`);
+  if (!evidence.source_platform) hard_blockers.push('source_platform is required.');
+  else if (!evidence.source_platform_valid) hard_blockers.push(`source_platform must be runsignup; received ${lc(evidence.source_platform)}.`);
+  if (!evidence.registration_url) hard_blockers.push('registration_url is required; source_url is not a substitute.');
+  if (!evidence.registration_url_valid) hard_blockers.push(`registration_url must be a RunSignup race page; received ${evidence.registration_url_category}.`);
+  if (!evidence.community_mockup_present) hard_blockers.push('mockup_template_family must be community and Community mockup URL is required.');
+  hard_blockers.push(...evidence.preview_blockers);
+  if (!evidence.race_date_valid) {
+    const raceTime = Date.parse(prospect.event_date || prospect.race_date || sourceBundle(generationJob).event_date || '');
+    const nowTime = Date.parse(now);
+    hard_blockers.push(Number.isFinite(raceTime) && Number.isFinite(nowTime) && raceTime <= nowTime ? 'race date is in the past.' : 'valid future race date is required.');
+  } else if (!evidence.lead_time_valid) hard_blockers.push('race_too_close_to_event_day.');
+  if (!evidence.qa_valid) hard_blockers.push('Community mockup QA and site auditor status must be acceptable for review.');
+  if (!evidence.official_site_valid) hard_blockers.push(`Lane A excluded: ${evidence.official_site_reason}.`);
+  if (!evidence.official_site_reason || ['official_site_requires_manual_review', 'missing_official_site_assessment'].includes(evidence.official_site_reason)) warnings.push('Official-site assessment requires manual CMO review before inclusion.');
+  if (evidence.invalid_selected_recipients.length) hard_blockers.push('selected recipient must be present in source-backed verified contact evidence.');
+  if (evidence.cc_bcc_present) hard_blockers.push('CC/BCC are not allowed for pilot sends.');
+  if (evidence.contact_form_only) hard_blockers.push('contact-form-only prospect is excluded.');
+  if (evidence.prior_outcome_fields_present || evidence.outcome_history_state === OUTCOME_HISTORY_DETERMINISTICALLY_BLOCKED) hard_blockers.push('prior reply/manual contact/audit/proposal/checkout/purchase blocks pilot send.');
+  if (!evidence.prior_outreach_clear) hard_blockers.push('duplicate/prior outreach exists for this prospect/mockup.');
+  if (!evidence.suppression_clear) hard_blockers.push('suppression or negative delivery signal blocks pilot send.');
+  if (!evidence.attribution_complete) hard_blockers.push(`missing attribution fields: ${evidence.missing_attribution_fields.join(', ')}.`);
+
+  if (evidence.contact_state === 'MULTIPLE_VERIFIED_RECIPIENTS') contact_decision_items.push('multiple verified recipients require Steve to select exactly one recipient.');
+  else if (evidence.contact_state === 'PLAUSIBLE_UNVERIFIED_CONTACT' || evidence.contact_state === 'NO_VERIFIED_CONTACT') contact_decision_items.push('verified direct or routing email is required; missing or unverified email requires owner contact verification.');
+  if (evidence.manual_history_confirmation_required) contact_decision_items.push('manual history confirmation required before any live pilot send.');
+
+  let recommendation = 'EXCLUDE';
+  if (hard_blockers.length === 0 && contact_decision_items.length === 0 && evidence.contact_state === 'ONE_VERIFIED_RECIPIENT') recommendation = 'INCLUDE';
+  else if (hard_blockers.length === 0 && evidence.contact_state === 'MULTIPLE_VERIFIED_RECIPIENTS' && contact_decision_items.length === 1) recommendation = 'NEEDS_STEVE_DECISION — SELECT_ONE_RECIPIENT';
+  else if (hard_blockers.length === 0 && ['PLAUSIBLE_UNVERIFIED_CONTACT', 'NO_VERIFIED_CONTACT'].includes(evidence.contact_state) && contact_decision_items.length === 1) recommendation = 'NEEDS_STEVE_DECISION — CONTACT_VERIFICATION';
+  else if (hard_blockers.length === 0 && evidence.manual_history_confirmation_required && evidence.contact_state === 'ONE_VERIFIED_RECIPIENT') recommendation = 'NEEDS_STEVE_DECISION — MANUAL_HISTORY_CONFIRMATION';
+
+  const blockers = [...hard_blockers, ...contact_decision_items];
+  return { ok: recommendation === 'INCLUDE', blockers, hard_blockers, contact_decision_items, warnings, recommendation, selected_recipient_masked: maskEmail(evidence.selected_recipients[0]), attribution_payload: evidence.attribution, official_site_assessment: evidence.official_site_assessment, eligibility_evidence: evidence };
 };
 
 export const classifyEngagementSignal = ({ outreach = {}, events = [], recipientEmailHash = '' } = {}) => {
@@ -392,9 +460,9 @@ export const validateNoSendText = (text = '') => {
   return { ok: hits.length === 0, rejected_terms: hits.map((rx) => rx.source) };
 };
 
-export const buildOwnerReviewDossierItem = ({ prospect = {}, generationJob = {}, suppressions = [], priorOutreach = [], now = nowIso() } = {}) => {
+export const buildOwnerReviewDossierItem = ({ prospect = {}, generationJob = {}, suppressions = [], priorOutreach = [], outcomeEvidence = {}, now = nowIso() } = {}) => {
   const emails = extractVerifiedEmails(prospect);
-  const validation = validatePilotInitialSend({ prospect, generationJob, recipientEmails: emails.map((item) => item.email), suppressions, priorOutreach, now });
+  const validation = validatePilotInitialSend({ prospect, generationJob, recipientEmails: emails.map((item) => item.email), suppressions, priorOutreach, outcomeEvidence, now });
   const raceName = clean(prospect.race_name || sourceBundle(generationJob).race_name || 'Unknown race', 160);
   const mockupUrl = clean(generationJob.mockup_url || metadata(prospect).mockup_url, 600);
   const recommendation = validation.recommendation;
@@ -416,6 +484,14 @@ export const buildOwnerReviewDossierItem = ({ prospect = {}, generationJob = {},
     experiment_attribution_payload: validation.attribution_payload,
     recommended_tier: RECOMMENDED_TIER,
     owner_concerns: [...validation.blockers, ...validation.warnings],
+    hard_blockers: validation.hard_blockers,
+    contact_decision_items: validation.contact_decision_items,
+    warnings: validation.warnings,
+    eligibility_evidence: validation.eligibility_evidence,
+    owner_history_confirmation_state: validation.eligibility_evidence.outcome_history_state,
+    owner_history_confirmation_required: validation.eligibility_evidence.manual_history_confirmation_required,
+    owner_history_confirmation_reasons: validation.eligibility_evidence.outcome_history_reasons,
+    outcome_evidence_sources: outcomeEvidence.sourceSummary || {},
     final_dry_run_recommendation: recommendation,
   };
 };

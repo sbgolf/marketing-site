@@ -39,6 +39,13 @@ import {
   selectLatestCommunityJobByProspect,
 } from '../scripts/build-community-pilot-dry-run-dossier.mjs';
 
+import {
+  findOutcomeEvidenceForCandidate,
+  findPriorOutreachForCandidate,
+  normalizeGenerationJobRow,
+  normalizeProspectRow,
+} from '../scripts/lib/community-pilot-production-adapter.mjs';
+
 const prospect = (overrides = {}) => ({
   id: 'prospect-1',
   race_name: 'River Town 5K',
@@ -338,15 +345,15 @@ test('suppression and broader duplicate evidence block during full scan', async 
     calls.push(path);
     if (path.startsWith('race_mockup_generation_jobs')) return calls.filter((p) => p.startsWith('race_mockup_generation_jobs')).length === 1 ? [job()] : [];
     if (path.startsWith('race_mockup_prospects')) return [prospect()];
-    if (path.startsWith('race_mockup_outreach')) return path.includes('prospect_id=eq.prospect-1') ? [{ id: 'prior-prospect' }] : [];
+    if (path.startsWith('race_mockup_outreach')) return [{ id: 'prior-prospect', metadata: { prospect_id: 'prospect-1', generation_job_id: 'job-1' } }];
     if (path.startsWith('outreach_suppressions')) return [{ id: 'suppression-1' }];
     return [];
   };
   const result = await loadReadOnlySupabaseCandidates({ requester });
   assert.equal(result.items[0].final_dry_run_recommendation, 'EXCLUDE');
   assert.match(result.items[0].owner_concerns.join('\n'), /duplicate\/prior outreach|suppression/);
-  assert.ok(calls.some((p) => p.includes('metadata->>generation_job_id')));
-  assert.ok(calls.some((p) => p.includes('prospect_id=eq.prospect-1')));
+  assert.ok(!calls.some((p) => p.includes('mockup_generation_job_id=eq')));
+  assert.ok(!calls.some((p) => p.includes('prospect_id=eq')));
 });
 
 test('aggregate outreach status alone cannot qualify a different recipient or source', () => {
@@ -370,7 +377,7 @@ test('missing source outreach attribution blocks follow-up', () => {
 });
 
 test('excluded records receive no email preview', () => {
-  const item = buildOwnerReviewDossierItem({ prospect: prospect({ contact_sources: [] }), generationJob: job() });
+  const item = buildOwnerReviewDossierItem({ prospect: prospect({ campaign_lane: 'lane_d', contact_sources: [] }), generationJob: job() });
   assert.equal(item.final_dry_run_recommendation, 'EXCLUDE');
   assert.equal(item.initial_email_preview, '');
   assert.equal(item.opened_followup_preview, '');
@@ -502,8 +509,10 @@ test('review correction: full sequential waterfall reconciles to denominator', (
   const rows = buildExclusionWaterfall([{ prospect: prospect(), job: job(), item: include }, { prospect: prospect({ campaign_lane: 'lane_d' }), job: job(), item: excluded }]);
   assert.equal(rows[0].stage, 'all_prospect_rows');
   assert.equal(rows[0].before, 2);
-  assert.equal(rows.at(-1).stage, 'EXCLUDE');
-  assert.equal(rows.at(-1).remaining, 1);
+  assert.equal(rows.at(-2).stage, 'EXCLUDE');
+  assert.equal(rows.at(-2).remaining, 1);
+  assert.equal(rows.at(-1).stage, 'DENOMINATOR_RECONCILIATION');
+  assert.equal(rows.at(-1).remaining, 2);
 });
 
 test('review correction: limit caps only owner-review dossier and not scan counts', async () => {
@@ -524,3 +533,58 @@ test('review correction: invalid registration-url-to-mockup-url duplicate compar
   await loadReadOnlySupabaseCandidates({ requester });
   assert.ok(!calls.some((path) => path.includes('mockup_url=eq.https%3A%2F%2Frunsignup')));
 });
+
+test('data adapter: actual schema metadata supplies prospect type, lane, event date, and contacts', () => {
+  const row = normalizeProspectRow({
+    id: 'actual-p1',
+    race_name: 'Actual Shape 5K',
+    event_date: '2026-12-01',
+    source_platform: 'runsignup',
+    source_race_id: 'rsu-1',
+    registration_url: 'https://runsignup.com/Race/TX/Austin/ActualShape5K',
+    contact_sources: [{ email: 'director@example.test', confidence: 'source_backed' }],
+    metadata: { prospect_type: 'runsignup_first_community_race', campaign_lane: 'lane_a', official_site_assessment: 'no_meaningful_standalone_site' },
+  });
+  assert.equal(row.prospect_type, 'runsignup_first_community_race');
+  assert.equal(row.campaign_lane, 'lane_a');
+  assert.equal(row.event_date, '2026-12-01');
+  assert.equal(row.contact_sources.length, 1);
+  assert.equal(row.field_provenance.prospect_type, 'prospect.metadata.prospect_type');
+});
+
+test('data adapter: duplicate outreach links through actual metadata and stable keys', () => {
+  const p = normalizeProspectRow(prospect({ id: 'p-actual', race_slug: 'actual-5k', official_domain: 'actual.test', registration_platform: 'runsignup', registration_race_id: '42' }));
+  const j = normalizeGenerationJobRow(job({ id: 'j-actual', prospect_id: 'p-actual' }));
+  const indexes = {
+    outreachByGenerationJobId: new Map([['j-actual', [{ id: 'by-job', metadata: { generation_job_id: 'j-actual' } }]]]),
+    outreachByProspectId: new Map(),
+    outreachByMockupUrl: new Map(),
+    outreachByRegistrationKey: new Map([['runsignup|42', [{ id: 'by-registration' }]]]),
+    outreachByRegistrationUrl: new Map(),
+    outreachByRaceDomain: new Map([['actual-5k|actual.test', [{ id: 'by-domain' }]]]),
+  };
+  const matches = findPriorOutreachForCandidate({ prospect: p, generationJob: j, indexes });
+  assert.deepEqual(matches.map((row) => row.id).sort(), ['by-domain', 'by-job', 'by-registration']);
+});
+
+test('data adapter: unavailable proposal source requires owner history confirmation, not false clear', () => {
+  const p = prospect();
+  const item = buildOwnerReviewDossierItem({ prospect: p, generationJob: job(), outcomeEvidence: { unavailableSources: ['proposal_evidence_source_unavailable'], sourceSummary: { proposal_evidence_source: 'unavailable' } } });
+  assert.equal(item.final_dry_run_recommendation, 'NEEDS_STEVE_DECISION — MANUAL_HISTORY_CONFIRMATION');
+  assert.equal(item.owner_history_confirmation_required, true);
+});
+
+test('data adapter: customer/payment evidence uses verified existing sources', () => {
+  const p = normalizeProspectRow(prospect({ registration_url: 'https://runsignup.com/Race/TX/Austin/RiverTown5K' }));
+  const indexes = {
+    auditRequestsByRegistrationUrl: new Map(),
+    customerRecordsByRegistrationUrl: new Map([['https://runsignup.com/race/tx/austin/rivertown5k', [{ id: 'customer-1', stripe_checkout_session_id: 'cs_1' }]]]),
+    stripeEventsByCheckout: new Map([['cs_1', [{ id: 'evt-1', event_type: 'checkout.session.completed' }]]]),
+    stripeEventsByPaymentIntent: new Map(),
+    stripeEventsByCustomer: new Map(),
+  };
+  const evidence = findOutcomeEvidenceForCandidate({ prospect: p, generationJob: job(), indexes });
+  assert.equal(evidence.customerRecords.length, 1);
+  assert.equal(evidence.checkouts.length, 1);
+});
+

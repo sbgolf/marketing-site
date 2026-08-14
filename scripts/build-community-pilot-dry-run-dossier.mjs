@@ -1,11 +1,25 @@
 #!/usr/bin/env node
 import fs from 'node:fs/promises';
 import { createSupabaseRestRequester } from './lib/mockup-generation-send-gate.mjs';
-import { buildDossierMarkdown, buildOwnerReviewDossierItem, extractVerifiedEmails, hashRecipient, redactPrivateUrl, validatePilotInitialSend } from './lib/community-pilot-governance.mjs';
+import { buildDossierMarkdown, buildOwnerReviewDossierItem, extractVerifiedEmails, hashRecipient, redactPrivateUrl } from './lib/community-pilot-governance.mjs';
+import {
+  buildProductionDataMapMarkdown,
+  buildProductionIndexes,
+  findOutcomeEvidenceForCandidate,
+  findPriorOutreachForCandidate,
+  findSuppressionsForCandidate,
+  normalizeAuditRequestRow,
+  normalizeCustomerRecordRow,
+  normalizeGenerationJobRow,
+  normalizeProspectRow,
+  normalizeStripeWebhookEventRow,
+  normalizeSuppressionRow,
+  normalizeOutreachRow,
+} from './lib/community-pilot-production-adapter.mjs';
 
-const USAGE = `Usage: node scripts/build-community-pilot-dry-run-dossier.mjs [--input fixture.json] [--output file.md] [--limit 10]\n\nPreview-only Phase 2A-1 dossier generator. It reads data and writes only the requested local output file. It never sends email, submits contact forms, persists send approvals, applies migrations, or mutates Supabase.`;
-
+const USAGE = `Usage: node scripts/build-community-pilot-dry-run-dossier.mjs [--input fixture.json] [--output file.md] [--limit 10] [--exclusion-output file.md] [--data-map-output file.md] [--schema-preflight-only]\n\nPreview-only Phase 2A-1 dossier generator. It reads data and writes only requested local output files. It never sends email, submits contact forms, persists send approvals, applies migrations, or mutates Supabase.`;
 const PAGE_SIZE = 100;
+const MAX_BULK_QUERY_COUNT = 20;
 
 const parseArgs = (argv = process.argv.slice(2)) => {
   const args = {};
@@ -35,11 +49,20 @@ const readInput = async (path) => {
 };
 
 const encode = (value) => encodeURIComponent(String(value ?? ''));
-const uniqById = (rows = []) => [...new Map((rows || []).filter(Boolean).map((row) => [row.id || JSON.stringify(row), row])).values()];
 
 export const createReadOnlyRequester = (requester = createSupabaseRestRequester()) => async ({ path, method = 'GET', ...rest } = {}) => {
   if (String(method || 'GET').toUpperCase() !== 'GET') throw new Error(`read-only dossier requester rejected ${method} mutation attempt`);
   return requester({ path, method: 'GET', ...rest });
+};
+
+const withQueryCounter = (request) => {
+  const calls = [];
+  const counted = async (call) => {
+    calls.push(call.path);
+    return request(call);
+  };
+  counted.calls = calls;
+  return counted;
 };
 
 const requireRows = async ({ request, path, stage }) => {
@@ -68,99 +91,28 @@ export const loadPagedRows = async ({ request, table, select = '*', filters = ''
     page += 1;
     if (batch.length < pageSize) break;
   }
-  return { rows, pageCount: page, pageSize, deterministicSort: order, sourceQuery: `${table}${filters ? `?${filters}` : ''}` };
+  return { table, rows, pageCount: page, pageSize, deterministicSort: order, sourceQuery: `${table}${filters ? `?${filters}` : ''}` };
 };
 
-const lookupRows = async ({ request, table, select = 'id', filters = [], stage }) => {
-  const all = [];
-  for (const filter of filters.filter(Boolean)) {
-    all.push(...await requireRows({ request, path: `${table}?select=${encode(select)}&${filter}&limit=25`, stage }));
+const TABLE_SPECS = {
+  prospects: { table: 'race_mockup_prospects', select: '*', normalizer: normalizeProspectRow, keysIndexed: ['id', 'registration_url', 'registration_platform|registration_race_id', 'race_slug|official_domain'] },
+  generationJobs: { table: 'race_mockup_generation_jobs', select: 'id,prospect_id,job_status,qa_status,site_auditor_status,owner_approval_status,mockup_url,template,source_bundle,metadata,updated_at,created_at,outreach_id', filters: 'template=eq.community', normalizer: normalizeGenerationJobRow, keysIndexed: ['prospect_id', 'id', 'mockup_url'] },
+  outreach: { table: 'race_mockup_outreach', select: 'id,race_name,race_slug,official_domain,registration_url,registration_platform,registration_race_id,mockup_url,mockup_template,outreach_status,response_status,to_emails,cc_emails,bcc_emails,sent_at,last_contacted_at,resend_email_id,engagement_status,bounced_at,complained_at,unsubscribed_at,suppressed_at,campaign_id,campaign_lane,metadata,created_at,updated_at', normalizer: normalizeOutreachRow, keysIndexed: ['metadata.generation_job_id', 'metadata.prospect_id', 'mockup_url', 'registration_platform|registration_race_id', 'race_slug|official_domain'] },
+  suppressions: { table: 'outreach_suppressions', select: 'id,recipient_email_hash,reason,source_provider,source_outreach_id,created_at,updated_at', normalizer: normalizeSuppressionRow, keysIndexed: ['recipient_email_hash'] },
+  auditRequests: { table: 'audit_requests', select: 'id,race_name,current_url,contact_email,race_date,registration_url,registration_platform,status,outreach_status,stripe_customer_id,stripe_checkout_session_id,stripe_payment_intent_id,deposit_status,deposit_paid_at,metadata,created_at,updated_at', normalizer: normalizeAuditRequestRow, keysIndexed: ['registration_url/current_url'] },
+  customerRecords: { table: 'customer_records', select: 'id,audit_request_id,race_name,current_url,registration_url,primary_contact_email,billing_contact_email,customer_status,deposit_status,subscription_status,stripe_customer_id,stripe_checkout_session_id,stripe_deposit_payment_intent_id,deposit_paid_at,metadata,created_at,updated_at', normalizer: normalizeCustomerRecordRow, keysIndexed: ['registration_url/current_url', 'stripe ids'] },
+  stripeWebhookEvents: { table: 'stripe_webhook_events', select: 'id,stripe_event_id,event_type,processing_status,checkout_session_id,payment_intent_id,stripe_customer_id,payload,processed_at,created_at,updated_at', normalizer: normalizeStripeWebhookEventRow, keysIndexed: ['checkout_session_id', 'payment_intent_id', 'stripe_customer_id'] },
+};
+
+export const loadProductionTables = async ({ request } = {}) => {
+  const scans = {};
+  for (const [name, spec] of Object.entries(TABLE_SPECS)) {
+    const scan = await loadPagedRows({ request, table: spec.table, select: spec.select, filters: spec.filters || '', order: 'updated_at.desc', stage: name });
+    scan.rows = scan.rows.map(spec.normalizer);
+    scan.keysIndexed = spec.keysIndexed;
+    scans[name] = scan;
   }
-  return uniqById(all);
-};
-
-const buildPriorOutreachFilters = ({ job = {}, prospect = {} }) => [
-  job.id ? `metadata->>generation_job_id=eq.${encode(job.id)}` : '',
-  job.id ? `mockup_generation_job_id=eq.${encode(job.id)}` : '',
-  job.prospect_id ? `prospect_id=eq.${encode(job.prospect_id)}` : '',
-  prospect.id ? `prospect_id=eq.${encode(prospect.id)}` : '',
-  job.mockup_url ? `mockup_url=eq.${encode(job.mockup_url)}` : '',
-  prospect.source_race_id ? `metadata->>source_race_id=eq.${encode(prospect.source_race_id)}` : '',
-  prospect.registration_race_id ? `metadata->>registration_race_id=eq.${encode(prospect.registration_race_id)}` : '',
-  prospect.registration_url ? `metadata->>registration_url=eq.${encode(prospect.registration_url)}` : '',
-];
-
-export const buildSuppressionFilters = ({ prospect = {} }) => {
-  const emails = extractVerifiedEmails(prospect).map((item) => item.email);
-  const hashes = [...new Set(emails.map((email) => hashRecipient(email)).filter(Boolean))];
-  return hashes.length ? [`recipient_email_hash=in.(${hashes.map(encode).join(',')})`] : [];
-};
-
-const buildOutcomeEvidence = async ({ request, prospect = {}, job = {} }) => {
-  const sourceRaceId = prospect.source_race_id || prospect.registration_race_id || job.source_bundle?.source_race_id || job.source_bundle?.registration_race_id;
-  const prospectId = prospect.id || job.prospect_id;
-  const filters = [
-    prospectId ? `prospect_id=eq.${encode(prospectId)}` : '',
-    sourceRaceId ? `metadata->>source_race_id=eq.${encode(sourceRaceId)}` : '',
-  ];
-  const [auditRequests, proposals, checkouts, customers] = await Promise.all([
-    lookupRows({ request, table: 'audit_requests', filters, stage: 'outcome:audit_requests' }),
-    lookupRows({ request, table: 'startline_proposals', filters, stage: 'outcome:proposals' }),
-    lookupRows({ request, table: 'stripe_checkout_sessions', filters, stage: 'outcome:checkouts' }),
-    lookupRows({ request, table: 'startline_customers', filters, stage: 'outcome:customers' }),
-  ]);
-  return { auditRequests, proposals, checkouts, customers };
-};
-
-export const WATERFALL_STAGES = [
-  ['all_prospect_rows', () => true],
-  ['approved_prospect_type_candidates', ({ prospect }) => Boolean(prospect.prospect_type)],
-  ['lane_a', ({ prospect, job }) => ['lane_a', 'a'].includes(String(prospect.campaign_lane || job?.campaign_lane || '').toLowerCase())],
-  ['race_level_runsignup_registration_url', ({ prospect }) => Boolean(prospect.registration_url)],
-  ['known_future_date', ({ prospect }) => Boolean(prospect.event_date || prospect.race_date)],
-  ['sufficient_lead_time', ({ item }) => !item.owner_concerns.some((c) => /race_too_close|past|future race date/.test(c))],
-  ['no_prior_outreach_or_outcome_blocker', ({ item }) => !item.owner_concerns.some((c) => /prior|duplicate|reply|audit|proposal|checkout|purchase/.test(c))],
-  ['one_verified_recipient_or_owner_resolvable_contact_decision', ({ item }) => item.final_dry_run_recommendation === 'INCLUDE' || item.final_dry_run_recommendation.startsWith('NEEDS_STEVE_DECISION') || !item.owner_concerns.some((c) => /verified direct|selected recipient|multiple verified/.test(c))],
-  ['unsuppressed', ({ item }) => !item.owner_concerns.some((c) => /suppression|negative delivery/.test(c))],
-  ['current_accessible_community_mockup', ({ item }) => !item.owner_concerns.some((c) => /Community mockup|private preview|mockup_template_family/.test(c))],
-  ['qa_requirements', ({ item }) => !item.owner_concerns.some((c) => /QA|auditor/.test(c))],
-  ['explicit_official_site_classification', ({ item }) => !item.owner_concerns.some((c) => /official_site|Lane A excluded/.test(c))],
-  ['complete_attribution', ({ item }) => !item.owner_concerns.some((c) => /missing attribution/.test(c))],
-];
-
-export const buildExclusionWaterfall = (candidates = []) => {
-  let remaining = candidates.slice();
-  const rows = [];
-  for (const [stage, predicate] of WATERFALL_STAGES) {
-    const before = remaining.length;
-    const passed = remaining.filter(predicate);
-    rows.push({ stage, before, excluded: before - passed.length, remaining: passed.length });
-    remaining = passed;
-  }
-  rows.push({ stage: 'INCLUDE', before: remaining.length, excluded: remaining.filter((row) => row.item.final_dry_run_recommendation !== 'INCLUDE').length, remaining: remaining.filter((row) => row.item.final_dry_run_recommendation === 'INCLUDE').length });
-  rows.push({ stage: 'NEEDS_STEVE_DECISION', before: candidates.length, excluded: candidates.filter((row) => !row.item.final_dry_run_recommendation.startsWith('NEEDS_STEVE_DECISION')).length, remaining: candidates.filter((row) => row.item.final_dry_run_recommendation.startsWith('NEEDS_STEVE_DECISION')).length });
-  rows.push({ stage: 'EXCLUDE', before: candidates.length, excluded: candidates.filter((row) => row.item.final_dry_run_recommendation !== 'EXCLUDE').length, remaining: candidates.filter((row) => row.item.final_dry_run_recommendation === 'EXCLUDE').length });
-  return rows;
-};
-
-export const buildExclusionWaterfallMarkdown = ({ items = [], scanEvidence = {}, generatedAt = new Date().toISOString() } = {}) => {
-  const lines = [
-    '# StartLineSites CMO Phase 2A-1 Candidate Exclusion Waterfall',
-    '',
-    `Generated: ${generatedAt}`,
-    `Source table/query: ${scanEvidence.sourceQuery || 'unknown'}`,
-    `Deterministic sort: ${scanEvidence.deterministicSort || 'unknown'}`,
-    `Total rows scanned: ${scanEvidence.totalRowsScanned ?? items.length}`,
-    `Page count: ${scanEvidence.pageCount || 0}`,
-    '',
-    'No outreach, contact form submission, send approval persistence, production migration, or Supabase mutation occurred.',
-    '',
-    '## Reason counts',
-  ];
-  for (const row of buildExclusionWaterfall(items.map((item) => ({ item, prospect: item.prospect_snapshot || {}, job: item.generation_job_snapshot || {} })))) lines.push(`- ${row.stage}: before=${row.before}; excluded=${row.excluded}; remaining=${row.remaining}`);
-  lines.push('', '## Last-mile candidates', '');
-  for (const item of items.filter((i) => i.final_dry_run_recommendation !== 'EXCLUDE')) lines.push(`- ${item.race_name}: ${item.final_dry_run_recommendation}; contact=${item.contact_role}; mockup=${redactPrivateUrl(item.community_mockup_url_redacted || '') || 'redacted'}`);
-  return `${lines.join('\n')}\n`;
+  return scans;
 };
 
 export const selectLatestCommunityJobByProspect = (jobs = []) => {
@@ -176,49 +128,117 @@ export const selectLatestCommunityJobByProspect = (jobs = []) => {
   return { byProspect, generationJobsScanned: communityJobs.length, duplicateGenerationJobsCollapsed: communityJobs.length - byProspect.size };
 };
 
+export const buildSuppressionFilters = ({ prospect = {} }) => {
+  const emails = extractVerifiedEmails(prospect).map((item) => item.email);
+  const hashes = [...new Set(emails.map((email) => hashRecipient(email)).filter(Boolean))];
+  return hashes.length ? [`recipient_email_hash=in.(${hashes.map(encode).join(',')})`] : [];
+};
+
+const recipientHashesForProspect = (prospect = {}) => [...new Set(extractVerifiedEmails(prospect).map((item) => hashRecipient(item.email)).filter(Boolean))];
+
+export const buildExclusionWaterfall = (candidates = []) => {
+  let remaining = candidates.slice();
+  const rows = [];
+  const stages = [
+    ['all_prospect_rows', () => true],
+    ['approved_prospect_type_candidates', ({ item }) => item.eligibility_evidence.prospect_type_valid],
+    ['lane_a', ({ item }) => item.eligibility_evidence.lane_valid],
+    ['race_level_runsignup_registration_url', ({ item }) => item.eligibility_evidence.registration_url_valid],
+    ['known_future_date', ({ item }) => item.eligibility_evidence.race_date_valid],
+    ['sufficient_lead_time', ({ item }) => item.eligibility_evidence.lead_time_valid],
+    ['no_prior_outreach_or_outcome_blocker', ({ item }) => item.eligibility_evidence.prior_outreach_clear && item.eligibility_evidence.outcome_history_state !== 'DETERMINISTICALLY_BLOCKED'],
+    ['one_verified_recipient_or_owner_resolvable_contact_decision', ({ item }) => ['ONE_VERIFIED_RECIPIENT', 'MULTIPLE_VERIFIED_RECIPIENTS', 'PLAUSIBLE_UNVERIFIED_CONTACT'].includes(item.eligibility_evidence.contact_state)],
+    ['unsuppressed', ({ item }) => item.eligibility_evidence.suppression_clear],
+    ['current_accessible_community_mockup', ({ item }) => item.eligibility_evidence.community_mockup_present && item.eligibility_evidence.preview_ready],
+    ['qa_requirements', ({ item }) => item.eligibility_evidence.qa_valid],
+    ['explicit_official_site_classification', ({ item }) => item.eligibility_evidence.official_site_valid],
+    ['complete_attribution', ({ item }) => item.eligibility_evidence.attribution_complete],
+  ];
+  for (const [stage, predicate] of stages) {
+    const before = remaining.length;
+    const passed = remaining.filter(predicate);
+    rows.push({ stage, before, excluded: before - passed.length, remaining: passed.length });
+    remaining = passed;
+  }
+  const includeCount = candidates.filter((row) => row.item.final_dry_run_recommendation === 'INCLUDE').length;
+  const needsCount = candidates.filter((row) => String(row.item.final_dry_run_recommendation).startsWith('NEEDS_STEVE_DECISION')).length;
+  const excludeCount = candidates.filter((row) => row.item.final_dry_run_recommendation === 'EXCLUDE').length;
+  rows.push({ stage: 'INCLUDE', before: candidates.length, excluded: candidates.length - includeCount, remaining: includeCount });
+  rows.push({ stage: 'NEEDS_STEVE_DECISION', before: candidates.length, excluded: candidates.length - needsCount, remaining: needsCount });
+  rows.push({ stage: 'EXCLUDE', before: candidates.length, excluded: candidates.length - excludeCount, remaining: excludeCount });
+  rows.push({ stage: 'DENOMINATOR_RECONCILIATION', before: candidates.length, excluded: 0, remaining: includeCount + needsCount + excludeCount });
+  return rows;
+};
+
+export const buildExclusionWaterfallMarkdown = ({ items = [], scanEvidence = {}, generatedAt = new Date().toISOString() } = {}) => {
+  const lines = [
+    '# StartLineSites CMO Phase 2A-1 Candidate Exclusion Waterfall',
+    '',
+    `Generated: ${generatedAt}`,
+    `Source table/query: ${scanEvidence.sourceQuery || 'unknown'}`,
+    `Deterministic sort: ${scanEvidence.deterministicSort || 'unknown'}`,
+    `Unique prospect denominator: ${scanEvidence.uniqueProspectIds ?? items.length}`,
+    `Total REST query count: ${scanEvidence.totalRestQueryCount ?? 'unknown'}`,
+    '',
+    'No outreach, contact form submission, send approval persistence, production migration, or Supabase mutation occurred.',
+    '',
+    '## Structured sequential waterfall',
+  ];
+  const candidates = items.map((item) => ({ item, prospect: item.prospect_snapshot || {}, job: item.generation_job_snapshot || {} }));
+  for (const row of buildExclusionWaterfall(candidates)) lines.push(`- ${row.stage}: before=${row.before}; excluded=${row.excluded}; remaining=${row.remaining}`);
+  lines.push('', '## Last-mile candidates', '');
+  for (const item of items.filter((i) => i.final_dry_run_recommendation !== 'EXCLUDE')) lines.push(`- ${item.race_name}: ${item.final_dry_run_recommendation}; contact=${item.contact_role}; mockup=${redactPrivateUrl(item.community_mockup_url_redacted || '') || 'redacted'}; history=${item.owner_history_confirmation_state}`);
+  return `${lines.join('\n')}\n`;
+};
+
 export const loadReadOnlySupabaseCandidates = async ({ limit = 10, requester } = {}) => {
-  const request = createReadOnlyRequester(requester);
-  const [prospectScan, jobScan] = await Promise.all([
-    loadPagedRows({ request, table: 'race_mockup_prospects', select: '*', order: 'updated_at.desc', stage: 'prospects' }),
-    loadPagedRows({ request, table: 'race_mockup_generation_jobs', select: 'id,prospect_id,job_status,qa_status,site_auditor_status,owner_approval_status,mockup_url,template,source_bundle,metadata,updated_at,created_at,outreach_id', filters: 'template=eq.community', order: 'updated_at.desc', stage: 'generation_jobs' }),
-  ]);
-  const collapsed = selectLatestCommunityJobByProspect(jobScan.rows);
+  const request = withQueryCounter(createReadOnlyRequester(requester));
+  const scans = await loadProductionTables({ request });
+  const indexes = buildProductionIndexes({
+    prospects: scans.prospects.rows,
+    generationJobs: scans.generationJobs.rows,
+    outreach: scans.outreach.rows,
+    suppressions: scans.suppressions.rows,
+    auditRequests: scans.auditRequests.rows,
+    customerRecords: scans.customerRecords.rows,
+    stripeWebhookEvents: scans.stripeWebhookEvents.rows,
+  });
+  if (request.calls.length > MAX_BULK_QUERY_COUNT) throw new Error(`bounded bulk scan exceeded query cap: ${request.calls.length} > ${MAX_BULK_QUERY_COUNT}`);
+  const collapsed = selectLatestCommunityJobByProspect(scans.generationJobs.rows);
   const candidates = [];
-  for (const prospect of prospectScan.rows) {
+  for (const prospect of scans.prospects.rows) {
     const job = collapsed.byProspect.get(prospect.id) || {};
-    const [priorOutreach, suppressions, outcomes] = await Promise.all([
-      lookupRows({ request, table: 'race_mockup_outreach', filters: buildPriorOutreachFilters({ job, prospect }), stage: 'prior_outreach' }),
-      lookupRows({ request, table: 'outreach_suppressions', filters: buildSuppressionFilters({ prospect }), stage: 'suppressions' }),
-      buildOutcomeEvidence({ request, prospect, job }),
-    ]);
-    const enrichedProspect = {
-      ...prospect,
-      audit_request_id: outcomes.auditRequests[0]?.id || prospect.audit_request_id,
-      proposal_id: outcomes.proposals[0]?.id || prospect.proposal_id,
-      checkout_session_id: outcomes.checkouts[0]?.id || prospect.checkout_session_id,
-      customer_record_id: outcomes.customers[0]?.id || prospect.customer_record_id,
-    };
-    const item = buildOwnerReviewDossierItem({ prospect: enrichedProspect, generationJob: job, priorOutreach, suppressions });
-    item.prospect_snapshot = { id: prospect.id, prospect_type: prospect.prospect_type, campaign_lane: prospect.campaign_lane, registration_url: prospect.registration_url, race_date: prospect.race_date || prospect.event_date };
+    const priorOutreach = findPriorOutreachForCandidate({ prospect, generationJob: job, indexes });
+    const suppressions = findSuppressionsForCandidate({ recipientHashes: recipientHashesForProspect(prospect), indexes });
+    const outcomeEvidence = findOutcomeEvidenceForCandidate({ prospect, generationJob: job, indexes });
+    const item = buildOwnerReviewDossierItem({ prospect, generationJob: job, priorOutreach, suppressions, outcomeEvidence });
+    item.prospect_snapshot = { id: prospect.id, prospect_type: prospect.prospect_type, campaign_lane: prospect.campaign_lane, registration_url: prospect.registration_url, race_date: prospect.race_date || prospect.event_date, field_provenance: prospect.field_provenance };
     item.generation_job_snapshot = { id: job.id || '', prospect_id: job.prospect_id || '', template: job.template || '', updated_at: job.updated_at || '' };
-    candidates.push({ prospect: enrichedProspect, job, item });
+    candidates.push({ prospect, job, item });
   }
   const items = candidates.map((candidate) => candidate.item);
   const reviewItems = items.filter((item) => item.final_dry_run_recommendation === 'INCLUDE' || item.final_dry_run_recommendation.startsWith('NEEDS_STEVE_DECISION'));
+  const tableReports = Object.fromEntries(Object.entries(scans).map(([name, scan]) => [name, { table: scan.table, rowsLoaded: scan.rows.length, pages: scan.pageCount, queryCount: scan.pageCount, keysIndexed: scan.keysIndexed }]));
   return {
     items,
+    dataMapMarkdown: buildProductionDataMapMarkdown({ tableScans: scans }),
     scanEvidence: {
-      prospectRowsScanned: prospectScan.rows.length,
-      uniqueProspectIds: new Set(prospectScan.rows.map((row) => row.id)).size,
+      tableReports,
+      prospectRowsScanned: scans.prospects.rows.length,
+      uniqueProspectIds: new Set(scans.prospects.rows.map((row) => row.id)).size,
       generationJobsScanned: collapsed.generationJobsScanned,
       duplicateGenerationJobsCollapsed: collapsed.duplicateGenerationJobsCollapsed,
+      outreachRows: scans.outreach.rows.length,
+      suppressionRows: scans.suppressions.rows.length,
+      auditOutcomeRows: scans.auditRequests.rows.length + scans.customerRecords.rows.length + scans.stripeWebhookEvents.rows.length,
       finalOneRowPerProspectCandidateCount: candidates.length,
-      pageCount: prospectScan.pageCount,
-      prospectPageCount: prospectScan.pageCount,
-      generationJobPageCount: jobScan.pageCount,
-      totalRowsScanned: prospectScan.rows.length,
-      sourceQuery: 'race_mockup_prospects full table joined read-only to latest relevant Community generation job per prospect',
-      deterministicSort: prospectScan.deterministicSort,
+      pageCount: scans.prospects.pageCount,
+      prospectPageCount: scans.prospects.pageCount,
+      generationJobPageCount: scans.generationJobs.pageCount,
+      totalRestQueryCount: request.calls.length,
+      totalRowsScanned: scans.prospects.rows.length,
+      sourceQuery: 'bounded bulk read of race_mockup_prospects plus actual production adapter tables; no per-prospect lookups',
+      deterministicSort: scans.prospects.deterministicSort,
       sourceTable: 'race_mockup_prospects authoritative prospect universe',
       exclusionWaterfall: buildExclusionWaterfall(candidates),
     },
@@ -231,12 +251,18 @@ const main = async () => {
   if (args.help) { console.log(USAGE); return; }
   const input = await readInput(args.input);
   const result = input
-    ? { items: (input.items || []).map((item) => buildOwnerReviewDossierItem(item)), scanEvidence: { totalRowsScanned: (input.items || []).length, pageCount: 0, sourceQuery: `fixture ${args.input}`, deterministicSort: 'fixture order' } }
+    ? { items: (input.items || []).map((item) => buildOwnerReviewDossierItem(item)), scanEvidence: { totalRowsScanned: (input.items || []).length, pageCount: 0, sourceQuery: `fixture ${args.input}`, deterministicSort: 'fixture order', uniqueProspectIds: (input.items || []).length, totalRestQueryCount: 0 } }
     : await loadReadOnlySupabaseCandidates({ limit: args.limit || 10 });
+  if (args['schema-preflight-only']) {
+    if (args['data-map-output'] && result.dataMapMarkdown) await fs.writeFile(args['data-map-output'], result.dataMapMarkdown);
+    console.log(JSON.stringify({ scanEvidence: result.scanEvidence }, null, 2));
+    return;
+  }
   const selected = result.selectedItems || result.items;
   const markdown = buildDossierMarkdown(selected, { source: input ? `fixture ${args.input}` : 'read-only production Supabase candidate scan' });
   if (args.output) await fs.writeFile(args.output, markdown);
   if (args['exclusion-output']) await fs.writeFile(args['exclusion-output'], buildExclusionWaterfallMarkdown({ items: result.items, scanEvidence: result.scanEvidence }));
+  if (args['data-map-output'] && result.dataMapMarkdown) await fs.writeFile(args['data-map-output'], result.dataMapMarkdown);
   console.log(markdown);
   console.error(JSON.stringify({ scanEvidence: result.scanEvidence }, null, 2));
 };
