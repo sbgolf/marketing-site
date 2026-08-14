@@ -18,7 +18,7 @@ import {
   summarizeOutreachHistory,
 } from './lib/community-pilot-production-adapter.mjs';
 
-const USAGE = `Usage: node scripts/build-community-pilot-dry-run-dossier.mjs [--input fixture.json] [--output file.md] [--limit 10] [--exclusion-output file.md] [--data-map-output file.md] [--schema-preflight-only]\n\nPreview-only Phase 2A-1 dossier generator. It reads data and writes only requested local output files. It never sends email, submits contact forms, persists send approvals, applies migrations, or mutates Supabase.`;
+const USAGE = `Usage: node scripts/build-community-pilot-dry-run-dossier.mjs [--input fixture.json] [--output file.md] [--limit 10] [--exclusion-output file.md] [--data-map-output file.md] [--truth-table-output file.md] [--last-mile-output file.md] [--history-output file.md] [--schema-preflight-only]\n\nPreview-only Phase 2A-1 dossier generator. It reads data and writes only requested local output files. It never sends email, submits contact forms, persists send approvals, applies migrations, or mutates Supabase.`;
 const PAGE_SIZE = 100;
 const MAX_BULK_QUERY_COUNT = 20;
 
@@ -216,6 +216,97 @@ const redactedLastMileIdentifier = (item = {}) => {
   return `${text.slice(0, 6)}***${text.slice(-4)}`;
 };
 
+const summarizeCounts = (items = [], field = 'prior_history_classification') => items.reduce((acc, item) => {
+  for (const [key, value] of Object.entries(item[field] || {})) acc[key] = (acc[key] || 0) + Number(value || 0);
+  return acc;
+}, {});
+
+export const buildCommercialHistoryMarkdown = ({ items = [], scanEvidence = {}, generatedAt = new Date().toISOString() } = {}) => {
+  const prior = summarizeCounts(items, 'prior_history_classification');
+  const lines = [
+    '# StartLineSites CMO Phase 2A-1 Real/Test Commercial History Summary',
+    '',
+    `Generated: ${generatedAt}`,
+    `Unique prospect denominator: ${scanEvidence.uniqueProspectIds ?? items.length}`,
+    `Total REST query count: ${scanEvidence.totalRestQueryCount ?? 'unknown'}`,
+    '',
+    'Private classification summary. Identities, raw email addresses, private tokens, database URLs, and environment values are excluded.',
+    '',
+    '## Classification counts',
+  ];
+  for (const key of ['REAL_EXTERNAL_OUTREACH', 'REAL_EXTERNAL_CONTACT_FORM_SUBMISSION', 'INTERNAL_SMOKE_OR_TEST', 'HISTORICAL_BACKFILL_OF_REAL_CONTACT', 'LIVE_AUDIT_CUSTOMER_PAYMENT_OUTCOME', 'CONTROLLED_TEST_OUTCOME', 'AMBIGUOUS_REQUIRES_OWNER_CONFIRMATION', 'AMBIGUOUS_MANUAL_HISTORY_CONFIRMATION', 'NO_HISTORICAL_BLOCKER']) {
+    lines.push(`- ${key}: ${prior[key] || 0}`);
+  }
+  const includeCount = items.filter((item) => item.final_dry_run_recommendation === 'INCLUDE').length;
+  const needsCount = items.filter((item) => String(item.final_dry_run_recommendation).startsWith('NEEDS_STEVE_DECISION')).length;
+  const excludeCount = items.filter((item) => item.final_dry_run_recommendation === 'EXCLUDE').length;
+  lines.push('', '## Final recommendations', `- INCLUDE: ${includeCount}`, `- NEEDS_STEVE_DECISION: ${needsCount}`, `- EXCLUDE: ${excludeCount}`);
+  lines.push('', 'Revenue claim guardrail: test-mode/internal controlled records remain excluded from live revenue/customer claims. Ambiguous manual/test history requires owner confirmation rather than deterministic clear.');
+  return `${lines.join('\n')}\n`;
+};
+
+export const buildPrivateTruthTableMarkdown = ({ items = [], scanEvidence = {}, generatedAt = new Date().toISOString() } = {}) => {
+  const approvedLaneItems = items.filter((item) => item.eligibility_evidence?.prospect_type_valid && item.eligibility_evidence?.lane_valid);
+  const lines = [
+    '# StartLineSites CMO Phase 2A-1 Private Lane A Commercial-Truth Table',
+    '',
+    `Generated: ${generatedAt}`,
+    `Approved Lane A rows: ${approvedLaneItems.length}`,
+    `Full denominator: ${scanEvidence.uniqueProspectIds ?? items.length}`,
+    '',
+    'No raw email addresses, private preview tokens, database URLs, or environment values are included.',
+    '',
+  ];
+  if (!approvedLaneItems.length) lines.push('- none');
+  for (const item of approvedLaneItems) {
+    lines.push(`- id=${redactedLastMileIdentifier(item)}; prior_history=${JSON.stringify(item.prior_history_classification || {})}; deterministic_blocker=${Boolean(item.deterministic_history_blocker)}; owner_confirmation_reason=${item.owner_confirmation_reason || 'none'}; contact_state=${item.eligibility_evidence?.contact_state || 'unknown'}; final_recommendation=${item.final_dry_run_recommendation}`);
+  }
+  return `${lines.join('\n')}\n`;
+};
+
+const contactPathSummary = (item = {}) => {
+  const e = item.eligibility_evidence || {};
+  if (e.contact_state === 'NO_VERIFIED_CONTACT') return 'zero verified contacts and zero plausible direct/routing contacts';
+  if (e.contact_state === 'MULTIPLE_VERIFIED_RECIPIENTS') return `${e.verified_contacts_count || 0} verified contacts require Steve to select one`;
+  if (e.contact_state === 'PLAUSIBLE_UNVERIFIED_CONTACT') return `${e.plausible_contacts_count || 0} plausible unverified direct/routing contact candidate(s)`;
+  if (e.contact_state === 'ONE_VERIFIED_RECIPIENT') return 'one verified contact';
+  return e.contact_state || 'unknown contact state';
+};
+
+export const buildLastMileCandidateCardMarkdown = ({ items = [], scanEvidence = {}, generatedAt = new Date().toISOString() } = {}) => {
+  const lastMileItems = items.map((item) => ({ item, lastMile: classifyLastMileVisibility(item) })).filter(({ lastMile }) => lastMile.visible);
+  const lines = [
+    '# StartLineSites CMO Phase 2A-1 Private Last-Mile Candidate Card',
+    '',
+    `Generated: ${generatedAt}`,
+    `Full denominator: ${scanEvidence.uniqueProspectIds ?? items.length}`,
+    `Last-mile candidates rendered: ${lastMileItems.length}`,
+    '',
+    'No outreach, contact-form submission, send approval persistence, production migration, or Supabase mutation occurred.',
+    '',
+  ];
+  if (!lastMileItems.length) lines.push('No candidates reached final contact or quality gates.');
+  for (const { item, lastMile } of lastMileItems) {
+    const e = item.eligibility_evidence || {};
+    lines.push(`## ${item.race_name}`);
+    lines.push(`- Redacted identifier: ${redactedLastMileIdentifier(item)}`);
+    lines.push(`- Final recommendation: ${item.final_dry_run_recommendation}`);
+    lines.push(`- Last gate passed: ${lastMile.lastGatePassed}`);
+    lines.push(`- Exact final exclusion stage: ${lastMile.finalExclusionStage}`);
+    lines.push(`- Contact state: ${lastMile.contactState}`);
+    lines.push(`- Contact path: ${contactPathSummary(item)}`);
+    lines.push(`- Verified-contact source evidence: verified=${e.verified_contacts_count || 0}; plausible=${e.plausible_contacts_count || 0}; selected_masked=${item.masked_recipient || 'none'}`);
+    lines.push(`- Contact-form availability: ${e.contact_form_only ? 'contact_form_only' : e.contact_form_only === false ? 'not_contact_form_only' : 'unknown'}`);
+    lines.push(`- Prior external/test history: ${JSON.stringify(item.prior_history_classification || {})}; deterministic_blocker=${Boolean(item.deterministic_history_blocker)}; owner_confirmation_reason=${item.owner_confirmation_reason || 'none'}`);
+    lines.push(`- Mockup/Site Auditor state: mockup_present=${Boolean(e.community_mockup_present)}; preview_ready=${Boolean(e.preview_ready)}; qa_valid=${Boolean(e.qa_valid)}; site_auditor_valid=${Boolean(e.site_auditor_valid)}`);
+    lines.push(`- Official-site state: ${e.official_site_reason || 'unknown'}`);
+    lines.push(`- Exclusion reason: ${lastMile.exclusionReason}`);
+    lines.push(`- Required change to qualify: ${lastMile.contactState === 'NO_VERIFIED_CONTACT' ? 'source-backed direct/routing email evidence plus all other quality, official-site, attribution, suppression, and history gates passing' : 'clear listed blockers while preserving no-send and owner approval gates'}`);
+    lines.push('');
+  }
+  return `${lines.join('\n')}\n`;
+};
+
 export const buildExclusionWaterfallMarkdown = ({ items = [], scanEvidence = {}, generatedAt = new Date().toISOString() } = {}) => {
   const lines = [
     '# StartLineSites CMO Phase 2A-1 Candidate Exclusion Waterfall',
@@ -267,9 +358,11 @@ export const loadReadOnlySupabaseCandidates = async ({ limit = 10, requester } =
     if (outreachHistory.ambiguousRows.length) outcomeEvidence.unavailableSources = [...(outcomeEvidence.unavailableSources || []), 'ambiguous_prior_outreach_requires_owner_confirmation'];
     outcomeEvidence.sourceSummary = { ...(outcomeEvidence.sourceSummary || {}), outreach_history_breakdown: outreachHistory.breakdown, prior_outreach_rows: priorOutreachRows.length, real_prior_outreach_blockers: outreachHistory.blockingRows.length, ambiguous_prior_outreach_rows: outreachHistory.ambiguousRows.length };
     const item = buildOwnerReviewDossierItem({ prospect, generationJob: job, priorOutreach: outreachHistory.blockingRows, suppressions, outcomeEvidence });
-    item.prior_history_classification = Object.keys(outreachHistory.breakdown).length ? outreachHistory.breakdown : { NO_HISTORICAL_BLOCKER: 1 };
+    const outreachBreakdown = Object.keys(outreachHistory.breakdown).length ? outreachHistory.breakdown : {};
+    const commercialBreakdown = outcomeEvidence.commercialHistoryClassification?.breakdown || {};
+    item.prior_history_classification = Object.keys({ ...outreachBreakdown, ...commercialBreakdown }).length ? { ...outreachBreakdown, ...commercialBreakdown } : { NO_HISTORICAL_BLOCKER: 1 };
     item.deterministic_history_blocker = outreachHistory.blockingRows.length > 0 || outcomeEvidence.commercialHistoryClassification?.state === 'BLOCKS';
-    item.owner_confirmation_reason = [...(outcomeEvidence.unavailableSources || []), ...(outcomeEvidence.unverifiedLinkages || [])].join('; ');
+    item.owner_confirmation_reason = [...(outreachHistory.ambiguousRows.length ? ['ambiguous_prior_outreach_requires_owner_confirmation'] : []), ...(outcomeEvidence.unavailableSources || []), ...(outcomeEvidence.unverifiedLinkages || [])].join('; ');
     item.prospect_snapshot = { id: prospect.id, prospect_type: prospect.prospect_type, campaign_lane: prospect.campaign_lane, registration_url: prospect.registration_url, race_date: prospect.race_date || prospect.event_date, field_provenance: prospect.field_provenance };
     item.generation_job_snapshot = { id: job.id || '', prospect_id: job.prospect_id || '', template: job.template || '', updated_at: job.updated_at || '' };
     candidates.push({ prospect, job, item });
@@ -327,8 +420,11 @@ const main = async () => {
     displayLimit: args.limit || 10,
   });
   if (args.output) await fs.writeFile(args.output, markdown);
-  if (args['exclusion-output']) await fs.writeFile(args['exclusion-output'], buildExclusionWaterfallMarkdown({ items: result.items, scanEvidence: result.scanEvidence }));
+  if (args['exclusion-output']) await fs.writeFile(args['exclusion-output'], buildExclusionWaterfallMarkdown({ items: fullItems, scanEvidence: result.scanEvidence }));
   if (args['data-map-output'] && result.dataMapMarkdown) await fs.writeFile(args['data-map-output'], result.dataMapMarkdown);
+  if (args['truth-table-output']) await fs.writeFile(args['truth-table-output'], buildPrivateTruthTableMarkdown({ items: fullItems, scanEvidence: result.scanEvidence }));
+  if (args['last-mile-output']) await fs.writeFile(args['last-mile-output'], buildLastMileCandidateCardMarkdown({ items: fullItems, scanEvidence: result.scanEvidence }));
+  if (args['history-output']) await fs.writeFile(args['history-output'], buildCommercialHistoryMarkdown({ items: fullItems, scanEvidence: result.scanEvidence }));
   console.log(markdown);
   console.error(JSON.stringify({ scanEvidence: result.scanEvidence }, null, 2));
 };

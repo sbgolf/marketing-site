@@ -37,6 +37,9 @@ import {
   buildSuppressionFilters,
   buildExclusionWaterfall,
   buildExclusionWaterfallMarkdown,
+  buildCommercialHistoryMarkdown,
+  buildPrivateTruthTableMarkdown,
+  buildLastMileCandidateCardMarkdown,
   classifyLastMileVisibility,
   selectLatestCommunityJobByProspect,
 } from '../scripts/build-community-pilot-dry-run-dossier.mjs';
@@ -660,6 +663,49 @@ test('final truth gate: controlled test commercial history does not block, live 
   assert.equal(controlled.breakdown.CONTROLLED_TEST_OUTCOME, 1);
   const live = classifyCommercialHistory({ stripeEvents: [{ id: 'evt-live', event_type: 'checkout.session.completed', payload: { livemode: true, data: { object: { livemode: true } } } }] });
   assert.equal(live.state, 'BLOCKS');
+  const liveCustomer = classifyCommercialHistory({ customerRecords: [{ id: 'cust-live', metadata: { note: 'customer' }, payload: { livemode: true } }] });
+  assert.equal(liveCustomer.state, 'BLOCKS');
   const ambiguous = classifyCommercialHistory({ auditRequests: [{ id: 'audit-manual', status: 'manual_conversation' }] });
   assert.equal(ambiguous.state, 'OWNER_CONFIRMATION_REQUIRED');
+  const ambiguousTestManual = classifyCommercialHistory({ auditRequests: [{ id: 'audit-test-manual', status: 'manual_conversation', metadata: { phase3a_controlled_test: true } }] });
+  assert.equal(ambiguousTestManual.state, 'OWNER_CONFIRMATION_REQUIRED');
+  assert.equal(ambiguousTestManual.breakdown.AMBIGUOUS_MANUAL_HISTORY_CONFIRMATION, 1);
+  const testModeRevenue = classifyCommercialHistory({ stripeEvents: [{ id: 'evt-test', event_type: 'checkout.session.completed', livemode: false, metadata: { phase3a_controlled_test: true } }] });
+  assert.equal(testModeRevenue.state, 'CLEAR');
+  assert.equal(testModeRevenue.breakdown.CONTROLLED_TEST_OUTCOME, 1);
+});
+
+test('final truth gate: private reports split real/test history and last-mile details', () => {
+  const base = buildOwnerReviewDossierItem({
+    prospect: prospect({ id: 'prospect-history-card-123456', contact_sources: [], contact_email: '', contact_form_url: '' }),
+    generationJob: job({ prospect_id: 'prospect-history-card-123456' }),
+  });
+  base.prospect_snapshot = { id: 'prospect-history-card-123456' };
+  base.prior_history_classification = { REAL_EXTERNAL_OUTREACH: 1, CONTROLLED_TEST_OUTCOME: 1, AMBIGUOUS_MANUAL_HISTORY_CONFIRMATION: 1 };
+  base.deterministic_history_blocker = true;
+  base.owner_confirmation_reason = 'ambiguous_commercial_history_requires_owner_confirmation';
+
+  const history = buildCommercialHistoryMarkdown({ items: [base], scanEvidence: { uniqueProspectIds: 1, totalRestQueryCount: 7 }, generatedAt: '2026-08-14T00:00:00.000Z' });
+  assert.match(history, /REAL_EXTERNAL_OUTREACH: 1/);
+  assert.match(history, /CONTROLLED_TEST_OUTCOME: 1/);
+  assert.match(history, /AMBIGUOUS_MANUAL_HISTORY_CONFIRMATION: 1/);
+  assert.match(history, /test-mode\/internal controlled records remain excluded from live revenue\/customer claims/);
+
+  const truthTable = buildPrivateTruthTableMarkdown({ items: [base], scanEvidence: { uniqueProspectIds: 1 }, generatedAt: '2026-08-14T00:00:00.000Z' });
+  assert.match(truthTable, /Private Lane A Commercial-Truth Table/);
+  assert.match(truthTable, /id=prospe\*\*\*3456/);
+  assert.match(truthTable, /deterministic_blocker=true/);
+  assert.doesNotMatch(truthTable, /director@example\.test/);
+
+  const lastMileItem = buildOwnerReviewDossierItem({
+    prospect: prospect({ id: 'prospect-history-card-123456', contact_sources: [], contact_email: '', contact_form_url: '' }),
+    generationJob: job({ prospect_id: 'prospect-history-card-123456' }),
+  });
+  lastMileItem.prospect_snapshot = { id: 'prospect-history-card-123456' };
+  lastMileItem.prior_history_classification = { NO_HISTORICAL_BLOCKER: 1 };
+  const lastMile = buildLastMileCandidateCardMarkdown({ items: [lastMileItem], scanEvidence: { uniqueProspectIds: 1 }, generatedAt: '2026-08-14T00:00:00.000Z' });
+  assert.match(lastMile, /Exact final exclusion stage: one_verified_recipient_or_owner_resolvable_contact_decision/);
+  assert.match(lastMile, /Contact path: zero verified contacts and zero plausible direct\/routing contacts/);
+  assert.match(lastMile, /Mockup\/Site Auditor state:/);
+  assert.match(lastMile, /Required change to qualify:/);
 });

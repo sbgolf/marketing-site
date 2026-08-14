@@ -13,7 +13,7 @@ const firstKnown = (...values) => {
   return 'unknown';
 };
 
-const sourceOf = (row, paths = []) => {
+const sourceOf = (_row, paths = []) => {
   for (const [label, value] of paths) {
     if (value !== undefined && value !== null && clean(value) !== '') return label;
   }
@@ -223,9 +223,9 @@ export const summarizeOutreachHistory = (rows = []) => {
 const classifyCommercialRow = (row = {}) => {
   const meta = getMetadata(row);
   if (hasLiveStripeSignal(row)) return { classification: 'LIVE_AUDIT_CUSTOMER_PAYMENT_OUTCOME', blocks: true, reason: 'live-mode Stripe/customer/payment evidence' };
+  const statusText = lc([row.status, row.outreach_status, row.customer_status, row.deposit_status, row.subscription_status, meta.status, meta.created_by, meta.notes, meta.note].join(' '));
+  if (statusText.includes('manual') || statusText.includes('conversation')) return { classification: 'AMBIGUOUS_MANUAL_HISTORY_CONFIRMATION', ownerConfirmation: true, reason: 'manual/test commercial history needs owner confirmation' };
   if (hasTestMarker(row)) return { classification: 'CONTROLLED_TEST_OUTCOME', blocks: false, reason: 'controlled internal/test commercial evidence' };
-  const statusText = lc([row.status, row.outreach_status, row.customer_status, row.deposit_status, row.subscription_status, meta.status, meta.created_by].join(' '));
-  if (statusText.includes('manual') || statusText.includes('conversation')) return { classification: 'AMBIGUOUS_MANUAL_HISTORY_CONFIRMATION', ownerConfirmation: true, reason: 'manual/test history needs owner confirmation' };
   if (clean(row.id)) return { classification: 'AMBIGUOUS_MANUAL_HISTORY_CONFIRMATION', ownerConfirmation: true, reason: 'commercial row is linkable but not clearly live or controlled test' };
   return { classification: 'NO_HISTORICAL_BLOCKER', blocks: false, reason: 'no row' };
 };
