@@ -33,6 +33,7 @@ Internal, sanitized operating docs for the StartLine Sites sales-to-billing path
 - Outreach follow-up draft workflow: `outreach-follow-up-draft-workflow.md`
 - Outreach engagement implementation backlog: `outreach-engagement-implementation-backlog.md`
 - Outreach engagement implementation spec: `outreach-engagement-implementation-spec.md`
+- Phase 2A-1B source cohort validation repeatability lock: `phase2a1b-source-cohort-validation-repeatability.md`
 - Service agreement draft: `legal/service-agreement-draft.md`
 - Service agreement source notes: `legal/source-notes.md`
 - Current blockers: `blockers.md`

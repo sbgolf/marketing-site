@@ -26,6 +26,7 @@
     "smoke:audit-request": "node scripts/smoke-audit-request.mjs",
     "dossier:community-pilot-dry-run": "node scripts/build-community-pilot-dry-run-dossier.mjs",
     "monitor:phase3b1-transactions": "node scripts/phase3b1-transaction-reconciliation.mjs",
+    "validate:phase2a1b-source-cohort": "node scripts/phase2a1b-source-cohort-validation-runner.mjs",
     "test": "node --test"
   },
   "dependencies": {
