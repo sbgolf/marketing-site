@@ -140,13 +140,15 @@ export const extractPlausibleContactEmails = (prospect = {}) => {
     if (!e || !e.includes('@')) return;
     const type = lc(source.type || 'email');
     const status = lc(source.status || source.confidence || source.verification_status || source.classification || 'unverified');
-    if (type.includes('form') || status.includes('unconfirmed') || status.includes('candidate')) return;
+    if (type.includes('form')) return;
+    const plausible = status.includes('candidate') || status.includes('unverified') || status.includes('plausible') || status.includes('routing') || status.includes('direct') || status === '';
+    if (!plausible && status.includes('unconfirmed')) return;
     if (!emails.includes(e)) emails.push(e);
   };
   add(prospect.contact_email, { type: 'direct_email' });
   for (const source of contactSources(prospect)) {
     if (typeof source === 'string') add(source, { type: 'email' });
-    else if (source && typeof source === 'object') add(source.email || source.value || source.address, source);
+    else if (source && typeof source === 'object') add(source.email || source.value || source.address || source.candidate_email, source);
   }
   return emails;
 };
@@ -216,6 +218,9 @@ export const OUTCOME_HISTORY_DETERMINISTICALLY_BLOCKED = 'DETERMINISTICALLY_BLOC
 export const OUTCOME_HISTORY_OWNER_CONFIRMATION_REQUIRED = 'OWNER_HISTORY_CONFIRMATION_REQUIRED';
 
 export const classifyOutcomeHistoryState = (outcomeEvidence = {}) => {
+  const commercial = outcomeEvidence.commercialHistoryClassification;
+  if (commercial?.state === 'BLOCKS') return { state: OUTCOME_HISTORY_DETERMINISTICALLY_BLOCKED, reasons: commercial.reasons || ['real commercial/outcome history blocks pilot send'] };
+  if (commercial?.state === 'OWNER_CONFIRMATION_REQUIRED') return { state: OUTCOME_HISTORY_OWNER_CONFIRMATION_REQUIRED, reasons: commercial.reasons || ['ambiguous commercial/outcome history requires owner confirmation'] };
   const positive = [
     ...asArray(outcomeEvidence.priorReplies),
     ...asArray(outcomeEvidence.manualContacts),
@@ -251,10 +256,10 @@ export const buildInitialEligibilityEvidence = ({ prospect = {}, generationJob =
   const attribution = buildAttributionPayload({ prospect, generationJob, recipientEmail: emails[0], now });
   const missingAttribution = validateAttributionPayload(attribution);
   const outcomeHistory = classifyOutcomeHistoryState(outcomeEvidence);
-  const contactFormOnly = prospect.contact_form_only === true || lc(prospect.contact_method || metadata(prospect).contact_method) === 'contact_form_only' || (Boolean(prospect.contact_form_url || metadata(prospect).contact_form_url) && emails.length === 0);
+  const contactState = emails.length === 1 && !invalidRequestedRecipients.length ? 'ONE_VERIFIED_RECIPIENT' : emails.length > 1 ? 'MULTIPLE_VERIFIED_RECIPIENTS' : plausibleContacts.length ? 'PLAUSIBLE_UNVERIFIED_CONTACT' : 'NO_VERIFIED_CONTACT';
+  const contactFormOnly = prospect.contact_form_only === true || lc(prospect.contact_method || metadata(prospect).contact_method) === 'contact_form_only' || (Boolean(prospect.contact_form_url || metadata(prospect).contact_form_url) && contactState === 'NO_VERIFIED_CONTACT');
   const ccBccPresent = parseEmailList(prospect.cc_emails).length > 0 || parseEmailList(prospect.bcc_emails).length > 0;
   const priorOutcomeFieldsPresent = hasAny(prospect, ['prior_reply_at', 'manual_contacted_at', 'audit_request_id', 'proposal_id', 'checkout_session_id', 'customer_record_id', 'purchase_at']);
-  const contactState = emails.length === 1 && !invalidRequestedRecipients.length ? 'ONE_VERIFIED_RECIPIENT' : emails.length > 1 ? 'MULTIPLE_VERIFIED_RECIPIENTS' : plausibleContacts.length ? 'PLAUSIBLE_UNVERIFIED_CONTACT' : 'NO_VERIFIED_CONTACT';
   const effectiveMissingAttribution = ['PLAUSIBLE_UNVERIFIED_CONTACT', 'NO_VERIFIED_CONTACT'].includes(contactState) ? missingAttribution.filter((field) => field !== 'recipient_email_hash') : missingAttribution;
   return {
     lane,
@@ -284,7 +289,8 @@ export const buildInitialEligibilityEvidence = ({ prospect = {}, generationJob =
     community_mockup_present: Boolean(previewUrl) && lc(generationJob.template || generationJob.mockup_template || prospect.recommended_template) === MOCKUP_TEMPLATE_FAMILY,
     preview_ready: previewBlockers.length === 0,
     preview_blockers: previewBlockers,
-    qa_valid: ['passed', 'pass', 'approved', 'ready'].includes(lc(generationJob.qa_status)) && (!generationJob.site_auditor_status || ['passed', 'pass', 'approved', 'ready', 'not_requested'].includes(lc(generationJob.site_auditor_status))),
+    qa_valid: ['passed', 'pass', 'approved', 'ready'].includes(lc(generationJob.qa_status)),
+    site_auditor_valid: ['passed', 'pass', 'approved', 'ready'].includes(lc(generationJob.site_auditor_status)),
     official_site_valid: site.qualifies,
     official_site_reason: site.reason,
     attribution_complete: effectiveMissingAttribution.length === 0,
@@ -316,7 +322,8 @@ export const validatePilotInitialSend = ({ prospect = {}, generationJob = {}, re
     const nowTime = Date.parse(now);
     hard_blockers.push(Number.isFinite(raceTime) && Number.isFinite(nowTime) && raceTime <= nowTime ? 'race date is in the past.' : 'valid future race date is required.');
   } else if (!evidence.lead_time_valid) hard_blockers.push('race_too_close_to_event_day.');
-  if (!evidence.qa_valid) hard_blockers.push('Community mockup QA and site auditor status must be acceptable for review.');
+  if (!evidence.qa_valid) hard_blockers.push('Community mockup QA must be passed/approved for pilot readiness.');
+  if (!evidence.site_auditor_valid) hard_blockers.push('Site Auditor review must be passed/approved for pilot readiness.');
   if (!evidence.official_site_valid) hard_blockers.push(`Lane A excluded: ${evidence.official_site_reason}.`);
   if (!evidence.official_site_reason || ['official_site_requires_manual_review', 'missing_official_site_assessment'].includes(evidence.official_site_reason)) warnings.push('Official-site assessment requires manual CMO review before inclusion.');
   if (evidence.invalid_selected_recipients.length) hard_blockers.push('selected recipient must be present in source-backed verified contact evidence.');
@@ -328,13 +335,14 @@ export const validatePilotInitialSend = ({ prospect = {}, generationJob = {}, re
   if (!evidence.attribution_complete) hard_blockers.push(`missing attribution fields: ${evidence.missing_attribution_fields.join(', ')}.`);
 
   if (evidence.contact_state === 'MULTIPLE_VERIFIED_RECIPIENTS') contact_decision_items.push('multiple verified recipients require Steve to select exactly one recipient.');
-  else if (evidence.contact_state === 'PLAUSIBLE_UNVERIFIED_CONTACT' || evidence.contact_state === 'NO_VERIFIED_CONTACT') contact_decision_items.push('verified direct or routing email is required; missing or unverified email requires owner contact verification.');
+  else if (evidence.contact_state === 'PLAUSIBLE_UNVERIFIED_CONTACT') contact_decision_items.push('plausible unverified direct or routing email requires owner contact verification.');
+  else if (evidence.contact_state === 'NO_VERIFIED_CONTACT') hard_blockers.push('EXCLUDE — NO CONTACT: no verified or plausible direct/routing email candidate exists.');
   if (evidence.manual_history_confirmation_required) contact_decision_items.push('manual history confirmation required before any live pilot send.');
 
   let recommendation = 'EXCLUDE';
   if (hard_blockers.length === 0 && contact_decision_items.length === 0 && evidence.contact_state === 'ONE_VERIFIED_RECIPIENT') recommendation = 'INCLUDE';
   else if (hard_blockers.length === 0 && evidence.contact_state === 'MULTIPLE_VERIFIED_RECIPIENTS' && contact_decision_items.length === 1) recommendation = 'NEEDS_STEVE_DECISION — SELECT_ONE_RECIPIENT';
-  else if (hard_blockers.length === 0 && ['PLAUSIBLE_UNVERIFIED_CONTACT', 'NO_VERIFIED_CONTACT'].includes(evidence.contact_state) && contact_decision_items.length === 1) recommendation = 'NEEDS_STEVE_DECISION — CONTACT_VERIFICATION';
+  else if (hard_blockers.length === 0 && evidence.contact_state === 'PLAUSIBLE_UNVERIFIED_CONTACT' && contact_decision_items.length === 1) recommendation = 'NEEDS_STEVE_DECISION — CONTACT_VERIFICATION';
   else if (hard_blockers.length === 0 && evidence.manual_history_confirmation_required && evidence.contact_state === 'ONE_VERIFIED_RECIPIENT') recommendation = 'NEEDS_STEVE_DECISION — MANUAL_HISTORY_CONFIRMATION';
 
   const blockers = [...hard_blockers, ...contact_decision_items];
@@ -496,8 +504,13 @@ export const buildOwnerReviewDossierItem = ({ prospect = {}, generationJob = {},
   };
 };
 
-export const buildDossierMarkdown = (items = [], { generatedAt = nowIso(), source = 'read-only dry-run evidence' } = {}) => {
+export const buildDossierMarkdown = (items = [], { generatedAt = nowIso(), source = 'read-only dry-run evidence', denominator = items.length, includeCount, needsDecisionCount, excludeCount, displayLimit } = {}) => {
   const reviewItems = items.filter((item) => item.final_dry_run_recommendation === 'INCLUDE' || String(item.final_dry_run_recommendation).startsWith('NEEDS_STEVE_DECISION'));
+  const fullIncludeCount = includeCount ?? items.filter((item) => item.final_dry_run_recommendation === 'INCLUDE').length;
+  const fullNeedsDecisionCount = needsDecisionCount ?? items.filter((item) => String(item.final_dry_run_recommendation).startsWith('NEEDS_STEVE_DECISION')).length;
+  const fullExcludeCount = excludeCount ?? items.filter((item) => item.final_dry_run_recommendation === 'EXCLUDE').length;
+  const fullDenominator = denominator ?? (fullIncludeCount + fullNeedsDecisionCount + fullExcludeCount);
+  const withheldCount = Math.max(0, fullDenominator - reviewItems.length);
   const lines = [
     '# StartLineSites CMO Phase 2A-1 Community Pilot Dry-Run Dossier',
     '',
@@ -506,9 +519,13 @@ export const buildDossierMarkdown = (items = [], { generatedAt = nowIso(), sourc
     '',
     'No race-director outreach, customer email, contact form submission, send approval persistence, production migration, or growth-job activation occurred while generating this dossier.',
     '',
-    `Qualified INCLUDE count: ${reviewItems.filter((item) => item.final_dry_run_recommendation === 'INCLUDE').length}`,
-    `Needs Steve decision count: ${reviewItems.filter((item) => String(item.final_dry_run_recommendation).startsWith('NEEDS_STEVE_DECISION')).length}`,
-    `Categorical exclusions withheld from owner dossier: ${items.length - reviewItems.length}`,
+    `Full denominator: ${fullDenominator}`,
+    `Full INCLUDE count: ${fullIncludeCount}`,
+    `Full NEEDS STEVE DECISION count: ${fullNeedsDecisionCount}`,
+    `Full EXCLUDE count: ${fullExcludeCount}`,
+    `Owner-review display limit: ${displayLimit ?? 'unlimited'}`,
+    `Categorical exclusions withheld from owner dossier: ${withheldCount}`,
+    `Rendered owner-review rows: ${reviewItems.length}`,
     '',
   ];
   if (!reviewItems.length) lines.push('No INCLUDE or NEEDS_STEVE_DECISION rows were selected. Categorical exclusions are reported only in the separate private exclusion waterfall.');

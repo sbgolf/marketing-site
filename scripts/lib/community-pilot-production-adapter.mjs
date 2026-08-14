@@ -192,6 +192,61 @@ export const deriveStableKeys = ({ prospect = {}, generationJob = {} } = {}) => 
 
 export const uniqueRows = (rows = []) => [...new Map(rows.filter(Boolean).map((row) => [row.id || JSON.stringify(row), row])).values()];
 
+const boolish = (value) => value === true || ['true', '1', 'yes'].includes(lc(value));
+const hasLiveStripeSignal = (row = {}) => row.livemode === true || row.payload?.livemode === true || row.payload?.data?.object?.livemode === true;
+const hasTestMarker = (row = {}) => {
+  const meta = getMetadata(row);
+  const text = lc([row.id, row.outreach_status, row.response_status, row.submission_channel, row.transport, row.resend_email_id, row.stripe_event_id, meta.test_live_classification, meta.created_by, meta.reconciliation_source, meta.note, meta.notes].join(' '), 2000);
+  return boolish(row.internal_only) || boolish(row.smoke_test) || boolish(row.exclude_from_campaign_metrics) || boolish(meta.internal_only) || boolish(meta.smoke_test) || boolish(meta.exclude_from_campaign_metrics) || boolish(meta.phase3a_controlled_test) || text.includes('smoke') || text.includes('internal') || text.includes('test');
+};
+
+export const classifyOutreachHistoryRow = (row = {}) => {
+  const meta = getMetadata(row);
+  const channel = lc(row.submission_channel || meta.submission_channel || row.transport || meta.transport);
+  if (hasTestMarker(row)) return { classification: 'INTERNAL_SMOKE_OR_TEST', blocks: false, reason: 'internal/smoke/test outreach marker' };
+  if (boolish(meta.historical_backfill_of_real_contact) || lc(meta.reconciliation_source).includes('historical_backfill')) return { classification: 'HISTORICAL_BACKFILL_OF_REAL_CONTACT', blocks: true, reason: 'historical backfill represents real contact' };
+  if (channel.includes('contact_form') || channel.includes('runsignup')) return { classification: 'REAL_EXTERNAL_CONTACT_FORM_SUBMISSION', blocks: true, reason: 'real contact-form submission blocks cold pilot send' };
+  if (clean(row.sent_at || row.last_contacted_at || row.resend_email_id || meta.resend_email_id) && !hasTestMarker(row)) return { classification: 'REAL_EXTERNAL_OUTREACH', blocks: true, reason: 'real external email/provider history blocks cold pilot send' };
+  return { classification: 'AMBIGUOUS_REQUIRES_OWNER_CONFIRMATION', blocks: false, ownerConfirmation: true, reason: 'matched outreach history lacks durable real/test classification' };
+};
+
+export const summarizeOutreachHistory = (rows = []) => {
+  const classifications = rows.map((row) => ({ row, ...classifyOutreachHistoryRow(row) }));
+  return {
+    classifications,
+    blockingRows: classifications.filter((item) => item.blocks).map((item) => item.row),
+    ambiguousRows: classifications.filter((item) => item.ownerConfirmation).map((item) => item.row),
+    breakdown: classifications.reduce((acc, item) => { acc[item.classification] = (acc[item.classification] || 0) + 1; return acc; }, {}),
+  };
+};
+
+const classifyCommercialRow = (row = {}) => {
+  const meta = getMetadata(row);
+  if (hasLiveStripeSignal(row)) return { classification: 'LIVE_AUDIT_CUSTOMER_PAYMENT_OUTCOME', blocks: true, reason: 'live-mode Stripe/customer/payment evidence' };
+  if (hasTestMarker(row)) return { classification: 'CONTROLLED_TEST_OUTCOME', blocks: false, reason: 'controlled internal/test commercial evidence' };
+  const statusText = lc([row.status, row.outreach_status, row.customer_status, row.deposit_status, row.subscription_status, meta.status, meta.created_by].join(' '));
+  if (statusText.includes('manual') || statusText.includes('conversation')) return { classification: 'AMBIGUOUS_MANUAL_HISTORY_CONFIRMATION', ownerConfirmation: true, reason: 'manual/test history needs owner confirmation' };
+  if (clean(row.id)) return { classification: 'AMBIGUOUS_MANUAL_HISTORY_CONFIRMATION', ownerConfirmation: true, reason: 'commercial row is linkable but not clearly live or controlled test' };
+  return { classification: 'NO_HISTORICAL_BLOCKER', blocks: false, reason: 'no row' };
+};
+
+export const classifyCommercialHistory = ({ auditRequests = [], customerRecords = [], stripeEvents = [] } = {}) => {
+  const classified = [...auditRequests, ...customerRecords, ...stripeEvents].map((row) => ({ row, ...classifyCommercialRow(row) }));
+  const blocking = classified.filter((item) => item.blocks);
+  const ambiguous = classified.filter((item) => item.ownerConfirmation);
+  const controlled = classified.filter((item) => item.classification === 'CONTROLLED_TEST_OUTCOME');
+  return {
+    state: blocking.length ? 'BLOCKS' : ambiguous.length ? 'OWNER_CONFIRMATION_REQUIRED' : 'CLEAR',
+    reasons: [...blocking, ...ambiguous].map((item) => item.reason),
+    classified,
+    breakdown: classified.reduce((acc, item) => { acc[item.classification] = (acc[item.classification] || 0) + 1; return acc; }, {}),
+    blockingAuditRequests: blocking.map((item) => item.row).filter((row) => auditRequests.includes(row)),
+    blockingCustomerRecords: blocking.map((item) => item.row).filter((row) => customerRecords.includes(row)),
+    blockingStripeEvents: blocking.map((item) => item.row).filter((row) => stripeEvents.includes(row)),
+    controlledTestRows: controlled.map((item) => item.row),
+  };
+};
+
 export const findPriorOutreachForCandidate = ({ prospect = {}, generationJob = {}, indexes } = {}) => {
   const keys = deriveStableKeys({ prospect, generationJob });
   return uniqueRows([
@@ -215,20 +270,24 @@ export const findOutcomeEvidenceForCandidate = ({ prospect = {}, generationJob =
     ...(indexes.stripeEventsByPaymentIntent.get(clean(row.stripe_deposit_payment_intent_id, 200)) || []),
     ...(indexes.stripeEventsByCustomer.get(clean(row.stripe_customer_id, 200)) || []),
   ]));
+  const commercialHistoryClassification = classifyCommercialHistory({ auditRequests, customerRecords, stripeEvents });
   return {
     priorReplies: [],
     manualContacts: [],
-    auditRequests,
+    auditRequests: commercialHistoryClassification.blockingAuditRequests,
     proposals: [],
-    checkouts: stripeEvents.filter((event) => lc(event.event_type).includes('checkout')),
-    customerRecords,
-    stripeEvents,
-    unavailableSources: ['proposal_evidence_source_unavailable'],
-    unverifiedLinkages: auditRequests.length ? [] : ['audit_linkage_registration_url_only'],
+    checkouts: commercialHistoryClassification.blockingStripeEvents.filter((event) => lc(event.event_type).includes('checkout')),
+    customerRecords: commercialHistoryClassification.blockingCustomerRecords,
+    stripeEvents: commercialHistoryClassification.blockingStripeEvents,
+    commercialHistoryClassification,
+    unavailableSources: commercialHistoryClassification.state === 'OWNER_CONFIRMATION_REQUIRED' ? ['ambiguous_commercial_history_requires_owner_confirmation'] : [],
+    unverifiedLinkages: [],
     sourceSummary: {
       audit_requests: auditRequests.length,
       customer_records: customerRecords.length,
       stripe_webhook_events: stripeEvents.length,
+      commercial_history_breakdown: commercialHistoryClassification.breakdown,
+      controlled_test_rows: commercialHistoryClassification.controlledTestRows.length,
       proposal_evidence_source: 'unavailable',
     },
   };
@@ -244,13 +303,13 @@ export const buildProductionDataMapMarkdown = ({ tableScans = {}, generatedAt = 
     '',
   ];
   for (const [table, scan] of Object.entries(tableScans)) {
-    const sample = scan.rows?.[0] || {};
     const metadataKeys = new Set();
     for (const row of scan.rows || []) Object.keys(asObject(row.metadata)).forEach((key) => metadataKeys.add(key));
     lines.push(`## ${table}`);
     lines.push(`- Rows loaded: ${scan.rows?.length ?? 0}`);
     lines.push(`- Pages: ${scan.pageCount ?? 0}`);
-    lines.push(`- Actual columns observed: ${Object.keys(sample).sort().join(', ') || 'none_observed'}`);
+    lines.push(`- Raw production columns observed: ${(scan.rawColumns || []).sort().join(', ') || 'none_observed'}`);
+    lines.push(`- Canonical normalized fields produced: ${(scan.canonicalFields || []).sort().join(', ') || 'none_observed'}`);
     lines.push(`- Metadata keys observed: ${[...metadataKeys].sort().join(', ') || 'none_observed'}`);
     lines.push(`- Stable linkage keys used: ${scan.keysIndexed?.join(', ') || 'see adapter indexes'}`);
     lines.push('');

@@ -44,6 +44,9 @@ import {
   findPriorOutreachForCandidate,
   normalizeGenerationJobRow,
   normalizeProspectRow,
+  classifyOutreachHistoryRow,
+  summarizeOutreachHistory,
+  classifyCommercialHistory,
 } from '../scripts/lib/community-pilot-production-adapter.mjs';
 
 const prospect = (overrides = {}) => ({
@@ -350,8 +353,8 @@ test('suppression and broader duplicate evidence block during full scan', async 
     return [];
   };
   const result = await loadReadOnlySupabaseCandidates({ requester });
-  assert.equal(result.items[0].final_dry_run_recommendation, 'EXCLUDE');
-  assert.match(result.items[0].owner_concerns.join('\n'), /duplicate\/prior outreach|suppression/);
+  assert.equal(result.items[0].final_dry_run_recommendation, 'NEEDS_STEVE_DECISION — MANUAL_HISTORY_CONFIRMATION');
+  assert.match(result.items[0].owner_concerns.join('\n'), /manual history confirmation|ambiguous_prior_outreach/);
   assert.ok(!calls.some((p) => p.includes('mockup_generation_job_id=eq')));
   assert.ok(!calls.some((p) => p.includes('prospect_id=eq')));
 });
@@ -584,7 +587,54 @@ test('data adapter: customer/payment evidence uses verified existing sources', (
     stripeEventsByCustomer: new Map(),
   };
   const evidence = findOutcomeEvidenceForCandidate({ prospect: p, generationJob: job(), indexes });
-  assert.equal(evidence.customerRecords.length, 1);
-  assert.equal(evidence.checkouts.length, 1);
+  assert.equal(evidence.customerRecords.length, 0);
+  assert.equal(evidence.checkouts.length, 0);
+  assert.equal(evidence.commercialHistoryClassification.state, 'OWNER_CONFIRMATION_REQUIRED');
 });
 
+
+test('final truth gate: no verified or plausible contact is EXCLUDE NO CONTACT, not Steve verification', () => {
+  const result = validatePilotInitialSend({ prospect: prospect({ contact_sources: [], contact_email: '', contact_form_url: '' }), generationJob: job() });
+  assert.equal(result.recommendation, 'EXCLUDE');
+  assert.match(result.blockers.join('\n'), /EXCLUDE — NO CONTACT/);
+  assert.doesNotMatch(result.recommendation, /CONTACT_VERIFICATION/);
+});
+
+test('final truth gate: plausible unverified routing contact may require Steve contact verification', () => {
+  const result = validatePilotInitialSend({ prospect: prospect({ contact_sources: [{ candidate_email: 'routing@example.test', status: 'candidate_unconfirmed', type: 'candidate_email' }], contact_email: '' }), generationJob: job() });
+  assert.equal(result.recommendation, 'NEEDS_STEVE_DECISION — CONTACT_VERIFICATION');
+});
+
+test('final truth gate: contact form plus plausible email is not contact-form-only', () => {
+  const result = validatePilotInitialSend({ prospect: prospect({ contact_sources: [{ candidate_email: 'routing@example.test', status: 'candidate_unconfirmed', type: 'candidate_email' }], contact_email: '', contact_form_url: 'https://race.example/contact' }), generationJob: job() });
+  assert.equal(result.recommendation, 'NEEDS_STEVE_DECISION — CONTACT_VERIFICATION');
+  assert.doesNotMatch(result.blockers.join('\n'), /contact-form-only/);
+});
+
+test('final truth gate: Site Auditor not_requested or missing blocks pilot readiness', () => {
+  for (const site_auditor_status of ['not_requested', '', undefined, 'failed', 'timed_out']) {
+    const result = validatePilotInitialSend({ prospect: prospect(), generationJob: job({ site_auditor_status }) });
+    assert.equal(result.ok, false);
+    assert.match(result.blockers.join('\n'), /Site Auditor review must be passed\/approved/);
+  }
+});
+
+test('final truth gate: internal smoke outreach does not count as real prior outreach but real channels block', () => {
+  assert.equal(classifyOutreachHistoryRow({ id: 'smoke-1', internal_only: true, sent_at: '2026-01-01' }).classification, 'INTERNAL_SMOKE_OR_TEST');
+  assert.equal(classifyOutreachHistoryRow({ id: 'real-1', resend_email_id: 're_123', sent_at: '2026-01-01' }).classification, 'REAL_EXTERNAL_OUTREACH');
+  assert.equal(classifyOutreachHistoryRow({ id: 'form-1', submission_channel: 'runsignup_contact_form', sent_at: '2026-01-01' }).classification, 'REAL_EXTERNAL_CONTACT_FORM_SUBMISSION');
+  assert.equal(classifyOutreachHistoryRow({ id: 'backfill-1', metadata: { historical_backfill_of_real_contact: true } }).classification, 'HISTORICAL_BACKFILL_OF_REAL_CONTACT');
+  const summary = summarizeOutreachHistory([{ id: 'smoke-1', smoke_test: true }, { id: 'real-1', resend_email_id: 're_123', sent_at: '2026-01-01' }]);
+  assert.equal(summary.blockingRows.length, 1);
+  assert.equal(summary.breakdown.INTERNAL_SMOKE_OR_TEST, 1);
+});
+
+test('final truth gate: controlled test commercial history does not block, live or ambiguous history does', () => {
+  const controlled = classifyCommercialHistory({ auditRequests: [{ id: 'audit-test', metadata: { phase3a_controlled_test: true } }] });
+  assert.equal(controlled.state, 'CLEAR');
+  assert.equal(controlled.breakdown.CONTROLLED_TEST_OUTCOME, 1);
+  const live = classifyCommercialHistory({ stripeEvents: [{ id: 'evt-live', event_type: 'checkout.session.completed', payload: { livemode: true, data: { object: { livemode: true } } } }] });
+  assert.equal(live.state, 'BLOCKS');
+  const ambiguous = classifyCommercialHistory({ auditRequests: [{ id: 'audit-manual', status: 'manual_conversation' }] });
+  assert.equal(ambiguous.state, 'OWNER_CONFIRMATION_REQUIRED');
+});
