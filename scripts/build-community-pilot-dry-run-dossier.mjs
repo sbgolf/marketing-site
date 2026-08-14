@@ -139,29 +139,31 @@ export const buildSuppressionFilters = ({ prospect = {} }) => {
 
 const recipientHashesForProspect = (prospect = {}) => [...new Set(extractVerifiedEmails(prospect).map((item) => hashRecipient(item.email)).filter(Boolean))];
 
+const exclusionGateStages = [
+  ['all_prospect_rows', () => true],
+  ['approved_prospect_type_candidates', ({ item }) => item.eligibility_evidence.prospect_type_valid],
+  ['lane_a', ({ item }) => item.eligibility_evidence.lane_valid],
+  ['race_level_runsignup_registration_url', ({ item }) => item.eligibility_evidence.registration_url_valid],
+  ['known_future_date', ({ item }) => item.eligibility_evidence.race_date_valid],
+  ['sufficient_lead_time', ({ item }) => item.eligibility_evidence.lead_time_valid],
+  ['commercial_truth_real_external_prior_outreach', ({ item }) => !(item.prior_history_classification || {}).REAL_EXTERNAL_OUTREACH],
+  ['commercial_truth_real_contact_form_submission', ({ item }) => !(item.prior_history_classification || {}).REAL_EXTERNAL_CONTACT_FORM_SUBMISSION],
+  ['commercial_truth_internal_smoke_test_only', () => true],
+  ['commercial_truth_historical_real_contact_backfill', ({ item }) => !(item.prior_history_classification || {}).HISTORICAL_BACKFILL_OF_REAL_CONTACT],
+  ['commercial_truth_live_audit_customer_payment_outcome', ({ item }) => item.eligibility_evidence.outcome_history_state !== 'DETERMINISTICALLY_BLOCKED'],
+  ['commercial_truth_ambiguous_manual_history_confirmation', ({ item }) => item.eligibility_evidence.outcome_history_state !== 'OWNER_HISTORY_CONFIRMATION_REQUIRED'],
+  ['one_verified_recipient_or_owner_resolvable_contact_decision', ({ item }) => ['ONE_VERIFIED_RECIPIENT', 'MULTIPLE_VERIFIED_RECIPIENTS', 'PLAUSIBLE_UNVERIFIED_CONTACT'].includes(item.eligibility_evidence.contact_state)],
+  ['unsuppressed', ({ item }) => item.eligibility_evidence.suppression_clear],
+  ['current_accessible_community_mockup', ({ item }) => item.eligibility_evidence.community_mockup_present && item.eligibility_evidence.preview_ready],
+  ['completed_quality_reviews', ({ item }) => item.eligibility_evidence.qa_valid && item.eligibility_evidence.site_auditor_valid],
+  ['explicit_official_site_classification', ({ item }) => item.eligibility_evidence.official_site_valid],
+  ['complete_attribution', ({ item }) => item.eligibility_evidence.attribution_complete],
+];
+
 export const buildExclusionWaterfall = (candidates = []) => {
   let remaining = candidates.slice();
   const rows = [];
-  const stages = [
-    ['all_prospect_rows', () => true],
-    ['approved_prospect_type_candidates', ({ item }) => item.eligibility_evidence.prospect_type_valid],
-    ['lane_a', ({ item }) => item.eligibility_evidence.lane_valid],
-    ['race_level_runsignup_registration_url', ({ item }) => item.eligibility_evidence.registration_url_valid],
-    ['known_future_date', ({ item }) => item.eligibility_evidence.race_date_valid],
-    ['sufficient_lead_time', ({ item }) => item.eligibility_evidence.lead_time_valid],
-    ['commercial_truth_real_external_prior_outreach', ({ item }) => !(item.prior_history_classification || {}).REAL_EXTERNAL_OUTREACH],
-    ['commercial_truth_real_contact_form_submission', ({ item }) => !(item.prior_history_classification || {}).REAL_EXTERNAL_CONTACT_FORM_SUBMISSION],
-    ['commercial_truth_internal_smoke_test_only', () => true],
-    ['commercial_truth_historical_real_contact_backfill', ({ item }) => !(item.prior_history_classification || {}).HISTORICAL_BACKFILL_OF_REAL_CONTACT],
-    ['commercial_truth_live_audit_customer_payment_outcome', ({ item }) => item.eligibility_evidence.outcome_history_state !== 'DETERMINISTICALLY_BLOCKED'],
-    ['commercial_truth_ambiguous_manual_history_confirmation', ({ item }) => item.eligibility_evidence.outcome_history_state !== 'OWNER_HISTORY_CONFIRMATION_REQUIRED'],
-    ['one_verified_recipient_or_owner_resolvable_contact_decision', ({ item }) => ['ONE_VERIFIED_RECIPIENT', 'MULTIPLE_VERIFIED_RECIPIENTS', 'PLAUSIBLE_UNVERIFIED_CONTACT'].includes(item.eligibility_evidence.contact_state)],
-    ['unsuppressed', ({ item }) => item.eligibility_evidence.suppression_clear],
-    ['current_accessible_community_mockup', ({ item }) => item.eligibility_evidence.community_mockup_present && item.eligibility_evidence.preview_ready],
-    ['completed_quality_reviews', ({ item }) => item.eligibility_evidence.qa_valid && item.eligibility_evidence.site_auditor_valid],
-    ['explicit_official_site_classification', ({ item }) => item.eligibility_evidence.official_site_valid],
-    ['complete_attribution', ({ item }) => item.eligibility_evidence.attribution_complete],
-  ];
+  const stages = exclusionGateStages;
   for (const [stage, predicate] of stages) {
     const before = remaining.length;
     const passed = remaining.filter(predicate);
@@ -176,6 +178,42 @@ export const buildExclusionWaterfall = (candidates = []) => {
   rows.push({ stage: 'EXCLUDE', before: candidates.length, excluded: candidates.length - excludeCount, remaining: excludeCount });
   rows.push({ stage: 'DENOMINATOR_RECONCILIATION', before: candidates.length, excluded: 0, remaining: includeCount + needsCount + excludeCount });
   return rows;
+};
+
+export const classifyLastMileVisibility = (item = {}) => {
+  const contactStage = 'one_verified_recipient_or_owner_resolvable_contact_decision';
+  const qualityStage = 'completed_quality_reviews';
+  const contactIndex = exclusionGateStages.findIndex(([stage]) => stage === contactStage);
+  const qualityIndex = exclusionGateStages.findIndex(([stage]) => stage === qualityStage);
+  let lastGatePassed = 'none';
+  let lastPassedIndex = -1;
+  let finalExclusionStage = item.final_dry_run_recommendation || 'unknown';
+  for (const [index, [stage, predicate]] of exclusionGateStages.entries()) {
+    if (predicate({ item })) {
+      lastGatePassed = stage;
+      lastPassedIndex = index;
+      continue;
+    }
+    finalExclusionStage = stage;
+    break;
+  }
+  const reachedFinalContactOrQualityGate = finalExclusionStage === contactStage || lastPassedIndex >= contactIndex || finalExclusionStage === qualityStage || lastPassedIndex >= qualityIndex;
+  const reasons = item.hard_blockers?.length ? item.hard_blockers : item.owner_concerns || [];
+  return {
+    visible: item.final_dry_run_recommendation !== 'EXCLUDE' || reachedFinalContactOrQualityGate,
+    reachedFinalContactOrQualityGate,
+    lastGatePassed,
+    finalExclusionStage: item.final_dry_run_recommendation === 'EXCLUDE' ? finalExclusionStage : item.final_dry_run_recommendation,
+    contactState: item.eligibility_evidence?.contact_state || 'unknown',
+    exclusionReason: reasons.join('; ') || 'none',
+  };
+};
+
+const redactedLastMileIdentifier = (item = {}) => {
+  const id = item.prospect_snapshot?.id || item.generation_job_snapshot?.prospect_id || item.generation_job_snapshot?.id || item.race_name || 'unknown';
+  const text = String(id);
+  if (text.length <= 8) return `${text.slice(0, 2)}***`;
+  return `${text.slice(0, 6)}***${text.slice(-4)}`;
 };
 
 export const buildExclusionWaterfallMarkdown = ({ items = [], scanEvidence = {}, generatedAt = new Date().toISOString() } = {}) => {
@@ -195,7 +233,13 @@ export const buildExclusionWaterfallMarkdown = ({ items = [], scanEvidence = {},
   const candidates = items.map((item) => ({ item, prospect: item.prospect_snapshot || {}, job: item.generation_job_snapshot || {} }));
   for (const row of buildExclusionWaterfall(candidates)) lines.push(`- ${row.stage}: before=${row.before}; excluded=${row.excluded}; remaining=${row.remaining}`);
   lines.push('', '## Last-mile candidates', '');
-  for (const item of items.filter((i) => i.final_dry_run_recommendation !== 'EXCLUDE')) lines.push(`- ${item.race_name}: ${item.final_dry_run_recommendation}; contact=${item.contact_role}; mockup=${redactPrivateUrl(item.community_mockup_url_redacted || '') || 'redacted'}; history=${item.owner_history_confirmation_state}`);
+  const lastMileItems = items
+    .map((item) => ({ item, lastMile: classifyLastMileVisibility(item) }))
+    .filter(({ lastMile }) => lastMile.visible);
+  if (!lastMileItems.length) lines.push('- none');
+  for (const { item, lastMile } of lastMileItems) {
+    lines.push(`- id=${redactedLastMileIdentifier(item)}; race=${item.race_name}; recommendation=${item.final_dry_run_recommendation}; last_gate_passed=${lastMile.lastGatePassed}; final_exclusion_stage=${lastMile.finalExclusionStage}; contact_state=${lastMile.contactState}; reason=${lastMile.exclusionReason}; contact=${item.contact_role}; mockup=${redactPrivateUrl(item.community_mockup_url_redacted || '') || 'redacted'}; history=${item.owner_history_confirmation_state}`);
+  }
   return `${lines.join('\n')}\n`;
 };
 

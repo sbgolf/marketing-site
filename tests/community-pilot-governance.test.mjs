@@ -36,6 +36,8 @@ import {
   loadReadOnlySupabaseCandidates,
   buildSuppressionFilters,
   buildExclusionWaterfall,
+  buildExclusionWaterfallMarkdown,
+  classifyLastMileVisibility,
   selectLatestCommunityJobByProspect,
 } from '../scripts/build-community-pilot-dry-run-dossier.mjs';
 
@@ -598,6 +600,29 @@ test('final truth gate: no verified or plausible contact is EXCLUDE NO CONTACT, 
   assert.equal(result.recommendation, 'EXCLUDE');
   assert.match(result.blockers.join('\n'), /EXCLUDE — NO CONTACT/);
   assert.doesNotMatch(result.recommendation, /CONTACT_VERIFICATION/);
+});
+
+test('private last-mile report includes EXCLUDE-at-contact candidate with redacted gate details', () => {
+  const item = buildOwnerReviewDossierItem({
+    prospect: prospect({ id: 'prospect-contact-exclude-123456', contact_sources: [], contact_email: '', contact_form_url: '' }),
+    generationJob: job({ prospect_id: 'prospect-contact-exclude-123456' }),
+  });
+  item.prospect_snapshot = { id: 'prospect-contact-exclude-123456' };
+  const lastMile = classifyLastMileVisibility(item);
+  assert.equal(item.final_dry_run_recommendation, 'EXCLUDE');
+  assert.equal(lastMile.visible, true);
+  assert.equal(lastMile.lastGatePassed, 'commercial_truth_ambiguous_manual_history_confirmation');
+  assert.equal(lastMile.finalExclusionStage, 'one_verified_recipient_or_owner_resolvable_contact_decision');
+  assert.equal(lastMile.contactState, 'NO_VERIFIED_CONTACT');
+  assert.match(lastMile.exclusionReason, /EXCLUDE — NO CONTACT/);
+
+  const markdown = buildExclusionWaterfallMarkdown({ items: [item], scanEvidence: { uniqueProspectIds: 1 }, generatedAt: '2026-08-14T00:00:00.000Z' });
+  assert.match(markdown, /## Last-mile candidates/);
+  assert.match(markdown, /id=prospe\*\*\*3456/);
+  assert.match(markdown, /last_gate_passed=commercial_truth_ambiguous_manual_history_confirmation/);
+  assert.match(markdown, /final_exclusion_stage=one_verified_recipient_or_owner_resolvable_contact_decision/);
+  assert.match(markdown, /contact_state=NO_VERIFIED_CONTACT/);
+  assert.match(markdown, /EXCLUDE — NO CONTACT/);
 });
 
 test('final truth gate: plausible unverified routing contact may require Steve contact verification', () => {
