@@ -227,7 +227,7 @@ export const runLaneA = async ({ policyPath = DEFAULT_POLICY, runId, mode = 'fix
   };
 
   await writeText(path.join(outputDir, 'STARTLINESITES_CMO_LANE_A_REPEATABILITY_SOP.md'), renderSop({ policy, sourcePolicyFileSha256, canonicalPolicyObjectSha256, specSha256 }));
-  await writeJson(path.join(outputDir, 'startline-lane-a-sourcing-policy-v1.json'), policy);
+  await writeText(path.join(outputDir, 'startline-lane-a-sourcing-policy-v1.json'), policyRaw);
   await writeText(path.join(outputDir, 'STARTLINESITES_CMO_LANE_A_STATE_MACHINE.md'), renderStateMachine(policy));
   await writeText(path.join(outputDir, 'STARTLINESITES_CMO_LANE_A_DEVIATION_POLICY.md'), renderDeviationPolicy(policy));
   await writeText(path.join(outputDir, 'STARTLINESITES_CMO_LANE_A_OWNER_DECISION_LEDGER_TEMPLATE.md'), renderOwnerLedgerTemplate(policy));

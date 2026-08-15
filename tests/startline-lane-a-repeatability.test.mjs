@@ -51,6 +51,7 @@ test('policy checksum fields distinguish source file and canonical object hashes
   assert.equal(result.manifest.canonicalPolicyObjectSha256, sha256Text(stableStringify(policy)));
   const external = JSON.parse(await fs.readFile(path.join(out, 'external-evidence-checksums.json'), 'utf8'));
   assert.equal(external.policyFileVerification.matches, true);
+  assert.equal(external.artifactHashes['startline-lane-a-sourcing-policy-v1.json'], sha256Text(raw));
 });
 
 test('unknown enum fails source-evidence validation', async () => {
