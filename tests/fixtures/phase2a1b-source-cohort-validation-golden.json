@@ -1,0 +1,19 @@
+{
+  "finalDecisions": {
+    "APPROVE_FOR_ASSET_PREPARATION": 1,
+    "EXCLUDE": 5,
+    "NEEDS_STEVE_DECISION": 3
+  },
+  "noSideEffectCertification": {
+    "cronJobsCreatedOrActivated": false,
+    "emailsToProspects": false,
+    "mockupsCreated": false,
+    "networkMode": "fixture replay only",
+    "productionWrites": false,
+    "prospectWrites": false,
+    "recurringSourcingCronCreated": false,
+    "contactFormSubmissions": false
+  },
+  "sampledLaneASupply": "INCONCLUSIVE",
+  "sourceCohortValidation": "GO"
+}

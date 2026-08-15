@@ -26,7 +26,10 @@
     "smoke:audit-request": "node scripts/smoke-audit-request.mjs",
     "dossier:community-pilot-dry-run": "node scripts/build-community-pilot-dry-run-dossier.mjs",
     "monitor:phase3b1-transactions": "node scripts/phase3b1-transaction-reconciliation.mjs",
-    "test": "node --test"
+    "validate:phase2a1b-source-cohort": "node scripts/phase2a1b-source-cohort-validation-runner.mjs",
+    "test": "node --test",
+    "cmo:lane-a:source": "node scripts/startline-lane-a-source-runner.mjs",
+    "cmo:lane-a:replay-fixtures": "env -u RESEND_API_KEY -u RESEND_AUDIENCES_API_KEY -u STRIPE_SECRET_KEY -u SUPABASE_SERVICE_ROLE_KEY -u SUPABASE_SERVICE_KEY -u STARTLINE_SUPABASE_SERVICE_ROLE_KEY node scripts/startline-lane-a-source-runner.mjs --policy config/startline-lane-a-sourcing-policy-v1.json --run-id fixture-replay --mode fixture --input tests/fixtures/startline-lane-a-repeatability-fixture.json --output-dir /tmp/startline-lane-a-repeatability-fixture --golden-manifest tests/fixtures/startline-lane-a-repeatability-golden.json --spec-sha256 fa6d777eb065456ad5da3b0877761cf79cf5f50e4dcd2283c3cac48f6419144c"
   },
   "dependencies": {
     "@fontsource/instrument-serif": "latest",

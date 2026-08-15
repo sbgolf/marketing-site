@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StartLine Lane A Owner Review",
+  "type": "object",
+  "required": ["runId", "policyId", "policyVersion", "candidateId", "recommendation", "evidenceCard", "authorizedNextStep"],
+  "properties": {
+    "runId": { "type": "string" },
+    "policyId": { "type": "string" },
+    "policyVersion": { "type": "string" },
+    "candidateId": { "type": ["string", "number"] },
+    "recommendation": { "enum": ["APPROVE_FOR_ASSET_PREPARATION", "NEEDS_STEVE_DECISION", "EXCLUDE"] },
+    "evidenceCard": { "type": "object" },
+    "authorizedNextStep": { "enum": ["NONE_PHASE_2A_1B_ONLY", "OWNER_REVIEW_REQUIRED"] }
+  },
+  "additionalProperties": true
+}

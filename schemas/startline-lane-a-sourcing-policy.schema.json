@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StartLine Lane A Sourcing Policy",
+  "type": "object",
+  "required": ["policyId", "version", "targetSegment", "allowedSourcePlatform", "websiteNeedRubric", "commercialCapacityRubric", "enums", "hardExclusions", "stateTransitions", "preflightRequirements", "postflightRequirements", "recurringCronCertificationRules"],
+  "properties": {
+    "policyId": { "const": "startline-lane-a-sourcing-policy" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "targetSegment": { "type": "string" },
+    "allowedSourcePlatform": { "const": "RunSignup" },
+    "allowedWebsiteClassifications": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "sourceHierarchy": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "leadTimeBands": { "type": "object", "required": ["approveMinimumDays", "limitedRunwayMinimumDays", "underRunwayExclusionDays"] },
+    "websiteNeedRubric": { "type": "object", "required": ["thresholds", "components", "rules"] },
+    "commercialCapacityRubric": { "type": "object", "required": ["thresholds", "components"] },
+    "enums": { "type": "object", "required": ["websiteNeed", "commercialCapacity", "contactState", "eventReliability", "recommendation", "historyState", "candidateState", "ownerDecision"] },
+    "hardExclusions": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "ownerDecisionReasons": { "type": "array", "items": { "type": "string" } },
+    "evidenceFreshnessWindows": { "type": "object" },
+    "noSendNoWriteControls": { "type": "object" },
+    "stateTransitions": { "type": "array", "items": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "string" } }, "minItems": 1 },
+    "preflightRequirements": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "postflightRequirements": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "outputArtifacts": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "recurringCronCertificationRules": { "type": "object", "required": ["authorized", "minimumConsecutiveLiveReadOnlyRuns", "requiresSteveApproval"] }
+  },
+  "additionalProperties": true
+}

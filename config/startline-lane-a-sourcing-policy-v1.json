@@ -1,0 +1,332 @@
+{
+  "policyId": "startline-lane-a-sourcing-policy",
+  "version": "1.0.0",
+  "semanticVersion": "1.0.0",
+  "targetSegment": "StartLine Sites Lane A Community-template race candidates",
+  "allowedSourcePlatform": "RunSignup",
+  "allowedWebsiteClassifications": [
+    "NO_STANDALONE_SITE",
+    "RUNSIGNUP_ONLY",
+    "BASIC_EVENT_PAGE",
+    "MEANINGFUL_OFFICIAL_SITE",
+    "UNKNOWN"
+  ],
+  "sourceHierarchy": [
+    "race_level_runsignup_page",
+    "exact_organizer_official_website",
+    "exact_official_race_event_page",
+    "official_contact_page",
+    "trusted_corroborating_race_calendar",
+    "search_snippet_discovery_only"
+  ],
+  "leadTimeBands": {
+    "approveMinimumDays": 120,
+    "limitedRunwayMinimumDays": 90,
+    "underRunwayExclusionDays": 89
+  },
+  "websiteNeedRubric": {
+    "thresholds": {
+      "HIGH": 15,
+      "MEDIUM": 9,
+      "LOW": 1
+    },
+    "components": [
+      {
+        "id": "standalone_site_gap",
+        "weight": 3
+      },
+      {
+        "id": "runsignup_completeness_gap",
+        "weight": 2
+      },
+      {
+        "id": "current_information_consistency",
+        "weight": 2
+      },
+      {
+        "id": "race_specific_brand_story_gap",
+        "weight": 2
+      },
+      {
+        "id": "sponsor_presentation_gap",
+        "weight": 1
+      },
+      {
+        "id": "routes_faq_logistics_gap",
+        "weight": 2
+      },
+      {
+        "id": "year_round_seo_gap",
+        "weight": 2
+      },
+      {
+        "id": "photos_media_gap",
+        "weight": 1
+      },
+      {
+        "id": "charity_donation_story_gap",
+        "weight": 1
+      },
+      {
+        "id": "contact_capture_gap",
+        "weight": 1
+      },
+      {
+        "id": "incremental_value_beyond_current_experience",
+        "weight": 3
+      }
+    ],
+    "rules": {
+      "absenceOfUniqueDomainAloneCannotProduceHigh": true,
+      "detailedRunSignupOrOfficialPageReducesNeed": true
+    }
+  },
+  "commercialCapacityRubric": {
+    "thresholds": {
+      "HIGH": 13,
+      "MEDIUM": 7,
+      "LOW": 1
+    },
+    "components": [
+      {
+        "id": "recurring_event_history",
+        "weight": 3
+      },
+      {
+        "id": "paid_entry",
+        "weight": 2
+      },
+      {
+        "id": "participant_field_evidence",
+        "weight": 2
+      },
+      {
+        "id": "sponsors",
+        "weight": 2
+      },
+      {
+        "id": "organizer_type",
+        "weight": 2
+      },
+      {
+        "id": "multiple_distances",
+        "weight": 1
+      },
+      {
+        "id": "professional_marketing_media",
+        "weight": 1
+      },
+      {
+        "id": "fundraising",
+        "weight": 1
+      },
+      {
+        "id": "operational_scale",
+        "weight": 2
+      }
+    ]
+  },
+  "enums": {
+    "websiteNeed": [
+      "HIGH",
+      "MEDIUM",
+      "LOW",
+      "UNKNOWN"
+    ],
+    "commercialCapacity": [
+      "HIGH",
+      "MEDIUM",
+      "LOW",
+      "UNKNOWN"
+    ],
+    "contactState": [
+      "VERIFIED_RACE_DIRECT",
+      "VERIFIED_ORGANIZER_ROUTING",
+      "PLAUSIBLE_REQUIRES_STEVE_VERIFICATION",
+      "CONTACT_FORM_ONLY",
+      "NO_CONTACT",
+      "INVALID_OR_WRONG_ORGANIZATION"
+    ],
+    "eventReliability": [
+      "CURRENT_AND_CONSISTENT",
+      "STALE_OR_CONFLICTING",
+      "UNVERIFIED"
+    ],
+    "recommendation": [
+      "APPROVE_FOR_ASSET_PREPARATION",
+      "NEEDS_STEVE_DECISION",
+      "EXCLUDE"
+    ],
+    "historyState": [
+      "NEW_NO_HISTORY",
+      "PRIOR_REAL_EXTERNAL_OUTREACH",
+      "PRIOR_CONTACT_FORM_OUTREACH",
+      "PRIOR_COMMERCIAL_HISTORY",
+      "INTERNAL_TEST_ONLY",
+      "AMBIGUOUS_REQUIRES_STEVE_CONFIRMATION"
+    ],
+    "candidateState": [
+      "DISCOVERED",
+      "DETERMINISTIC_PREFILTER_PASS",
+      "DEEP_REVIEW_READY",
+      "EVIDENCE_COMPLETE",
+      "VALIDATED",
+      "OWNER_SOURCE_APPROVED",
+      "ASSET_PREPARATION_READY",
+      "ASSET_READY_FOR_OWNER_REVIEW",
+      "OWNER_SEND_APPROVED",
+      "SENT"
+    ],
+    "ownerDecision": [
+      "approve source",
+      "reject",
+      "hold",
+      "verify contact",
+      "allow limited runway",
+      "classify manual history",
+      "request re-research"
+    ],
+    "officialSiteClassification": [
+      "NO_STANDALONE_SITE",
+      "RUNSIGNUP_ONLY",
+      "BASIC_EVENT_PAGE",
+      "MEANINGFUL_OFFICIAL_SITE",
+      "UNKNOWN"
+    ]
+  },
+  "hardExclusions": [
+    "DUPLICATE_OR_SUPPRESSED",
+    "PRIOR_REAL_EXTERNAL_OUTREACH",
+    "PRIOR_CONTACT_FORM_OUTREACH",
+    "PRIOR_COMMERCIAL_HISTORY",
+    "INVALID_OR_WRONG_ORGANIZATION",
+    "NO_CONTACT",
+    "CONTACT_FORM_ONLY",
+    "UNDER_90_DAY_RUNWAY",
+    "STALE_OR_CONFLICTING_EVENT_DETAILS",
+    "UNVERIFIED_EVENT_DETAILS",
+    "LOW_WEBSITE_NEED",
+    "UNKNOWN_WEBSITE_NEED",
+    "LOW_COMMERCIAL_CAPACITY",
+    "UNKNOWN_COMMERCIAL_CAPACITY",
+    "NOT_LANE_A_FIT",
+    "NO_OBVIOUS_INCREMENTAL_VALUE",
+    "MISSING_REQUIRED_EVIDENCE",
+    "PROCESS_DEVIATION_BLOCKED"
+  ],
+  "ownerDecisionReasons": [
+    "LIMITED_RUNWAY",
+    "CONTACT_VERIFICATION",
+    "BORDERLINE_MEDIUM_WEBSITE_NEED",
+    "AMBIGUOUS_HISTORY",
+    "STRATEGIC_TIER_FIT",
+    "MANUAL_HISTORY_CLASSIFICATION"
+  ],
+  "historyStates": [
+    "NEW_NO_HISTORY",
+    "PRIOR_REAL_EXTERNAL_OUTREACH",
+    "PRIOR_CONTACT_FORM_OUTREACH",
+    "PRIOR_COMMERCIAL_HISTORY",
+    "INTERNAL_TEST_ONLY",
+    "AMBIGUOUS_REQUIRES_STEVE_CONFIRMATION"
+  ],
+  "recommendationStates": [
+    "APPROVE_FOR_ASSET_PREPARATION",
+    "NEEDS_STEVE_DECISION",
+    "EXCLUDE"
+  ],
+  "evidenceFreshnessWindows": {
+    "historySuppression": "same_run",
+    "currentRaceDateContactSite": "same_run",
+    "finalPreAssetRevalidationHours": 24,
+    "finalPreSendRevalidation": "required_in_phase_2a_2",
+    "sourceEvidenceMaxAgeHours": 72
+  },
+  "noSendNoWriteControls": {
+    "resendSend": false,
+    "stripeWrite": false,
+    "contactFormSubmit": false,
+    "mockupCreate": false,
+    "prospectWrite": false,
+    "cronMutation": false,
+    "productionMutation": false
+  },
+  "stateTransitions": [
+    [
+      "DISCOVERED",
+      "DETERMINISTIC_PREFILTER_PASS"
+    ],
+    [
+      "DETERMINISTIC_PREFILTER_PASS",
+      "DEEP_REVIEW_READY"
+    ],
+    [
+      "DEEP_REVIEW_READY",
+      "EVIDENCE_COMPLETE"
+    ],
+    [
+      "EVIDENCE_COMPLETE",
+      "VALIDATED"
+    ],
+    [
+      "VALIDATED",
+      "OWNER_SOURCE_APPROVED"
+    ],
+    [
+      "OWNER_SOURCE_APPROVED",
+      "ASSET_PREPARATION_READY"
+    ],
+    [
+      "ASSET_PREPARATION_READY",
+      "ASSET_READY_FOR_OWNER_REVIEW"
+    ],
+    [
+      "ASSET_READY_FOR_OWNER_REVIEW",
+      "OWNER_SEND_APPROVED"
+    ],
+    [
+      "OWNER_SEND_APPROVED",
+      "SENT"
+    ]
+  ],
+  "phase2a1bAllowedTerminalStates": [
+    "VALIDATED",
+    "OWNER_SOURCE_APPROVED"
+  ],
+  "preflightRequirements": [
+    "policy_checksum",
+    "safety_jobs_enabled",
+    "outbound_jobs_paused",
+    "read_only_history_available",
+    "no_send_credentials",
+    "no_write_credentials",
+    "private_output_path"
+  ],
+  "postflightRequirements": [
+    "no_emails_sent",
+    "no_contact_forms_submitted",
+    "no_prospects_written",
+    "no_mockups_created",
+    "no_cron_state_changed",
+    "no_database_mutation",
+    "output_schema_valid",
+    "counts_reconcile"
+  ],
+  "outputArtifacts": [
+    "preflight-report.json",
+    "source-evidence-validation.json",
+    "rubric-scores.json",
+    "sequential-waterfall.json",
+    "owner-review-dossier.json",
+    "deviation-register.json",
+    "run-manifest.json",
+    "postflight-no-side-effect-report.json"
+  ],
+  "recurringCronCertificationRules": {
+    "authorized": false,
+    "minimumConsecutiveLiveReadOnlyRuns": 3,
+    "requiresZeroUnresolvedDeviations": true,
+    "requiresIndependentReview": true,
+    "requiresSteveApproval": true
+  }
+}
