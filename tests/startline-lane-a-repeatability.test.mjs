@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs/promises';
-import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import {
@@ -137,6 +136,57 @@ test('stale fallback cannot produce APPROVE', async () => {
   const decision = classifyCandidate({ candidate, policy });
   assert.equal(decision.recommendation, FINAL_STATES.EXCLUDE);
   assert(decision.hardExclusions.includes('PROCESS_DEVIATION_BLOCKED'));
+});
+
+
+test('missing duplicateState blocks APPROVE_FOR_ASSET_PREPARATION', async () => {
+  const { policy, fixture } = await load();
+  const candidate = structuredClone(fixture.candidates.find((c) => c.candidateId === 17));
+  delete candidate.duplicateState;
+  const decision = classifyCandidate({ candidate, policy });
+  assert.equal(decision.recommendation, FINAL_STATES.EXCLUDE);
+  assert.match(decision.schemaErrors.join('\n'), /missing duplicateState/);
+  assert(decision.hardExclusions.includes('MISSING_REQUIRED_EVIDENCE'));
+});
+
+test('missing suppressionClear blocks APPROVE_FOR_ASSET_PREPARATION', async () => {
+  const { policy, fixture } = await load();
+  const candidate = structuredClone(fixture.candidates.find((c) => c.candidateId === 17));
+  delete candidate.suppressionClear;
+  const decision = classifyCandidate({ candidate, policy });
+  assert.equal(decision.recommendation, FINAL_STATES.EXCLUDE);
+  assert.match(decision.schemaErrors.join('\n'), /missing suppressionClear/);
+  assert(decision.hardExclusions.includes('MISSING_REQUIRED_EVIDENCE'));
+});
+
+test('missing official-site evidence blocks APPROVE_FOR_ASSET_PREPARATION', async () => {
+  const { policy, fixture } = await load();
+  const candidate = structuredClone(fixture.candidates.find((c) => c.candidateId === 17));
+  delete candidate.officialSiteClassification;
+  candidate.sourceReferences = candidate.sourceReferences.filter((source) => !String(source.type).includes('official'));
+  const decision = classifyCandidate({ candidate, policy });
+  assert.equal(decision.recommendation, FINAL_STATES.EXCLUDE);
+  assert.match(decision.schemaErrors.join('\n'), /missing officialSiteClassification/);
+  assert(decision.hardExclusions.includes('MISSING_REQUIRED_EVIDENCE'));
+});
+
+test('expired stale source evidence blocks APPROVE_FOR_ASSET_PREPARATION', async () => {
+  const { policy, fixture } = await load();
+  const candidate = structuredClone(fixture.candidates.find((c) => c.candidateId === 17));
+  candidate.evidenceAccessedAt = '2026-08-10T12:00:00-05:00';
+  candidate.sourceReferences = candidate.sourceReferences.map((source) => ({ ...source, accessedAt: '2026-08-10T12:00:00-05:00' }));
+  const decision = classifyCandidate({ candidate, policy, now: fixture.frozenEvaluationTimestamp });
+  assert.equal(decision.recommendation, FINAL_STATES.EXCLUDE);
+  assert.match(decision.schemaErrors.join('\n'), /stale source evidence/);
+  assert(decision.hardExclusions.includes('MISSING_REQUIRED_EVIDENCE'));
+});
+
+test('live-read-only mode is rejected until separately certified', async () => {
+  const out = await fs.mkdtemp('/tmp/lane-a-live-disabled-');
+  await assert.rejects(
+    () => runLaneA({ policyPath, runId: 'live-disabled', mode: 'live-read-only', inputPath: fixturePath, outputDir: out }),
+    /LIVE_READ_ONLY_MODE — NOT CERTIFIED/,
+  );
 });
 
 test('run manifest required fields validate', async () => {

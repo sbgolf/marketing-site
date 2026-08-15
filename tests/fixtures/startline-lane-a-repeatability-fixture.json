@@ -76,7 +76,7 @@
       "laneAFit": true,
       "leadTimeDays": 150,
       "obviousIncrementalValue": true,
-      "raceName": "5K Run for the Donut \u2014 sanitized frozen candidate",
+      "raceName": "Synthetic Lane A Candidate 5",
       "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate5",
       "sourceReferences": [
         {
@@ -87,7 +87,7 @@
         {
           "accessedAt": "2026-08-14T12:00:00-05:00",
           "type": "official_contact_page",
-          "url": "https://sanitized-source.invalid/candidate-5/contact"
+          "url": "https://synthetic-source.invalid/candidate-5/contact"
         }
       ],
       "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
@@ -171,7 +171,9 @@
           "id": "incremental_value_beyond_current_experience",
           "score": 0
         }
-      ]
+      ],
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00"
     },
     {
       "candidateId": 10,
@@ -249,7 +251,7 @@
       "laneAFit": true,
       "leadTimeDays": 92,
       "obviousIncrementalValue": true,
-      "raceName": "Hytrol Industrial Park 5K/10K \u2014 sanitized frozen candidate",
+      "raceName": "Synthetic Lane A Candidate 10",
       "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate10",
       "sourceReferences": [
         {
@@ -260,7 +262,7 @@
         {
           "accessedAt": "2026-08-14T12:00:00-05:00",
           "type": "official_contact_page",
-          "url": "https://sanitized-source.invalid/candidate-10/contact"
+          "url": "https://synthetic-source.invalid/candidate-10/contact"
         }
       ],
       "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
@@ -344,7 +346,9 @@
           "id": "incremental_value_beyond_current_experience",
           "score": 0
         }
-      ]
+      ],
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00"
     },
     {
       "candidateId": 13,
@@ -422,7 +426,7 @@
       "laneAFit": true,
       "leadTimeDays": 150,
       "obviousIncrementalValue": false,
-      "raceName": "CMH Heroes for Hospice \u2014 sanitized frozen candidate",
+      "raceName": "Synthetic Lane A Candidate 13",
       "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate13",
       "sourceReferences": [
         {
@@ -433,7 +437,7 @@
         {
           "accessedAt": "2026-08-14T12:00:00-05:00",
           "type": "official_contact_page",
-          "url": "https://sanitized-source.invalid/candidate-13/contact"
+          "url": "https://synthetic-source.invalid/candidate-13/contact"
         }
       ],
       "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
@@ -517,7 +521,9 @@
           "id": "incremental_value_beyond_current_experience",
           "score": 0
         }
-      ]
+      ],
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00"
     },
     {
       "candidateId": 15,
@@ -595,7 +601,7 @@
       "laneAFit": true,
       "leadTimeDays": 150,
       "obviousIncrementalValue": false,
-      "raceName": "Cape Carteret Turkey Trot \u2014 sanitized frozen candidate",
+      "raceName": "Synthetic Lane A Candidate 15",
       "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate15",
       "sourceReferences": [
         {
@@ -606,7 +612,7 @@
         {
           "accessedAt": "2026-08-14T12:00:00-05:00",
           "type": "official_contact_page",
-          "url": "https://sanitized-source.invalid/candidate-15/contact"
+          "url": "https://synthetic-source.invalid/candidate-15/contact"
         }
       ],
       "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
@@ -690,7 +696,9 @@
           "id": "incremental_value_beyond_current_experience",
           "score": 0
         }
-      ]
+      ],
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00"
     },
     {
       "candidateId": 17,
@@ -768,7 +776,7 @@
       "laneAFit": true,
       "leadTimeDays": 150,
       "obviousIncrementalValue": true,
-      "raceName": "Greater Things on the Move 5K \u2014 sanitized frozen candidate",
+      "raceName": "Synthetic Lane A Candidate 17",
       "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate17",
       "sourceReferences": [
         {
@@ -779,7 +787,7 @@
         {
           "accessedAt": "2026-08-14T12:00:00-05:00",
           "type": "official_contact_page",
-          "url": "https://sanitized-source.invalid/candidate-17/contact"
+          "url": "https://synthetic-source.invalid/candidate-17/contact"
         }
       ],
       "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
@@ -863,7 +871,9 @@
           "id": "incremental_value_beyond_current_experience",
           "score": 0
         }
-      ]
+      ],
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00"
     },
     {
       "candidateId": 19,
@@ -941,7 +951,7 @@
       "laneAFit": true,
       "leadTimeDays": 150,
       "obviousIncrementalValue": true,
-      "raceName": "ACC Turkey Trot \u2014 sanitized frozen candidate",
+      "raceName": "Synthetic Lane A Candidate 19",
       "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate19",
       "sourceReferences": [
         {
@@ -952,7 +962,7 @@
         {
           "accessedAt": "2026-08-14T12:00:00-05:00",
           "type": "official_contact_page",
-          "url": "https://sanitized-source.invalid/candidate-19/contact"
+          "url": "https://synthetic-source.invalid/candidate-19/contact"
         }
       ],
       "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
@@ -1036,7 +1046,9 @@
           "id": "incremental_value_beyond_current_experience",
           "score": 3
         }
-      ]
+      ],
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00"
     },
     {
       "candidateId": 22,
@@ -1114,7 +1126,7 @@
       "laneAFit": false,
       "leadTimeDays": 150,
       "obviousIncrementalValue": true,
-      "raceName": "Run With Meb \u2014 sanitized frozen candidate",
+      "raceName": "Synthetic Lane A Candidate 22",
       "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate22",
       "sourceReferences": [
         {
@@ -1125,7 +1137,7 @@
         {
           "accessedAt": "2026-08-14T12:00:00-05:00",
           "type": "official_contact_page",
-          "url": "https://sanitized-source.invalid/candidate-22/contact"
+          "url": "https://synthetic-source.invalid/candidate-22/contact"
         }
       ],
       "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
@@ -1209,7 +1221,9 @@
           "id": "incremental_value_beyond_current_experience",
           "score": 0
         }
-      ]
+      ],
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00"
     },
     {
       "candidateId": 24,
@@ -1287,7 +1301,7 @@
       "laneAFit": true,
       "leadTimeDays": 150,
       "obviousIncrementalValue": true,
-      "raceName": "A Running Start for Hope 5K \u2014 sanitized frozen candidate",
+      "raceName": "Synthetic Lane A Candidate 24",
       "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate24",
       "sourceReferences": [
         {
@@ -1298,7 +1312,7 @@
         {
           "accessedAt": "2026-08-14T12:00:00-05:00",
           "type": "official_contact_page",
-          "url": "https://sanitized-source.invalid/candidate-24/contact"
+          "url": "https://synthetic-source.invalid/candidate-24/contact"
         }
       ],
       "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
@@ -1382,7 +1396,9 @@
           "id": "incremental_value_beyond_current_experience",
           "score": 0
         }
-      ]
+      ],
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00"
     },
     {
       "candidateId": 30,
@@ -1460,7 +1476,7 @@
       "laneAFit": true,
       "leadTimeDays": 150,
       "obviousIncrementalValue": true,
-      "raceName": "4.01K Reindeer Run \u2014 sanitized frozen candidate",
+      "raceName": "Synthetic Lane A Candidate 30",
       "runSignupUrl": "https://runsignup.com/Race/Sanitized/Candidate30",
       "sourceReferences": [
         {
@@ -1471,7 +1487,7 @@
         {
           "accessedAt": "2026-08-14T12:00:00-05:00",
           "type": "official_contact_page",
-          "url": "https://sanitized-source.invalid/candidate-30/contact"
+          "url": "https://synthetic-source.invalid/candidate-30/contact"
         }
       ],
       "sourceSnapshotId": "lane-a-frozen-sanitized-nine-2026-08-14",
@@ -1555,7 +1571,9 @@
           "id": "incremental_value_beyond_current_experience",
           "score": 3
         }
-      ]
+      ],
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00"
     }
   ],
   "frozenEvaluationTimestamp": "2026-08-14T12:00:00-05:00",

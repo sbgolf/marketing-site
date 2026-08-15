@@ -72,6 +72,7 @@ export const validatePolicy = (policy = {}) => {
     eventReliability: ['CURRENT_AND_CONSISTENT', 'STALE_OR_CONFLICTING', 'UNVERIFIED'],
     recommendation: Object.values(FINAL_STATES),
     historyState: ['NEW_NO_HISTORY', 'PRIOR_REAL_EXTERNAL_OUTREACH', 'PRIOR_CONTACT_FORM_OUTREACH', 'PRIOR_COMMERCIAL_HISTORY', 'INTERNAL_TEST_ONLY', 'AMBIGUOUS_REQUIRES_STEVE_CONFIRMATION'],
+    officialSiteClassification: ['NO_STANDALONE_SITE', 'RUNSIGNUP_ONLY', 'BASIC_EVENT_PAGE', 'MEANINGFUL_OFFICIAL_SITE', 'UNKNOWN'],
   };
   for (const [key, required] of Object.entries(requiredEnums)) {
     for (const value of required) if (!includes(enums[key], value)) errors.push(`policy enums.${key} missing ${value}`);
@@ -84,13 +85,14 @@ export const validatePolicy = (policy = {}) => {
 export const validateSourceEvidence = (candidate = {}, policy) => {
   const errors = [];
   const enums = policy.enums;
-  for (const key of ['candidateId', 'raceName', 'runSignupUrl', 'sourceSnapshotId', 'evidenceHash', 'eventReliability', 'contactState', 'historyState', 'websiteNeedComponents', 'commercialCapacityComponents', 'sourceReferences']) {
+  for (const key of ['candidateId', 'raceName', 'runSignupUrl', 'sourceSnapshotId', 'evidenceHash', 'eventReliability', 'contactState', 'historyState', 'duplicateState', 'suppressionClear', 'leadTimeDays', 'laneAFit', 'obviousIncrementalValue', 'officialSiteClassification', 'evidenceAccessedAt', 'websiteNeedComponents', 'commercialCapacityComponents', 'sourceReferences']) {
     if (candidate[key] === undefined) errors.push(`missing ${key}`);
   }
   if (candidate.runSignupUrl && !String(candidate.runSignupUrl).includes('runsignup.com/Race/')) errors.push('runSignupUrl must be an exact race-level RunSignup URL');
   if (!includes(enums.eventReliability, candidate.eventReliability)) errors.push(`eventReliability unknown enum ${candidate.eventReliability}`);
   if (!includes(enums.contactState, candidate.contactState)) errors.push(`contactState unknown enum ${candidate.contactState}`);
   if (!includes(enums.historyState, candidate.historyState)) errors.push(`historyState unknown enum ${candidate.historyState}`);
+  if (!includes(enums.officialSiteClassification, candidate.officialSiteClassification)) errors.push(`officialSiteClassification unknown enum ${candidate.officialSiteClassification}`);
   for (const componentSet of ['websiteNeedComponents', 'commercialCapacityComponents']) {
     for (const [index, component] of asArray(candidate[componentSet]).entries()) {
       if (!component.id) errors.push(`${componentSet}[${index}] missing id`);
@@ -99,6 +101,33 @@ export const validateSourceEvidence = (candidate = {}, policy) => {
     }
   }
   if (!Array.isArray(candidate.sourceReferences) || !candidate.sourceReferences.length) errors.push('sourceReferences must be non-empty');
+  const officialSourceTypes = new Set(['exact_organizer_official_website', 'exact_official_race_event_page', 'official_contact_page']);
+  if (!asArray(candidate.sourceReferences).some((source) => officialSourceTypes.has(source.type))) errors.push('missing official-site evidence source reference');
+  for (const [index, source] of asArray(candidate.sourceReferences).entries()) {
+    if (!source.accessedAt) errors.push(`sourceReferences[${index}] missing accessedAt`);
+  }
+  return errors;
+};
+
+const parseTime = (value) => {
+  const time = Date.parse(value);
+  return Number.isFinite(time) ? time : null;
+};
+
+export const validateSourceEvidenceFreshness = (candidate = {}, now = new Date().toISOString(), policy = {}) => {
+  const errors = [];
+  const maxHours = Number(policy.evidenceFreshnessWindows?.sourceEvidenceMaxAgeHours ?? 72);
+  const nowMs = parseTime(now);
+  const timestamps = [candidate.evidenceAccessedAt, ...asArray(candidate.sourceReferences).map((source) => source.accessedAt)];
+  for (const [index, timestamp] of timestamps.entries()) {
+    const tsMs = parseTime(timestamp);
+    if (!timestamp || tsMs === null) {
+      errors.push(index === 0 ? 'missing source evidence timestamp evidenceAccessedAt' : `missing source evidence timestamp sourceReferences[${index - 1}].accessedAt`);
+      continue;
+    }
+    if (nowMs !== null && maxHours > 0 && nowMs - tsMs > maxHours * 60 * 60 * 1000) errors.push(`stale source evidence timestamp ${timestamp}`);
+    if (nowMs !== null && tsMs - nowMs > 5 * 60 * 1000) errors.push(`future source evidence timestamp ${timestamp}`);
+  }
   return errors;
 };
 
@@ -190,13 +219,14 @@ export const validateTransitionLog = (transitions = []) => {
 };
 
 export const classifyCandidate = ({ candidate, policy, runId = 'test-run', now = new Date().toISOString() }) => {
-  const schemaErrors = validateSourceEvidence(candidate, policy);
+  const schemaErrors = [...validateSourceEvidence(candidate, policy), ...validateSourceEvidenceFreshness(candidate, now, policy)];
   const websiteNeed = deriveWebsiteNeed(candidate, policy);
   const commercialCapacity = deriveCommercialCapacity(candidate, policy);
   const hardExclusions = [];
   const ownerDecisionReasons = [];
 
   if (schemaErrors.length) hardExclusions.push('MISSING_REQUIRED_EVIDENCE');
+  if (candidate.duplicateState === undefined || candidate.suppressionClear === undefined) hardExclusions.push('MISSING_REQUIRED_EVIDENCE');
   if (candidate.duplicateState === 'DUPLICATE_OR_SUPPRESSED' || candidate.suppressionClear === false) hardExclusions.push('DUPLICATE_OR_SUPPRESSED');
   if (['PRIOR_REAL_EXTERNAL_OUTREACH', 'PRIOR_CONTACT_FORM_OUTREACH', 'PRIOR_COMMERCIAL_HISTORY'].includes(candidate.historyState)) hardExclusions.push(candidate.historyState);
   if (candidate.historyState === 'AMBIGUOUS_REQUIRES_STEVE_CONFIRMATION') ownerDecisionReasons.push('AMBIGUOUS_HISTORY');
@@ -214,6 +244,7 @@ export const classifyCandidate = ({ candidate, policy, runId = 'test-run', now =
   if (commercialCapacity.classification === 'UNKNOWN') hardExclusions.push('UNKNOWN_COMMERCIAL_CAPACITY');
   if (candidate.laneAFit !== true) hardExclusions.push('NOT_LANE_A_FIT');
   if (candidate.obviousIncrementalValue !== true) hardExclusions.push('NO_OBVIOUS_INCREMENTAL_VALUE');
+  if (schemaErrors.length) hardExclusions.push('MISSING_REQUIRED_EVIDENCE');
   if (!asArray(candidate.sourceReferences).some((source) => source.type === 'race_level_runsignup_page')) hardExclusions.push('MISSING_REQUIRED_EVIDENCE');
   if (asArray(candidate.deviations).some((deviation) => deviation.finalRunStatus === 'PROCESS DEVIATION — BLOCKED')) hardExclusions.push('PROCESS_DEVIATION_BLOCKED');
   if (ownerDecisionReasons.length > 1 && policy.allowMultipleUnresolvedOwnerIssuesForNeeds !== true) hardExclusions.push('MULTIPLE_UNRESOLVED_OWNER_ISSUES');

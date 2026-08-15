@@ -2,20 +2,178 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "StartLine Lane A Source Evidence",
   "type": "object",
-  "required": ["candidateId", "raceName", "runSignupUrl", "sourceSnapshotId", "evidenceHash", "eventReliability", "contactState", "historyState", "websiteNeedComponents", "commercialCapacityComponents", "sourceReferences"],
+  "required": [
+    "candidateId",
+    "raceName",
+    "runSignupUrl",
+    "sourceSnapshotId",
+    "evidenceHash",
+    "eventReliability",
+    "contactState",
+    "historyState",
+    "websiteNeedComponents",
+    "commercialCapacityComponents",
+    "sourceReferences",
+    "duplicateState",
+    "suppressionClear",
+    "leadTimeDays",
+    "laneAFit",
+    "obviousIncrementalValue",
+    "officialSiteClassification",
+    "evidenceAccessedAt"
+  ],
   "properties": {
-    "candidateId": { "type": ["string", "number"] },
-    "raceName": { "type": "string" },
-    "runSignupUrl": { "type": "string" },
-    "sourceSnapshotId": { "type": "string" },
-    "evidenceHash": { "type": "string" },
-    "eventReliability": { "enum": ["CURRENT_AND_CONSISTENT", "STALE_OR_CONFLICTING", "UNVERIFIED"] },
-    "contactState": { "enum": ["VERIFIED_RACE_DIRECT", "VERIFIED_ORGANIZER_ROUTING", "PLAUSIBLE_REQUIRES_STEVE_VERIFICATION", "CONTACT_FORM_ONLY", "NO_CONTACT", "INVALID_OR_WRONG_ORGANIZATION"] },
-    "historyState": { "enum": ["NEW_NO_HISTORY", "PRIOR_REAL_EXTERNAL_OUTREACH", "PRIOR_CONTACT_FORM_OUTREACH", "PRIOR_COMMERCIAL_HISTORY", "INTERNAL_TEST_ONLY", "AMBIGUOUS_REQUIRES_STEVE_CONFIRMATION"] },
-    "websiteNeedComponents": { "type": "array", "items": { "$ref": "#/$defs/component" } },
-    "commercialCapacityComponents": { "type": "array", "items": { "$ref": "#/$defs/component" } },
-    "sourceReferences": { "type": "array", "items": { "type": "object", "required": ["type", "url", "accessedAt"], "properties": { "type": { "type": "string" }, "url": { "type": "string" }, "accessedAt": { "type": "string" } } } }
+    "candidateId": {
+      "type": [
+        "string",
+        "number"
+      ]
+    },
+    "raceName": {
+      "type": "string"
+    },
+    "runSignupUrl": {
+      "type": "string"
+    },
+    "sourceSnapshotId": {
+      "type": "string"
+    },
+    "evidenceHash": {
+      "type": "string"
+    },
+    "eventReliability": {
+      "enum": [
+        "CURRENT_AND_CONSISTENT",
+        "STALE_OR_CONFLICTING",
+        "UNVERIFIED"
+      ]
+    },
+    "contactState": {
+      "enum": [
+        "VERIFIED_RACE_DIRECT",
+        "VERIFIED_ORGANIZER_ROUTING",
+        "PLAUSIBLE_REQUIRES_STEVE_VERIFICATION",
+        "CONTACT_FORM_ONLY",
+        "NO_CONTACT",
+        "INVALID_OR_WRONG_ORGANIZATION"
+      ]
+    },
+    "historyState": {
+      "enum": [
+        "NEW_NO_HISTORY",
+        "PRIOR_REAL_EXTERNAL_OUTREACH",
+        "PRIOR_CONTACT_FORM_OUTREACH",
+        "PRIOR_COMMERCIAL_HISTORY",
+        "INTERNAL_TEST_ONLY",
+        "AMBIGUOUS_REQUIRES_STEVE_CONFIRMATION"
+      ]
+    },
+    "websiteNeedComponents": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/component"
+      }
+    },
+    "commercialCapacityComponents": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/component"
+      }
+    },
+    "sourceReferences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "url",
+          "accessedAt"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "accessedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "contains": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "enum": [
+              "exact_organizer_official_website",
+              "exact_official_race_event_page",
+              "official_contact_page"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "minContains": 1
+    },
+    "duplicateState": {
+      "enum": [
+        "CLEAR",
+        "DUPLICATE_OR_SUPPRESSED"
+      ]
+    },
+    "suppressionClear": {
+      "type": "boolean"
+    },
+    "leadTimeDays": {
+      "type": "number"
+    },
+    "laneAFit": {
+      "type": "boolean"
+    },
+    "obviousIncrementalValue": {
+      "type": "boolean"
+    },
+    "officialSiteClassification": {
+      "enum": [
+        "NO_STANDALONE_SITE",
+        "RUNSIGNUP_ONLY",
+        "BASIC_EVENT_PAGE",
+        "MEANINGFUL_OFFICIAL_SITE",
+        "UNKNOWN"
+      ]
+    },
+    "evidenceAccessedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
   },
-  "$defs": { "component": { "type": "object", "required": ["id", "score", "evidenceRefs"], "properties": { "id": { "type": "string" }, "score": { "type": "number" }, "evidenceRefs": { "type": "array", "items": { "type": "string" } } } } },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "required": [
+        "id",
+        "score",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "score": {
+          "type": "number"
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
   "additionalProperties": true
 }

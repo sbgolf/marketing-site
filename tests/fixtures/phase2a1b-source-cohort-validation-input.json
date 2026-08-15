@@ -4,8 +4,8 @@
   "candidates": [
     {
       "candidateNumber": 1,
-      "raceName": "Fixture Deep Review Exclude Low Need",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/LowNeed",
+      "raceName": "Synthetic Phase 2A-1B Candidate 1",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate1",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -21,13 +21,27 @@
       "laneAFit": true,
       "obviousIncrementalValue": false,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/fixture-low-need"],
-      "evidenceHashes": ["sha256:fixture-low"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-1"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-low"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-1/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 2,
-      "raceName": "Fixture Deep Review Exclude Under Runway",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/UnderRunway",
+      "raceName": "Synthetic Phase 2A-1B Candidate 2",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate2",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -43,13 +57,27 @@
       "laneAFit": true,
       "obviousIncrementalValue": true,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/fixture-under-runway"],
-      "evidenceHashes": ["sha256:fixture-under"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-2"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-under"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-2/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 3,
-      "raceName": "Fixture Deep Review Exclude History",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/History",
+      "raceName": "Synthetic Phase 2A-1B Candidate 3",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate3",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -64,14 +92,36 @@
       "duplicateResult": "CLEAR",
       "laneAFit": true,
       "obviousIncrementalValue": true,
-      "historyMatches": [{"source":"race_mockup_outreach","recordId":"out_fixture","stableKey":"runsignup:history","classification":"REAL_EXTERNAL","implication":"exclude"}],
-      "officialSourceUrls": ["https://example.org/fixture-history"],
-      "evidenceHashes": ["sha256:fixture-history"]
+      "historyMatches": [
+        {
+          "source": "race_mockup_outreach",
+          "recordId": "out_fixture",
+          "stableKey": "synthetic:3",
+          "classification": "REAL_EXTERNAL",
+          "implication": "exclude"
+        }
+      ],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-3"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-history"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-3/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 4,
-      "raceName": "Fixture Deep Review Exclude Contact",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/NoContact",
+      "raceName": "Synthetic Phase 2A-1B Candidate 4",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate4",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -87,13 +137,27 @@
       "laneAFit": true,
       "obviousIncrementalValue": true,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/fixture-no-contact"],
-      "evidenceHashes": ["sha256:fixture-contact"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-4"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-contact"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-4/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 5,
-      "raceName": "5K Run for the Donut Fixture",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/Donut",
+      "raceName": "Synthetic Phase 2A-1B Candidate 5",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate5",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -109,13 +173,27 @@
       "laneAFit": true,
       "obviousIncrementalValue": false,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/donut"],
-      "evidenceHashes": ["sha256:donut"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-5"
+      ],
+      "evidenceHashes": [
+        "sha256:donut"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-5/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 6,
-      "raceName": "Fixture Deep Review Exclude Stale",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/Stale",
+      "raceName": "Synthetic Phase 2A-1B Candidate 6",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate6",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -131,13 +209,27 @@
       "laneAFit": true,
       "obviousIncrementalValue": true,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/fixture-stale"],
-      "evidenceHashes": ["sha256:fixture-stale"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-6"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-stale"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-6/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 7,
-      "raceName": "Fixture Deep Review Exclude Suppression",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/Suppressed",
+      "raceName": "Synthetic Phase 2A-1B Candidate 7",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate7",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -153,13 +245,27 @@
       "laneAFit": true,
       "obviousIncrementalValue": true,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/fixture-suppressed"],
-      "evidenceHashes": ["sha256:fixture-suppressed"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-7"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-suppressed"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-7/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 8,
-      "raceName": "Fixture Deep Review Exclude Non Lane A",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/NonLaneA",
+      "raceName": "Synthetic Phase 2A-1B Candidate 8",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate8",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -175,13 +281,27 @@
       "laneAFit": false,
       "obviousIncrementalValue": true,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/fixture-non-lane-a"],
-      "evidenceHashes": ["sha256:fixture-lane"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-8"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-lane"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-8/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 9,
-      "raceName": "Fixture Deep Review Approve Supply",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/ApproveSupply",
+      "raceName": "Synthetic Phase 2A-1B Candidate 9",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate9",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -197,13 +317,27 @@
       "laneAFit": true,
       "obviousIncrementalValue": true,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/fixture-approve-supply"],
-      "evidenceHashes": ["sha256:fixture-approve-supply"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-9"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-approve-supply"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-9/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 10,
-      "raceName": "Hytrol Industrial Park 5K/10K Fixture",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/Hytrol",
+      "raceName": "Synthetic Phase 2A-1B Candidate 10",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate10",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -219,13 +353,27 @@
       "laneAFit": true,
       "obviousIncrementalValue": true,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/hytrol"],
-      "evidenceHashes": ["sha256:hytrol"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-10"
+      ],
+      "evidenceHashes": [
+        "sha256:hytrol"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-10/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 13,
-      "raceName": "CMH Heroes for Hospice Fixture",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/CMH",
+      "raceName": "Synthetic Phase 2A-1B Candidate 13",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate13",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -241,13 +389,27 @@
       "laneAFit": true,
       "obviousIncrementalValue": false,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/cmh"],
-      "evidenceHashes": ["sha256:cmh"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-13"
+      ],
+      "evidenceHashes": [
+        "sha256:cmh"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-13/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 15,
-      "raceName": "Cape Carteret Turkey Trot Fixture",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/CapeCarteret",
+      "raceName": "Synthetic Phase 2A-1B Candidate 15",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate15",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -263,13 +425,27 @@
       "laneAFit": true,
       "obviousIncrementalValue": false,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/cape-carteret"],
-      "evidenceHashes": ["sha256:cape"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-15"
+      ],
+      "evidenceHashes": [
+        "sha256:cape"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-15/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 17,
-      "raceName": "Greater Things on the Move 5K Fixture",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/GreaterThings",
+      "raceName": "Synthetic Phase 2A-1B Candidate 17",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate17",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -285,13 +461,27 @@
       "laneAFit": true,
       "obviousIncrementalValue": true,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/greater-things"],
-      "evidenceHashes": ["sha256:greater"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-17"
+      ],
+      "evidenceHashes": [
+        "sha256:greater"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-17/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 19,
-      "raceName": "ACC Turkey Trot Fixture",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/ACC",
+      "raceName": "Synthetic Phase 2A-1B Candidate 19",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate19",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -307,13 +497,27 @@
       "laneAFit": true,
       "obviousIncrementalValue": true,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/acc"],
-      "evidenceHashes": ["sha256:acc"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-19"
+      ],
+      "evidenceHashes": [
+        "sha256:acc"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-19/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 22,
-      "raceName": "Run With Meb Fixture",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/Meb",
+      "raceName": "Synthetic Phase 2A-1B Candidate 22",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate22",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -328,14 +532,36 @@
       "duplicateResult": "BLOCKED_OR_AMBIGUOUS",
       "laneAFit": false,
       "obviousIncrementalValue": true,
-      "historyMatches": [{"source":"race_mockup_prospects","recordId":"prospect_fixture","stableKey":"runsignup:meb","classification":"AMBIGUOUS","implication":"needs exclusion until resolved"}],
-      "officialSourceUrls": ["https://example.org/meb"],
-      "evidenceHashes": ["sha256:meb"]
+      "historyMatches": [
+        {
+          "source": "race_mockup_prospects",
+          "recordId": "prospect_fixture",
+          "stableKey": "synthetic:22",
+          "classification": "AMBIGUOUS",
+          "implication": "needs exclusion until resolved"
+        }
+      ],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-22"
+      ],
+      "evidenceHashes": [
+        "sha256:meb"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-22/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 24,
-      "raceName": "A Running Start for Hope 5K Fixture",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/Hope",
+      "raceName": "Synthetic Phase 2A-1B Candidate 24",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate24",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -351,13 +577,27 @@
       "laneAFit": true,
       "obviousIncrementalValue": true,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/hope"],
-      "evidenceHashes": ["sha256:hope"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-24"
+      ],
+      "evidenceHashes": [
+        "sha256:hope"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-24/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     },
     {
       "candidateNumber": 30,
-      "raceName": "4.01K Reindeer Run Fixture",
-      "runSignupUrl": "https://runsignup.com/Race/Fixture/Reindeer",
+      "raceName": "Synthetic Phase 2A-1B Candidate 30",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate30",
       "individualRaceNotOperator": true,
       "raceLevelRunSignupPage": true,
       "futureDate": true,
@@ -373,8 +613,22 @@
       "laneAFit": true,
       "obviousIncrementalValue": true,
       "historyMatches": [],
-      "officialSourceUrls": ["https://example.org/reindeer"],
-      "evidenceHashes": ["sha256:reindeer"]
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-30"
+      ],
+      "evidenceHashes": [
+        "sha256:reindeer"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-30/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
     }
   ]
 }

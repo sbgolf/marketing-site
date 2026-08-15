@@ -21,7 +21,7 @@ import {
 } from './lib/startline-lane-a-repeatability-policy.mjs';
 
 const DEFAULT_POLICY = 'config/startline-lane-a-sourcing-policy-v1.json';
-const USAGE = `Usage: node scripts/startline-lane-a-source-runner.mjs --policy config/startline-lane-a-sourcing-policy-v1.json --run-id <id> --mode <fixture|live-read-only> --input fixture.json --output-dir /private/path [--golden-manifest golden.json]\n\nOwner-invoked Lane A repeatability runner. Fixture mode reads local sanitized evidence only. Live read-only mode is structurally read-only and fails closed unless approved read-only access is available; it never sends email, submits forms, writes prospects, creates mockups, mutates cron jobs, or starts Phase 2A-1C/2A-2.`;
+const USAGE = `Usage: node scripts/startline-lane-a-source-runner.mjs --policy config/startline-lane-a-sourcing-policy-v1.json --run-id <id> --mode <fixture|live-read-only> --input fixture.json --output-dir /private/path [--golden-manifest golden.json]\n\nOwner-invoked Lane A repeatability runner. PR #190 certifies frozen fixture replay and governance scaffolding only. Fixture mode reads local sanitized evidence only. LIVE_READ_ONLY_MODE — NOT CERTIFIED: live-read-only is rejected until a separate adapter performs certified live public discovery/history/suppression verification. The runner never sends email, submits forms, writes prospects, creates mockups, mutates cron jobs, or starts Phase 2A-1C/2A-2.`;
 
 const parseArgs = (argv = process.argv.slice(2)) => {
   const args = {};
@@ -66,7 +66,7 @@ const renderSop = ({ policy, sourcePolicyFileSha256, canonicalPolicyObjectSha256
   '## Authorized modes',
   '',
   '- `fixture`: local sanitized regression replay only; no network and no side effects.',
-  '- `live-read-only`: approved public/read-only collection and history checks only; no production mutations and no sends.',
+  '- `live-read-only`: `LIVE_READ_ONLY_MODE — NOT CERTIFIED`; rejected until a separate certified adapter performs live public discovery/history/suppression verification.',
   '',
   '## Fixed stage order',
   '',
@@ -166,6 +166,7 @@ const renderCertificationReport = ({ manifest, preflight, postflight, deviations
 export const runLaneA = async ({ policyPath = DEFAULT_POLICY, runId, mode = 'fixture', inputPath, outputDir, goldenManifestPath, specSha256 = '' }) => {
   if (!runId) throw new Error('required --run-id');
   if (!['fixture', 'live-read-only'].includes(mode)) throw new Error('mode must be fixture or live-read-only');
+  if (mode === 'live-read-only') throw new Error('LIVE_READ_ONLY_MODE — NOT CERTIFIED');
   if (!outputDir) throw new Error('required --output-dir');
   if (!inputPath) throw new Error('required --input local evidence file for this locked PR; fresh sourcing is not authorized');
   const { policy, raw: policyRaw, sourcePolicyFileSha256, canonicalPolicyObjectSha256 } = await loadPolicy(policyPath);
@@ -207,7 +208,7 @@ export const runLaneA = async ({ policyPath = DEFAULT_POLICY, runId, mode = 'fix
     evaluationTimestamp: now,
     evaluationTimeZone: 'America/Chicago',
     mode,
-    sourceEvidenceMode: mode === 'fixture' ? 'FROZEN_SANITIZED_FIXTURE' : 'LIVE_READ_ONLY',
+    sourceEvidenceMode: mode === 'fixture' ? 'FROZEN_SANITIZED_FIXTURE' : 'LIVE_READ_ONLY_NOT_CERTIFIED',
     sourceUrlsAndAccessTimestamps: candidates.flatMap((candidate) => (candidate.sourceReferences || []).map((source) => ({ ...source, accessSemantics: mode === 'fixture' ? 'FIXTURE_REFERENCE_NOT_LIVE_ACCESS_EVIDENCE' : 'LIVE_READ_ONLY_ACCESS_EVIDENCE' }))),
     productionHistorySnapshotTimestamp: mode === 'fixture' ? null : (input.productionHistorySnapshotTimestamp || null),
     queryCounts: input.queryCounts || { productionHistorySelects: 0, publicSourceFetches: 0 },

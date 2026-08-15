@@ -19,11 +19,13 @@ Fixture regression replay:
 npm run cmo:lane-a:replay-fixtures
 ```
 
-Owner-invoked generic runner shape:
+Owner-invoked certified fixture runner shape:
 
 ```bash
-npm run cmo:lane-a:source -- --policy config/startline-lane-a-sourcing-policy-v1.json --run-id <id> --mode <fixture|live-read-only> --input <local-evidence.json> --output-dir <private-output-dir>
+npm run cmo:lane-a:source -- --policy config/startline-lane-a-sourcing-policy-v1.json --run-id <id> --mode fixture --input <local-evidence.json> --output-dir <private-output-dir>
 ```
+
+PR #190 certifies frozen fixture replay and governance scaffolding only. `--mode live-read-only` is intentionally disabled and exits fail-closed with `LIVE_READ_ONLY_MODE — NOT CERTIFIED` until a separate adapter is certified to perform live public discovery, history checks, and suppression verification. Do not treat a local evidence file as live verification.
 
 The legacy `validate:phase2a1b-source-cohort` command remains a bounded regression subsystem for the original nine-candidate fixture replay. It is not the future generic sourcing process.
 
@@ -48,7 +50,7 @@ Safety monitors remain outside this runner and must stay enabled/unchanged. Outb
 The runner enforces:
 
 - machine-readable policy loading with manifest policy SHA-256;
-- fixed JSON schemas and enum checks;
+- fixed JSON schemas and enum checks, including duplicate, suppression, lead-time, Lane A fit, incremental-value, official-site classification, and timestamp evidence;
 - component-based website-need scoring;
 - component-based commercial-capacity scoring;
 - hard exclusions that owner decisions cannot override;
