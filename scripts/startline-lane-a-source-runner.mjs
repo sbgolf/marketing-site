@@ -9,6 +9,7 @@ import {
   buildPreflight,
   classifyCandidate,
   gitCommitSha,
+  gitDirtyState,
   loadPolicy,
   readJson,
   renderMarkdownTable,
@@ -41,21 +42,23 @@ const ensureDir = async (dir) => fs.mkdir(dir, { recursive: true });
 const writeJson = async (file, value) => fs.writeFile(file, `${stableStringify(value)}\n`);
 const writeText = async (file, value) => fs.writeFile(file, value.endsWith('\n') ? value : `${value}\n`);
 
-const artifactHashes = async (outputDir) => {
+const artifactHashes = async (outputDir, { exclude = [] } = {}) => {
   const hashes = {};
   for (const name of (await fs.readdir(outputDir)).sort()) {
     const file = path.join(outputDir, name);
     const stat = await fs.stat(file);
+    if (exclude.includes(name)) continue;
     if (stat.isFile()) hashes[name] = sha256Text(await fs.readFile(file, 'utf8'));
   }
   return hashes;
 };
 
-const renderSop = ({ policy, policySha256, specSha256 }) => [
+const renderSop = ({ policy, sourcePolicyFileSha256, canonicalPolicyObjectSha256, specSha256 }) => [
   '# STARTLINESITES_CMO_LANE_A_REPEATABILITY_SOP',
   '',
   `Policy: \`${policy.policyId}\` v\`${policy.version}\``,
-  `Policy SHA-256: \`${policySha256}\``,
+  `Source policy file SHA-256: \`${sourcePolicyFileSha256}\``,
+  `Canonical policy object SHA-256: \`${canonicalPolicyObjectSha256}\``,
   `Authoritative specification SHA-256: \`${specSha256 || 'recorded in evidence package'}\``,
   '',
   'This SOP locks the Lane A sourcing process to a versioned policy, fixed schemas, fixed rubrics, explicit deviations, and a no-send/no-write boundary.',
@@ -140,11 +143,12 @@ const renderCertificationReport = ({ manifest, preflight, postflight, deviations
   '',
   `Run ID: \`${manifest.runId}\``,
   `Policy: \`${manifest.policyId}\` v\`${manifest.policyVersion}\``,
-  `Policy SHA-256: \`${manifest.policySha256}\``,
+  `Source policy file SHA-256: \`${manifest.sourcePolicyFileSha256}\``,
+  `Canonical policy object SHA-256: \`${manifest.canonicalPolicyObjectSha256}\``,
   '',
   '## GO / NO-GO',
   '',
-  `- REPEATABILITY POLICY — ${manifest.policySha256 ? 'GO' : 'NO-GO'}`,
+  `- REPEATABILITY POLICY — ${manifest.sourcePolicyFileSha256 && manifest.canonicalPolicyObjectSha256 ? 'GO' : 'NO-GO'}`,
   `- SCHEMA VALIDATION — ${manifest.outputSchemaValid ? 'GO' : 'NO-GO'}`,
   `- GOLDEN FIXTURE REPLAY — ${manifest.goldenReplayStatus || 'NOT_RUN'}`,
   `- READ-ONLY ENFORCEMENT — ${preflight.noSendOrWriteCredentialsLoaded && postflight.noDatabaseMutation ? 'GO' : 'NO-GO'}`,
@@ -164,13 +168,13 @@ export const runLaneA = async ({ policyPath = DEFAULT_POLICY, runId, mode = 'fix
   if (!['fixture', 'live-read-only'].includes(mode)) throw new Error('mode must be fixture or live-read-only');
   if (!outputDir) throw new Error('required --output-dir');
   if (!inputPath) throw new Error('required --input local evidence file for this locked PR; fresh sourcing is not authorized');
-  const { policy, sha256: policySha256 } = await loadPolicy(policyPath);
+  const { policy, raw: policyRaw, sourcePolicyFileSha256, canonicalPolicyObjectSha256 } = await loadPolicy(policyPath);
   sanitizeForbiddenEnv();
   const startedAt = new Date().toISOString();
   await ensureDir(outputDir);
   const input = await readJson(inputPath);
   const evidenceSnapshotHash = sha256Object(input);
-  const preflight = buildPreflight({ mode, policy, policySha256, outputDir, runId });
+  const preflight = buildPreflight({ mode, policy, sourcePolicyFileSha256, canonicalPolicyObjectSha256, outputDir, runId });
   if (mode === 'live-read-only' && preflight.deviations.length) {
     await writeJson(path.join(outputDir, 'deviation-register.json'), preflight.deviations);
     throw new Error('PROCESS DEVIATION — BLOCKED');
@@ -189,15 +193,23 @@ export const runLaneA = async ({ policyPath = DEFAULT_POLICY, runId, mode = 'fix
     runId,
     policyId: policy.policyId,
     policyVersion: policy.version,
-    policySha256,
+    sourcePolicyFileSha256,
+    canonicalPolicyObjectSha256,
+    policyChecksumSemantics: {
+      sourcePolicyFileSha256: 'SHA-256 of config/startline-lane-a-sourcing-policy-v1.json bytes as checked out at runtime',
+      canonicalPolicyObjectSha256: 'SHA-256 of stable JSON stringification of the parsed policy object',
+    },
     codeCommitSha: gitCommitSha(),
-    sopSha256: sha256Text(renderSop({ policy, policySha256, specSha256 })),
+    codeCommitSource: 'git rev-parse HEAD at runner execution time; caller-supplied commit values are ignored',
+    gitDirtyState: gitDirtyState(),
+    sopSha256: sha256Text(renderSop({ policy, sourcePolicyFileSha256, canonicalPolicyObjectSha256, specSha256 })),
     modelProviderWhereAiJudgmentUsed: input.modelProviderWhereAiJudgmentUsed || 'none-fixture-deterministic',
     evaluationTimestamp: now,
     evaluationTimeZone: 'America/Chicago',
     mode,
-    sourceUrlsAndAccessTimestamps: candidates.flatMap((candidate) => candidate.sourceReferences || []),
-    productionHistorySnapshotTimestamp: input.productionHistorySnapshotTimestamp || null,
+    sourceEvidenceMode: mode === 'fixture' ? 'FROZEN_SANITIZED_FIXTURE' : 'LIVE_READ_ONLY',
+    sourceUrlsAndAccessTimestamps: candidates.flatMap((candidate) => (candidate.sourceReferences || []).map((source) => ({ ...source, accessSemantics: mode === 'fixture' ? 'FIXTURE_REFERENCE_NOT_LIVE_ACCESS_EVIDENCE' : 'LIVE_READ_ONLY_ACCESS_EVIDENCE' }))),
+    productionHistorySnapshotTimestamp: mode === 'fixture' ? null : (input.productionHistorySnapshotTimestamp || null),
     queryCounts: input.queryCounts || { productionHistorySelects: 0, publicSourceFetches: 0 },
     rowCounts: input.rowCounts || { sourceEvidenceRows: candidates.length },
     evidenceSnapshotId: input.sourceSnapshotId || 'sanitized-frozen-nine-candidate-repeatability-fixture',
@@ -214,7 +226,7 @@ export const runLaneA = async ({ policyPath = DEFAULT_POLICY, runId, mode = 'fix
     goldenReplayStatus: goldenManifestPath ? 'PENDING' : 'NOT_REQUESTED',
   };
 
-  await writeText(path.join(outputDir, 'STARTLINESITES_CMO_LANE_A_REPEATABILITY_SOP.md'), renderSop({ policy, policySha256, specSha256 }));
+  await writeText(path.join(outputDir, 'STARTLINESITES_CMO_LANE_A_REPEATABILITY_SOP.md'), renderSop({ policy, sourcePolicyFileSha256, canonicalPolicyObjectSha256, specSha256 }));
   await writeJson(path.join(outputDir, 'startline-lane-a-sourcing-policy-v1.json'), policy);
   await writeText(path.join(outputDir, 'STARTLINESITES_CMO_LANE_A_STATE_MACHINE.md'), renderStateMachine(policy));
   await writeText(path.join(outputDir, 'STARTLINESITES_CMO_LANE_A_DEVIATION_POLICY.md'), renderDeviationPolicy(policy));
@@ -237,13 +249,26 @@ export const runLaneA = async ({ policyPath = DEFAULT_POLICY, runId, mode = 'fix
     }
     goldenReplayStatus = 'GO';
   }
-  const hashesBeforeManifest = await artifactHashes(outputDir);
+  const hashesBeforeManifest = await artifactHashes(outputDir, { exclude: ['run-manifest.json', 'external-evidence-checksums.json'] });
   const manifest = { ...manifestBase, goldenReplayStatus, outputArtifactHashes: hashesBeforeManifest, finishedAt: new Date().toISOString() };
   await writeJson(path.join(outputDir, 'run-manifest.json'), manifest);
   await writeText(path.join(outputDir, 'STARTLINESITES_CMO_LANE_A_REPEATABILITY_CERTIFICATION_REPORT.md'), renderCertificationReport({ manifest, preflight, postflight, deviations }));
-  manifest.outputArtifactHashes = await artifactHashes(outputDir);
+  manifest.outputArtifactHashes = await artifactHashes(outputDir, { exclude: ['run-manifest.json', 'external-evidence-checksums.json'] });
   await writeJson(path.join(outputDir, 'run-manifest.json'), manifest);
-  return { outputDir, policy, policySha256, manifest, decisions, population, postflight, deviations };
+  const finalizedHashes = await artifactHashes(outputDir, { exclude: ['external-evidence-checksums.json'] });
+  const policyFileVerification = {
+    path: policyPath,
+    sourcePolicyFileSha256,
+    recomputedSourcePolicyFileSha256: sha256Text(policyRaw),
+    matches: sourcePolicyFileSha256 === sha256Text(policyRaw),
+  };
+  await writeJson(path.join(outputDir, 'external-evidence-checksums.json'), {
+    generatedAfterRunManifestFinalized: true,
+    runManifestSha256: finalizedHashes['run-manifest.json'],
+    artifactHashes: finalizedHashes,
+    policyFileVerification,
+  });
+  return { outputDir, policy, sourcePolicyFileSha256, canonicalPolicyObjectSha256, manifest, decisions, population, postflight, deviations };
 };
 
 const main = async () => {

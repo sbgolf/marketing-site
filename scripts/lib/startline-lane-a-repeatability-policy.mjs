@@ -47,10 +47,11 @@ export const readJson = async (file) => JSON.parse(await fs.readFile(file, 'utf8
 export const loadPolicy = async (policyPath) => {
   const raw = await fs.readFile(policyPath, 'utf8');
   const policy = JSON.parse(raw);
-  const sha256 = sha256Text(raw);
+  const sourcePolicyFileSha256 = sha256Text(raw);
+  const canonicalPolicyObjectSha256 = sha256Object(policy);
   const errors = validatePolicy(policy);
   if (errors.length) throw new Error(`policy validation failed closed:\n- ${errors.join('\n- ')}`);
-  return { policy, raw, sha256 };
+  return { policy, raw, sha256: sourcePolicyFileSha256, sourcePolicyFileSha256, canonicalPolicyObjectSha256 };
 };
 
 const includes = (array, value) => Array.isArray(array) && array.includes(value);
@@ -285,25 +286,28 @@ export const sanitizeForbiddenEnv = () => {
   for (const key of FORBIDDEN_ENV_KEYS) delete process.env[key];
 };
 
-export const buildPreflight = ({ mode, policy, policySha256, outputDir, runId }) => {
+export const buildPreflight = ({ mode, policy, sourcePolicyFileSha256, canonicalPolicyObjectSha256, outputDir, runId }) => {
   const forbiddenLoaded = FORBIDDEN_ENV_KEYS.filter((key) => Boolean(process.env[key]));
   const outputPrivate = String(outputDir || '').startsWith('/tmp/') || String(outputDir || '').includes('/.hermes/artifacts/');
-  const liveReadOnlyHealthy = mode === 'fixture' ? true : Boolean(process.env.STARTLINE_READ_ONLY_HISTORY_ENDPOINT || process.env.STARTLINE_READ_ONLY_SUPABASE_URL);
+  const liveReadOnlyHealthy = Boolean(process.env.STARTLINE_READ_ONLY_HISTORY_ENDPOINT || process.env.STARTLINE_READ_ONLY_SUPABASE_URL);
+  const readOnlyCredentialStatus = mode === 'fixture' ? 'NOT_APPLICABLE_IN_FIXTURE_MODE' : (liveReadOnlyHealthy ? 'AVAILABLE' : 'UNAVAILABLE');
   const outboundJobsPaused = true;
   const safetyJobsEnabled = true;
   const deviations = [];
   if (forbiddenLoaded.length) deviations.push(createDeviation({ runId, policy, stage: 'preflight', expectedCondition: 'no send/write credentials in runner environment', actualCondition: `forbidden keys loaded: ${forbiddenLoaded.join(',')}`, reason: 'FORBIDDEN_CAPABILITY_LOADED', affectedRecords: [] }));
   if (!outputPrivate) deviations.push(createDeviation({ runId, policy, stage: 'preflight', expectedCondition: 'output path private', actualCondition: String(outputDir), reason: 'OUTPUT_PATH_NOT_PRIVATE', affectedRecords: [] }));
-  if (!liveReadOnlyHealthy) deviations.push(createDeviation({ runId, policy, stage: 'preflight', expectedCondition: 'read-only history credential healthy', actualCondition: 'missing approved read-only endpoint/credential', reason: 'READ_ONLY_HISTORY_UNAVAILABLE', affectedRecords: [] }));
+  if (mode !== 'fixture' && !liveReadOnlyHealthy) deviations.push(createDeviation({ runId, policy, stage: 'preflight', expectedCondition: 'read-only history credential healthy', actualCondition: 'missing approved read-only endpoint/credential', reason: 'READ_ONLY_HISTORY_UNAVAILABLE', affectedRecords: [] }));
   return {
     runId,
     policyId: policy.policyId,
     policyVersion: policy.version,
-    policySha256,
+    sourcePolicyFileSha256,
+    canonicalPolicyObjectSha256,
     mode,
     safetyJobsEnabled,
     outboundJobsPaused,
-    readOnlyCredentialHealthy: liveReadOnlyHealthy,
+    readOnlyCredentialStatus,
+    readOnlyCredentialHealthy: mode === 'fixture' ? null : liveReadOnlyHealthy,
     noSendOrWriteCredentialsLoaded: forbiddenLoaded.length === 0,
     forbiddenCapabilitiesDetected: forbiddenLoaded,
     outputPrivate,
@@ -337,6 +341,15 @@ export const assertNoSideEffectPostflight = (postflight) => {
 
 export const gitCommitSha = () => {
   try { return execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(); } catch { return 'unknown'; }
+};
+
+export const gitDirtyState = () => {
+  try {
+    const porcelain = execFileSync('git', ['status', '--short'], { encoding: 'utf8' }).trim();
+    return { isDirty: porcelain.length > 0, porcelain };
+  } catch {
+    return { isDirty: null, porcelain: 'unknown' };
+  }
 };
 
 export const renderMarkdownTable = (headers, rows) => [

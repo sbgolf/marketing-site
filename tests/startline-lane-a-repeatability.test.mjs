@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -41,11 +42,15 @@ test('policy JSON validates against schema-level contract and carries fixed enum
   assert.equal(policy.recurringCronCertificationRules.authorized, false);
 });
 
-test('policy SHA in manifest matches file', async () => {
+test('policy checksum fields distinguish source file and canonical object hashes', async () => {
   const out = await fs.mkdtemp('/tmp/lane-a-sha-');
   const raw = await fs.readFile(policyPath, 'utf8');
+  const policy = JSON.parse(raw);
   const result = await runLaneA({ policyPath, runId: 'sha-test', mode: 'fixture', inputPath: fixturePath, outputDir: out, goldenManifestPath: goldenPath });
-  assert.equal(result.manifest.policySha256, sha256Text(raw));
+  assert.equal(result.manifest.sourcePolicyFileSha256, sha256Text(raw));
+  assert.equal(result.manifest.canonicalPolicyObjectSha256, sha256Text(stableStringify(policy)));
+  const external = JSON.parse(await fs.readFile(path.join(out, 'external-evidence-checksums.json'), 'utf8'));
+  assert.equal(external.policyFileVerification.matches, true);
 });
 
 test('unknown enum fails source-evidence validation', async () => {
@@ -118,8 +123,8 @@ test('more than one unresolved owner issue cannot become narrow NEEDS', async ()
 });
 
 test('history 401 creates deviation and blocks live read-only mode', async () => {
-  const { policy, sha256 } = await loadPolicy(policyPath);
-  const preflight = buildPreflight({ mode: 'live-read-only', policy, policySha256: sha256, outputDir: '/tmp/lane-a-test', runId: 'history-401' });
+  const { policy, sourcePolicyFileSha256, canonicalPolicyObjectSha256 } = await loadPolicy(policyPath);
+  const preflight = buildPreflight({ mode: 'live-read-only', policy, sourcePolicyFileSha256, canonicalPolicyObjectSha256, outputDir: '/tmp/lane-a-test', runId: 'history-401' });
   assert.equal(preflight.status, 'PROCESS DEVIATION — BLOCKED');
   assert(preflight.deviations.some((record) => record.reason === 'READ_ONLY_HISTORY_UNAVAILABLE'));
 });
@@ -136,7 +141,7 @@ test('stale fallback cannot produce APPROVE', async () => {
 test('run manifest required fields validate', async () => {
   const out = await fs.mkdtemp('/tmp/lane-a-manifest-');
   const result = await runLaneA({ policyPath, runId: 'manifest-test', mode: 'fixture', inputPath: fixturePath, outputDir: out, goldenManifestPath: goldenPath });
-  for (const key of ['runId', 'policyId', 'policyVersion', 'policySha256', 'codeCommitSha', 'sopSha256', 'evaluationTimestamp', 'mode', 'preflight', 'populationCounts', 'outputArtifactHashes', 'deviations', 'finalDecisions', 'postflight']) {
+  for (const key of ['runId', 'policyId', 'policyVersion', 'sourcePolicyFileSha256', 'canonicalPolicyObjectSha256', 'codeCommitSha', 'gitDirtyState', 'sopSha256', 'evaluationTimestamp', 'mode', 'sourceEvidenceMode', 'preflight', 'populationCounts', 'outputArtifactHashes', 'deviations', 'finalDecisions', 'postflight']) {
     assert.notEqual(result.manifest[key], undefined, `${key} should exist`);
   }
 });
@@ -198,11 +203,11 @@ test('fixture replay matches corrected 1/2/6 candidate-level mapping', async () 
 });
 
 test('no send/write capability is available in sanitized runner environment', async () => {
-  const { policy, sha256 } = await loadPolicy(policyPath);
+  const { policy, sourcePolicyFileSha256, canonicalPolicyObjectSha256 } = await loadPolicy(policyPath);
   const saved = {};
   for (const key of ['RESEND_API_KEY', 'RESEND_AUDIENCES_API_KEY', 'STRIPE_SECRET_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_SERVICE_KEY', 'STARTLINE_SUPABASE_SERVICE_ROLE_KEY']) { saved[key] = process.env[key]; delete process.env[key]; }
   try {
-    const preflight = buildPreflight({ mode: 'fixture', policy, policySha256: sha256, outputDir: '/tmp/lane-a-safe', runId: 'env-test' });
+    const preflight = buildPreflight({ mode: 'fixture', policy, sourcePolicyFileSha256, canonicalPolicyObjectSha256, outputDir: '/tmp/lane-a-safe', runId: 'env-test' });
     assert.equal(preflight.noSendOrWriteCredentialsLoaded, true);
   } finally {
     for (const [key, value] of Object.entries(saved)) { if (value !== undefined) process.env[key] = value; else delete process.env[key]; }
@@ -219,6 +224,34 @@ test('no-side-effect postflight fails if a forbidden capability is detected', as
   } finally {
     for (const [key, value] of Object.entries(saved)) { if (value !== undefined) process.env[key] = value; else delete process.env[key]; }
   }
+});
+
+
+test('manifest records actual git HEAD and dirty worktree state from runtime', async () => {
+  const out = await fs.mkdtemp('/tmp/lane-a-head-');
+  const expectedHead = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+  const result = await runLaneA({ policyPath, runId: 'head-test', mode: 'fixture', inputPath: fixturePath, outputDir: out, goldenManifestPath: goldenPath });
+  assert.equal(result.manifest.codeCommitSha, expectedHead);
+  assert.match(result.manifest.codeCommitSource, /git rev-parse HEAD/);
+  assert.equal(typeof result.manifest.gitDirtyState.isDirty, 'boolean');
+});
+
+test('run manifest excludes self hash and external checksum matches final bytes', async () => {
+  const out = await fs.mkdtemp('/tmp/lane-a-external-hash-');
+  const result = await runLaneA({ policyPath, runId: 'external-hash-test', mode: 'fixture', inputPath: fixturePath, outputDir: out, goldenManifestPath: goldenPath });
+  assert.equal(result.manifest.outputArtifactHashes['run-manifest.json'], undefined);
+  const external = JSON.parse(await fs.readFile(path.join(out, 'external-evidence-checksums.json'), 'utf8'));
+  assert.equal(external.runManifestSha256, sha256Text(await fs.readFile(path.join(out, 'run-manifest.json'), 'utf8')));
+});
+
+test('fixture mode manifest semantics are explicit and not live-evidence claims', async () => {
+  const out = await fs.mkdtemp('/tmp/lane-a-fixture-semantics-');
+  const result = await runLaneA({ policyPath, runId: 'fixture-semantics-test', mode: 'fixture', inputPath: fixturePath, outputDir: out, goldenManifestPath: goldenPath });
+  assert.equal(result.manifest.sourceEvidenceMode, 'FROZEN_SANITIZED_FIXTURE');
+  assert.equal(result.manifest.productionHistorySnapshotTimestamp, null);
+  assert.equal(result.manifest.preflight.readOnlyCredentialStatus, 'NOT_APPLICABLE_IN_FIXTURE_MODE');
+  assert.equal(result.manifest.preflight.readOnlyCredentialHealthy, null);
+  assert(result.manifest.sourceUrlsAndAccessTimestamps.every((source) => source.accessSemantics === 'FIXTURE_REFERENCE_NOT_LIVE_ACCESS_EVIDENCE'));
 });
 
 test('golden fixture file stays exactly aligned to runner comparable output', async () => {
