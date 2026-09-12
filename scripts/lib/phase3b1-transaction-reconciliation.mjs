@@ -1,5 +1,85 @@
 const clean = (value, max = 500) => (typeof value === 'string' ? value.trim().replace(/\s+/g, ' ').slice(0, max) : '');
 
+const TRANSIENT_SUPABASE_STATUSES = new Set([429, 502, 503, 504]);
+const DEFAULT_RETRY_DELAYS_MS = [0, 2000, 5000];
+const DEFAULT_REQUEST_TIMEOUT_MS = 30000;
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+class SupabaseRequestError extends Error {
+  constructor({ path, status, body, cause }) {
+    const suffix = status ? `${status} ${body || ''}`.trim() : (cause?.message || String(cause));
+    super(`Supabase ${path} failed: ${suffix}`);
+    this.name = 'SupabaseRequestError';
+    this.path = path;
+    this.status = status || null;
+    this.body = body || '';
+    this.cause = cause;
+  }
+}
+
+const isTransientSupabaseError = (error) => {
+  if (error?.status && TRANSIENT_SUPABASE_STATUSES.has(Number(error.status))) return true;
+  const name = String(error?.cause?.name || error?.name || '');
+  const code = String(error?.cause?.code || error?.code || '');
+  const message = String(error?.cause?.message || error?.message || '').toLowerCase();
+  return name === 'AbortError'
+    || ['econnreset', 'etimedout', 'econnaborted', 'enetreset', 'eai_again'].includes(code.toLowerCase())
+    || message.includes('timeout')
+    || message.includes('timed out')
+    || message.includes('connection reset')
+    || message.includes('socket hang up')
+    || message.includes('fetch failed');
+};
+
+export const createSupabaseRequest = ({
+  supabaseUrl,
+  serviceKey,
+  fetchImpl = globalThis.fetch,
+  retryDelaysMs = DEFAULT_RETRY_DELAYS_MS,
+  timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS,
+  retryLogger = () => {},
+} = {}) => async (path, options = {}) => {
+  const method = options.method || 'GET';
+  let lastError;
+  for (let attemptIndex = 0; attemptIndex < retryDelaysMs.length; attemptIndex += 1) {
+    if (attemptIndex > 0) await sleep(retryDelaysMs[attemptIndex]);
+    const attempt = attemptIndex + 1;
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), timeoutMs);
+      let response;
+      try {
+        response = await fetchImpl(`${supabaseUrl}/rest/v1/${path}`, {
+          method,
+          headers: {
+            apikey: serviceKey,
+            authorization: `Bearer ${serviceKey}`,
+            'content-type': 'application/json',
+            accept: 'application/json',
+            ...(options.prefer ? { prefer: options.prefer } : {}),
+          },
+          body: options.body ? JSON.stringify(options.body) : undefined,
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timeout);
+      }
+      if (!response.ok) {
+        throw new SupabaseRequestError({ path, status: response.status, body: await response.text() });
+      }
+      const text = await response.text();
+      if (attempt > 1) retryLogger(`StartLine Phase 3B-1 transient Supabase retry succeeded: method=${method} attempts=${attempt} path=${path}`);
+      return text ? JSON.parse(text) : null;
+    } catch (error) {
+      lastError = error instanceof SupabaseRequestError ? error : new SupabaseRequestError({ path, cause: error });
+      if (!isTransientSupabaseError(lastError) || attempt === retryDelaysMs.length) break;
+      retryLogger(`StartLine Phase 3B-1 transient Supabase failure; retrying: method=${method} attempt=${attempt} status=${lastError.status || 'network'} path=${path}`);
+    }
+  }
+  throw lastError;
+};
+
 const setupFirstAction = 'Confirm SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY in the cron runtime; if sourced from Netlify CLI, run netlify link --name startline-sites in the StartLine checkout and rerun one dry-run.';
 
 const setupFailure = ({ fingerprint, title, detail }) => ({
