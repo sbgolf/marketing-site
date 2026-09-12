@@ -5,7 +5,7 @@ import { createHmac } from 'node:crypto';
 import { handler as stripeHandler } from '../netlify/functions/stripe-webhook.mjs';
 import { handler as auditHandler } from '../netlify/functions/submit-audit-request.mjs';
 import { sendMockupOutreachFromGenerationJob } from '../scripts/lib/mockup-generation-send-gate.mjs';
-import { buildReconciliationFindings } from '../scripts/lib/phase3b1-transaction-reconciliation.mjs';
+import { buildReconciliationFindings, createSupabaseRequest } from '../scripts/lib/phase3b1-transaction-reconciliation.mjs';
 
 const sign = ({ rawBody, secret, timestamp }) => {
   const signature = createHmac('sha256', secret).update(`${timestamp}.${rawBody}`, 'utf8').digest('hex');
@@ -447,4 +447,46 @@ test('Phase 3B-1 reconciliation failed notification remains retryable and undeli
   assert.equal(rows.some((row) => row.delivered_at), false);
   const retry = await filterDeliverableFindings({ findings: [finding], request });
   assert.equal(retry.length, 1, 'failed notification must remain deliverable for retry');
+});
+
+test('Phase 3B-1 Supabase request retries transient 504 and records success', async () => {
+  const logs = [];
+  const attempts = [];
+  const request = createSupabaseRequest({
+    supabaseUrl: 'https://supabase.example',
+    serviceKey: 'service-role',
+    retryDelaysMs: [0, 1, 1],
+    timeoutMs: 1000,
+    retryLogger: (message) => logs.push(message),
+    fetchImpl: async (url, options) => {
+      attempts.push({ url: String(url), method: options.method, headers: options.headers });
+      if (attempts.length === 1) return new Response(JSON.stringify({ message: 'Gateway Timeout' }), { status: 504 });
+      return new Response(JSON.stringify([{ id: 'customer-1' }]), { status: 200 });
+    },
+  });
+
+  const rows = await request('customer_records?select=id&deposit_status=eq.paid&order=updated_at.asc&limit=100');
+  assert.deepEqual(rows, [{ id: 'customer-1' }]);
+  assert.equal(attempts.length, 2);
+  assert.ok(logs.some((line) => line.includes('transient Supabase failure; retrying')));
+  assert.ok(logs.some((line) => line.includes('transient Supabase retry succeeded') && line.includes('attempts=2')));
+});
+
+test('Phase 3B-1 Supabase request does not retry permanent 400 errors', async () => {
+  let attempts = 0;
+  const request = createSupabaseRequest({
+    supabaseUrl: 'https://supabase.example',
+    serviceKey: 'service-role',
+    retryDelaysMs: [0, 1, 1],
+    fetchImpl: async () => {
+      attempts += 1;
+      return new Response(JSON.stringify({ message: 'Bad query' }), { status: 400 });
+    },
+  });
+
+  await assert.rejects(
+    () => request('customer_records?select=missing_column'),
+    /400.*Bad query/,
+  );
+  assert.equal(attempts, 1);
 });
