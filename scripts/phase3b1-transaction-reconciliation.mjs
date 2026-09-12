@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { homedir } from 'node:os';
 import {
   createSupabaseRequest,
   formatReconciliationAlert,
@@ -7,14 +10,36 @@ import {
   markDeliveredAlerts,
   markResolvedAlerts,
   deliverReconciliationAlert,
+  validateSupabaseRuntimeConfig,
+  planOperationalFailureAlert,
+  planOperationalRecoveryAlert,
 } from './lib/phase3b1-transaction-reconciliation.mjs';
 
-const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, '');
-const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const alertStatePath = process.env.STARTLINE_PHASE3B1_ALERT_STATE_PATH
+  || join(homedir(), '.hermes/state/startline_phase3b1_reconciliation_alert_state.json');
+
+const loadAlertState = async () => {
+  try {
+    return JSON.parse(await readFile(alertStatePath, 'utf8'));
+  } catch {
+    return null;
+  }
+};
+
+const saveAlertState = async (state) => {
+  if (!state) return;
+  await mkdir(dirname(alertStatePath), { recursive: true });
+  await writeFile(alertStatePath, `${JSON.stringify(state, null, 2)}\n`);
+};
+
+const runtimeConfig = validateSupabaseRuntimeConfig({
+  supabaseUrl: process.env.SUPABASE_URL,
+  serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+});
 
 const request = createSupabaseRequest({
-  supabaseUrl,
-  serviceKey,
+  supabaseUrl: runtimeConfig.supabaseUrl,
+  serviceKey: runtimeConfig.serviceKey,
   retryLogger: (message) => console.error(message),
 });
 
@@ -55,7 +80,21 @@ const fetchPaidCustomerRecordsForReconciliation = async () => {
 };
 
 const main = async () => {
-  if (!supabaseUrl || !serviceKey) throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.');
+  const previousAlertState = await loadAlertState();
+  if (!runtimeConfig.ok) {
+    const planned = planOperationalFailureAlert({ failure: runtimeConfig.failure, previousState: previousAlertState });
+    await saveAlertState(planned.nextState);
+    if (planned.shouldAlert) console.log(planned.message);
+    return;
+  }
+
+  const recovery = planOperationalRecoveryAlert({ previousState: previousAlertState });
+  if (recovery.shouldAlert) {
+    await saveAlertState(recovery.nextState);
+    console.log(recovery.message);
+    return;
+  }
+
   const stripeEvents = await request('stripe_webhook_events?select=stripe_event_id,livemode,processing_status,created_at,updated_at,error_message&processing_status=in.(processing,failed_retryable,failed_terminal)&order=updated_at.asc&limit=100');
   const customerRecords = await fetchPaidCustomerRecordsForReconciliation();
   const outreachAttempts = await request('outreach_send_attempts?select=id,business_key,attempt_status,created_at,updated_at,provider_message_id&attempt_status=in.(sending,delivery_unknown)&order=updated_at.asc&limit=100').catch(() => []);

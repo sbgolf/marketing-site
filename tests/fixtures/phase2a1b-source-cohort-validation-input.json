@@ -1,0 +1,634 @@
+{
+  "policyVersion": "phase2a1b-source-cohort-validation-v1.0.0",
+  "networkMode": "fixture replay only",
+  "candidates": [
+    {
+      "candidateNumber": 1,
+      "raceName": "Synthetic Phase 2A-1B Candidate 1",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate1",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 150,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "LOW",
+      "strongMediumNeed": false,
+      "commercialCapacity": "MEDIUM",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "VERIFIED_ORGANIZER_ROUTING",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": false,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-1"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-low"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-1/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 2,
+      "raceName": "Synthetic Phase 2A-1B Candidate 2",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate2",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 70,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "HIGH",
+      "strongMediumNeed": true,
+      "commercialCapacity": "HIGH",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "VERIFIED_RACE_DIRECT",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": true,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-2"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-under"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-2/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 3,
+      "raceName": "Synthetic Phase 2A-1B Candidate 3",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate3",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 160,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "HIGH",
+      "strongMediumNeed": true,
+      "commercialCapacity": "HIGH",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "VERIFIED_RACE_DIRECT",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": true,
+      "historyMatches": [
+        {
+          "source": "race_mockup_outreach",
+          "recordId": "out_fixture",
+          "stableKey": "synthetic:3",
+          "classification": "REAL_EXTERNAL",
+          "implication": "exclude"
+        }
+      ],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-3"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-history"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-3/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 4,
+      "raceName": "Synthetic Phase 2A-1B Candidate 4",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate4",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 140,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "HIGH",
+      "strongMediumNeed": true,
+      "commercialCapacity": "HIGH",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "NO_CONTACT",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": true,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-4"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-contact"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-4/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 5,
+      "raceName": "Synthetic Phase 2A-1B Candidate 5",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate5",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 130,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "LOW",
+      "strongMediumNeed": false,
+      "commercialCapacity": "MEDIUM",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "VERIFIED_ORGANIZER_ROUTING",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": false,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-5"
+      ],
+      "evidenceHashes": [
+        "sha256:donut"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-5/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 6,
+      "raceName": "Synthetic Phase 2A-1B Candidate 6",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate6",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 122,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "HIGH",
+      "strongMediumNeed": true,
+      "commercialCapacity": "MEDIUM",
+      "eventDetailReliability": "STALE_OR_CONFLICTING",
+      "contactStatus": "VERIFIED_ORGANIZER_ROUTING",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": true,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-6"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-stale"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-6/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 7,
+      "raceName": "Synthetic Phase 2A-1B Candidate 7",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate7",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 150,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "HIGH",
+      "strongMediumNeed": true,
+      "commercialCapacity": "HIGH",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "VERIFIED_RACE_DIRECT",
+      "suppressionClear": false,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": true,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-7"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-suppressed"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-7/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 8,
+      "raceName": "Synthetic Phase 2A-1B Candidate 8",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate8",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 145,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "HIGH",
+      "strongMediumNeed": true,
+      "commercialCapacity": "HIGH",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "VERIFIED_RACE_DIRECT",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": false,
+      "obviousIncrementalValue": true,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-8"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-lane"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-8/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 9,
+      "raceName": "Synthetic Phase 2A-1B Candidate 9",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate9",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 180,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "HIGH",
+      "strongMediumNeed": true,
+      "commercialCapacity": "HIGH",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "VERIFIED_RACE_DIRECT",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": true,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-9"
+      ],
+      "evidenceHashes": [
+        "sha256:fixture-approve-supply"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-9/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 10,
+      "raceName": "Synthetic Phase 2A-1B Candidate 10",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate10",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 92,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "MEDIUM",
+      "strongMediumNeed": true,
+      "commercialCapacity": "MEDIUM",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "VERIFIED_RACE_DIRECT",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": true,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-10"
+      ],
+      "evidenceHashes": [
+        "sha256:hytrol"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-10/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 13,
+      "raceName": "Synthetic Phase 2A-1B Candidate 13",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate13",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 160,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "LOW",
+      "strongMediumNeed": false,
+      "commercialCapacity": "HIGH",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "VERIFIED_ORGANIZER_ROUTING",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": false,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-13"
+      ],
+      "evidenceHashes": [
+        "sha256:cmh"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-13/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 15,
+      "raceName": "Synthetic Phase 2A-1B Candidate 15",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate15",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 120,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "LOW",
+      "strongMediumNeed": false,
+      "commercialCapacity": "MEDIUM",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "VERIFIED_ORGANIZER_ROUTING",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": false,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-15"
+      ],
+      "evidenceHashes": [
+        "sha256:cape"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-15/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 17,
+      "raceName": "Synthetic Phase 2A-1B Candidate 17",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate17",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 150,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "MEDIUM",
+      "strongMediumNeed": false,
+      "commercialCapacity": "MEDIUM",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "VERIFIED_ORGANIZER_ROUTING",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": true,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-17"
+      ],
+      "evidenceHashes": [
+        "sha256:greater"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-17/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 19,
+      "raceName": "Synthetic Phase 2A-1B Candidate 19",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate19",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 125,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "HIGH",
+      "strongMediumNeed": true,
+      "commercialCapacity": "MEDIUM",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "PLAUSIBLE_REQUIRES_STEVE_CONFIRMATION",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": true,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-19"
+      ],
+      "evidenceHashes": [
+        "sha256:acc"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-19/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 22,
+      "raceName": "Synthetic Phase 2A-1B Candidate 22",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate22",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 150,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "MEDIUM",
+      "strongMediumNeed": false,
+      "commercialCapacity": "HIGH",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "VERIFIED_ORGANIZER_ROUTING",
+      "suppressionClear": true,
+      "duplicateResult": "BLOCKED_OR_AMBIGUOUS",
+      "laneAFit": false,
+      "obviousIncrementalValue": true,
+      "historyMatches": [
+        {
+          "source": "race_mockup_prospects",
+          "recordId": "prospect_fixture",
+          "stableKey": "synthetic:22",
+          "classification": "AMBIGUOUS",
+          "implication": "needs exclusion until resolved"
+        }
+      ],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-22"
+      ],
+      "evidenceHashes": [
+        "sha256:meb"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-22/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 24,
+      "raceName": "Synthetic Phase 2A-1B Candidate 24",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate24",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 155,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "MEDIUM",
+      "strongMediumNeed": true,
+      "commercialCapacity": "MEDIUM",
+      "eventDetailReliability": "CURRENT_AND_CONSISTENT",
+      "contactStatus": "VERIFIED_ORGANIZER_ROUTING",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": true,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-24"
+      ],
+      "evidenceHashes": [
+        "sha256:hope"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-24/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    },
+    {
+      "candidateNumber": 30,
+      "raceName": "Synthetic Phase 2A-1B Candidate 30",
+      "runSignupUrl": "https://runsignup.com/Race/Fixture/SyntheticCandidate30",
+      "individualRaceNotOperator": true,
+      "raceLevelRunSignupPage": true,
+      "futureDate": true,
+      "leadTimeDays": 113,
+      "identityAndOrganizerVerified": true,
+      "websiteNeedSeverity": "HIGH",
+      "strongMediumNeed": true,
+      "commercialCapacity": "MEDIUM",
+      "eventDetailReliability": "STALE_OR_CONFLICTING",
+      "contactStatus": "VERIFIED_ORGANIZER_ROUTING",
+      "suppressionClear": true,
+      "duplicateResult": "CLEAR",
+      "laneAFit": true,
+      "obviousIncrementalValue": true,
+      "historyMatches": [],
+      "officialSourceUrls": [
+        "https://synthetic-source.invalid/phase2a1b/candidate-30"
+      ],
+      "evidenceHashes": [
+        "sha256:reindeer"
+      ],
+      "duplicateState": "CLEAR",
+      "officialSiteClassification": "RUNSIGNUP_ONLY",
+      "evidenceAccessedAt": "2026-08-14T12:00:00-05:00",
+      "sourceReferences": [
+        {
+          "type": "official_contact_page",
+          "url": "https://synthetic-source.invalid/candidate-30/contact",
+          "accessedAt": "2026-08-14T12:00:00-05:00"
+        }
+      ]
+    }
+  ]
+}

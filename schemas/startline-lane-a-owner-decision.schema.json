@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StartLine Lane A Owner Decision",
+  "type": "object",
+  "required": ["candidateId", "ownerIdentity", "decision", "reasonCode", "timestamp", "policyVersion", "evidenceHash", "expirationOrRevalidationTimestamp"],
+  "properties": {
+    "candidateId": { "type": ["string", "number"] },
+    "ownerIdentity": { "type": "string" },
+    "decision": { "enum": ["approve source", "reject", "hold", "verify contact", "allow limited runway", "classify manual history", "request re-research"] },
+    "reasonCode": { "type": "string" },
+    "timestamp": { "type": "string" },
+    "policyVersion": { "type": "string" },
+    "evidenceHash": { "type": "string" },
+    "expirationOrRevalidationTimestamp": { "type": "string" },
+    "priorDecisionReference": { "type": "string" }
+  },
+  "additionalProperties": true
+}

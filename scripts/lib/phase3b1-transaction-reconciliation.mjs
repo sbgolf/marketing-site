@@ -80,6 +80,81 @@ export const createSupabaseRequest = ({
   throw lastError;
 };
 
+const setupFirstAction = 'Confirm SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY in the cron runtime; if sourced from Netlify CLI, run netlify link --name startline-sites in the StartLine checkout and rerun one dry-run.';
+
+const setupFailure = ({ fingerprint, title, detail }) => ({
+  fingerprint,
+  title,
+  detail: clean(detail, 500),
+  severity: 'setup_once',
+  first_action: setupFirstAction,
+});
+
+export const validateSupabaseRuntimeConfig = ({ supabaseUrl, serviceKey } = {}) => {
+  const rawUrl = clean(supabaseUrl, 1000).replace(/\/$/, '');
+  const rawKey = clean(serviceKey, 200);
+  if (!rawUrl) return { ok: false, failure: setupFailure({ fingerprint: 'phase3b1:config:missing-supabase-url', title: 'Missing SUPABASE_URL', detail: 'SUPABASE_URL is empty in the reconciliation monitor runtime.' }) };
+  if (!rawKey) return { ok: false, failure: setupFailure({ fingerprint: 'phase3b1:config:missing-service-role-key', title: 'Missing SUPABASE_SERVICE_ROLE_KEY', detail: 'SUPABASE_SERVICE_ROLE_KEY is empty in the reconciliation monitor runtime.' }) };
+  if (/\[MASKED\]|no project id found|netlify/i.test(rawUrl)) return { ok: false, failure: setupFailure({ fingerprint: 'phase3b1:config:netlify-link-or-masked-url', title: 'Invalid SUPABASE_URL from setup/config output', detail: rawUrl }) };
+  let parsed;
+  try {
+    parsed = new URL(rawUrl);
+  } catch {
+    return { ok: false, failure: setupFailure({ fingerprint: 'phase3b1:config:malformed-supabase-url', title: 'Malformed SUPABASE_URL', detail: rawUrl }) };
+  }
+  if (parsed.protocol !== 'https:' || !parsed.hostname.endsWith('.supabase.co')) {
+    return { ok: false, failure: setupFailure({ fingerprint: 'phase3b1:config:invalid-supabase-url', title: 'Invalid SUPABASE_URL host/protocol', detail: rawUrl }) };
+  }
+  return { ok: true, supabaseUrl: rawUrl, serviceKey: rawKey };
+};
+
+export const planOperationalFailureAlert = ({ failure, previousState = null, now = new Date(), reminderMinutes = 60 } = {}) => {
+  const timestamp = now.toISOString();
+  const previous = previousState?.status === 'open' ? previousState : null;
+  const sameFingerprint = previous?.fingerprint === failure?.fingerprint;
+  const lastAlertedAt = previous?.last_alerted_at ? new Date(previous.last_alerted_at).getTime() : 0;
+  const minutesSinceAlert = lastAlertedAt ? Math.floor((now.getTime() - lastAlertedAt) / 60000) : Infinity;
+  const shouldAlert = !sameFingerprint || minutesSinceAlert >= reminderMinutes;
+  const occurrenceCount = sameFingerprint ? (previous.occurrence_count || 1) + 1 : 1;
+  const nextState = {
+    status: 'open',
+    fingerprint: failure?.fingerprint || 'phase3b1:unknown-operational-failure',
+    title: failure?.title || 'StartLine reconciliation monitor operational failure',
+    first_seen_at: sameFingerprint ? previous.first_seen_at : timestamp,
+    last_seen_at: timestamp,
+    last_alerted_at: shouldAlert ? timestamp : previous?.last_alerted_at,
+    occurrence_count: occurrenceCount,
+    severity: failure?.severity || 'actionable',
+  };
+  if (!shouldAlert) return { shouldAlert: false, nextState, message: '' };
+  const persistence = sameFingerprint ? `This setup failure is still failing after ${minutesSinceAlert} minutes / ${occurrenceCount} observed runs.` : 'This setup/config failure will be suppressed unless it changes or persists past the reminder window.';
+  const message = [
+    'Steve action needed — StartLine reconciliation monitor setup/config failure.',
+    '',
+    `Issue: ${failure?.title || 'Operational failure'}`,
+    failure?.detail ? `Detail: ${failure.detail}` : null,
+    `First action: ${failure?.first_action || 'Inspect cron runtime configuration.'}`,
+    persistence,
+  ].filter(Boolean).join('\n');
+  return { shouldAlert: true, nextState, message };
+};
+
+export const planOperationalRecoveryAlert = ({ previousState = null, now = new Date() } = {}) => {
+  if (previousState?.status !== 'open') return { shouldAlert: false, nextState: previousState || null, message: '' };
+  const timestamp = now.toISOString();
+  return {
+    shouldAlert: true,
+    nextState: { ...previousState, status: 'resolved', resolved_at: timestamp },
+    message: [
+      'Resolved — StartLine reconciliation monitor setup/config failure cleared.',
+      '',
+      `Previous issue: ${previousState.title || previousState.fingerprint}`,
+      `First seen: ${previousState.first_seen_at || 'unknown'}`,
+      `Resolved at: ${timestamp}`,
+    ].join('\n'),
+  };
+};
+
 const ageMinutes = (now, updatedAt) => {
   const t = new Date(updatedAt || 0).getTime();
   if (!Number.isFinite(t)) return null;

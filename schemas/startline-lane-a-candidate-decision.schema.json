@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StartLine Lane A Candidate Decision",
+  "type": "object",
+  "required": ["candidateId", "recommendation", "reason", "hardExclusions", "ownerDecisionReasons", "websiteNeed", "commercialCapacity", "transitionLog"],
+  "properties": {
+    "candidateId": { "type": ["string", "number"] },
+    "recommendation": { "enum": ["APPROVE_FOR_ASSET_PREPARATION", "NEEDS_STEVE_DECISION", "EXCLUDE"] },
+    "reason": { "type": "string" },
+    "hardExclusions": { "type": "array", "items": { "type": "string" } },
+    "ownerDecisionReasons": { "type": "array", "items": { "type": "string" } },
+    "websiteNeed": { "enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN"] },
+    "commercialCapacity": { "enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN"] },
+    "transitionLog": { "type": "array", "items": { "type": "object", "required": ["candidateId", "from", "to", "runId", "policyVersion", "timestamp", "actor", "evidenceHash"] } }
+  },
+  "additionalProperties": true
+}
